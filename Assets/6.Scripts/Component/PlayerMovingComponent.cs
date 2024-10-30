@@ -26,6 +26,7 @@ public class PlayerMovingComponent : MonoBehaviour
     /// </summary>
     private bool bRun = false;
 
+    private static readonly int SPEED = Animator.StringToHash("SpeedY");
 
     #region COMPONENT PROPERTY
 
@@ -50,7 +51,7 @@ public class PlayerMovingComponent : MonoBehaviour
     private void Awake()
     {
         movement = SO_Movement.GetMovement();
-
+        animator = GetComponent<Animator>();
         Awake_PlayerBindInput();
     }
 
@@ -100,14 +101,9 @@ public class PlayerMovingComponent : MonoBehaviour
         }
 
         direction = direction.normalized * speed;
+        float deltaSpeed = direction.magnitude / movement.WalkSpeed * movement.Ratio;
         transform.Translate(direction * Time.deltaTime, Space.World);
-
-        //TODO: animator에 속도 추가
-
+        
+        animator?.SetFloat(SPEED, deltaSpeed);
     }
-
-
-
-
-
 }

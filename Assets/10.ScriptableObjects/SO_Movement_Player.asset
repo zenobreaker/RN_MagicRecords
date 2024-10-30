@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 143a75cc6a13c4641be798fc66d5c4d8, type: 3}
   m_Name: SO_Movement_Player
   m_EditorClassIdentifier: 
-  walkSpeed: 2
-  runSpeed: 4
-  sprintSpeed: 6
+  walkSpeed: 8
+  runSpeed: 12
+  sprintSpeed: 20
+  walkToRunRatio: 1
