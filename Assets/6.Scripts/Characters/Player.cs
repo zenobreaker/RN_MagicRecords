@@ -5,9 +5,13 @@ using UnityEngine.InputSystem;
 public class Player : Character
 {
 
+    private ComboComponent comboComponent;
+
     protected override void Awake()
     {
         base.Awake();
+
+        comboComponent = GetComponent<ComboComponent>();
 
         PlayerInput input = GetComponent<PlayerInput>();
         Debug.Assert(input != null);
@@ -17,7 +21,8 @@ public class Player : Character
 
         actionMap.FindAction("Action").started += (context) =>
         {
-            Debug.Log("Actin !");
+            Debug.Log("Action!");
+            comboComponent.InputCombo(KeyCode.X);
         };
 
     }

@@ -18,9 +18,13 @@ public class PlayerMovingComponent : MonoBehaviour
     private Quaternion rotation;
 
 
-    [Header("Speed")]
+    [Header("Speed Settings")]
     [SerializeField] private SO_Movement SO_Movement;
     private SO_Movement movement;
+    private float speed;
+    private float deltaSpeed;
+    public float Speed { get => speed; }
+    public float DeltaSpeed { get => deltaSpeed; }
     /// <summary>
     /// Run & Sprint 
     /// </summary>
@@ -81,7 +85,7 @@ public class PlayerMovingComponent : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(inputMove);
+        //Debug.Log(inputMove);
         currentInputMove = Vector2.SmoothDamp(currentInputMove, inputMove, ref velocity, 1.0f / sensitivity);
 
         //TODO : Condition에 따라서 이동 불가 
@@ -89,7 +93,7 @@ public class PlayerMovingComponent : MonoBehaviour
         if (bCanMove == false)
             return;
 
-        float speed = bRun ? movement.RunSpeed : movement.WalkSpeed;
+        speed = bRun ? movement.RunSpeed : movement.WalkSpeed;
 
         Vector3 direction = Vector3.zero;
         if (currentInputMove.magnitude > deadZone)
@@ -101,7 +105,7 @@ public class PlayerMovingComponent : MonoBehaviour
         }
 
         direction = direction.normalized * speed;
-        float deltaSpeed = direction.magnitude / movement.WalkSpeed * movement.Ratio;
+        deltaSpeed = direction.magnitude / movement.WalkSpeed * movement.Ratio;
         transform.Translate(direction * Time.deltaTime, Space.World);
         
         animator?.SetFloat(SPEED, deltaSpeed);
