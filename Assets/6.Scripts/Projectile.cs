@@ -8,9 +8,10 @@ public class Projectile : MonoBehaviour
     [SerializeField] private float force = 1000.0f;
     [SerializeField] private float life = 10.0f;
 
+    private float curLife = 0f;
+
     private new Rigidbody rigidbody;
     private new Collider collider; 
-
 
     public event Action<Collider> OnTriggerEnterAction;
     public event Action<Collider, Collider, Vector3> OnProjectileHit; 
@@ -27,15 +28,27 @@ public class Projectile : MonoBehaviour
     {
         if (rigidbody == null)
             return;
-
-        rigidbody.AddForce(transform.forward * force);
         
+        // #. Unity6 기준 프로퍼티 명이 달라짐
+        rigidbody.linearVelocity = Vector3.zero;
+        rigidbody.AddForce(transform.forward * force);
+        curLife = life;
     }
 
 
     protected virtual void OnDisable()
     {
         ObjectPooler.ReturnToPool(this.gameObject);
+    }
+
+    protected virtual void Update()
+    {
+        if(life != -1)
+        {
+            curLife -= Time.deltaTime;
+            if (curLife <= 0f)
+                this.gameObject.SetActive(false);
+        }
     }
 
     protected virtual void OnTriggerEnter(Collider other)

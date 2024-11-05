@@ -80,7 +80,7 @@ public class WeaponComponent : ActionComponent
     #endregion
 
     private Animator animator;
-    
+
     private readonly int IsAction = Animator.StringToHash("IsAction");
     public event Action<WeaponType, WeaponType> OnWeaponTypeChanged;
     public event Action<SO_Combo> OnWeaponTypeChanged_Combo;
@@ -147,7 +147,7 @@ public class WeaponComponent : ActionComponent
     {
         if (animator == null)
             return;
-        
+
         base.DoAction();
 
         //animator.SetBool(IsAction, true);
@@ -158,11 +158,17 @@ public class WeaponComponent : ActionComponent
     public void Begin_DoAction()
     {
         OnBeginDoAction?.Invoke();
+
+        weaponTable[type]?.Begin_DoAction();
     }
 
     public override void End_DoAction()
     {
         base.End_DoAction();
+
         OnEndDoAction?.Invoke();
+
+        weaponTable[type]?.End_DoAction();
+
     }
 }

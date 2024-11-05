@@ -38,7 +38,9 @@ public partial class ObjectPooler : MonoBehaviour
 	[SerializeField] Pool[] pools;
 	List<GameObject> spawnObjects;
 	Dictionary<string, Queue<GameObject>> poolDictionary;
-	readonly string INFO = " 오브젝트에 다음을 적으세요 \nvoid OnDisable()\n{\n" +
+    // 부모 관리용 딕셔너리 추가
+    Dictionary<string, Transform> parentDictionary = new Dictionary<string, Transform>();
+    readonly string INFO = " 오브젝트에 다음을 적으세요 \nvoid OnDisable()\n{\n" +
 		"    ObjectPooler.ReturnToPool(gameObject);    // 한 객체에 한번만 \n" +
 		"    CancelInvoke();    // Monobehaviour에 Invoke가 있다면 \n}";
 
@@ -138,8 +140,9 @@ public partial class ObjectPooler : MonoBehaviour
 		if (poolQueue.Count <= 0)
 		{
 			Pool pool = Array.Find(pools, x => x.tag == tag);
-			var obj = CreateNewObject(pool.tag, pool.prefab);
-			ArrangePool(obj);
+            //var obj = CreateNewObject(pool.tag, pool.prefab);
+            GameObject obj = CreateNewObjectSetParent(pool.tag, pool.prefab);
+            ArrangePool(obj);
 		}
 
 		// 큐에서 꺼내서 사용

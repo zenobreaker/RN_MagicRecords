@@ -8,15 +8,12 @@ public partial class ObjectPooler : MonoBehaviour
         foreach(Pool pool in pools)
         {
             poolDictionary.Add(pool.tag, new Queue<GameObject>());
-            GameObject parent = new GameObject(pool.tag);
-            parent.transform.SetParent(transform);
 
             // 기존 오브젝트 생성 및 부모 설정
             for(int i = 0; i< pool.size; i++)
             {
-                GameObject obj = CreateNewObjectNoParent(pool.tag, pool.prefab);
                 // Version up : 2024 11 03 => 풀링될 오브젝트의 부모를 받아서 거기에 생성
-                obj.transform.SetParent(parent.transform);
+                GameObject obj = CreateNewObjectSetParent(pool.tag, pool.prefab);
                 ArrangePool(obj);
             }
 
@@ -35,5 +32,30 @@ public partial class ObjectPooler : MonoBehaviour
         obj.name = tag;
         obj.SetActive(false); // 비활성화시 ReturnToPool을 하므로 Enqueue가 됨
         return obj;
+    }
+
+
+    // 부모 오브젝트 생성 또는 가져오기
+    private Transform GetOrCreateParent(string tag)
+    {
+        if (!parentDictionary.TryGetValue(tag, out Transform parent))
+        {
+            GameObject parentObj = new GameObject($"{tag}_Parent");
+            parent = parentObj.transform;
+            parent.transform.SetParent(transform);
+            parentDictionary[tag] = parent;
+        }
+        return parent;
+    }
+
+    // 오브젝트 생성 후 부모에 할당
+    private GameObject CreateNewObjectSetParent(string tag, GameObject prefab)
+    {
+        GameObject newObj = Instantiate(prefab);
+        newObj.name = tag;
+        Transform parent = GetOrCreateParent(tag);
+        newObj.transform.SetParent(parent);
+        newObj.SetActive(false);
+        return newObj;
     }
 }

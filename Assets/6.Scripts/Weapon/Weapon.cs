@@ -74,6 +74,9 @@ public class Weapon : MonoBehaviour
     public void Equip()
     {
         Debug.Log($"Equip : {type.ToString()}");
+
+        //TODO : 장착 애니메이션이 없으므로 여기서 이 함수를 콜함
+        Begin_Equip();
     }
 
     public virtual void Begin_Equip()
