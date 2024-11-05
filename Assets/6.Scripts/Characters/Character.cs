@@ -8,6 +8,10 @@ public class Character : MonoBehaviour
     protected Animator animator;
     protected new Rigidbody rigidbody;
 
+
+    protected StateComponent state;
+    protected HealthPointComponent healthPoint;
+
     protected virtual void Awake()
     {
         animator = GetComponent<Animator>();
@@ -16,7 +20,8 @@ public class Character : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();  
         Debug.Assert(rigidbody != null);
 
-
+        state = GetComponent<StateComponent>();
+        healthPoint = GetComponent<HealthPointComponent>();
     }
 
     protected virtual void Start()
@@ -24,4 +29,9 @@ public class Character : MonoBehaviour
         
     }
 
+
+    protected virtual void End_Damaged()
+    {
+
+    }
 }

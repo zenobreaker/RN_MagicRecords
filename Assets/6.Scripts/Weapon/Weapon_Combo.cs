@@ -6,9 +6,9 @@ public class Weapon_Combo : Weapon
 
     public SO_Combo ComboData { get => so_Combo; }
 
-    bool bEnable;
-    bool bExist; 
-    int index;
+    protected int index;
+    protected bool bEnable;
+    protected bool bExist; 
 
     protected override void Awake()
     {
@@ -28,10 +28,12 @@ public class Weapon_Combo : Weapon
         base.DoAction(index);
 
         //this.index = index &= so_Combo.comboDatas.Count;
+        
+        this.index = index;
 
         animator.Play(so_Combo.comboDatas[index].ComboName);
         if (bDebug)
-            Debug.Log($"Combo Play: {index} {so_Combo.comboDatas[index].ComboName}");
+            Debug.Log($"Combo Play: {this.index} {so_Combo.comboDatas[index].ComboName}");
     }
 
 

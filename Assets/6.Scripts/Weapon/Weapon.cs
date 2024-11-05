@@ -5,7 +5,7 @@ using UnityEngine;
 public class DoActionData : ICloneable, IEquatable<DoActionData>
 {
     [Header("Power Settings")]
-    public float Pwoer;
+    public float Power;
     public float Distance;
     public float HeightValue;
     public int StopFrame; 

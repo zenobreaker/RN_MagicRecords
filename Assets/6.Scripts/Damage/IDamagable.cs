@@ -2,6 +2,5 @@ using UnityEngine;
 
 public interface IDamagable 
 {
-
-    public void Damage(float damage);
+    public void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, DoActionData data);
 }

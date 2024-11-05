@@ -36,6 +36,7 @@ public class Gun : Weapon_Combo
         //TODO: TryGetComponent가 너무 자주 호출되서 비용이 높다면 이벤트 처리를 다르게 생각.
         if (obj.TryGetComponent<Projectile>(out var projectile))
         {
+            projectile.AddIgnore(rootObject);
             projectile.OnProjectileHit -= OnProjectileHit;
             projectile.OnProjectileHit += OnProjectileHit;
         }
@@ -49,15 +50,16 @@ public class Gun : Weapon_Combo
         // hit Sound Play
         //SoundManager.Instance.PlaySFX(doActionDatas[index].hitSoundName);
 
-        //IDamagable damage = other.GetComponent<IDamagable>();
-        //if (damage != null)
-        //{
-        //    Vector3 hitPoint = self.ClosestPoint(other.transform.position);
-        //    hitPoint = other.transform.InverseTransformPoint(hitPoint);
-        //    damage?.OnDamage(rootObject, this, hitPoint, doActionDatas[index]);
+        // Damage 
+        IDamagable damage = other.GetComponent<IDamagable>();
+        if (damage != null)
+        {
+            Vector3 hitPoint = self.ClosestPoint(other.transform.position);
+            hitPoint = other.transform.InverseTransformPoint(hitPoint);
+            damage?.OnDamage(rootObject, this, hitPoint, doActionDatas[index]);
 
-        //    return;
-        //}
+            return;
+        }
 
         //Instantiate<GameObject>(doActionDatas[index].HitParticle, point, rootObject.transform.rotation);
     }

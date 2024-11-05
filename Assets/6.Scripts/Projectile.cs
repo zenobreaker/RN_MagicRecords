@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent (typeof(Rigidbody))]
@@ -14,7 +15,16 @@ public class Projectile : MonoBehaviour
     private new Collider collider; 
 
     public event Action<Collider> OnTriggerEnterAction;
-    public event Action<Collider, Collider, Vector3> OnProjectileHit; 
+    public event Action<Collider, Collider, Vector3> OnProjectileHit;
+
+    private List<GameObject> ignores = new List<GameObject>();
+    public void AddIgnore(GameObject ignore)
+    {
+        if (ignores.Contains(ignore) == true)
+            return;
+
+        ignores.Add(ignore);
+    }
 
     private void Awake()
     {
@@ -53,6 +63,10 @@ public class Projectile : MonoBehaviour
 
     protected virtual void OnTriggerEnter(Collider other)
     {
+        var ignore = ignores.Find(x=>x.gameObject == other.gameObject);
+        if (ignore != null)
+            return; 
+
         OnTriggerEnterAction?.Invoke(other);
 
         OnProjectileHit?.Invoke(collider,other, transform.position);
