@@ -3,9 +3,12 @@ using UnityEngine;
 
 public class Gun : Weapon_Combo
 {
-    [SerializeField] private GameObject bulletPrefabs;
+
+    [SerializeField] private GameObject muzzleFlashPrefab;
     [SerializeField] private string muzzle_name = "Gun_Muzzle";
     [SerializeField] private string bulletName = "Bullet";
+    
+    
     private Transform muzzleTransform;
 
     protected override void Start()
@@ -26,12 +29,16 @@ public class Gun : Weapon_Combo
 
     public override void Begin_DoAction()
     {
-        if (bulletPrefabs == null  || muzzleTransform == null)
+        if (muzzleTransform == null)
             return;
 
         base.Begin_DoAction();
 
-        //GameObject obj = Instantiate<GameObject>(bulletPrefabs, muzzleTransform.position, rootObject.transform.rotation);
+        if (muzzleFlashPrefab != null)
+        {
+            GameObject flash = Instantiate<GameObject>(muzzleFlashPrefab, muzzleTransform);
+        }
+
         GameObject obj = ObjectPooler.SpawnFromPool(bulletName, muzzleTransform.position, rootObject.transform.rotation);
         //TODO: TryGetComponent가 너무 자주 호출되서 비용이 높다면 이벤트 처리를 다르게 생각.
         if (obj.TryGetComponent<Projectile>(out var projectile))

@@ -19,10 +19,10 @@ MonoBehaviour:
     lastInputCheckTime: 0.5
     comboMaintainTime: 0.5
     doActionData:
-      Pwoer: 0
-      Distance: 0
+      Power: 10
+      Distance: 2
       HeightValue: 0
-      StopFrame: 0
+      StopFrame: 2
       bDownable: 0
       bLauncher: 0
       impulseDirection: {x: 0, y: 0, z: 0}
@@ -35,7 +35,7 @@ MonoBehaviour:
     lastInputCheckTime: 0.5
     comboMaintainTime: 0.5
     doActionData:
-      Pwoer: 0
+      Power: 10
       Distance: 0
       HeightValue: 0
       StopFrame: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
     lastInputCheckTime: 0.5
     comboMaintainTime: 0.5
     doActionData:
-      Pwoer: 0
+      Power: 10
       Distance: 0
       HeightValue: 0
       StopFrame: 0
@@ -67,7 +67,7 @@ MonoBehaviour:
     lastInputCheckTime: 0.5
     comboMaintainTime: 0.5
     doActionData:
-      Pwoer: 0
+      Power: 12
       Distance: 0
       HeightValue: 0
       StopFrame: 0
@@ -78,7 +78,7 @@ MonoBehaviour:
       HitSoundName: 
       bCanMove: 1
   subActionData:
-    Pwoer: 0
+    Power: 0
     Distance: 0
     HeightValue: 0
     StopFrame: 0
