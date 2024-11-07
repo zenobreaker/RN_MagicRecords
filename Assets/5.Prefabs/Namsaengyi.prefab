@@ -678,6 +678,7 @@ GameObject:
   - component: {fileID: 4756509315433545653}
   - component: {fileID: 3458649697022001091}
   - component: {fileID: 7892349361581766820}
+  - component: {fileID: 5856322758750016862}
   m_Layer: 0
   m_Name: Namsaengyi
   m_TagString: Player
@@ -853,6 +854,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealthPoint: 100
+  uiEnemyName: EnemyHealthbar
+  speed: 2
+  hideTime: 3
 --- !u!114 &3458649697022001091
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -884,6 +888,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   originPrefabs:
   - {fileID: 3126351601299179236, guid: 8cfc0c45a1c83ff43a11659c75050798, type: 3}
+--- !u!114 &5856322758750016862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2506087712966942240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4451e3dac1fa6214daf673d8135d8151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dashSpeed: 25
+  dashDistance: 5
 --- !u!1 &2537152034210038321
 GameObject:
   m_ObjectHideFlags: 0
