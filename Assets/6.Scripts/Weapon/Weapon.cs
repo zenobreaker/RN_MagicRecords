@@ -25,9 +25,29 @@ public class DoActionData : ICloneable, IEquatable<DoActionData>
 
     public bool bCanMove;
 
-    public object Clone()
+    public virtual DoActionData DeepCopy()
     {
-        throw new NotImplementedException();
+        DoActionData doActionData = new DoActionData();
+        doActionData.Power = Power;
+        doActionData.Distance = Distance;
+        doActionData.HeightValue = HeightValue;
+        doActionData.StopFrame = StopFrame;
+
+        doActionData.bDownable = bDownable;
+        doActionData.bLauncher = bLauncher;
+        doActionData.impulseDirection = impulseDirection;
+
+        doActionData.HitImpactIndex = HitImpactIndex;
+        doActionData.HitSoundName = HitSoundName;
+
+        doActionData.bCanMove = bCanMove;
+
+        return doActionData;
+    }
+
+    public virtual object Clone()
+    {
+       return this.MemberwiseClone();
     }
 
     public bool Equals(DoActionData other)

@@ -6,9 +6,8 @@ using UnityEngine;
 public class SkillDataJson
 {
     public int id;
-    public int userID;
+    public int jobID;
     public string keycode;
-    public string callName;
     public string objectName;
     public int isPassive;
     public int activation;
@@ -22,27 +21,46 @@ public class SkillDataJsonAllData
 
 
 [System.Serializable]
-public class ActiveSKillDataJson
+public class ActiveSkillDataJson
 {
     public int id;
     public string skillKeycode;
     public int maxLevel;
+    public float cooldown;
+    public float limitCooldown;
+    public float castingTime;
+    public int cost;
+    public string leadingSkillList;
+   
+    public int activation;
+}
+
+
+[System.Serializable]
+public class PhaseSkillData
+{
+    public int targetID;
+    public int phase;
     public float baseDamage;
     public float coefficient;
-    public int hitCount;
-    public int cost;
-    public float baseCoolTime;
-    public float decreaseTimeValue;
+    public float hitDelay;
+    public float duration;
     public string bonusOptionList;
-    public string bonusSpecialOptionList;
-    public string leadingSkillList;
+
     public int activation;
 }
 
 [System.Serializable]
 public class ActiveSkillDataJsonAllData
 {
-    public ActiveSKillDataJson[] activeSkillDataJson;
+    public ActiveSkillDataJson[] activeSkillDataJson;
+}
+
+
+[System.Serializable]
+public class ActiveSkillPhaseJsonAllData
+{
+    public PhaseSkillData[] PhaseSkillDataJson;
 }
 
 [System.Serializable]
@@ -81,36 +99,54 @@ public class SkillJsonConverter : MonoBehaviour
     private PassiveSkillDataJsonAllData passiveSkillDataJsonAllData;
 
 
+    private void Awake()
+    {
+
+        skillDataJsonAllData = JsonUtility.FromJson<SkillDataJsonAllData>(skillDataJson.text);
+        activeSkillDataJsonAllData =
+            JsonUtility.FromJson<ActiveSkillDataJsonAllData>(activeSkillDataJosn.text);
+        passiveSkillDataJsonAllData =
+            JsonUtility.FromJson<PassiveSkillDataJsonAllData>(passiveSkillDataJson.text);
+    }
+
     private void Start()
     {
-        
+
     }
 
     public void ConvertSkillData_Skill()
     {
-        if (skillDataJson == null)
-            return; 
-
-
-        skillDataJsonAllData = JsonUtility.FromJson<SkillDataJsonAllData>(skillDataJson.text);
-        if (skillDataJsonAllData == null)
+        if (skillDataJson == null || skillDataJsonAllData == null)
             return;
 
-
+        // 알지 알지.. 
+        foreach (SkillDataJson data in skillDataJsonAllData.skillDataJson)
+        {
+            if (data.isPassive == 1)
+                ConvertSkillData_Passive(data);
+            else
+                ConvertSkillData_Active(data);
+        }
 
     }
 
-    public void ConvertSkillData_Passive()
+    private void ConvertSkillData_Passive(SkillDataJson data)
     {
-        passiveSkillDataJsonAllData = JsonUtility.FromJson<PassiveSkillDataJsonAllData>(passiveSkillDataJson.text);
+        if (passiveSkillDataJsonAllData == null)
+            return;
 
+        
     }
 
-    public void ConvertSkillData_Active()
+    private void ConvertSkillData_Active(SkillDataJson data)
     {
+        if (activeSkillDataJsonAllData == null)
+            return;
 
-        activeSkillDataJsonAllData = JsonUtility.FromJson<ActiveSkillDataJsonAllData>(activeSkillDataJosn.text);
+        foreach (ActiveSkillDataJson active in activeSkillDataJsonAllData.activeSkillDataJson)
+        {
+            SO_ActiveSkillData activeSkill = ScriptableObject.CreateInstance<SO_ActiveSkillData>();
+        }
     }
-
 
 }
