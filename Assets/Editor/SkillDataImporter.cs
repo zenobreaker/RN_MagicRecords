@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.Jobs;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,14 +20,16 @@ namespace UserEditor
         }
 
 
-        private SkillDataJsonAllData skillDataJsonAllData;
-        private ActiveSkillDataJsonAllData activeSkillDataJsonAllData;
-        private ActiveSkillPhaseJsonAllData activeSkillPhaseJsonAllData;
-        private PassiveSkillDataJsonAllData passiveSkillDataJsonAllData;
+        private MasterSkillDataGroup masterskillDataGroupData;
+        private ActiveSkillDataGroup activeSkillDataGroupData;
+        private PhaseSkillDataGroup phaseSkillDataGroupData;
+        private PassiveSkillDataGroup passiveSkillDataGroupData;
 
-        private string jsonFilePath = "Assets/98.Datas/skillDataJson.json";
+        private string masterSkillFilePath = "Assets/98.Datas/MasterSkillDataJson.json";
+        private string activeSkillFilePath = "Assets/98.Datas/ActiveSkillDataJson.json";
+        private string phaseSkillFilePath = "Assets/98.Datas/PhaseSkillDataJson.json";
 
-        private Dictionary<JOB_ID, List<ActiveSkillDataJson>> activeSkillTable = new Dictionary<int, List<ActiveSkillDataJson>>();
+        private Dictionary<JOB_ID, List<ActiveSkillData>> activeSkillTable = new Dictionary<int, List<ActiveSkillData>>();
         private Dictionary<SKILL_ID, List<PhaseSkillData>> activeSkillPhaseTable = new Dictionary<int, List<PhaseSkillData>>();
 
         [MenuItem("Tools/Skill Data Impoter")]
@@ -37,16 +40,31 @@ namespace UserEditor
         private void OnGUI()
         {
             GUILayout.Label("Skill Data Importer", EditorStyles.boldLabel);
-            jsonFilePath = EditorGUILayout.TextField("JSON File Path", jsonFilePath);
+            masterSkillFilePath = EditorGUILayout.TextField("JSON File Path", masterSkillFilePath);
 
             if (GUILayout.Button("Load Json Data"))
             {
                 LoadJsonData();
             }
 
+            if (GUILayout.Button("Clear All Skill Data"))
+            {
+                activeSkillTable.Clear();
+                activeSkillPhaseTable.Clear();
+            }
+
             if (GUILayout.Button("Convert Active Skill Data"))
             {
+                foreach(var pair in activeSkillTable)
+                {
+                    if (pair.Value.Count <= 0)
+                    { continue; }   
 
+                    foreach(var p2 in pair.Value)
+                    {
+                        Debug.Log(p2.skillKeycode);
+                    }
+                }
             }
 
         }
@@ -64,83 +82,140 @@ namespace UserEditor
         private void LoadJsonData()
         {
 
-            if (!File.Exists(jsonFilePath))
+            if (!File.Exists(masterSkillFilePath))
             {
-                Debug.LogError("JSON 파일 경로가 잘못되었습니다.");
+                Debug.LogError(" Master Skill Data JSON 파일 경로가 잘못되었습니다.");
                 return;
             }
 
-            string json = File.ReadAllText(jsonFilePath);
-            skillDataJsonAllData = JsonUtility.FromJson<SkillDataJsonAllData>(json);
+            string masterSkillJson = File.ReadAllText(masterSkillFilePath);
+            masterskillDataGroupData = JsonUtility.FromJson<MasterSkillDataGroup>(masterSkillJson);
 
-
-            string path = "Assets/98.Datas/activeSkillDataJson.json";
-            if (!File.Exists(@path))
+            if (!File.Exists(activeSkillFilePath))
             {
-                Debug.LogError($"Active Skill JSON 파일 경로가 잘못되었습니다.");
+                Debug.LogError(" Active Skill Data JSON 파일 경로가 잘못되었습니다.");
                 return;
             }
 
-            string activeSkillJson = File.ReadAllText(path);
-            activeSkillDataJsonAllData = JsonUtility.FromJson<ActiveSkillDataJsonAllData>(activeSkillJson);
 
+            string activeSkillJson = File.ReadAllText(activeSkillFilePath);
+            activeSkillDataGroupData = JsonUtility.FromJson<ActiveSkillDataGroup>(activeSkillJson);
 
-            string paseSkillJsonPath = "Assets/98.Datas/PhaseSkillDataJson.json";
-
-            activeSkillPhaseJsonAllData = JsonUtility.FromJson<ActiveSkillPhaseJsonAllData>(paseSkillJsonPath);
-
-            foreach (SkillDataJson data in skillDataJsonAllData.skillDataJson)
+            if (!File.Exists(phaseSkillFilePath))
             {
-                if (data.isPassive == 1)
-                {
-                    //   ConvertSkillData_Passive(data);
-                }
-                else
-                {
+                Debug.LogError(" Phase Skill Data JSON 파일 경로가 잘못되었습니다.");
+                return;
+            }
 
-                    if (activeSkillTable.ContainsKey(data.jobID) == false)
+            string phaseSkillJson = File.ReadAllText(phaseSkillFilePath);
+            phaseSkillDataGroupData = JsonUtility.FromJson<PhaseSkillDataGroup>(phaseSkillJson);
+
+
+            for (int job = (int)JobType.Common; job <= (int)JobType.MAX; job++)
+            {
+                var list = LoadSkillDataFromJobID(job);
+                if (list == null)
+                    continue;
+                
+                // Active 
+                if (activeSkillTable.ContainsKey(job) == false)
+                {
+                    List<ActiveSkillData> activeList = new List<ActiveSkillData>();
+                    activeSkillTable.Add(job, activeList);
+
+                    foreach (SkillData skillDataJson in list)
                     {
+                        ActiveSkillData activeSkill = LoadActiveSkillData(skillDataJson.id);
+                        if (activeSkill == null)
+                            continue; 
 
+                        if (activeSkillTable[job].Contains(activeSkill) == false)
+                            activeSkillTable[job].Add(activeSkill);
+                        else
+                        {
+                            // 기존에 있다면 삭제하고 추가 
+                            activeSkillTable[job].Remove(activeSkill);
+                            activeSkillTable[job].Add(activeSkill);
+                        }
                     }
-                }
+
+                    // 정렬
+                    if (activeSkillTable[job].Count > 0)
+                        activeSkillTable[job].Sort((a, b) => a.id.CompareTo(b.id));
+
+                } // if end 
+
+                //TODO: 패시브 추가 
+
+            }// for end 
+
+            Debug.Log("데이터 로드 완료");
+        }
+
+        private void ConvertSkillData_Passive(SkillData data)
+        {
+            
+
+        }
+
+        // 마스터 스킬 테이블에서 스킬 정보를 ID로 구분 지어서 가져옴 
+        private List<SkillData> LoadSkillDataFromJobID(JOB_ID id)
+        {
+            // 데이터가 null이 아닌지 확인
+            if (masterskillDataGroupData == null || masterskillDataGroupData.MasterSkillDataJson == null)
+            {
+                Debug.LogWarning("Master skill data group or JSON data is null. Returning empty list.");
+                return new List<SkillData>();
             }
 
+            // jobID가 id와 일치하는 데이터를 필터링
+            return masterskillDataGroupData.MasterSkillDataJson
+                .Where(data => data.jobID == id)
+                .ToList();
         }
 
-        private void ConvertSkillData_Passive(SkillDataJson data)
+        private ActiveSkillData LoadActiveSkillData(SKILL_ID id)
         {
-            if (passiveSkillDataJsonAllData == null)
+            if (activeSkillDataGroupData == null)
+                return null;
+
+           
+            foreach (ActiveSkillData data in activeSkillDataGroupData.ActiveSkillDataJson)
+            {
+                if (id != data.id)
+                    continue;
+
+                //Phase 
+                if (activeSkillPhaseTable.ContainsKey(id) == false)
+                {
+                    activeSkillPhaseTable.Add(id, GetPhaseSkillDataList(id));
+                }
+
+                return data;
+            }
+
+            return null;
+        }
+
+        private void LoadActiveSkillData(SkillData skillData)
+        {
+            if (activeSkillDataGroupData == null)
                 return;
 
-
-        }
-
-        private List<SkillDataJson> LoadSkillDataFromJobID(JOB_ID id)
-        {
-            return skillDataJsonAllData?.skillDataJson
-                .Where(data => data.jobID == id).ToList();
-        }
-
-
-        private void LoadActiveSkillData(SkillDataJson skillData)
-        {
-            if (activeSkillDataJsonAllData == null)
-                return;
-
-            foreach (ActiveSkillDataJson data in activeSkillDataJsonAllData.activeSkillDataJson)
+            foreach (ActiveSkillData data in activeSkillDataGroupData.ActiveSkillDataJson)
             {
                 if (skillData.id != data.id)
-                    continue; 
+                    continue;
 
                 SO_ActiveSkillData activeSkill = SO_ActiveSkillData.CreateInstance<SO_ActiveSkillData>();
 
                 activeSkill.id = data.id;
                 activeSkill.skillName = GetSkillNameKeycode(data.skillKeycode);
                 activeSkill.skillDescription = GetSkillDecKeycode(data.skillKeycode);
-                
+
                 activeSkill.skillLevel = 1;
                 activeSkill.maxLevel = data.maxLevel;
-                
+
 
             }
 
@@ -150,17 +225,7 @@ namespace UserEditor
 
         private List<PhaseSkillData> GetPhaseSkillDataList(int skillID)
         {
-            //List<PhaseSkillData> list = new List<PhaseSkillData>();
-            //foreach (PhaseSkillData phaseData in activeSkillPhaseJsonAllData.PhaseSkillDataJson)
-            //{
-            //    if (skillID != phaseData.targetID)
-            //        continue;
-
-            //    list.Add(phaseData);
-            //}
-
-            //return list; 
-            return activeSkillPhaseJsonAllData?.PhaseSkillDataJson.
+            return phaseSkillDataGroupData?.PhaseSkillDataJson.
                 Where(phaseSkillData => phaseSkillData.targetID == skillID).ToList();
         }
 
