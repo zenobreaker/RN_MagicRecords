@@ -87,7 +87,7 @@ public class WeaponComponent : ActionComponent
     private Dictionary<WeaponType, Weapon> weaponTable;
 
     private StateComponent state;
-
+    private SkillComponent skill;
 
     private void Awake()
     {
@@ -95,6 +95,8 @@ public class WeaponComponent : ActionComponent
         animator = GetComponent<Animator>();
 
         state = GetComponent<StateComponent>();
+        skill = GetComponent<SkillComponent>();
+        Debug.Log(skill != null);
 
         Awake_InitWeapon();
     }

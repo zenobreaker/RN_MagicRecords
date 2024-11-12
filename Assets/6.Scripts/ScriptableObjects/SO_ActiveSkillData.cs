@@ -10,6 +10,9 @@ public class PhaseSkill
     public float hitDelay;
     public float duration;
     public List<int> bonusOptionList;
+
+    [Header("Skill Prefab")]
+    public GameObject skillObject;
 }
 
 public class SO_ActiveSkillData : SO_SkillData
@@ -23,6 +26,5 @@ public class SO_ActiveSkillData : SO_SkillData
     [Header("Phase")]
     public List<PhaseSkill> phaseList; 
     
-    [Header("Skill Prefab")]
-    public GameObject skillObject;
+   
 }

@@ -31,6 +31,42 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SkillAction1",
+                    "type": "Button",
+                    "id": "9b581c8f-346f-46c5-b6b8-9f3b734e2660",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SkillAction2",
+                    "type": "Button",
+                    "id": "b868b6b3-6c02-44c6-9b75-448ebfd78146",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SkillAction3",
+                    "type": "Button",
+                    "id": "0df3e6ea-94b6-4493-8ad8-0f29060b13b8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SkillAction4",
+                    "type": "Button",
+                    "id": "e77762b9-466f-49b5-ae2a-01902f9a93c1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -102,23 +138,56 @@
                 },
                 {
                     "name": "",
-                    "id": "1e59357a-14b8-4d29-8452-b845a132d65c",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Action",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "47e910a7-9b72-4bd1-8905-538a03e7a81f",
                     "path": "<Keyboard>/c",
                     "interactions": "",
                     "processors": "",
                     "groups": ";PC",
                     "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "171eee9c-7647-4aa5-bd12-32342895c122",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkillAction1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d5c6c00c-c8b7-4ca0-8daa-7d9357a0e9c4",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkillAction2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "903708aa-7c9b-4565-a768-8de6ae5c71fc",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkillAction3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9622c86c-b61b-4daa-be13-32b08a583661",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkillAction4",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
