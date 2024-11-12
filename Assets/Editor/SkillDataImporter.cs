@@ -55,18 +55,23 @@ namespace UserEditor
 
             if (GUILayout.Button("Convert Active Skill Data"))
             {
-                foreach(var pair in activeSkillTable)
-                {
-                    if (pair.Value.Count <= 0)
-                    { continue; }   
+                //foreach(var pair in activeSkillTable)
+                //{
+                //    if (pair.Value.Count <= 0)
+                //    { continue; }   
 
-                    foreach(var p2 in pair.Value)
-                    {
-                        Debug.Log(p2.skillKeycode);
-                    }
-                }
+                //    foreach(var p2 in pair.Value)
+                //    {
+                //        Debug.Log(p2.skillKeycode);
+                //    }
+                //}
+
+                Convert_SkillData();
             }
-
+            if (GUILayout.Button("Create Folder"))
+            {
+                CreateFolder("test");
+            }
         }
 
         private string GetSkillNameKeycode(string skillKeycode)
@@ -152,11 +157,7 @@ namespace UserEditor
             Debug.Log("데이터 로드 완료");
         }
 
-        private void ConvertSkillData_Passive(SkillData data)
-        {
-            
-
-        }
+    
 
         // 마스터 스킬 테이블에서 스킬 정보를 ID로 구분 지어서 가져옴 
         private List<SkillData> LoadSkillDataFromJobID(JOB_ID id)
@@ -197,38 +198,136 @@ namespace UserEditor
             return null;
         }
 
-        private void LoadActiveSkillData(SkillData skillData)
-        {
-            if (activeSkillDataGroupData == null)
-                return;
-
-            foreach (ActiveSkillData data in activeSkillDataGroupData.ActiveSkillDataJson)
-            {
-                if (skillData.id != data.id)
-                    continue;
-
-                SO_ActiveSkillData activeSkill = SO_ActiveSkillData.CreateInstance<SO_ActiveSkillData>();
-
-                activeSkill.id = data.id;
-                activeSkill.skillName = GetSkillNameKeycode(data.skillKeycode);
-                activeSkill.skillDescription = GetSkillDecKeycode(data.skillKeycode);
-
-                activeSkill.skillLevel = 1;
-                activeSkill.maxLevel = data.maxLevel;
-
-
-            }
-
-        }
-
-
-
         private List<PhaseSkillData> GetPhaseSkillDataList(int skillID)
         {
             return phaseSkillDataGroupData?.PhaseSkillDataJson.
                 Where(phaseSkillData => phaseSkillData.targetID == skillID).ToList();
         }
 
+        private void Convert_SkillData()
+        {
+            for(int job = (int)JobType.Common; job <= (int)JobType.MAX; job++)
+            {
+                //Active 
+                Convert_ActiveSkill(job);
+
+                //TODO : Passive 
+            }
+        }
+
+        private void Convert_ActiveSkill(JOB_ID jobID)
+        {
+            foreach (KeyValuePair<JOB_ID, List<ActiveSkillData>> jobAndSkillPair in activeSkillTable)
+            {
+                if (jobAndSkillPair.Key != jobID)
+                    continue; 
+
+                if(jobAndSkillPair.Value.Count <= 0)
+                    continue;
+
+                // Create Scriptable Object
+                string assetPath = "";
+                string jobPath = "";
+                {
+                    jobPath = ((JobType)jobID).ToString();
+                    // 폴더 생성
+                    CreateFolder(jobPath);
+                   
+                }
+
+                foreach (ActiveSkillData data in  jobAndSkillPair.Value)
+                {
+                    SO_ActiveSkillData soSkill = SO_ActiveSkillData.CreateInstance<SO_ActiveSkillData>();
+
+                    List<PhaseSkillData> phaseList = activeSkillPhaseTable[data.id];
+                    if (phaseList == null)
+                        continue;
+
+                    soSkill.id = data.id;
+                    soSkill.skillDescription = GetSkillDecKeycode(data.skillKeycode);
+                    soSkill.skillName = GetSkillNameKeycode(data.skillKeycode);
+                    soSkill.skillLevel = 1;
+                    soSkill.maxLevel = data.maxLevel;
+                    soSkill.cooldown = data.cooldown;
+                    soSkill.limitCooldown = data.limitCooldown;
+                    soSkill.castingTime = data.castingTime;
+                    soSkill.cost = data.cost;
+
+                    //TODO: leading Skill
+
+                    soSkill.phaseList = new List<PhaseSkill>();
+                    foreach (PhaseSkillData phaseSkill in phaseList)
+                    {
+                        PhaseSkill phase = new PhaseSkill();
+                        phase.basePower = phaseSkill.baseDamage;
+                        phase.confficient = phaseSkill.coefficient;
+                        phase.hitDelay = phaseSkill.hitDelay;
+                        phase.duration = phaseSkill.duration;
+
+                        //TODO: Skill Object
+
+                        //TODO: bonus 
+                        //soSkill.
+                        soSkill.phaseList.Add(phase);
+                    }
+                    assetPath = $"Assets/10.ScriptableObjects/Resources/Skills/{jobPath}/";
+                    assetPath = assetPath + $"{data.skillKeycode}.asset";
+                    // 이미 존재하는 에셋이 있는 경우 삭제 후 재생성
+                    var existingAsset = AssetDatabase.LoadAssetAtPath<SO_ActiveSkillData>(assetPath);
+                    if (existingAsset != null)
+                    {
+                        AssetDatabase.DeleteAsset(assetPath);
+                    }
+
+                    AssetDatabase.CreateAsset(soSkill, assetPath);
+                    Debug.Log("Active Skills imported from JSON");
+                } //   end   foreach (ActiveSkillData data 
+            } //  end  foreach (KeyValuePair<JOB_ID, List<ActiveSkillData>>  
+
+            AssetDatabase.Refresh();
+        }
+
+
+        private void ConvertSkillData_Passive(SkillData data)
+        {
+
+
+        }
+
+
+        public void CreateFolder(string path)
+        {
+            string folderPath = "10.ScriptableObjects/Resources/Skills/" + path;
+
+            // 유효한 폴더인지 확인
+            if (AssetDatabase.IsValidFolder(folderPath))
+            {
+                Debug.Log("폴더가 이미 존재합니다.");
+                return;
+            }
+            else
+            {
+                // 경로 상의 각 폴더를 순차적으로 생성
+                string[] splitPath = folderPath.Split('/');
+                string currentPath = "Assets";
+
+                foreach (string folder in splitPath)
+                {
+                    string tempPath = Path.Combine(currentPath, folder);
+                    if (!AssetDatabase.IsValidFolder(tempPath))
+                    {
+                        AssetDatabase.CreateFolder(currentPath, folder);
+                    }
+                    currentPath = tempPath;
+                }
+
+                Debug.Log($"폴더가 생성되었습니다: {folderPath}");
+
+                AssetDatabase.Refresh();
+            }
+        }
+
+       
     }  // class end 
 
 }// namespace end; 
