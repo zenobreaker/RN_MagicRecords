@@ -4,6 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SO_SkillData", menuName = "Scriptable Objects/SO_SkillData")]
 public class SO_SkillData : ScriptableObject
 {
+    [Header("Skill Info")]
     public int id;
     public string skillName;
     public string skillDescription;
@@ -14,6 +15,4 @@ public class SO_SkillData : ScriptableObject
 
     [Header("Skill Leading Skill ID's")]
     public List<int> leadingSkillList;
-    //public float basePower;
-    //public float confficient; 
 }

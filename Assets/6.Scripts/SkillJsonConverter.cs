@@ -64,6 +64,24 @@ public class PhaseSkillDataGroup
 }
 
 [System.Serializable]
+public class SkillSpawnData
+{
+    public float posX;
+    public float posY;
+    public float posZ;
+
+    public float rotX;
+    public float rotY;
+    public float rotZ; 
+}
+
+[System.Serializable]
+public class SkillSpawnDataGroup
+{
+    public SkillSpawnData[] SkillSpawnDataJson;
+}
+
+[System.Serializable]
 public class PassiveSkillData
 {
     public int id;
@@ -93,8 +111,6 @@ public class SkillJsonConverter : MonoBehaviour
     public TextAsset activeSkillDataJosn;
     public TextAsset passiveSkillDataJson;
 
-
-   
 
 
     private void Awake()

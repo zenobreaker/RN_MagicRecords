@@ -23,6 +23,7 @@ namespace UserEditor
         private MasterSkillDataGroup masterskillDataGroupData;
         private ActiveSkillDataGroup activeSkillDataGroupData;
         private PhaseSkillDataGroup phaseSkillDataGroupData;
+        private SkillSpawnDataGroup skillSpawnDataGroupData;
         private PassiveSkillDataGroup passiveSkillDataGroupData;
 
         private string masterSkillFilePath = "Assets/98.Datas/MasterSkillDataJson.json";

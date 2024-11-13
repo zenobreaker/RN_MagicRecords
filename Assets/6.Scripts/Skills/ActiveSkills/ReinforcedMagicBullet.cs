@@ -15,8 +15,14 @@ public class ReinforcedMagicBullet : ActiveSkill
         if (phaseIndex < 0 || phaseIndex >= skillData.phaseList.Count)
             return;
 
+        //TODO: 오브젝트 풀링에서 가져오기 
         // 마탄 오브젝트 생성 
-        GameObject.Instantiate<GameObject>(skillData.phaseList[phaseIndex].skillObject);
+        PhaseSkill phaseSkill = skillData.phaseList[phaseIndex];
+
+        Vector3 position = ownerObject.transform.position + phaseSkill.spawnPosition;
+        Quaternion rotation = ownerObject.transform.rotation * phaseSkill.spwanQuaternion;
+
+        GameObject.Instantiate<GameObject>(skillData.phaseList[phaseIndex].skillObject, position, rotation);
     }
 
 }
