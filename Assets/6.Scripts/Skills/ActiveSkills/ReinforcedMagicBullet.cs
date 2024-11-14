@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -5,24 +6,38 @@ using UnityEngine;
 /// </summary>
 public class ReinforcedMagicBullet : ActiveSkill
 {
+    private PhaseSkill phaseSkill; 
     protected override void ApplyEffects()
     {
         
     }
+
 
     protected override void StartPhase(int phaseIndex)
     {
         if (phaseIndex < 0 || phaseIndex >= skillData.phaseList.Count)
             return;
 
+        
+        phaseSkill = skillData.phaseList[phaseIndex];
+        animator?.Play(phaseSkill.skillActionAnimation);
+    }
+
+    public override void Begin_DoAction()
+    {
+        if (phaseSkill == null) return;
+
         //TODO: 오브젝트 풀링에서 가져오기 
         // 마탄 오브젝트 생성 
-        PhaseSkill phaseSkill = skillData.phaseList[phaseIndex];
 
         Vector3 position = ownerObject.transform.position + phaseSkill.spawnPosition;
         Quaternion rotation = ownerObject.transform.rotation * phaseSkill.spwanQuaternion;
 
-        GameObject.Instantiate<GameObject>(skillData.phaseList[phaseIndex].skillObject, position, rotation);
+        GameObject.Instantiate<GameObject>(phaseSkill.skillObject, position, rotation);
     }
 
+    public override void End_DoAction()
+    {
+        phaseSkill = null;
+    }
 }

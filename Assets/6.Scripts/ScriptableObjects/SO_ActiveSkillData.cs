@@ -16,6 +16,7 @@ public class PhaseSkill
     [Header("Skill Prefab")]
     public GameObject skillObject;
     public string objectName;
+    public string skillActionAnimation;
 
     [Header("Spawn Data")]
     public Vector3 spawnPosition;

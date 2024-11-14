@@ -6,8 +6,22 @@ public abstract class ActiveSkill : ISkill
     protected float currentCooldown;
 
     protected GameObject ownerObject;
+    protected Animator animator; 
 
     public bool IsOnCooldown => currentCooldown > 0;
+    public float CurrentCooldown { get => currentCooldown; }
+
+    public void SetOwner(GameObject gameObject)
+    {
+        ownerObject = gameObject; 
+        animator = gameObject.GetComponent<Animator>();
+    }
+
+    public void SetCooldown(float cooldown)
+    {
+        if(currentCooldown > 0)
+            currentCooldown -= cooldown;
+    }
 
     public void Cast()
     {
@@ -25,4 +39,8 @@ public abstract class ActiveSkill : ISkill
 
     protected abstract void StartPhase(int phaseIndex);
     protected abstract void ApplyEffects();     // 개별 효과 적용 
+
+    public abstract void Begin_DoAction();
+
+    public abstract void End_DoAction();
 }

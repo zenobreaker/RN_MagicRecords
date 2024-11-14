@@ -6,14 +6,15 @@ public class Player : Character
 {
 
     private ComboComponent comboComponent;
-    private DashComponent dashComponent;
+    private WeaponComponent weapon;
 
     protected override void Awake()
     {
         base.Awake();
 
         comboComponent = GetComponent<ComboComponent>();
-        dashComponent = GetComponent<DashComponent>();
+        weapon = GetComponent<WeaponComponent>();
+        Debug.Assert(weapon != null);
 
         PlayerInput input = GetComponent<PlayerInput>();
         Debug.Assert(input != null);
@@ -27,6 +28,7 @@ public class Player : Character
             comboComponent.InputCombo(KeyCode.X);
         };
 
+        Awake_SkillAcitonInput(actionMap);
 
         actionMap.FindAction("Dash").started += (context) =>
         {
@@ -35,6 +37,33 @@ public class Player : Character
                 return;
 
             state.SetEvadeMode();
+        };
+    }
+
+
+    private void Awake_SkillAcitonInput(InputActionMap actionMap)
+    {
+        if (actionMap == null || weapon == null)
+            return; 
+
+        actionMap.FindAction("SkillAction1").started += (context) =>
+        {
+            weapon.DoSkillAction(SkillSlot.Slot1);
+        };
+
+        actionMap.FindAction("SkillAction2").started += (context) =>
+        {
+            weapon.DoSkillAction(SkillSlot.Slot2);
+        };
+
+        actionMap.FindAction("SkillAction3").started += (context) =>
+        {
+            weapon.DoSkillAction(SkillSlot.Slot3);
+        };
+
+        actionMap.FindAction("SkillAction4").started += (context) =>
+        {
+            weapon.DoSkillAction(SkillSlot.Slot4);
         };
     }
 }

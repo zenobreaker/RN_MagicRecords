@@ -10,6 +10,11 @@ public enum WeaponType
     Unarmed = 0, Gun, MAX,
 }
 
+public enum SkillSlot
+{
+    Slot1 = 0, Slot2, Slot3, Slot4, MAX,
+}
+
 /// <summary>
 /// 무기 관리 - 커맨더 패턴 이용 
 /// </summary>
@@ -162,6 +167,7 @@ public class WeaponComponent : ActionComponent
         OnBeginDoAction?.Invoke();
 
         weaponTable[type]?.Begin_DoAction();
+        skill?.Begin_DoAction();
     }
 
     public override void End_DoAction()
@@ -171,6 +177,11 @@ public class WeaponComponent : ActionComponent
         OnEndDoAction?.Invoke();
 
         weaponTable[type]?.End_DoAction();
+        skill?.End_DoAction();
+    }
 
+    public void DoSkillAction(SkillSlot slot)
+    {
+        skill.UseSkill(slot);
     }
 }
