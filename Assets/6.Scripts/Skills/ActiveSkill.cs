@@ -1,8 +1,10 @@
 using UnityEngine;
 
+[System.Serializable]
 public abstract class ActiveSkill : ISkill
 {
     protected SO_ActiveSkillData skillData;
+    public SO_ActiveSkillData SO_SkillData { set => skillData = value; }
     protected float currentCooldown;
 
     protected GameObject ownerObject;

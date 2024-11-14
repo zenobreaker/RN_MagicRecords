@@ -55,7 +55,7 @@ public class SkillComponent : MonoBehaviour
         {
             if (pair.Value == null) continue;
 
-            if (pair.Value.IsOnCooldown) continue;
+            if (pair.Value.IsOnCooldown == false) continue;
 
             pair.Value.SetCooldown(Time.deltaTime);
         }
@@ -80,7 +80,7 @@ public class SkillComponent : MonoBehaviour
         skillSlotTable[slot]?.Cast();
     }
 
-    public void Begin_DoAction()
+    public void Begin_SkillAction()
     {
         if(currentSlot == SkillSlot.MAX) return;
         
@@ -88,7 +88,7 @@ public class SkillComponent : MonoBehaviour
         skillSlotTable[currentSlot]?.Begin_DoAction();
     }
 
-    public void End_DoAction()
+    public void End_SkillAction()
     {
         if (currentSlot == SkillSlot.MAX) return;
 

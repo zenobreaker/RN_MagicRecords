@@ -84,16 +84,17 @@ public class WeaponComponent : ActionComponent
     }
     #endregion
 
-    private Animator animator;
-
-    private readonly int IsAction = Animator.StringToHash("IsAction");
-    public event Action<WeaponType, WeaponType> OnWeaponTypeChanged;
-    public event Action<SO_Combo> OnWeaponTypeChanged_Combo;
-    private Dictionary<WeaponType, Weapon> weaponTable;
-
     private StateComponent state;
     private SkillComponent skill;
 
+    private Animator animator;
+
+    private bool bUseSkill = false; 
+    private Dictionary<WeaponType, Weapon> weaponTable;
+    private readonly int IsAction = Animator.StringToHash("IsAction");
+
+    public event Action<WeaponType, WeaponType> OnWeaponTypeChanged;
+    public event Action<SO_Combo> OnWeaponTypeChanged_Combo;
     private void Awake()
     {
         weaponTable = new Dictionary<WeaponType, Weapon>();
@@ -162,12 +163,25 @@ public class WeaponComponent : ActionComponent
         weaponTable[type]?.DoAction(index);
     }
 
+    public void DoSkillAction(SkillSlot slot)
+    {
+        bUseSkill = true;
+        skill.UseSkill(slot);
+    }
+
+
     public void Begin_DoAction()
     {
         OnBeginDoAction?.Invoke();
 
+
+        if (bUseSkill == true)
+        {
+            skill?.Begin_SkillAction();
+            return; 
+        }
+
         weaponTable[type]?.Begin_DoAction();
-        skill?.Begin_DoAction();
     }
 
     public override void End_DoAction()
@@ -176,12 +190,16 @@ public class WeaponComponent : ActionComponent
 
         OnEndDoAction?.Invoke();
 
+        if (bUseSkill == true)
+        {
+            skill?.End_SkillAction();
+            bUseSkill = false;
+
+            return; 
+        }
+        
         weaponTable[type]?.End_DoAction();
-        skill?.End_DoAction();
     }
 
-    public void DoSkillAction(SkillSlot slot)
-    {
-        skill.UseSkill(slot);
-    }
+
 }

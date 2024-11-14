@@ -18,9 +18,10 @@ public class ReinforcedMagicBullet : ActiveSkill
         if (phaseIndex < 0 || phaseIndex >= skillData.phaseList.Count)
             return;
 
-        
+
         phaseSkill = skillData.phaseList[phaseIndex];
-        animator?.Play(phaseSkill.skillActionAnimation);
+        string animName = phaseSkill.skillActionPrefix + "." + phaseSkill.skillActionAnimation;
+        animator?.Play(animName);
     }
 
     public override void Begin_DoAction()

@@ -679,6 +679,7 @@ GameObject:
   - component: {fileID: 3458649697022001091}
   - component: {fileID: 7892349361581766820}
   - component: {fileID: 5856322758750016862}
+  - component: {fileID: 4430403630037275808}
   m_Layer: 0
   m_Name: Namsaengyi
   m_TagString: Player
@@ -902,6 +903,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dashSpeed: 25
   dashDistance: 5
+--- !u!114 &4430403630037275808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2506087712966942240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c50be100f9e522429eb662a7241f7f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillEventHandler: {fileID: 0}
 --- !u!1 &2537152034210038321
 GameObject:
   m_ObjectHideFlags: 0

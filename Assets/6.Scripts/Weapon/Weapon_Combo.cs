@@ -3,7 +3,7 @@ using UnityEngine;
 public class Weapon_Combo : Weapon
 {
     [SerializeField] protected SO_Combo so_Combo;
-
+    [SerializeField] protected string comboPrefixName = "Combo";
     public SO_Combo ComboData { get => so_Combo; }
 
     protected int index;
@@ -30,8 +30,9 @@ public class Weapon_Combo : Weapon
         //this.index = index &= so_Combo.comboDatas.Count;
         
         this.index = index;
-
-        animator.Play(so_Combo.comboDatas[index].ComboName);
+        string animName = comboPrefixName + "." + so_Combo.comboDatas[index].ComboName;
+        animator.Play(animName);
+        
         if (bDebug)
             Debug.Log($"Combo Play: {this.index} {so_Combo.comboDatas[index].ComboName}");
     }

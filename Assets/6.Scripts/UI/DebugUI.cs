@@ -18,12 +18,15 @@ public class DebugUI : MonoBehaviour
         timescaleSlider.onValueChanged.AddListener( OnValueChanged);
     }
 
+    private void OnEnable_DebugUI(bool bView)
+    {
+        for (int i = 0; i < gameObject.transform.childCount; i++)
+            gameObject.transform.GetChild(i).gameObject.SetActive(bView);
+    }
+
     private void Start()
     {
-        if (bDebugView == false)
-            this.gameObject.SetActive(false);
-        else 
-            this.gameObject.SetActive(true);
+        OnEnable_DebugUI(bDebugView);
     }
 
 
@@ -34,12 +37,14 @@ public class DebugUI : MonoBehaviour
             bDebugView = !bDebugView;
         }
 
-        if (bDebugView == false)
-            this.gameObject.SetActive(false);
-        else
-            this.gameObject.SetActive(true);
+        OnEnable_DebugUI(bDebugView);
 
         Draw_PlayerState();
+
+        if(Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            Test_SetSkill();
+        }
     }
 
 
@@ -56,5 +61,23 @@ public class DebugUI : MonoBehaviour
     private void OnValueChanged(float value)
     {
         Time.timeScale = value;
+    }
+
+    private void Test_SetSkill()
+    {
+        SkillComponent skill = debug_Character.GetComponent<SkillComponent>();
+        if (skill != null)
+        {
+            ActiveSkill activeSkill = new ReinforcedMagicBullet();
+            SO_ActiveSkillData so_ActiveSkillData =
+                Resources.Load<SO_ActiveSkillData>("Skills/Shooter/reinforecedmaigcbullet");
+
+            if (so_ActiveSkillData != null)
+            {
+                activeSkill.SO_SkillData = so_ActiveSkillData;
+                skill.SetActiveSkill(SkillSlot.Slot1, activeSkill);
+                Debug.Log($"skill ÀåÂø ¿Ï·á");
+            }
+        }
     }
 }
