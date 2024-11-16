@@ -31,10 +31,12 @@ public class ReinforcedMagicBullet : ActiveSkill
         //TODO: 오브젝트 풀링에서 가져오기 
         // 마탄 오브젝트 생성 
 
-        Vector3 position = ownerObject.transform.position + phaseSkill.spawnPosition;
+        Vector3 localOffset = phaseSkill.spawnPosition; // 스폰 위치(로컬 기준)
+        Vector3 position = ownerObject.transform.TransformPoint(localOffset); // 로컬 -> 월드 좌표로 변경
         Quaternion rotation = ownerObject.transform.rotation * phaseSkill.spwanQuaternion;
 
-        GameObject.Instantiate<GameObject>(phaseSkill.skillObject, position, rotation);
+        ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
+        //GameObject.Instantiate<GameObject>(phaseSkill.skillObject, position, rotation);
     }
 
     public override void End_DoAction()

@@ -264,7 +264,8 @@ namespace UserEditor
                         phase.confficient = phaseSkill.coefficient;
                         phase.hitDelay = phaseSkill.hitDelay;
                         phase.duration = phaseSkill.duration;
-
+                        //TODO: skillActionAnimation 
+                        //phase.skillActionAnimation = 
                         //TODO: Skill Object
 
                         //TODO: bonus 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent (typeof(Rigidbody))]
@@ -8,6 +9,8 @@ public class Projectile : MonoBehaviour
     [Header("Projectile Settings")]
     [SerializeField] private float force = 1000.0f;
     [SerializeField] private float life = 10.0f;
+
+    [SerializeField] private string bombEffectName = "";
 
     private float curLife = 0f;
 
@@ -72,6 +75,11 @@ public class Projectile : MonoBehaviour
         OnProjectileHit?.Invoke(collider,other, transform.position);
 
         this.gameObject.SetActive(false);
+
+        if(string.IsNullOrEmpty(bombEffectName) == false)
+        {
+            ObjectPooler.SpawnFromPool(bombEffectName, this.transform.position);
+        }
     }
 
 }

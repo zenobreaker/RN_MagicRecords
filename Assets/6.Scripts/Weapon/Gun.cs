@@ -64,8 +64,6 @@ public class Gun : Weapon_Combo
             Vector3 hitPoint = self.ClosestPoint(other.transform.position);
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
             damage?.OnDamage(rootObject, this, hitPoint, doActionDatas[index]);
-
-            return;
         }
 
         //Instantiate<GameObject>(doActionDatas[index].HitParticle, point, rootObject.transform.rotation);

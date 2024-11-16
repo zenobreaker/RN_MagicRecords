@@ -345,21 +345,20 @@ AnimatorStateMachine:
     m_StateMachine: {fileID: -9220638711354485288}
     m_Position: {x: 370, y: -110, z: 0}
   m_AnyStateTransitions:
-  - {fileID: 8562924470995332381}
   - {fileID: 6150046658575249998}
   - {fileID: 3074084339932485768}
   m_EntryTransitions: []
   m_StateMachineTransitions:
-  - first: {fileID: -9220638711354485288}
-    second:
-    - {fileID: -7908555097778565584}
   - first: {fileID: 3854129024400602293}
     second:
     - {fileID: -4910804205564910035}
+  - first: {fileID: -9220638711354485288}
+    second:
+    - {fileID: -7908555097778565584}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 30, y: -60, z: 0}
   m_EntryPosition: {x: 50, y: 120, z: 0}
-  m_ExitPosition: {x: 720, y: -90, z: 0}
+  m_ExitPosition: {x: 670, y: -60, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: -750225509115775353}
 --- !u!91 &9100000
@@ -403,6 +402,12 @@ AnimatorController:
     m_Controller: {fileID: 9100000}
   - m_Name: Evade
     m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
+  - m_Name: SkillAction
+    m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
@@ -569,7 +574,10 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: IsAction
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 3854129024400602293}
   m_DstState: {fileID: 0}
   m_Solo: 0
@@ -704,7 +712,10 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: SkillAction
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: -9220638711354485288}
   m_DstState: {fileID: 0}
   m_Solo: 0
@@ -794,28 +805,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1101 &8562924470995332381
-AnimatorStateTransition:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_Conditions: []
-  m_DstStateMachine: {fileID: 0}
-  m_DstState: {fileID: 4411227249350621489}
-  m_Solo: 0
-  m_Mute: 0
-  m_IsExit: 0
-  serializedVersion: 3
-  m_TransitionDuration: 0.25
-  m_TransitionOffset: 0
-  m_ExitTime: 0.75
-  m_HasExitTime: 0
-  m_HasFixedDuration: 1
-  m_InterruptionSource: 0
-  m_OrderedInterruption: 1
-  m_CanTransitionToSelf: 1
 --- !u!1101 &9168426350306092431
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
