@@ -142,7 +142,7 @@ public partial class ObjectPooler : MonoBehaviour
 			Pool pool = Array.Find(pools, x => x.tag == tag);
             //var obj = CreateNewObject(pool.tag, pool.prefab);
             GameObject obj = CreateNewObjectSetParent(pool.tag, pool.prefab);
-            ArrangePool(obj);
+            ArrangePool(tag, obj);
 		}
 
 		// 큐에서 꺼내서 사용

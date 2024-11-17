@@ -12,12 +12,16 @@ public class PhaseSkill
     public float duration;
     public List<int> bonusOptionList;
 
+
     // 오브젝트 풀링 적용 상태라면 굳이 오브젝트 자체를 가질 필요가 없긴함.
     [Header("Skill Prefab")]
     public GameObject skillObject;
     public string objectName;
     public string skillActionPrefix = "Skills";
     public string skillActionAnimation;
+
+    [Header("Skill Sounds")]
+    public string soundName; 
 
     [Header("Spawn Data")]
     public Vector3 spawnPosition;

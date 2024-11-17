@@ -46,6 +46,9 @@ public class PhaseSkillData
     public float duration;
     public string bonusOptionList;
     public string objectName;
+    public string skillActionPrefix;
+    public string skillActionAnimation;
+    public string skillSound;
 
     public int activation;
 }

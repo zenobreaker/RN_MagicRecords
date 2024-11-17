@@ -21,7 +21,7 @@ MonoBehaviour:
   skillImage: {fileID: 0}
   leadingSkillList: 
   cost: 10
-  cooldown: 2
+  cooldown: 10
   limitCooldown: 2
   castingTime: -1
   phaseList:
@@ -30,9 +30,10 @@ MonoBehaviour:
     hitDelay: 0
     duration: 0
     bonusOptionList: 
-    skillObject: {fileID: 2006234525802268607, guid: 7f2142c16bdeec74dad86fb5f1d6e421, type: 3}
+    skillObject: {fileID: 0}
     objectName: ReinForcedMagicBullet
     skillActionPrefix: Skills
     skillActionAnimation: Skill_Action_Gun_4
+    soundName: 
     spawnPosition: {x: 0, y: 2, z: 1.5}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}

@@ -28,7 +28,6 @@ public class ReinforcedMagicBullet : ActiveSkill
     {
         if (phaseSkill == null) return;
 
-        //TODO: 오브젝트 풀링에서 가져오기 
         // 마탄 오브젝트 생성 
 
         Vector3 localOffset = phaseSkill.spawnPosition; // 스폰 위치(로컬 기준)

@@ -17,6 +17,8 @@ public class Explosion
 
     public void OnDisable()
     {
+        ObjectPooler.ReturnToPool(gameObject);
+
         OnDisableEvent();
     }
 

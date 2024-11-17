@@ -264,14 +264,25 @@ namespace UserEditor
                         phase.confficient = phaseSkill.coefficient;
                         phase.hitDelay = phaseSkill.hitDelay;
                         phase.duration = phaseSkill.duration;
-                        //TODO: skillActionAnimation 
-                        //phase.skillActionAnimation = 
-                        //TODO: Skill Object
+                        
+                        //skillActionAnimation 
+                        phase.skillActionPrefix = phaseSkill.skillActionPrefix;
+                        phase.skillActionAnimation = phaseSkill.skillActionAnimation;
+                        
+                        // Skill Object
+                        phase.objectName = phaseSkill.objectName;
+
+                        //TODO: skill create pos <= 다른 캐릭터가 생성되면 위치값은 캐릭터에 따라
+                        // 다를 수 있으므로 추후에 조정..
+
+                        // Sound
+                        phase.soundName = phaseSkill.skillSound;
 
                         //TODO: bonus 
                         //soSkill.
                         soSkill.phaseList.Add(phase);
                     }
+
                     assetPath = $"Assets/10.ScriptableObjects/Resources/Skills/{jobPath}/";
                     assetPath = assetPath + $"{data.skillKeycode}.asset";
                     // 이미 존재하는 에셋이 있는 경우 삭제 후 재생성

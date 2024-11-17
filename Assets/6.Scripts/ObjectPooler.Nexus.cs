@@ -14,7 +14,7 @@ public partial class ObjectPooler : MonoBehaviour
             {
                 // Version up : 2024 11 03 => 풀링될 오브젝트의 부모를 받아서 거기에 생성
                 GameObject obj = CreateNewObjectSetParent(pool.tag, pool.prefab);
-                ArrangePool(obj);
+                ArrangePool(pool.tag, obj);
             }
 
             // OnDisable에 ReturnToPool 구현여부와 중복구현 검사
@@ -58,4 +58,33 @@ public partial class ObjectPooler : MonoBehaviour
         newObj.SetActive(false);
         return newObj;
     }
+
+    void ArrangePool(string tag, GameObject obj)
+    {
+        // 해당 태그의 부모 오브젝트 찾음 
+        Transform parent = transform.FindChildByName(tag + "_Parent");
+        if (parent == null)
+            parent = GetOrCreateParent(tag); // 없으면 생성
+
+        // 추가된 오브젝트 묶어서 정렬
+        bool isFind = false;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            if (i == parent.childCount - 1)
+            {
+                obj.transform.SetSiblingIndex(i);
+                spawnObjects.Insert(i, obj);
+                break;
+            }
+            else if (parent.GetChild(i).name == obj.name)
+                isFind = true;
+            else if (isFind)
+            {
+                obj.transform.SetSiblingIndex(i);
+                spawnObjects.Insert(i, obj);
+                break;
+            }
+        }
+    }
+
 }
