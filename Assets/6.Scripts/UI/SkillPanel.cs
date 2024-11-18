@@ -7,15 +7,15 @@ public class SkillPanel : MonoBehaviour
     [SerializeField] private SkillSlotUI[] ui_SkillSlot = new SkillSlotUI[(int)SkillSlot.MAX];
 
     [Header("Skill Hanlder")]
-    [SerializeField] private SO_SkillEventHandler hanlder;
+    [SerializeField] private SO_SkillEventHandler handler;
 
-    private string path = "Assets/10.ScriptableObjects/Resources/" +
-        "Skills/SO_SkillHander.asset";
+    private readonly string path = "Skills/SO_SkillHander";
+
     private void Start()
     {
-        if(hanlder == null)
+        if(handler == null)
         {
-            hanlder = Resources.Load<SO_SkillEventHandler>(path);
+            handler = Resources.Load<SO_SkillEventHandler>(path);
         }
 
         SetSkillHandlerToSlots();
@@ -26,7 +26,7 @@ public class SkillPanel : MonoBehaviour
         foreach(SkillSlotUI slot in ui_SkillSlot)
         {
             if(slot == null) continue;
-            slot.SetSkillHandler(hanlder);
+            slot.SetSkillHandler(handler);
         }
     }
 

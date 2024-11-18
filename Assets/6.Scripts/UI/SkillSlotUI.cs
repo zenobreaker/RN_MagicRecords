@@ -12,11 +12,6 @@ public class SkillSlotUI : MonoBehaviour
 
     private float currCooldown;
 
-    private void Start()
-    {
-
-    }
-
     public void SetSkillHandler(SO_SkillEventHandler hanlder)
     {
         if (hanlder == null)

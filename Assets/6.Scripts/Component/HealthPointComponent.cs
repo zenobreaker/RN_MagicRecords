@@ -12,6 +12,10 @@ public class HealthPointComponent : MonoBehaviour
     [SerializeField] private float speed = 2.0f;
     [SerializeField] private float hideTime = 3.0f;
 
+    [Header("HUD Hanlder")]
+    [SerializeField] private SO_HUDHandler handler;
+    private readonly string path = "SO_HUDHandler";
+
     private Image hpGauge;
     private Image delayGauge;
     private Canvas uiEnemyCanvas;
@@ -29,6 +33,11 @@ public class HealthPointComponent : MonoBehaviour
 
     private void Start()
     {
+        if (handler == null)
+        {
+            handler = Resources.Load<SO_HUDHandler>(path);
+        }
+      
         InitCurrentHealth();
 
         isShow = false;
@@ -81,15 +90,26 @@ public class HealthPointComponent : MonoBehaviour
         }
     }
 
-    public void InitCurrentHealth() => currentHealthPoint = maxHealthPoint;
+    public void InitCurrentHealth()
+    {
+        currentHealthPoint = maxHealthPoint;
+        
+        handler?.OnInitValue_HP(currentHealthPoint);
+    }
 
-    public void Damage(float amount)
+
+        public void Damage(float amount)
     {
         if (amount < 1.0f)
             return;
 
         currentHealthPoint += (amount * -1.0f);
         currentHealthPoint = Mathf.Clamp(currentHealthPoint, 0, maxHealthPoint);
+
+        if(isEnemy == false)
+        {
+            handler?.OnChangeValue_HP(currentHealthPoint, maxHealthPoint);
+        }
 
         if(hpGauge != null)
         {
