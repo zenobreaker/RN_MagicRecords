@@ -4,7 +4,7 @@ using UnityEngine;
 public abstract class ActiveSkill : ISkill
 {
     protected SO_ActiveSkillData skillData;
-    public SO_ActiveSkillData SO_SkillData { set => skillData = value; }
+    public SO_ActiveSkillData SO_SkillData { get => skillData; set => skillData = value; }
     protected float currentCooldown;
 
     protected GameObject ownerObject;
@@ -12,6 +12,7 @@ public abstract class ActiveSkill : ISkill
 
     public bool IsOnCooldown => currentCooldown > 0;
     public float CurrentCooldown { get => currentCooldown; }
+    public float MaxCooldown { get => skillData.cooldown; }
 
     public void SetOwner(GameObject gameObject)
     {

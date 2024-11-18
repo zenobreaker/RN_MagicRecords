@@ -58,6 +58,8 @@ public class SkillComponent : MonoBehaviour
             if (pair.Value.IsOnCooldown == false) continue;
 
             pair.Value.SetCooldown(Time.deltaTime);
+            skillEventHandler?.OnInCoolDown(pair.Value.IsOnCooldown);
+            skillEventHandler?.OnCooldown(pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
         }
     }
 
@@ -69,6 +71,8 @@ public class SkillComponent : MonoBehaviour
 
         skillSlotTable[slot] = skill;
         skillSlotTable[slot].SetOwner(rootObject);
+
+        skillEventHandler?.OnSetting_ActiveSkill(skill);
     }
 
     // 슬롯의 있는 스킬 사용 

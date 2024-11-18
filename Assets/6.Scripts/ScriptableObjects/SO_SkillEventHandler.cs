@@ -8,14 +8,25 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SO_SkillEventHandler", menuName = "Scriptable Objects/SO_SkillEventHandler")]
 public class SO_SkillEventHandler : ScriptableObject
 {
+    public event Action<ActiveSkill> OnSetActiveSkill;
+
+    public event Action<bool> OnInSkillCooldown;
     public event Action<float> OnSkillCooldown;
+    public event Action<float, float> OnSkillCooldown_TwoParam;
 
     public event Action<ActiveSkill> OnSkillData_Slot1;
     public event Action<ActiveSkill> OnSkillData_Slot2;
     public event Action<ActiveSkill> OnSkillData_Slot3;
     public event Action<ActiveSkill> OnSkillData_Slot4;
 
+
     public event Action OnDisableSkill;
+
+
+    public void OnSetting_ActiveSkill(ActiveSkill skill)
+    {
+        OnSetActiveSkill?.Invoke(skill);  
+    }
 
     // ½½·Ô 1¿¡ ÀåÂø
     public void OnEquipSkill_Slot1(ActiveSkill activeSkill)
@@ -40,9 +51,20 @@ public class SO_SkillEventHandler : ScriptableObject
 
 
     // ÄðÅ¸ÀÓ 
+
+    public void OnInCoolDown(bool inCooldown)
+    {
+        OnInSkillCooldown?.Invoke(inCooldown);
+    }
+
     public void OnCooldown(float InCooldown)
     {
         OnSkillCooldown?.Invoke(InCooldown);
+    }
+
+    public void OnCooldown(float cooldown, float maxCooldown)
+    {
+        OnSkillCooldown_TwoParam?.Invoke(cooldown, maxCooldown);
     }
 
     // ÀåÂø ÇØÁ¦ 
