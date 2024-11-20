@@ -129,6 +129,7 @@ MonoBehaviour:
   img_ForegroundGauge: {fileID: 4030840168792510646}
   img_BackgroundGauge: {fileID: 0}
   txt_GaugeText: {fileID: 1526613699159045446}
+  handler: {fileID: 0}
 --- !u!1 &1070369585126019069
 GameObject:
   m_ObjectHideFlags: 0
@@ -1374,6 +1375,7 @@ MonoBehaviour:
   img_ForegroundGauge: {fileID: 1940339183215572713}
   img_BackgroundGauge: {fileID: 0}
   txt_GaugeText: {fileID: 6428098844449698379}
+  handler: {fileID: 0}
 --- !u!1 &6875025960803907617
 GameObject:
   m_ObjectHideFlags: 0
@@ -1434,7 +1436,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -2303,7 +2305,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:

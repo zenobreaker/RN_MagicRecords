@@ -9,7 +9,7 @@ public class SkillPanel : MonoBehaviour
     [Header("Skill Hanlder")]
     [SerializeField] private SO_SkillEventHandler handler;
 
-    private readonly string path = "Skills/SO_SkillHander";
+    private readonly string path = "Skills/SO_SkillEventHandler";
 
     private void Start()
     {

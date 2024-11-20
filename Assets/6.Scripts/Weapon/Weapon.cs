@@ -22,6 +22,9 @@ public class DoActionData : ICloneable, IEquatable<DoActionData>
     [Header("Hit")]
     public int HitImpactIndex;
     public string HitSoundName;
+    public GameObject HitParticle;
+    public Vector3 HitParticlePositionOffset;
+    public Vector3 HitParticleSacleOffset = Vector3.one;
 
     public bool bCanMove;
 

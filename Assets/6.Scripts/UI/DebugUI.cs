@@ -8,7 +8,7 @@ public class DebugUI : MonoBehaviour
     [SerializeField] private bool bDebugView = false; 
 
     [SerializeField] private TextMeshProUGUI stateText;
-    [SerializeField] private string PlayeName = "Namsaengyi";
+    //[SerializeField] private string PlayeName = "Namsaengyi";
     [SerializeField] private Slider timescaleSlider;
     private Character debug_Character;
 

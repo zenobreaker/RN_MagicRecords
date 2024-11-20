@@ -56,10 +56,19 @@ public class Enemy
         if(healthPoint.Dead == false)
         {
             state?.SetDamagedMode();
+
+            return;
         }
 
         // Dead..
         state?.SetDeadMode();
+        Collider collider = GetComponent<Collider>();
+        collider.enabled = false;
+
+        animator.SetTrigger("Dead");
+        MovableStopper.Instance.Delete(this);
+        MovableSlower.Instance.Delete(this);
+        Destroy(gameObject, 5);
     }
 
 
