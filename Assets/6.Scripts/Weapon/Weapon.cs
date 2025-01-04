@@ -126,8 +126,9 @@ public class Weapon : MonoBehaviour
     public virtual void DoAction()
     {
         if (state.IdleMode == false)
-            return; 
+            return;
 
+        state.SetActionMode();
         CheckStop(0);
     }
 
@@ -146,7 +147,7 @@ public class Weapon : MonoBehaviour
 
     public virtual void End_DoAction()
     {
-        
+        state.SetIdleMode();
     }
 
 

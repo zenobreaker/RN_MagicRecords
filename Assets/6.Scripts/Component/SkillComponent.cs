@@ -82,6 +82,8 @@ public class SkillComponent : MonoBehaviour
 
         currentSlot = slot;
         skillSlotTable[slot]?.Cast();
+
+        
     }
 
     public void Begin_SkillAction()
@@ -90,6 +92,8 @@ public class SkillComponent : MonoBehaviour
         
         bIsSkillAction = true;
         skillSlotTable[currentSlot]?.Begin_DoAction();
+
+        skillEventHandler?.OnBegin_UseSkill();
     }
 
     public void End_SkillAction()
@@ -99,5 +103,7 @@ public class SkillComponent : MonoBehaviour
         bIsSkillAction = false; 
         skillSlotTable[currentSlot]?.End_DoAction();
         currentSlot = SkillSlot.MAX;
+
+        skillEventHandler?.OnEnd_UseSkill();
     }
 }

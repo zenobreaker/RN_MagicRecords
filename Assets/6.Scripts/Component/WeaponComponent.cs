@@ -156,6 +156,9 @@ public class WeaponComponent : ActionComponent
         if (animator == null)
             return;
 
+        if (bUseSkill)
+            return; 
+
         base.DoAction();
 
         //animator.SetBool(IsAction, true);
@@ -200,6 +203,4 @@ public class WeaponComponent : ActionComponent
         
         weaponTable[type]?.End_DoAction();
     }
-
-
 }

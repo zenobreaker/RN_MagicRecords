@@ -19,10 +19,12 @@ public class SO_SkillEventHandler : ScriptableObject
     public event Action<ActiveSkill> OnSkillData_Slot3;
     public event Action<ActiveSkill> OnSkillData_Slot4;
 
+    public event Action OnBeginUseSkill;
+    public event Action OnEndUseSkill;
 
     public event Action OnDisableSkill;
 
-
+#region EQUIP SKILL
     public void OnSetting_ActiveSkill(ActiveSkill skill)
     {
         OnSetActiveSkill?.Invoke(skill);  
@@ -49,7 +51,9 @@ public class SO_SkillEventHandler : ScriptableObject
         OnSkillData_Slot4?.Invoke(activeSkill);
     }
 
+    #endregion
 
+#region COOLDOWN
     // ÄðÅ¸ÀÓ 
 
     public void OnInCoolDown(bool inCooldown)
@@ -66,6 +70,19 @@ public class SO_SkillEventHandler : ScriptableObject
     {
         OnSkillCooldown_TwoParam?.Invoke(cooldown, maxCooldown);
     }
+    #endregion
+
+#region USE SKILL
+    public void OnBegin_UseSkill()
+    {
+        OnBeginUseSkill?.Invoke();
+    }
+
+    public void OnEnd_UseSkill()
+    {
+        OnEndUseSkill?.Invoke();
+    }
+#endregion
 
     // ÀåÂø ÇØÁ¦ 
     public void OnUnequipment()
