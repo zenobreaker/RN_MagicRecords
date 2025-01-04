@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,18 +11,21 @@ public class DashComponent : MonoBehaviour
         Forward, Backward, Left, Right
     }
 
-
     [Header("Dash Settings")]
     [SerializeField] private float dashSpeed = 25.0f;
     [SerializeField] private float dashDistance = 5.0f;
-
 
     private readonly int EVADE = Animator.StringToHash("Evade");
     private readonly int DASH = Animator.StringToHash("Dash");
     private Animator animator;
 
+    #region COMPONENTS
     private PlayerMovingComponent moving;
     private StateComponent state;
+    #endregion
+
+    public event Action OnBeginDash;
+    public event Action OnEndDash;
 
     private void Awake()
     {
@@ -76,6 +80,8 @@ public class DashComponent : MonoBehaviour
         float startTime = Time.time; 
         float resultTime = dashDistance / (float)dashSpeed;
 
+        Begin_Dash(); 
+
         // 4. 이동 제약 
         moving.Stop();
 
@@ -94,6 +100,9 @@ public class DashComponent : MonoBehaviour
             if (remainTime >= resultTime)
                 break; 
         }
+
+
+        End_Dash();
 
         // 4. 이동 제약
         moving.Move();
@@ -128,6 +137,17 @@ public class DashComponent : MonoBehaviour
 
             DoAction_Dash(dd);
         }
+    }
+
+    // 대쉬 시전 시, 기타 기능 캔슬 
+    private void Begin_Dash()
+    {
+        OnBeginDash?.Invoke();
+    }
+
+   private void End_Dash()
+    {
+        OnEndDash?.Invoke();
     }
 
 }

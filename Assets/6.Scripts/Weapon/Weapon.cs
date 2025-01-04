@@ -63,6 +63,9 @@ public class DoActionData : ICloneable, IEquatable<DoActionData>
 
 public class Weapon : MonoBehaviour
 {
+    public bool bDebug = false;
+
+    [Header("Weapon Settings")]
     [SerializeField] protected WeaponType type;
     [SerializeField] protected DoActionData[] doActionDatas;
     public WeaponType Type { get => type; }
@@ -77,7 +80,7 @@ public class Weapon : MonoBehaviour
     protected StateComponent state;
     protected PlayerMovingComponent moving;
 
-    public bool bDebug = false;
+    private DashComponent dash;
 
     protected virtual void Awake()
     {
@@ -86,7 +89,12 @@ public class Weapon : MonoBehaviour
 
         state = rootObject.GetComponent<StateComponent>();
         animator = rootObject.GetComponent<Animator>();
-        moving = rootObject.GetComponent<PlayerMovingComponent>();  
+        moving = rootObject.GetComponent<PlayerMovingComponent>();
+        dash = rootObject.GetComponent<DashComponent>();
+        Debug.Assert(dash != null);
+
+        //TODO : 아직은 시기 상조 공격 후, 대쉬로 후딜 캔슬
+        //dash.OnBeginDash += End_DoAction;
     }
 
     protected virtual void Start()
