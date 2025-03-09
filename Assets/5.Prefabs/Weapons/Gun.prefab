@@ -44,10 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4786bc13e7ef114b90e2db400e07634, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 1
-  doActionDatas: []
   bDebug: 0
+  type: 3
+  doActionDatas: []
   so_Combo: {fileID: 11400000, guid: 207852ad9b1672f41a2da5e18ddf0bc4, type: 2}
+  comboPrefixName: Combo
   muzzleFlashPrefab: {fileID: 183874007921423211, guid: 1574dcd3866ae6048a2ad399d17aca84, type: 3}
   muzzle_name: Gun_Muzzle
   bulletName: Bullet

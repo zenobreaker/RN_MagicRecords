@@ -14,7 +14,9 @@ public class BehaviorTreeEditor : EditorWindow
     private IMGUIContainer blackboardView;
 
     private SerializedObject treeObject;
-    private SerializedProperty blackboardProperty; 
+    private SerializedProperty blackboardProperty;
+
+    private bool showBlackboard = true;
 
     [MenuItem("BehaviorTreeEditor/Editor ...")]
     public static void OpenWindow()
@@ -27,12 +29,12 @@ public class BehaviorTreeEditor : EditorWindow
     public static bool OnOpenAsset(int instanceId, int line)
     {
         // 더블클릭하면 편집창을 열게한다.
-        if(Selection.activeObject is BehaviorTree)
+        if (Selection.activeObject is BehaviorTree)
         {
             OpenWindow();
-            return true; 
+            return true;
         }
-        return false; 
+        return false;
     }
 
     public void CreateGUI()
@@ -40,7 +42,7 @@ public class BehaviorTreeEditor : EditorWindow
         // Each editor window contains a root VisualElement object
         VisualElement root = rootVisualElement;
 
-       
+
         // Import UXML
         var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/BehaviorTreeEditor.uxml");
         visualTree.CloneTree(root);
@@ -54,31 +56,19 @@ public class BehaviorTreeEditor : EditorWindow
         treeView = root.Q<BehaviorTreeView>();
         inspectorView = root.Q<InspectorView>();
         blackboardView = root.Q<IMGUIContainer>();
-        blackboardView.onGUIHandler = () =>
-        {
-            if (treeObject != null)
-            {
-                treeObject.Update();
-                if (blackboardProperty != null)
-                {
-                    EditorGUILayout.PropertyField(blackboardProperty);
 
-                    SO_Blackboard blackboard = blackboardProperty.objectReferenceValue as SO_Blackboard;
-                    if(blackboard != null)
-                    {
-                        var keys = blackboard.GetAllKeys();
-                        foreach (var key in keys)
-                        {
-                            EditorGUILayout.LabelField("Key Name:", key.Key);
-                            EditorGUILayout.LabelField("Key Type:", blackboard.GeteKeyType(key.Key).Name);
-                            EditorGUILayout.LabelField("Current Value:", key.Value.GetValue()?.ToString() ?? "null");
-                            EditorGUILayout.Space();
-                        }
-                    }
-                }
-                treeObject.ApplyModifiedProperties();   // 변경사항을 직렬화된 객체에 재적용
-            }
+
+        Button toggleBlackboardButton = new Button(() =>
+        {
+            showBlackboard = !showBlackboard;
+            blackboardView.style.display = showBlackboard ? DisplayStyle.Flex : DisplayStyle.None;
+        })
+        {
+            text = "Toggle Blackboard"
         };
+        root.Add(toggleBlackboardButton);
+        //blackboardView.style.display = DisplayStyle.None;
+        blackboardView.onGUIHandler = () => { UpdateBlackboardView(); };
 
         treeView.OnNodeSelected = OnNodeSelectionChanged;
         OnSelectionChange();    // 수동으로 호출하여 생성 시 선택되게 설정
@@ -96,23 +86,23 @@ public class BehaviorTreeEditor : EditorWindow
 
     private void OnPlayModeStateChanged(PlayModeStateChange obj)
     {
-        switch(obj)
+        switch (obj)
         {
             case PlayModeStateChange.EnteredEditMode:
-            OnSelectionChange();
-            break;
-            case PlayModeStateChange.ExitingEditMode: 
-            break;
+                OnSelectionChange();
+                break;
+            case PlayModeStateChange.ExitingEditMode:
+                break;
             case PlayModeStateChange.EnteredPlayMode:
-            OnSelectionChange();
-            break;
-            case PlayModeStateChange.ExitingPlayMode: 
-            break;
+                OnSelectionChange();
+                break;
+            case PlayModeStateChange.ExitingPlayMode:
+                break;
         }
     }
 
 
-    private void OnSelectionChange() 
+    private void OnSelectionChange()
     {
         // 활성 개체가 BT 인 경우 
         BehaviorTree tree = Selection.activeObject as BehaviorTree;
@@ -120,33 +110,33 @@ public class BehaviorTreeEditor : EditorWindow
         // 실행중인 Runner를 가져온다. 
         if (!tree)
         {
-            if(Selection.activeGameObject)
+            if (Selection.activeGameObject)
             {
                 BehaviorTreeRunner runner = Selection.activeGameObject.GetComponent<BehaviorTreeRunner>();
-                if(runner != null)
+                if (runner != null)
                 {
                     tree = runner.tree;
                 }
             }
         }
 
-        if(Application.isPlaying)
+        if (Application.isPlaying)
         {
-            if(tree)
+            if (tree)
             {
                 treeView?.PopulateView(tree);
-            }    
+            }
         }
 
         // 루트노드를 추가하려고 하면 직렬화할 수 없는 개체에 하위 개체를 
-        // 추가할 수 없다는 버그를 발생한다. 그러므로 에디터를 열기전에 tree의 인스턴스ID를 가쟈온다.
-        if(tree != null && AssetDatabase.CanOpenAssetInEditor(tree.GetInstanceID())) 
+        // 추가할 수 없다는 버그를 발생한다. 그러므로 에디터를 열기전에 tree의 인스턴스ID를 가져 온다.
+        if (tree != null && AssetDatabase.CanOpenAssetInEditor(tree.GetInstanceID()))
         {
             treeView?.PopulateView(tree);
         }
 
         // 직렬화 오브젝트 및 프로퍼티 생성
-        if(tree != null)
+        if (tree != null)
         {
             treeObject = new SerializedObject(tree);
             blackboardProperty = treeObject?.FindProperty("blackboard");
@@ -162,5 +152,31 @@ public class BehaviorTreeEditor : EditorWindow
     private void OnInspectorUpdate()
     {
         treeView?.UpdateNodeState();
+    }
+
+    private void UpdateBlackboardView()
+    {
+        if (treeObject != null)
+        {
+            treeObject.Update();
+            if (blackboardProperty != null)
+            {
+                EditorGUILayout.PropertyField(blackboardProperty);
+
+                SO_Blackboard blackboard = blackboardProperty.objectReferenceValue as SO_Blackboard;
+                if (blackboard != null)
+                {
+                    var keys = blackboard.GetAllKeys();
+                    foreach (var key in keys)
+                    {
+                        EditorGUILayout.LabelField("Key Name:", key.Key);
+                        EditorGUILayout.LabelField("Key Type:", blackboard.GeteKeyType(key.Key).Name);
+                        EditorGUILayout.LabelField("Current Value:", key.Value.GetValue()?.ToString() ?? "null");
+                        EditorGUILayout.Space();
+                    }
+                }
+            }
+            treeObject.ApplyModifiedProperties();   // 변경사항을 직렬화된 객체에 재적용
+        }
     }
 }

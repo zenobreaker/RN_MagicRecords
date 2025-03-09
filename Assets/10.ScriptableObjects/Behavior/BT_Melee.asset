@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WaitNode
   m_EditorClassIdentifier: 
   guid: 23dedc06ab8f0784e9e549ca71d80675
-  position: {x: 77, y: 279}
+  position: {x: 122.000015, y: 285.21005}
   blackboard: {fileID: 0}
   description: 
   waitTime: 1
@@ -31,7 +31,7 @@ MonoBehaviour:
   m_Name: SelectorNode
   m_EditorClassIdentifier: 
   guid: 8b51fca7e64422148b0c8083d872fa2a
-  position: {x: -38, y: -12}
+  position: {x: -37.999966, y: -10.85}
   blackboard: {fileID: 0}
   description: 
   children:
@@ -69,7 +69,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid: 12472c358721c2447bb407d8364ae43d
   position: {x: -38, y: -107}
-  blackboard: {fileID: 0}
+  blackboard: {fileID: 11400000, guid: 9be5e4f7009f03d47b09928c8363a723, type: 2}
   description: 
   childNode: {fileID: -6054687434333289613}
 --- !u!114 &11400000
@@ -84,9 +84,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8c51080210c48d4db5b6892a79bff3e, type: 3}
   m_Name: BT_Melee
   m_EditorClassIdentifier: 
-  blackboard: {fileID: 0}
+  blackboard: {fileID: 11400000, guid: 9be5e4f7009f03d47b09928c8363a723, type: 2}
   rootNode: {fileID: -1073563986952866508}
-  state: 0
+  state: 4
   nodes:
   - {fileID: -1073563986952866508}
   - {fileID: -6054687434333289613}
@@ -106,6 +106,6 @@ MonoBehaviour:
   m_Name: MoveToNode
   m_EditorClassIdentifier: 
   guid: 0e8889d010dfb5244bf0ab8f77eef323
-  position: {x: -220.27039, y: 278.68787}
+  position: {x: -206, y: 297.48}
   blackboard: {fileID: 0}
   description: 

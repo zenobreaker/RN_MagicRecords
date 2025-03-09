@@ -16,6 +16,7 @@ public class BlackboardEditor : Editor
     // 사용할 데이터 타입들을 Enum으로 정의
     private enum BlackboardType
     {
+        Bool,
         Int,
         Float,
         String,
@@ -25,6 +26,7 @@ public class BlackboardEditor : Editor
 
     private static readonly Dictionary<BlackboardType, Type> TypeMap = new Dictionary<BlackboardType, Type>
     {
+        { BlackboardType.Bool, typeof(bool) },
         { BlackboardType.Int, typeof(int) },
         { BlackboardType.Float, typeof(float) },
         { BlackboardType.String, typeof(string) },

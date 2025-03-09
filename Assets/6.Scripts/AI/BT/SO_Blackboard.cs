@@ -156,6 +156,28 @@ public class StringComparisonStrategy : IComparisonStrategy
     }
 }
 
+public class BoolComparisonStrategy : IComparisonStrategy
+{
+    public IComparisonStrategy DeepCopy()
+    {
+        return new BoolComparisonStrategy();
+    }
+
+    public bool IsEqual(object a, object b)
+    {
+        return a is bool valueA && b is bool valueB && valueA == valueB;
+    }
+
+    public bool IsGreaterthan(object a, object b)
+    {
+        return false; // bool에는 의미 없음
+    }
+
+    public bool IsLessthan(object a, object b)
+    {
+        return false; // bool에는 의미 없음
+    }
+}
 public class EnumComparisonStrategy<T> : IComparisonStrategy where T : struct, Enum
 {
     public IComparisonStrategy DeepCopy()
@@ -369,6 +391,7 @@ public class SO_Blackboard : ScriptableObject
         // 비교 전략 등록
         RegisterComparisonStrategy<Vector3>(new Vector3ComparisonStrategy());
         RegisterComparisonStrategy<GameObject>(new GameObjectComparisonStrategy());
+        RegisterComparisonStrategy<bool>(new BoolComparisonStrategy());
         RegisterComparisonStrategy<string>(new StringComparisonStrategy());
         RegisterComparisonStrategy<int>(new NumericComparisonStrategy<int>());
         RegisterComparisonStrategy<float>(new NumericComparisonStrategy<float>());
@@ -447,6 +470,9 @@ public class SO_Blackboard : ScriptableObject
     // 데이터 설정 메서드
     public void SetValue(string keyName, object value)
     {
+        if (value == null)
+            return; 
+
         Type valueType = value.GetType();
 
         if (keys.ContainsKey(keyName))
@@ -519,6 +545,15 @@ public class SO_Blackboard : ScriptableObject
     // 동적으로 키를 생성하는 헬퍼 메서드
     private IBlackboardKey CreateBlackboardKey(Type valueType, string keyName, object value)
     {
+        if(typeof(GameObject).IsAssignableFrom(valueType))
+        {
+            GameObject newObj =  new GameObject(keyName);
+            IBlackboardKey key = new BlackboardKey<GameObject>(keyName);
+            key.SetValue(newObj);
+
+            return key; 
+        }
+
         Type keyType = typeof(BlackboardKey<>).MakeGenericType(valueType);
         IBlackboardKey newKey = (IBlackboardKey)Activator.CreateInstance(keyType, keyName);
 

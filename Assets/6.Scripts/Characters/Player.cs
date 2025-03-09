@@ -13,8 +13,6 @@ public class Player
     private ComboComponent comboComponent;
     private WeaponComponent weapon;
 
-
-
     protected override void Awake()
     {
         base.Awake();

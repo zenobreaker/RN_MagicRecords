@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 public enum WeaponType
 {
-    Unarmed = 0, Gun, MAX,
+    Unarmed = 0, Fist, Sword, Gun, MAX,
 }
 
 public enum SkillSlot
@@ -16,7 +16,7 @@ public enum SkillSlot
 }
 
 /// <summary>
-/// 무기 관리 - 커맨더 패턴 이용 
+/// 무기 관리 - 유사 커맨더 패턴 이용 
 /// </summary>
 
 public class WeaponComponent : ActionComponent
@@ -24,20 +24,41 @@ public class WeaponComponent : ActionComponent
     [Header("Weapons")]
     [SerializeField] private GameObject[] originPrefabs;
 
+    [Header("Weapon Type")]
+    [SerializeField]  private WeaponType initType = WeaponType.Unarmed;
     private WeaponType type = WeaponType.Unarmed;
     public WeaponType Type { get => type; }
 
     #region Equipment 
     public bool UnarmedMode { get => type == WeaponType.Unarmed; }
+    public bool FistMode { get => type == WeaponType.Fist; }
+    public bool SwordMode { get => type == WeaponType.Sword; }
     public bool GunMode { get => type == WeaponType.Gun; }
 
 
+
+    public void SetFistMode()
+    {
+        if (state.IdleMode == false)
+            return;
+
+        SetMode(WeaponType.Fist);
+    }
+
+    public void SetSwordMode()
+    {
+        if (state.IdleMode == false)
+            return;
+
+        SetMode(WeaponType.Sword);
+    }
 
     public void SetGunMode()
     {
         if (state.IdleMode == false)
             return;
 
+        Debug.Log("Gun 장착 ");
         SetMode(WeaponType.Gun);
     }
 
@@ -74,9 +95,8 @@ public class WeaponComponent : ActionComponent
             return;
         }
 
-        //TODO: 무기타입이 여럿 생기면 추가
-        //animator.SetBool("IsEquipping", true);
-        //animator.SetInteger("WeaponType", (int)type);
+        animator.SetBool("isEquipping", true);
+        animator.SetInteger("WeaponType", (int)type);
 
         weaponTable[type].Equip();
 
@@ -89,7 +109,7 @@ public class WeaponComponent : ActionComponent
 
     private Animator animator;
 
-    private bool bUseSkill = false; 
+    private bool bUseSkill = false;
     private Dictionary<WeaponType, Weapon> weaponTable;
     private readonly int IsAction = Animator.StringToHash("IsAction");
 
@@ -105,7 +125,7 @@ public class WeaponComponent : ActionComponent
         Debug.Log(skill != null);
 
         Awake_InitWeapon();
-    }
+    } 
 
     private void Awake_InitWeapon()
     {
@@ -129,9 +149,19 @@ public class WeaponComponent : ActionComponent
 
     private void Start()
     {
-        //TODO: 임시
-        // Equipment
-        SetGunMode();
+        // Equip
+        switch (initType)
+        {
+            case WeaponType.Fist:
+                SetFistMode();
+                break;
+            case WeaponType.Sword:
+                SetSwordMode();
+                break;
+            case WeaponType.Gun:
+                SetGunMode();
+                break; 
+        }
     }
 
 
@@ -157,7 +187,7 @@ public class WeaponComponent : ActionComponent
             return;
 
         if (bUseSkill)
-            return; 
+            return;
 
         base.DoAction();
 
@@ -181,7 +211,7 @@ public class WeaponComponent : ActionComponent
         if (bUseSkill == true)
         {
             skill?.Begin_SkillAction();
-            return; 
+            return;
         }
 
         weaponTable[type]?.Begin_DoAction();
@@ -198,9 +228,9 @@ public class WeaponComponent : ActionComponent
             skill?.End_SkillAction();
             bUseSkill = false;
 
-            return; 
+            return;
         }
-        
+
         weaponTable[type]?.End_DoAction();
     }
 }
