@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 
 public class InspectorView : VisualElement
 {
+    [Obsolete]
     public new class UxmlFactory : UxmlFactory<InspectorView, VisualElement.UxmlTraits> { }
 
     private Editor editor;

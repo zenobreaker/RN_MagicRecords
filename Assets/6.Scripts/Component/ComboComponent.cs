@@ -45,9 +45,9 @@ public partial class ComboComponent : MonoBehaviour
 
     private void ResetTimerValue(ComboData data)
     {
-        comboCheckTime = data.lastComboCheckTime;
-        lastInputCheckTime = data.lastInputCheckTime;
-        comboMaintainTime = data.comboMaintainTime;
+        comboCheckTime = data.LastComboCheckTime;
+        lastInputCheckTime = data.LastInputCheckTime;
+        comboMaintainTime = data.ComboMaintainTime;
     }
 
     private void OnWeaponTypeChanged_Combo(SO_Combo comboData)
@@ -83,7 +83,7 @@ public partial class ComboComponent : MonoBehaviour
         {
             if (bDebug)
             {
-                Debug.Log($"Execute Combodata {data.ComboIndex} / {data.ComboName} / Time stamp {inputElement.TimeStamp}");
+                Debug.Log($"Execute Combodata {data.ComboIndex} / {data.StateName} / Time stamp {inputElement.TimeStamp}");
             }
             weapon.DoAction(data.ComboIndex);
 

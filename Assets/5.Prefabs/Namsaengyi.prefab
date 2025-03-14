@@ -912,7 +912,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   originPrefabs:
   - {fileID: 3126351601299179236, guid: 8cfc0c45a1c83ff43a11659c75050798, type: 3}
-  type: 3
+  initType: 3
 --- !u!114 &5856322758750016862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -939,7 +939,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c50be100f9e522429eb662a7241f7f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillEventHandler: {fileID: 0}
+  skillEventHandler: {fileID: 11400000, guid: 03331a23dc591c047a374450029fd111, type: 2}
 --- !u!1 &2537152034210038321
 GameObject:
   m_ObjectHideFlags: 0

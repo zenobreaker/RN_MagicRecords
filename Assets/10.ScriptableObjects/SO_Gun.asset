@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   comboDatas:
   - comboIndex: 0
-    ComboName: Gun_Combo_1
+    stateName: Attack_Normal
+    animatorOv: {fileID: 22100000, guid: 490f4762b1b310248940e443e74ccd86, type: 2}
     lastComboCheckTime: 0.1
     lastInputCheckTime: 0.5
     comboMaintainTime: 0.5
@@ -28,9 +29,14 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       HitImpactIndex: 0
       HitSoundName: 
+      HitParticle: {fileID: 0}
+      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
       bCanMove: 1
+    actionSpeed: 1.5
   - comboIndex: 1
-    ComboName: Gun_Combo_2
+    stateName: Attack_Normal
+    animatorOv: {fileID: 22100000, guid: ed7464e6ef1d22344ba31e0109806b59, type: 2}
     lastComboCheckTime: 0.25
     lastInputCheckTime: 0.5
     comboMaintainTime: 0.5
@@ -44,9 +50,14 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       HitImpactIndex: 0
       HitSoundName: 
+      HitParticle: {fileID: 0}
+      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
       bCanMove: 1
+    actionSpeed: 1.5
   - comboIndex: 2
-    ComboName: Gun_Combo_3
+    stateName: Attack_Normal
+    animatorOv: {fileID: 22100000, guid: fef8192aaf6f3c044ad868a5dbffa1ce, type: 2}
     lastComboCheckTime: 0.25
     lastInputCheckTime: 0.5
     comboMaintainTime: 0.5
@@ -60,9 +71,14 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       HitImpactIndex: 0
       HitSoundName: 
+      HitParticle: {fileID: 0}
+      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
       bCanMove: 1
+    actionSpeed: 1.5
   - comboIndex: 3
-    ComboName: Gun_Combo_4
+    stateName: Attack_Final
+    animatorOv: {fileID: 22100000, guid: 5e695aec898769a46968fed50ba90ade, type: 2}
     lastComboCheckTime: 0.25
     lastInputCheckTime: 0.5
     comboMaintainTime: 0.5
@@ -76,7 +92,11 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       HitImpactIndex: 0
       HitSoundName: 
+      HitParticle: {fileID: 0}
+      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
       bCanMove: 1
+    actionSpeed: 1.5
   subActionData:
     Power: 0
     Distance: 0
@@ -87,4 +107,7 @@ MonoBehaviour:
     impulseDirection: {x: 0, y: 0, z: 0}
     HitImpactIndex: 0
     HitSoundName: 
+    HitParticle: {fileID: 0}
+    HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+    HitParticleSacleOffset: {x: 1, y: 1, z: 1}
     bCanMove: 0

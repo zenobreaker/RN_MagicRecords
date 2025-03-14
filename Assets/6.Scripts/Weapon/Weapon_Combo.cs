@@ -3,7 +3,7 @@ using UnityEngine;
 public class Weapon_Combo : Weapon
 {
     [SerializeField] protected SO_Combo so_Combo;
-    [SerializeField] protected string comboPrefixName = "Combo";
+    //[SerializeField] protected string comboPrefixName = "";
     public SO_Combo ComboData { get => so_Combo; }
 
     protected int index;
@@ -18,7 +18,7 @@ public class Weapon_Combo : Weapon
         int count = 0; 
         foreach (var data in so_Combo?.comboDatas)
         {
-            doActionDatas[count] = data.doActionData;
+            doActionDatas[count] = data.DoAction;
             count++;
         }
     }
@@ -28,13 +28,20 @@ public class Weapon_Combo : Weapon
         base.DoAction(index);
 
         //this.index = index &= so_Combo.comboDatas.Count;
-        
+        if (animator == null)
+        {
+            Debug.LogError("Animator is Null");
+            return;
+        }
+
         this.index = index;
-        string animName = comboPrefixName + "." + so_Combo.comboDatas[index].ComboName;
-        animator.Play(animName);
         
+        animator.runtimeAnimatorController = so_Combo.comboDatas[index].AnimatorOv;
+        animator.SetFloat(so_Combo.comboDatas[index].ActionSpeedHash, so_Combo.comboDatas[index].ActionSpeed);
+        animator.Play(so_Combo.comboDatas[index].StateName, 0, 0);
+
         if (bDebug)
-            Debug.Log($"Combo Play: {this.index} {so_Combo.comboDatas[index].ComboName}");
+            Debug.Log($"Combo Play: {this.index} {so_Combo.comboDatas[index].StateName}");
     }
 
 

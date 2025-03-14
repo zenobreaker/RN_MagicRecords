@@ -12,28 +12,50 @@ public class ComboData
     private int comboIndex;
     public int ComboIndex { get => comboIndex; }
 
-    public string ComboName;
+    [SerializeField]
+    private string stateName;
+    public string StateName { get => stateName; }
+
+
+    [SerializeField]
+    private AnimatorOverrideController animatorOv;
+    public AnimatorOverrideController AnimatorOv => animatorOv;
+
     /// <summary>
     ///  콤보 종료 시간 
     /// - 처음 콤보 종료 시간은 짧아야 한다.
     /// </summary>
-    public float lastComboCheckTime = 0.1f;
+    [SerializeField] private float lastComboCheckTime = 0.1f;
+    public float LastComboCheckTime { get => lastComboCheckTime; }
     /// <summary>
     /// 다음 콤보를 입력을 바라는 제한 시간
     /// </summary>
-    public float lastInputCheckTime = 0.5f;
+    [SerializeField] private float lastInputCheckTime = 0.5f;
+    public float LastInputCheckTime { get => lastInputCheckTime; }
     /// <summary>
     /// 콤보 유지 시간 
     /// - 해당 시간은 콤보 큐 등의 대한 정보를 유지하는 시간이다 종료 시 콤보 초기화
     /// </summary>
-    public float comboMaintainTime = 0.2f;
+    [SerializeField] private float comboMaintainTime = 0.2f;
+    public float ComboMaintainTime { get => comboMaintainTime; }
 
 
-    public DoActionData doActionData;
+    [SerializeField] private DoActionData doActionData;
+    public DoActionData DoAction { get => doActionData; }
 
-    public string GetComboName { get => ComboName; }
-
-
+    [SerializeField] private float actionSpeed = 1.0f; 
+    public float ActionSpeed { get =>  actionSpeed; }
+    // StateName을 해시 값으로 저장
+    private int actionSpeedHash = -1;
+    public int ActionSpeedHash
+    {
+        get
+        {
+            if (actionSpeedHash == -1)
+                actionSpeedHash = Animator.StringToHash("ActionSpeed");
+            return actionSpeedHash;
+        }
+    }
 }
 
 [CreateAssetMenu(fileName = "ComboObject", menuName = "ScriptableObjects/Combo", order = 1)]
