@@ -45,6 +45,11 @@ public class DebugUI : MonoBehaviour
         {
             Test_SetSkill();
         }
+
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            UIManager.Instance?.ToggleSoundUI();
+        }
     }
 
 
