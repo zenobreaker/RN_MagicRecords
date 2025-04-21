@@ -16,11 +16,17 @@ public class ComboData
     private string stateName;
     public string StateName { get => stateName; }
 
-
+    [Header("Character Anim")]
     [SerializeField]
     private AnimatorOverrideController animatorOv;
     public AnimatorOverrideController AnimatorOv => animatorOv;
 
+    [Header("Weapon Anim")]
+    [SerializeField]
+    private AnimatorOverrideController weaponAnimOv;
+    public AnimatorOverrideController WeaponAnimOv => weaponAnimOv;
+
+    [Header("Combo Input")]
     /// <summary>
     ///  콤보 종료 시간 
     /// - 처음 콤보 종료 시간은 짧아야 한다.

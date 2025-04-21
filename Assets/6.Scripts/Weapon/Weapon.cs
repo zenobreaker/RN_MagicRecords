@@ -2,6 +2,17 @@ using System;
 using UnityEngine;
 
 [Serializable]
+public class DamageInfo
+{
+    public int HitImpactIndex;
+    public string HitSoundName;
+    public GameObject HitParticle;
+    public Vector3 HitParticlePositionOffset = Vector3.zero;
+    public Vector3 HitParticleSacleOffset = Vector3.one;
+}
+
+
+[Serializable]
 public class DoActionData : ICloneable, IEquatable<DoActionData>
 {
     [Header("Power Settings")]
@@ -19,13 +30,7 @@ public class DoActionData : ICloneable, IEquatable<DoActionData>
     //TODO: Noise 가져오기
     //public Cinemachine settings;
 
-    [Header("Hit")]
-    public int HitImpactIndex;
-    public string HitSoundName;
-    public GameObject HitParticle;
-    public Vector3 HitParticlePositionOffset;
-    public Vector3 HitParticleSacleOffset = Vector3.one;
-
+    public DamageInfo damageInfo = null; 
     public bool bCanMove;
 
     public virtual DoActionData DeepCopy()
@@ -40,8 +45,14 @@ public class DoActionData : ICloneable, IEquatable<DoActionData>
         doActionData.bLauncher = bLauncher;
         doActionData.impulseDirection = impulseDirection;
 
-        doActionData.HitImpactIndex = HitImpactIndex;
-        doActionData.HitSoundName = HitSoundName;
+        doActionData.damageInfo = new DamageInfo
+        {
+            HitImpactIndex = damageInfo.HitImpactIndex,
+            HitSoundName = damageInfo.HitSoundName,
+            HitParticle = damageInfo.HitParticle,
+            HitParticlePositionOffset = damageInfo.HitParticlePositionOffset,
+            HitParticleSacleOffset = damageInfo.HitParticlePositionOffset
+        };
 
         doActionData.bCanMove = bCanMove;
 
@@ -67,7 +78,7 @@ public class Weapon : MonoBehaviour
 
     [Header("Weapon Settings")]
     [SerializeField] protected WeaponType type;
-    [SerializeField] protected DoActionData[] doActionDatas;
+     protected DoActionData[] doActionDatas;
     public WeaponType Type { get => type; }
 
     private bool bEquipped;

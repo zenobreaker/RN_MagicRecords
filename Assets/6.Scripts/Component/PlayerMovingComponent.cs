@@ -36,6 +36,9 @@ public class PlayerMovingComponent : MonoBehaviour
 
     private Animator animator;
 
+
+    private StatusEffectComponent statusEffect;
+
     #endregion
 
     private bool bCanMove = true;
@@ -57,6 +60,20 @@ public class PlayerMovingComponent : MonoBehaviour
         movement = SO_Movement.GetMovement();
         animator = GetComponent<Animator>();
         Awake_PlayerBindInput();
+
+        statusEffect = GetComponent<StatusEffectComponent>();
+    }
+
+    private void OnEnable()
+    {
+        if(statusEffect != null)
+            statusEffect.OnStatusEffectChanged +=OnStatusEffectChanged;
+    }
+
+    private void OnDisable()
+    {
+        if(statusEffect != null)
+            statusEffect.OnStatusEffectChanged -= OnStatusEffectChanged;
     }
 
     private void Awake_PlayerBindInput()
@@ -109,5 +126,20 @@ public class PlayerMovingComponent : MonoBehaviour
         transform.Translate(direction * Time.deltaTime, Space.World);
         
         animator?.SetFloat(SPEED, deltaSpeed);
+    }
+
+
+    private void OnStatusEffectChanged(StatusEffectType prevType,  StatusEffectType newType)
+    {
+        //TODO: 상태 이상이 전부 못움직이는거라면 상관없음
+        bool bNotMovable = (prevType & newType) != 0;
+
+        if (bNotMovable)
+        {
+            Stop();
+            return; 
+        }
+
+        Move(); 
     }
 }

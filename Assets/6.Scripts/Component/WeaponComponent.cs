@@ -106,15 +106,22 @@ public class WeaponComponent : ActionComponent
 
     private StateComponent state;
     private SkillComponent skill;
+    private StatusEffectComponent statusEffect; 
 
     private Animator animator;
 
+    private bool bCanAction = true; 
     private bool bUseSkill = false;
+
     private Dictionary<WeaponType, Weapon> weaponTable;
     private readonly int IsAction = Animator.StringToHash("IsAction");
 
+    [SerializeField]
+    private WeaponController weaponController;
+
     public event Action<WeaponType, WeaponType> OnWeaponTypeChanged;
     public event Action<SO_Combo> OnWeaponTypeChanged_Combo;
+
     private void Awake()
     {
         weaponTable = new Dictionary<WeaponType, Weapon>();
@@ -122,6 +129,7 @@ public class WeaponComponent : ActionComponent
 
         state = GetComponent<StateComponent>();
         skill = GetComponent<SkillComponent>();
+        statusEffect = GetComponent<StatusEffectComponent>();
         Debug.Log(skill != null);
 
         Awake_InitWeapon();
@@ -145,6 +153,19 @@ public class WeaponComponent : ActionComponent
             }
             weaponTable[weapon.Type] = weapon;
         }
+    }
+
+
+    private void OnEnable()
+    {
+        if (statusEffect != null)
+            statusEffect.OnStatusEffectChanged += OnStatusEffectChanged;
+    }
+
+    private void OnDisable()
+    {
+        if (statusEffect != null)
+            statusEffect.OnStatusEffectChanged -= OnStatusEffectChanged;
     }
 
     private void Start()
@@ -185,7 +206,8 @@ public class WeaponComponent : ActionComponent
     {
         if (animator == null)
             return;
-
+        if (bCanAction == false)
+            return; 
         if (bUseSkill)
             return;
 
@@ -213,8 +235,8 @@ public class WeaponComponent : ActionComponent
             skill?.Begin_SkillAction();
             return;
         }
-
         weaponTable[type]?.Begin_DoAction();
+        weaponController?.Begin_Action();
     }
 
     public override void End_DoAction()
@@ -232,5 +254,20 @@ public class WeaponComponent : ActionComponent
         }
 
         weaponTable[type]?.End_DoAction();
+        weaponController?.End_Action();
     }
+
+    private void OnStatusEffectChanged(StatusEffectType prevType, StatusEffectType newType)
+    {
+        bool bNotActionable = (prevType & newType) != 0;
+
+        if (bNotActionable)
+        {
+            bCanAction = false;
+            return; 
+        }
+
+        bCanAction = true;
+    }
+
 }

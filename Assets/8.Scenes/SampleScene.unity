@@ -4960,6 +4960,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1643902644 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2506087712966942240, guid: 9d7cf59d408cc1e4aac7aa68f5ad5efa, type: 3}
+  m_PrefabInstance: {fileID: 1719383149}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1643902658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1643902644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a60bf1049ab74d346b7fd37d9eca2dd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  statusEffectType: 0
 --- !u!1 &1655330097
 GameObject:
   m_ObjectHideFlags: 0
@@ -5357,7 +5375,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2506087712966942240, guid: 9d7cf59d408cc1e4aac7aa68f5ad5efa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1643902658}
   m_SourcePrefab: {fileID: 100100000, guid: 9d7cf59d408cc1e4aac7aa68f5ad5efa, type: 3}
 --- !u!1 &1743460839
 GameObject:
@@ -6484,6 +6505,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 558672117}
     - target: {fileID: 5558350930028995319, guid: 20afbde1f66de93428549206b79b6d9f, type: 3}
+      propertyPath: sfxSounds.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5558350930028995319, guid: 20afbde1f66de93428549206b79b6d9f, type: 3}
       propertyPath: sfxPlayers.Array.size
       value: 21
       objectReference: {fileID: 0}
@@ -6571,6 +6596,22 @@ PrefabInstance:
       propertyPath: 'sfxPlayers.Array.data[20]'
       value: 
       objectReference: {fileID: 271837914}
+    - target: {fileID: 5558350930028995319, guid: 20afbde1f66de93428549206b79b6d9f, type: 3}
+      propertyPath: sfxSounds.Array.data[0].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: ef1aa073dba5df24886ea9765dc5893f, type: 3}
+    - target: {fileID: 5558350930028995319, guid: 20afbde1f66de93428549206b79b6d9f, type: 3}
+      propertyPath: sfxSounds.Array.data[1].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: 0561032dd5a2e16418e21ab524a543cc, type: 3}
+    - target: {fileID: 5558350930028995319, guid: 20afbde1f66de93428549206b79b6d9f, type: 3}
+      propertyPath: sfxSounds.Array.data[0].soundName
+      value: Gun_Normal1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5558350930028995319, guid: 20afbde1f66de93428549206b79b6d9f, type: 3}
+      propertyPath: sfxSounds.Array.data[1].soundName
+      value: Gun_Normal2
+      objectReference: {fileID: 0}
     - target: {fileID: 5594001091414183591, guid: 20afbde1f66de93428549206b79b6d9f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

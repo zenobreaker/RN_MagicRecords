@@ -93,12 +93,12 @@ public class Player
         if (weapon != null /*&& weapon.InSkillAction*/)
             return;
 
-        if (data.HitParticle != null)
+        if (data != null && data.damageInfo != null)
         {
             //TODO: 옵젝풀러한테 불러오게할까
-            GameObject obj = Instantiate<GameObject>(data.HitParticle, transform, false);
-            obj.transform.localPosition = hitPoint + data.HitParticlePositionOffset;
-            obj.transform.localScale = data.HitParticleSacleOffset;
+            GameObject obj = Instantiate<GameObject>(data.damageInfo.HitParticle, transform, false);
+            obj.transform.localPosition = hitPoint + data.damageInfo.HitParticlePositionOffset;
+            obj.transform.localScale = data.damageInfo.HitParticleSacleOffset;
         }
 
         if (healthPoint.Dead == false)
