@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   comboDatas:
   - comboIndex: 0
-    stateName: Attack_Normal
+    stateName: Action
     animatorOv: {fileID: 22100000, guid: 490f4762b1b310248940e443e74ccd86, type: 2}
+    weaponAnimOv: {fileID: 22100000, guid: 460d5aa9bff3971468796738ce32a2e0, type: 2}
     lastComboCheckTime: 0.1
     lastInputCheckTime: 0.5
     comboMaintainTime: 0.5
@@ -27,16 +28,18 @@ MonoBehaviour:
       bDownable: 0
       bLauncher: 0
       impulseDirection: {x: 0, y: 0, z: 0}
-      HitImpactIndex: 0
-      HitSoundName: 
-      HitParticle: {fileID: 0}
-      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
+      damageInfo:
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleSacleOffset: {x: 1, y: 1, z: 1}
       bCanMove: 1
     actionSpeed: 1.5
   - comboIndex: 1
-    stateName: Attack_Normal
+    stateName: Action
     animatorOv: {fileID: 22100000, guid: ed7464e6ef1d22344ba31e0109806b59, type: 2}
+    weaponAnimOv: {fileID: 22100000, guid: 460d5aa9bff3971468796738ce32a2e0, type: 2}
     lastComboCheckTime: 0.25
     lastInputCheckTime: 0.5
     comboMaintainTime: 0.5
@@ -48,16 +51,18 @@ MonoBehaviour:
       bDownable: 0
       bLauncher: 0
       impulseDirection: {x: 0, y: 0, z: 0}
-      HitImpactIndex: 0
-      HitSoundName: 
-      HitParticle: {fileID: 0}
-      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
+      damageInfo:
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleSacleOffset: {x: 1, y: 1, z: 1}
       bCanMove: 1
     actionSpeed: 1.5
   - comboIndex: 2
-    stateName: Attack_Normal
+    stateName: Action
     animatorOv: {fileID: 22100000, guid: fef8192aaf6f3c044ad868a5dbffa1ce, type: 2}
+    weaponAnimOv: {fileID: 22100000, guid: 460d5aa9bff3971468796738ce32a2e0, type: 2}
     lastComboCheckTime: 0.25
     lastInputCheckTime: 0.5
     comboMaintainTime: 0.5
@@ -69,16 +74,18 @@ MonoBehaviour:
       bDownable: 0
       bLauncher: 0
       impulseDirection: {x: 0, y: 0, z: 0}
-      HitImpactIndex: 0
-      HitSoundName: 
-      HitParticle: {fileID: 0}
-      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
+      damageInfo:
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleSacleOffset: {x: 1, y: 1, z: 1}
       bCanMove: 1
     actionSpeed: 1.5
   - comboIndex: 3
-    stateName: Attack_Final
+    stateName: Action
     animatorOv: {fileID: 22100000, guid: 5e695aec898769a46968fed50ba90ade, type: 2}
+    weaponAnimOv: {fileID: 22100000, guid: e7eb14accfef4a54fa846b85fe6f74a8, type: 2}
     lastComboCheckTime: 0.25
     lastInputCheckTime: 0.5
     comboMaintainTime: 0.5
@@ -90,11 +97,12 @@ MonoBehaviour:
       bDownable: 0
       bLauncher: 0
       impulseDirection: {x: 0, y: 0, z: 0}
-      HitImpactIndex: 0
-      HitSoundName: 
-      HitParticle: {fileID: 0}
-      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
+      damageInfo:
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleSacleOffset: {x: 1, y: 1, z: 1}
       bCanMove: 1
     actionSpeed: 1.5
   subActionData:
@@ -105,9 +113,10 @@ MonoBehaviour:
     bDownable: 0
     bLauncher: 0
     impulseDirection: {x: 0, y: 0, z: 0}
-    HitImpactIndex: 0
-    HitSoundName: 
-    HitParticle: {fileID: 0}
-    HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-    HitParticleSacleOffset: {x: 1, y: 1, z: 1}
+    damageInfo:
+      HitImpactIndex: 0
+      HitSoundName: 
+      HitParticle: {fileID: 0}
+      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
     bCanMove: 0

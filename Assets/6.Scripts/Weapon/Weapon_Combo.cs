@@ -35,10 +35,22 @@ public class Weapon_Combo : Weapon
         }
 
         this.index = index;
-        
-        animator.runtimeAnimatorController = so_Combo.comboDatas[index].AnimatorOv;
-        animator.SetFloat(so_Combo.comboDatas[index].ActionSpeedHash, so_Combo.comboDatas[index].ActionSpeed);
-        animator.Play(so_Combo.comboDatas[index].StateName, 0, 0);
+
+        Debug.Assert(so_Combo.comboDatas.Count > 0);
+        Debug.Assert(so_Combo.comboDatas[index] != null);
+
+        // Set Override 
+        {
+            animator.runtimeAnimatorController = so_Combo.comboDatas[index].AnimatorOv;
+            weaponController?.SetWeaponAnimation(so_Combo.comboDatas[index].WeaponAnimOv);
+        }
+
+        // Play Animation 
+        {
+            animator.SetFloat(so_Combo.comboDatas[index].ActionSpeedHash, so_Combo.comboDatas[index].ActionSpeed);
+            animator.Play(so_Combo.comboDatas[index].StateName, 0, 0);
+            weaponController?.DoAction(so_Combo.comboDatas[index].StateName);
+        }
 
         if (bDebug)
             Debug.Log($"Combo Play: {this.index} {so_Combo.comboDatas[index].StateName}");

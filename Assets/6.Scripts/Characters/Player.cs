@@ -8,14 +8,19 @@ using UnityEngine.WSA;
 public class Player 
     : Character
     , IDamagable
+    , IWeaponUser
 {
 
     private ComboComponent comboComponent;
     private WeaponComponent weapon;
 
+    private WeaponController weaponController;
+
     protected override void Awake()
     {
         base.Awake();
+
+        weaponController = GetComponentInChildren<WeaponController>();
 
         comboComponent = GetComponent<ComboComponent>();
         weapon = GetComponent<WeaponComponent>();
@@ -26,7 +31,7 @@ public class Player
 
         InputActionMap actionMap = input.actions.FindActionMap("Player");
         Debug.Assert(actionMap != null);
-
+        //TODO: 게임시작하고 바로 안나가는 버그 있음
         actionMap.FindAction("Action").started += (context) =>
         {
             Debug.Log("Action!");
@@ -71,6 +76,8 @@ public class Player
             weapon.DoSkillAction(SkillSlot.Slot4);
         };
     }
+
+    public WeaponController GetWeaponController() => weaponController;
 
     public void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, DoActionData data)
     {

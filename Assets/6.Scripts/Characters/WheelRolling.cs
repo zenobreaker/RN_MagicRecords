@@ -9,7 +9,7 @@ public class WheelRolling : MonoBehaviour
 
     private void Awake()
     {
-        movingComponent = GetComponent<PlayerMovingComponent>();
+        movingComponent = GetComponentInParent<PlayerMovingComponent>();
         Debug.Log(movingComponent != null);
     }
 

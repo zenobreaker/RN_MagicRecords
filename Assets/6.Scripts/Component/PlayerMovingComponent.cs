@@ -102,10 +102,7 @@ public class PlayerMovingComponent : MonoBehaviour
 
     private void Update()
     {
-        //Debug.Log(inputMove);
         currentInputMove = Vector2.SmoothDamp(currentInputMove, inputMove, ref velocity, 1.0f / sensitivity);
-
-        //TODO : Condition에 따라서 이동 불가 
 
         if (bCanMove == false)
             return;

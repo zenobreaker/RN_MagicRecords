@@ -87,7 +87,8 @@ public class Weapon : MonoBehaviour
 
     protected GameObject rootObject;    // 무기를 가진 대상
     protected Animator animator;
-    
+    protected WeaponController weaponController;
+
     protected StateComponent state;
     protected PlayerMovingComponent moving;
 
@@ -104,6 +105,7 @@ public class Weapon : MonoBehaviour
         dash = rootObject.GetComponent<DashComponent>();
         Debug.Assert(dash != null);
 
+
         //TODO : 아직은 시기 상조 공격 후, 대쉬로 후딜 캔슬
         //dash.OnBeginDash += End_DoAction;
     }
@@ -118,6 +120,12 @@ public class Weapon : MonoBehaviour
         Debug.Log($"Equip : {type.ToString()}");
 
         //TODO : 장착 애니메이션이 없으므로 여기서 이 함수를 콜함
+
+        if (rootObject.TryGetComponent(out IWeaponUser user))
+        {
+            weaponController = user.GetWeaponController();
+        }
+
         Begin_Equip();
     }
 

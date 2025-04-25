@@ -2,9 +2,6 @@ using UnityEngine;
 
 public class WeaponController : MonoBehaviour
 {
-    [SerializeField]
-    private string PlayAnimName = ""; 
-
     private Animator weaponAnimator;
 
     private void Start()
@@ -20,25 +17,11 @@ public class WeaponController : MonoBehaviour
         weaponAnimator.runtimeAnimatorController = overrideController;
     }
 
-    private void ActionWeapon()
-    {
+    public void DoAction(string stateName)
+    { 
         if (weaponAnimator == null)
             return;
 
-        if (string.IsNullOrEmpty(PlayAnimName) == true)
-            return; 
-
-        weaponAnimator.Play(PlayAnimName);
+        weaponAnimator.Play(stateName);
     }
-
-    public void Begin_Action()
-    {
-        ActionWeapon(); 
-    }
-
-    public void End_Action()
-    {
-
-    }
-
 }

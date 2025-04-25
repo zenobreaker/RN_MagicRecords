@@ -34,8 +34,34 @@ public class ReinforcedMagicBullet : ActiveSkill
         Vector3 position = ownerObject.transform.TransformPoint(localOffset); // 로컬 -> 월드 좌표로 변경
         Quaternion rotation = ownerObject.transform.rotation * phaseSkill.spwanQuaternion;
 
-        ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
+        GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
         //GameObject.Instantiate<GameObject>(phaseSkill.skillObject, position, rotation);
+        if (obj.TryGetComponent<Projectile>(out var projectile))
+        {
+            projectile.AddIgnore(ownerObject);
+            projectile.OnProjectileHit -= OnProjectileHit;
+            projectile.OnProjectileHit += OnProjectileHit;
+        }
+    }
+
+
+    private void OnProjectileHit(Collider self, Collider other, Vector3 point)
+    {
+        Debug.Log($"self : {self} other : {other}");
+
+        // hit Sound Play
+        //SoundManager.Instance.PlaySFX(doActionDatas[index].hitSoundName);
+
+        // Damage 
+        IDamagable damage = other.GetComponent<IDamagable>();
+        if (damage != null)
+        {
+            Vector3 hitPoint = self.ClosestPoint(other.transform.position);
+            hitPoint = other.transform.InverseTransformPoint(hitPoint);
+         //   damage?.OnDamage(ownerObject, this, hitPoint, doActionDatas[index]);
+        }
+
+        //Instantiate<GameObject>(doActionDatas[index].HitParticle, point, rootObject.transform.rotation);
     }
 
     public override void End_DoAction()

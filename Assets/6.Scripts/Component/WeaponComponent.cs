@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 public enum WeaponType
 {
-    Unarmed = 0, Fist, Sword, Gun, MAX,
+    Unarmed = 0, Sword, Gun, MAX,
 }
 
 public enum SkillSlot
@@ -31,19 +31,10 @@ public class WeaponComponent : ActionComponent
 
     #region Equipment 
     public bool UnarmedMode { get => type == WeaponType.Unarmed; }
-    public bool FistMode { get => type == WeaponType.Fist; }
     public bool SwordMode { get => type == WeaponType.Sword; }
     public bool GunMode { get => type == WeaponType.Gun; }
 
 
-
-    public void SetFistMode()
-    {
-        if (state.IdleMode == false)
-            return;
-
-        SetMode(WeaponType.Fist);
-    }
 
     public void SetSwordMode()
     {
@@ -116,9 +107,7 @@ public class WeaponComponent : ActionComponent
     private Dictionary<WeaponType, Weapon> weaponTable;
     private readonly int IsAction = Animator.StringToHash("IsAction");
 
-    [SerializeField]
-    private WeaponController weaponController;
-
+    
     public event Action<WeaponType, WeaponType> OnWeaponTypeChanged;
     public event Action<SO_Combo> OnWeaponTypeChanged_Combo;
 
@@ -173,9 +162,6 @@ public class WeaponComponent : ActionComponent
         // Equip
         switch (initType)
         {
-            case WeaponType.Fist:
-                SetFistMode();
-                break;
             case WeaponType.Sword:
                 SetSwordMode();
                 break;
@@ -236,7 +222,6 @@ public class WeaponComponent : ActionComponent
             return;
         }
         weaponTable[type]?.Begin_DoAction();
-        weaponController?.Begin_Action();
     }
 
     public override void End_DoAction()
@@ -254,7 +239,6 @@ public class WeaponComponent : ActionComponent
         }
 
         weaponTable[type]?.End_DoAction();
-        weaponController?.End_Action();
     }
 
     private void OnStatusEffectChanged(StatusEffectType prevType, StatusEffectType newType)

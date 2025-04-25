@@ -40,6 +40,9 @@ public partial class ComboComponent : MonoBehaviour
 
         inputQueue = new Queue<InputElement>();
 
+        lastInputTime = -999f;
+        lastInputTime = -999f; 
+
         //Awake_Draw();
     }
 
