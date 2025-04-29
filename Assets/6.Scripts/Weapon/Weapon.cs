@@ -28,7 +28,7 @@ public class DoActionData : ICloneable, IEquatable<DoActionData>
     [Header("Camera Shake")]
     public Vector3 impulseDirection;
     //TODO: Noise 가져오기
-    //public Cinemachine settings;
+    public Unity.Cinemachine.NoiseSettings settings;
 
     public DamageInfo damageInfo = null; 
     public bool bCanMove;

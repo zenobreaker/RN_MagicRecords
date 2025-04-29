@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class Weapon_Combo : Weapon
@@ -5,6 +6,14 @@ public class Weapon_Combo : Weapon
     [SerializeField] protected SO_Combo so_Combo;
     //[SerializeField] protected string comboPrefixName = "";
     public SO_Combo ComboData { get => so_Combo; }
+
+
+    #region Cinenmachine
+    protected CinemachineImpulseSource impulse;
+    protected CinemachineImpulseListener listener;
+    protected CinemachineBrain brain;
+    #endregion
+
 
     protected int index;
     protected bool bEnable;
@@ -20,6 +29,18 @@ public class Weapon_Combo : Weapon
         {
             doActionDatas[count] = data.DoAction;
             count++;
+        }
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+
+        brain = Camera.main.GetComponent<CinemachineBrain>();
+        impulse = GetComponent<CinemachineImpulseSource>();
+        if(brain != null)
+        {
+            listener = brain.GetComponent<CinemachineImpulseListener>();
         }
     }
 
@@ -56,5 +77,14 @@ public class Weapon_Combo : Weapon
             Debug.Log($"Combo Play: {this.index} {so_Combo.comboDatas[index].StateName}");
     }
 
-
+    public virtual void Play_Impulse(DoActionData data)
+    {
+        if (impulse == null || data == null)
+            return;
+        if (data.settings == null)
+            return;
+        Debug.Log("Shake!");
+        listener.ReactionSettings.m_SecondaryNoise = data.settings;
+        impulse.GenerateImpulse();
+    }
 }
