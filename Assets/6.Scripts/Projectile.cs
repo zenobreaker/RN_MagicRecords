@@ -14,6 +14,9 @@ public class Projectile : MonoBehaviour
 
     private float curLife = 0f;
 
+    private int index; 
+    public int Index { get { return index; }  set {  index = value; } }
+
     private new Rigidbody rigidbody;
     private new Collider collider; 
 

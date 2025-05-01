@@ -73,8 +73,10 @@ public class Weapon_Combo : Weapon
             weaponController?.DoAction(so_Combo.comboDatas[index].StateName);
         }
 
+#if UNITY_EDITOR
         if (bDebug)
             Debug.Log($"Combo Play: {this.index} {so_Combo.comboDatas[index].StateName}");
+#endif
     }
 
     public virtual void Play_Impulse(DoActionData data)
@@ -83,7 +85,9 @@ public class Weapon_Combo : Weapon
             return;
         if (data.settings == null)
             return;
+#if UNITY_EDITOR
         Debug.Log("Shake!");
+#endif
         listener.ReactionSettings.m_SecondaryNoise = data.settings;
         impulse.GenerateImpulse();
     }

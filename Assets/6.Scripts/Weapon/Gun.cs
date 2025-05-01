@@ -44,6 +44,7 @@ public class Gun : Weapon_Combo
         if (obj.TryGetComponent<Projectile>(out var projectile))
         {
             projectile.AddIgnore(rootObject);
+            projectile.Index = index;
             projectile.OnProjectileHit -= OnProjectileHit;
             projectile.OnProjectileHit += OnProjectileHit;
         }
@@ -52,7 +53,13 @@ public class Gun : Weapon_Combo
 
     private void OnProjectileHit(Collider self, Collider other, Vector3 point)
     {
-        Debug.Log($"self : {self} other : {other}");
+#if UNITY_EDITOR
+        Debug.Log($"self : {self} other : {other} Index : {index}");
+#endif
+        var projectile = self.GetComponent<Projectile>();
+        if(projectile == null) return;
+
+        int myIndex = projectile.Index;  // 충돌한 총알의 index 사용
 
         // hit Sound Play
         //SoundManager.Instance.PlaySFX(doActionDatas[index].hitSoundName);
@@ -63,11 +70,11 @@ public class Gun : Weapon_Combo
         {
             Vector3 hitPoint = self.ClosestPoint(other.transform.position);
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
-            damage?.OnDamage(rootObject, this, hitPoint, doActionDatas[index]);
+            damage?.OnDamage(rootObject, this, hitPoint, doActionDatas[myIndex]);
 
         }
 
-        Play_Impulse(doActionDatas[index]);
+        Play_Impulse(doActionDatas[myIndex]);
 
         //Instantiate<GameObject>(doActionDatas[index].HitParticle, point, rootObject.transform.rotation);
     }
