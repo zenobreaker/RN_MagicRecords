@@ -25,6 +25,9 @@ public class DoActionData : ICloneable, IEquatable<DoActionData>
     public bool bDownable = false;
     public bool bLauncher = false;
 
+    [Header("Sound")]
+    public string SoundName; 
+
     [Header("Camera Shake")]
     public Vector3 impulseDirection;
     //TODO: Noise 가져오기
@@ -84,6 +87,8 @@ public class Weapon : MonoBehaviour
     private bool bEquipped;
     public bool Equipped { get => bEquipped; }
     protected int currentComboCount = 0;
+
+    private bool bDirtyMove = false;
 
     protected GameObject rootObject;    // 무기를 가진 대상
     protected Animator animator;
@@ -175,6 +180,17 @@ public class Weapon : MonoBehaviour
     public virtual void End_DoAction()
     {
         state.SetIdleMode();
+
+        if(bDirtyMove)
+        {
+            bDirtyMove = false;
+            Move();
+        }
+    }
+
+    public virtual void Begin_PlaySound()
+    {
+
     }
 
 
@@ -193,6 +209,9 @@ public class Weapon : MonoBehaviour
     protected void CheckStop(int index)
     {
         if (doActionDatas[index].bCanMove == false)
+        {
             Stop();
+            bDirtyMove = true; 
+        }
     }
 }

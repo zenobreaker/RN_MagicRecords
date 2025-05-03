@@ -48,6 +48,16 @@ public class Gun : Weapon_Combo
             projectile.OnProjectileHit -= OnProjectileHit;
             projectile.OnProjectileHit += OnProjectileHit;
         }
+
+        Play_Impulse(doActionDatas[index]);
+    }
+
+
+    public override void Begin_PlaySound()
+    {
+        base.Begin_PlaySound();
+
+        SoundManager.Instance.PlaySFX(doActionDatas[index].SoundName);
     }
 
 
@@ -73,8 +83,6 @@ public class Gun : Weapon_Combo
             damage?.OnDamage(rootObject, this, hitPoint, doActionDatas[myIndex]);
 
         }
-
-        Play_Impulse(doActionDatas[myIndex]);
 
         //Instantiate<GameObject>(doActionDatas[index].HitParticle, point, rootObject.transform.rotation);
     }

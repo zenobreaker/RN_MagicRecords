@@ -204,9 +204,8 @@ public class WeaponComponent : ActionComponent
         weaponTable[type]?.DoAction(index);
     }
 
-    public void DoSkillAction(SkillSlot slot)
+    public void UseSkill(SkillSlot slot)
     {
-        bUseSkill = true;
         skill.UseSkill(slot);
     }
 
@@ -216,11 +215,11 @@ public class WeaponComponent : ActionComponent
         OnBeginDoAction?.Invoke();
 
 
-        if (bUseSkill == true)
-        {
-            skill?.Begin_SkillAction();
-            return;
-        }
+        //if (bUseSkill == true)
+        //{
+        //    skill?.Begin_SkillAction();
+        //    return;
+        //}
         weaponTable[type]?.Begin_DoAction();
     }
 
@@ -230,13 +229,13 @@ public class WeaponComponent : ActionComponent
 
         OnEndDoAction?.Invoke();
 
-        if (bUseSkill == true)
-        {
-            skill?.End_SkillAction();
-            bUseSkill = false;
+        //if (bUseSkill == true)
+        //{
+        //    skill?.End_SkillAction();
+        //    bUseSkill = false;
 
-            return;
-        }
+        //    return;
+        //}
 
         weaponTable[type]?.End_DoAction();
     }

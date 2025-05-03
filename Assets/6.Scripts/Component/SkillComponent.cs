@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,6 +17,8 @@ public class SkillComponent : MonoBehaviour
 
     // 스킬 사용 관련 이벤트 핸들러
     public SO_SkillEventHandler skillEventHandler;
+
+    public event Action<bool> OnSkillUse;
 
     private void Awake()
     {
@@ -78,12 +81,15 @@ public class SkillComponent : MonoBehaviour
     // 슬롯의 있는 스킬 사용 
     public void UseSkill(SkillSlot slot)
     {
-        if (bIsSkillAction) return; 
+        if (bIsSkillAction)
+        {
+            OnSkillUse?.Invoke(false);
+            return;
+        }
 
         currentSlot = slot;
         skillSlotTable[slot]?.Cast();
-
-        
+        OnSkillUse?.Invoke(true); 
     }
 
     public void Begin_SkillAction()

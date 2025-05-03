@@ -19,6 +19,7 @@ public class PhaseSkill
     public string objectName;
     public string skillActionPrefix = "Skills";
     public string skillActionAnimation;
+    public string weaponActionAnimation;
 
     [Header("Skill Sounds")]
     public string soundName; 

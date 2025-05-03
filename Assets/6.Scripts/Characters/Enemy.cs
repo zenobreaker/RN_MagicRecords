@@ -63,7 +63,8 @@ public class Enemy
         // Dead..
         state?.SetDeadMode();
         Collider collider = GetComponent<Collider>();
-        collider.enabled = false;
+        collider.isTrigger = true;
+        rigidbody.isKinematic = true; 
 
         animator.SetTrigger("Dead");
         MovableStopper.Instance.Delete(this);

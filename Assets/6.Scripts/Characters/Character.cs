@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 
@@ -40,6 +41,14 @@ public class Character
     protected virtual void End_Damaged()
     {
 
+    }
+
+    public virtual void Begin_Action()
+    {
+    }
+
+    public virtual void End_Action()
+    {
     }
 
     #region Slow

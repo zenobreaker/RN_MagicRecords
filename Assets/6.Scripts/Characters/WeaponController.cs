@@ -18,10 +18,17 @@ public class WeaponController : MonoBehaviour
     }
 
     public void DoAction(string stateName)
-    { 
+    {
         if (weaponAnimator == null)
             return;
 
         weaponAnimator.Play(stateName);
+    }
+
+
+    // AnimationEvent e 
+    public void Play_Sound(string soundName)
+    {
+        SoundManager.Instance.PlaySFX(soundName);
     }
 }

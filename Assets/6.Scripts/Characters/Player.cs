@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static StateComponent;
 using UnityEngine.WSA;
+using UnityEditor.Experimental.GraphView;
 
-public class Player 
+public class Player
     : Character
     , IDamagable
     , IWeaponUser
@@ -13,8 +14,11 @@ public class Player
 
     private ComboComponent comboComponent;
     private WeaponComponent weapon;
+    private SkillComponent skill;
 
     private WeaponController weaponController;
+
+    private bool bIsSkillInput = false;
 
     protected override void Awake()
     {
@@ -25,6 +29,10 @@ public class Player
         comboComponent = GetComponent<ComboComponent>();
         weapon = GetComponent<WeaponComponent>();
         Debug.Assert(weapon != null);
+
+        skill = GetComponent<SkillComponent>();
+        Debug.Assert(skill != null);
+        skill.OnSkillUse += OnSkillUse;
 
         PlayerInput input = GetComponent<PlayerInput>();
         Debug.Assert(input != null);
@@ -53,28 +61,51 @@ public class Player
 
     private void Awake_SkillAcitonInput(InputActionMap actionMap)
     {
-        if (actionMap == null || weapon == null)
-            return; 
+        if (actionMap == null || skill == null)
+            return;
 
         actionMap.FindAction("SkillAction1").started += (context) =>
         {
-            weapon.DoSkillAction(SkillSlot.Slot1);
+            skill.UseSkill(SkillSlot.Slot1);
         };
 
         actionMap.FindAction("SkillAction2").started += (context) =>
         {
-            weapon.DoSkillAction(SkillSlot.Slot2);
+            skill.UseSkill(SkillSlot.Slot2);
         };
 
         actionMap.FindAction("SkillAction3").started += (context) =>
         {
-            weapon.DoSkillAction(SkillSlot.Slot3);
+            skill.UseSkill(SkillSlot.Slot3);
         };
 
         actionMap.FindAction("SkillAction4").started += (context) =>
         {
-            weapon.DoSkillAction(SkillSlot.Slot4);
+            skill.UseSkill(SkillSlot.Slot4);
         };
+    }
+
+    public override void Begin_Action()
+    {
+        if (bIsSkillInput)
+        {
+            skill?.Begin_SkillAction();
+            return; 
+        }
+
+        weapon?.Begin_DoAction();
+    }
+
+    public override void End_Action()
+    {
+        weapon?.End_DoAction();
+        skill?.End_SkillAction();
+        bIsSkillInput = false;
+    }
+
+    public void OnSkillUse(bool bIsUse)
+    {
+        bIsSkillInput = bIsUse;
     }
 
     public WeaponController GetWeaponController() => weaponController;
@@ -111,17 +142,17 @@ public class Player
         if (healthPoint.Dead == false)
         {
             state.SetDamagedMode();
-           // launch.DoHit(attacker, causer, data, false);
+            // launch.DoHit(attacker, causer, data, false);
 
-           // if (data.bDownable == false)
-           // {
-           //     DownDamaged();
+            // if (data.bDownable == false)
+            // {
+            //     DownDamaged();
 
-           //     animator.SetInteger(HitIndex, data.HitImpactIndex);
-           //     animator.SetTrigger(HitImapact);
-           // }
-           // else
-           //     Begin_DownImpact();
+            //     animator.SetInteger(HitIndex, data.HitImpactIndex);
+            //     animator.SetTrigger(HitImapact);
+            // }
+            // else
+            //     Begin_DownImpact();
 
             return;
         }
