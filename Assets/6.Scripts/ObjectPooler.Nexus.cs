@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public partial class ObjectPooler : MonoBehaviour
@@ -12,9 +13,9 @@ public partial class ObjectPooler : MonoBehaviour
             // 기존 오브젝트 생성 및 부모 설정
             for(int i = 0; i< pool.size; i++)
             {
-                // Version up : 2024 11 03 => 풀링될 오브젝트의 부모를 받아서 거기에 생성
-                GameObject obj = CreateNewObjectSetParent(pool.tag, pool.prefab);
-                ArrangePool(pool.tag, obj);
+                // Ver 25.05.04 : 하나의 함수로 처리하게 
+                GameObject obj = CreateNewObjectSetParent(pool.tag, pool.prefab, pool.parentTransform);
+                ArrangePool(pool.parentTransform, pool.tag, obj);
             }
 
             // OnDisable에 ReturnToPool 구현여부와 중복구현 검사
@@ -38,7 +39,7 @@ public partial class ObjectPooler : MonoBehaviour
     // 부모 오브젝트 생성 또는 가져오기
     private Transform GetOrCreateParent(string tag)
     {
-        if (!parentDictionary.TryGetValue(tag, out Transform parent))
+        if (parentDictionary.TryGetValue(tag, out Transform parent) == false)
         {
             GameObject parentObj = new GameObject($"{tag}_Parent");
             parent = parentObj.transform;
@@ -49,22 +50,43 @@ public partial class ObjectPooler : MonoBehaviour
     }
 
     // 오브젝트 생성 후 부모에 할당
-    private GameObject CreateNewObjectSetParent(string tag, GameObject prefab)
+    private GameObject CreateNewObjectSetParent(string tag, GameObject prefab, Transform parentTransform = null)
     {
         GameObject newObj = Instantiate(prefab);
         newObj.name = tag;
-        Transform parent = GetOrCreateParent(tag);
+
+        Transform parent = parentTransform != null ? parentTransform : GetOrCreateParent(tag);
         newObj.transform.SetParent(parent);
+        
         newObj.SetActive(false);
         return newObj;
     }
 
     void ArrangePool(string tag, GameObject obj)
     {
+        ArrangePool(null, tag, obj);
+    }
+
+    void ArrangePool(Transform parentTransform, string tag, GameObject obj)
+    {
         // 해당 태그의 부모 오브젝트 찾음 
-        Transform parent = transform.FindChildByName(tag + "_Parent");
+        Transform parent = null;
+        // 우선 parentTransform 있으면 사용
+        if (parentTransform != null)
+        {
+            parent = parentTransform;
+        }
+        else
+        {
+            // Pool 클래스에서 가져오기
+            var pool = pools.FirstOrDefault<Pool>(p => p.tag == tag);
+            if (pool != null && pool.parentTransform != null)
+                parent = pool.parentTransform;
+        }
+
+        // 아직 null이면 GetOrCreateParent 사용
         if (parent == null)
-            parent = GetOrCreateParent(tag); // 없으면 생성
+            parent = GetOrCreateParent(tag);
 
         // 추가된 오브젝트 묶어서 정렬
         bool isFind = false;

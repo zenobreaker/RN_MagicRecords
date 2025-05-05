@@ -33,6 +33,7 @@ public partial class ObjectPooler : MonoBehaviour
 		public string tag;
 		public GameObject prefab;
 		public int size;
+		public Transform parentTransform;
 	}
 
 	[SerializeField] Pool[] pools;

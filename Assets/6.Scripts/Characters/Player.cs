@@ -33,6 +33,8 @@ public class Player
         skill = GetComponent<SkillComponent>();
         Debug.Assert(skill != null);
         skill.OnSkillUse += OnSkillUse;
+        skill.skillEventHandler.OnBeginUseSkill += weapon.OnBeginSkillAction;
+        skill.skillEventHandler.OnEndUseSkill += weapon.OnEndSkillAction;
 
         PlayerInput input = GetComponent<PlayerInput>();
         Debug.Assert(input != null);

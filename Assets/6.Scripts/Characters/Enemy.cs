@@ -50,7 +50,12 @@ public class Enemy
             return;
 
         healthPoint.Damage(data.Power);
-
+        DamageText dt = ObjectPooler.SpawnFromPool<DamageText>("DamageText", transform);
+        if(dt != null)
+        {
+            dt.DrawDamage(transform.position, data.Power);
+        }
+        
         StartCoroutine(Change_Color(changeColorTime));
 
         if(healthPoint.Dead == false)
