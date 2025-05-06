@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 
 public class Enemy
@@ -94,7 +94,7 @@ public class Enemy
             index++;
         }
 
-        //TODO: ÀÓ½Ã·Î ¿©±â¿¡ È£ÃâÇÑ´Ù.
+        //TODO: ì„ì‹œë¡œ ì—¬ê¸°ì— í˜¸ì¶œí•œë‹¤.
         End_Damaged();
     }
 
