@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.Jobs;
@@ -14,8 +14,8 @@ namespace UserEditor
     {
         public enum JobType
         {
-            Common = 0,     // °ø¿ë
-            Shooter = 1,    // »ç¼ö
+            Common = 0,     // ê³µìš©
+            Shooter = 1,    // ì‚¬ìˆ˜
             MAX = Shooter,
         }
 
@@ -90,7 +90,7 @@ namespace UserEditor
 
             if (!File.Exists(masterSkillFilePath))
             {
-                Debug.LogError(" Master Skill Data JSON ÆÄÀÏ °æ·Î°¡ Àß¸øµÇ¾ú½À´Ï´Ù.");
+                Debug.LogError(" Master Skill Data JSON íŒŒì¼ ê²½ë¡œê°€ ì˜ëª»ë˜ì—ˆìŠµë‹ˆë‹¤.");
                 return;
             }
 
@@ -99,7 +99,7 @@ namespace UserEditor
 
             if (!File.Exists(activeSkillFilePath))
             {
-                Debug.LogError(" Active Skill Data JSON ÆÄÀÏ °æ·Î°¡ Àß¸øµÇ¾ú½À´Ï´Ù.");
+                Debug.LogError(" Active Skill Data JSON íŒŒì¼ ê²½ë¡œê°€ ì˜ëª»ë˜ì—ˆìŠµë‹ˆë‹¤.");
                 return;
             }
 
@@ -109,7 +109,7 @@ namespace UserEditor
 
             if (!File.Exists(phaseSkillFilePath))
             {
-                Debug.LogError(" Phase Skill Data JSON ÆÄÀÏ °æ·Î°¡ Àß¸øµÇ¾ú½À´Ï´Ù.");
+                Debug.LogError(" Phase Skill Data JSON íŒŒì¼ ê²½ë¡œê°€ ì˜ëª»ë˜ì—ˆìŠµë‹ˆë‹¤.");
                 return;
             }
 
@@ -139,38 +139,38 @@ namespace UserEditor
                             activeSkillTable[job].Add(activeSkill);
                         else
                         {
-                            // ±âÁ¸¿¡ ÀÖ´Ù¸é »èÁ¦ÇÏ°í Ãß°¡ 
+                            // ê¸°ì¡´ì— ìˆë‹¤ë©´ ì‚­ì œí•˜ê³  ì¶”ê°€ 
                             activeSkillTable[job].Remove(activeSkill);
                             activeSkillTable[job].Add(activeSkill);
                         }
                     }
 
-                    // Á¤·Ä
+                    // ì •ë ¬
                     if (activeSkillTable[job].Count > 0)
                         activeSkillTable[job].Sort((a, b) => a.id.CompareTo(b.id));
 
                 } // if end 
 
-                //TODO: ÆĞ½Ãºê Ãß°¡ 
+                //TODO: íŒ¨ì‹œë¸Œ ì¶”ê°€ 
 
             }// for end 
 
-            Debug.Log("µ¥ÀÌÅÍ ·Îµå ¿Ï·á");
+            Debug.Log("ë°ì´í„° ë¡œë“œ ì™„ë£Œ");
         }
 
     
 
-        // ¸¶½ºÅÍ ½ºÅ³ Å×ÀÌºí¿¡¼­ ½ºÅ³ Á¤º¸¸¦ ID·Î ±¸ºĞ Áö¾î¼­ °¡Á®¿È 
+        // ë§ˆìŠ¤í„° ìŠ¤í‚¬ í…Œì´ë¸”ì—ì„œ ìŠ¤í‚¬ ì •ë³´ë¥¼ IDë¡œ êµ¬ë¶„ ì§€ì–´ì„œ ê°€ì ¸ì˜´ 
         private List<SkillData> LoadSkillDataFromJobID(JOB_ID id)
         {
-            // µ¥ÀÌÅÍ°¡ nullÀÌ ¾Æ´ÑÁö È®ÀÎ
+            // ë°ì´í„°ê°€ nullì´ ì•„ë‹Œì§€ í™•ì¸
             if (masterskillDataGroupData == null || masterskillDataGroupData.MasterSkillDataJson == null)
             {
                 Debug.LogWarning("Master skill data group or JSON data is null. Returning empty list.");
                 return new List<SkillData>();
             }
 
-            // jobID°¡ id¿Í ÀÏÄ¡ÇÏ´Â µ¥ÀÌÅÍ¸¦ ÇÊÅÍ¸µ
+            // jobIDê°€ idì™€ ì¼ì¹˜í•˜ëŠ” ë°ì´í„°ë¥¼ í•„í„°ë§
             return masterskillDataGroupData.MasterSkillDataJson
                 .Where(data => data.jobID == id)
                 .ToList();
@@ -231,7 +231,7 @@ namespace UserEditor
                 string jobPath = "";
                 {
                     jobPath = ((JobType)jobID).ToString();
-                    // Æú´õ »ı¼º
+                    // í´ë” ìƒì„±
                     CreateFolder(jobPath);
                    
                 }
@@ -272,8 +272,8 @@ namespace UserEditor
                         // Skill Object
                         phase.objectName = phaseSkill.objectName;
 
-                        //TODO: skill create pos <= ´Ù¸¥ Ä³¸¯ÅÍ°¡ »ı¼ºµÇ¸é À§Ä¡°ªÀº Ä³¸¯ÅÍ¿¡ µû¶ó
-                        // ´Ù¸¦ ¼ö ÀÖÀ¸¹Ç·Î ÃßÈÄ¿¡ Á¶Á¤..
+                        //TODO: skill create pos <= ë‹¤ë¥¸ ìºë¦­í„°ê°€ ìƒì„±ë˜ë©´ ìœ„ì¹˜ê°’ì€ ìºë¦­í„°ì— ë”°ë¼
+                        // ë‹¤ë¥¼ ìˆ˜ ìˆìœ¼ë¯€ë¡œ ì¶”í›„ì— ì¡°ì •..
 
                         // Sound
                         phase.soundName = phaseSkill.skillSound;
@@ -285,7 +285,7 @@ namespace UserEditor
 
                     assetPath = $"Assets/10.ScriptableObjects/Resources/Skills/{jobPath}/";
                     assetPath = assetPath + $"{data.skillKeycode}.asset";
-                    // ÀÌ¹Ì Á¸ÀçÇÏ´Â ¿¡¼ÂÀÌ ÀÖ´Â °æ¿ì »èÁ¦ ÈÄ Àç»ı¼º
+                    // ì´ë¯¸ ì¡´ì¬í•˜ëŠ” ì—ì…‹ì´ ìˆëŠ” ê²½ìš° ì‚­ì œ í›„ ì¬ìƒì„±
                     var existingAsset = AssetDatabase.LoadAssetAtPath<SO_ActiveSkillData>(assetPath);
                     if (existingAsset != null)
                     {
@@ -312,15 +312,15 @@ namespace UserEditor
         {
             string folderPath = "10.ScriptableObjects/Resources/Skills/" + path;
 
-            // À¯È¿ÇÑ Æú´õÀÎÁö È®ÀÎ
+            // ìœ íš¨í•œ í´ë”ì¸ì§€ í™•ì¸
             if (AssetDatabase.IsValidFolder(folderPath))
             {
-                Debug.Log("Æú´õ°¡ ÀÌ¹Ì Á¸ÀçÇÕ´Ï´Ù.");
+                Debug.Log("í´ë”ê°€ ì´ë¯¸ ì¡´ì¬í•©ë‹ˆë‹¤.");
                 return;
             }
             else
             {
-                // °æ·Î »óÀÇ °¢ Æú´õ¸¦ ¼øÂ÷ÀûÀ¸·Î »ı¼º
+                // ê²½ë¡œ ìƒì˜ ê° í´ë”ë¥¼ ìˆœì°¨ì ìœ¼ë¡œ ìƒì„±
                 string[] splitPath = folderPath.Split('/');
                 string currentPath = "Assets";
 
@@ -334,7 +334,7 @@ namespace UserEditor
                     currentPath = tempPath;
                 }
 
-                Debug.Log($"Æú´õ°¡ »ı¼ºµÇ¾ú½À´Ï´Ù: {folderPath}");
+                Debug.Log($"í´ë”ê°€ ìƒì„±ë˜ì—ˆìŠµë‹ˆë‹¤: {folderPath}");
 
                 AssetDatabase.Refresh();
             }
@@ -350,19 +350,19 @@ namespace UserEditor
 //[MenuItem("Tools/Import Skills from CSV")]
 //static void ImportSkillsFromCSV()
 //{
-//    string path = "Assets/SkillData.csv"; // CSV ÆÄÀÏ °æ·Î ¼³Á¤
+//    string path = "Assets/SkillData.csv"; // CSV íŒŒì¼ ê²½ë¡œ ì„¤ì •
 //    string[] csvLines = File.ReadAllLines(path);
 
 //    foreach (var line in csvLines)
 //    {
 //        string[] values = line.Split(',');
 
-//        // ScriptableObject »ı¼º
+//        // ScriptableObject ìƒì„±
 //        SO_SkillData skillData = ScriptableObject.CreateInstance<SO_SkillData>();
 //        skillData.id = int.Parse(values[0]);
 //        skillData.skillName = values[1];
 //        skillData.skillDescription = values[2];
-//        // ±âÅ¸ ¼Ó¼º ¼³Á¤ ...
+//        // ê¸°íƒ€ ì†ì„± ì„¤ì • ...
 
 //        AssetDatabase.CreateAsset(skillData, $"Assets/Skills/{skillData.skillName}.asset");
 //    }
