@@ -1,9 +1,31 @@
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class DamageInfo
+public class DamageData
 {
+    [Header("Power Settings")]
+    public DamageType damageType;
+    public float Power;
+    public float Distance;
+    public float HeightValue;
+    public int StopFrame;
+
+    [Header("Launch & Down Settings")]
+    public bool bDownable = false;
+    public bool bLauncher = false;
+
+    [Header("Sound")]
+    public string SoundName;
+
+    [Header("Camera Shake")]
+    public Vector3 impulseDirection;
+    //TODO: Noise 가져오기
+    public Unity.Cinemachine.NoiseSettings settings;
+
+
     public int HitImpactIndex;
     public string HitSoundName;
     public GameObject HitParticle;
@@ -13,53 +35,65 @@ public class DamageInfo
 
 
 [Serializable]
-public class DoActionData : ICloneable, IEquatable<DoActionData>
+public class ActionData : ICloneable, IEquatable<ActionData>
 {
-    [Header("Power Settings")]
-    public float Power;
-    public float Distance;
-    public float HeightValue;
-    public int StopFrame; 
 
-    [Header("Launch & Down Settings")]
-    public bool bDownable = false;
-    public bool bLauncher = false;
+    [Header("Action State")]
+    [SerializeField]
+    private string stateName;
+    public string StateName { get => stateName; }
+
+    [Header("Action Speed")]
+    [SerializeField] private float actionSpeed = 1.0f;
+    public float ActionSpeed { get => actionSpeed; }
+    // StateName을 해시 값으로 저장
+    private int actionSpeedHash = -1;
+    public int ActionSpeedHash
+    {
+        get
+        {
+            if (actionSpeedHash == -1)
+                actionSpeedHash = Animator.StringToHash("ActionSpeed");
+            return actionSpeedHash;
+        }
+    }
+
+    [Header("Character Anim")]
+    [SerializeField]
+    private AnimatorOverrideController animatorOv;
+    public AnimatorOverrideController AnimatorOv => animatorOv;
+
+    [Header("Weapon Anim")]
+    [SerializeField]
+    private AnimatorOverrideController weaponAnimOv;
+    public AnimatorOverrideController WeaponAnimOv => weaponAnimOv;
 
     [Header("Sound")]
-    public string SoundName; 
+    public string SoundName;
 
     [Header("Camera Shake")]
     public Vector3 impulseDirection;
     //TODO: Noise 가져오기
     public Unity.Cinemachine.NoiseSettings settings;
 
-    public DamageInfo damageInfo = null; 
+    [Header("Damage Datas")]
+    public List<DamageData> damageDatas;
+
+
+    [Header("ETC")]
     public bool bCanMove;
+    //public bool bFixedCamera;
 
-    public virtual DoActionData DeepCopy()
+    public virtual ActionData DeepCopy()
     {
-        DoActionData doActionData = new DoActionData();
-        doActionData.Power = Power;
-        doActionData.Distance = Distance;
-        doActionData.HeightValue = HeightValue;
-        doActionData.StopFrame = StopFrame;
+        ActionData actionData = new ActionData();
 
-        doActionData.bDownable = bDownable;
-        doActionData.bLauncher = bLauncher;
-        doActionData.impulseDirection = impulseDirection;
+        actionData.animatorOv = animatorOv;
+        actionData.weaponAnimOv = weaponAnimOv;
 
-        doActionData.damageInfo = new DamageInfo
-        {
-            HitImpactIndex = damageInfo.HitImpactIndex,
-            HitSoundName = damageInfo.HitSoundName,
-            HitParticle = damageInfo.HitParticle,
-            HitParticlePositionOffset = damageInfo.HitParticlePositionOffset,
-            HitParticleSacleOffset = damageInfo.HitParticlePositionOffset
-        };
+        actionData.bCanMove = bCanMove;
 
-        doActionData.bCanMove = bCanMove;
-
-        return doActionData;
+        return actionData;
     }
 
     public virtual object Clone()
@@ -67,7 +101,7 @@ public class DoActionData : ICloneable, IEquatable<DoActionData>
        return this.MemberwiseClone();
     }
 
-    public bool Equals(DoActionData other)
+    public bool Equals(ActionData other)
     {
         throw new NotImplementedException();
     }
@@ -81,7 +115,7 @@ public class Weapon : MonoBehaviour
 
     [Header("Weapon Settings")]
     [SerializeField] protected WeaponType type;
-     protected DoActionData[] doActionDatas;
+    protected ActionData[] doActionDatas;
     public WeaponType Type { get => type; }
 
     private bool bEquipped;

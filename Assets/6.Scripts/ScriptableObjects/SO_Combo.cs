@@ -8,23 +8,10 @@ using UnityEngine;
 [System.Serializable]
 public class ComboData
 {
+    [Header("Combo Index")]
     [SerializeField]
     private int comboIndex;
     public int ComboIndex { get => comboIndex; }
-
-    [SerializeField]
-    private string stateName;
-    public string StateName { get => stateName; }
-
-    [Header("Character Anim")]
-    [SerializeField]
-    private AnimatorOverrideController animatorOv;
-    public AnimatorOverrideController AnimatorOv => animatorOv;
-
-    [Header("Weapon Anim")]
-    [SerializeField]
-    private AnimatorOverrideController weaponAnimOv;
-    public AnimatorOverrideController WeaponAnimOv => weaponAnimOv;
 
     [Header("Combo Input")]
     /// <summary>
@@ -45,31 +32,20 @@ public class ComboData
     [SerializeField] private float comboMaintainTime = 0.2f;
     public float ComboMaintainTime { get => comboMaintainTime; }
 
+    [Header("Action Data")]
+    [SerializeField] private ActionData actionData;
+    public ActionData Action { get => actionData; }
 
-    [SerializeField] private DoActionData doActionData;
-    public DoActionData DoAction { get => doActionData; }
-
-    [SerializeField] private float actionSpeed = 1.0f; 
-    public float ActionSpeed { get =>  actionSpeed; }
-    // StateName을 해시 값으로 저장
-    private int actionSpeedHash = -1;
-    public int ActionSpeedHash
-    {
-        get
-        {
-            if (actionSpeedHash == -1)
-                actionSpeedHash = Animator.StringToHash("ActionSpeed");
-            return actionSpeedHash;
-        }
-    }
 }
 
 [CreateAssetMenu(fileName = "ComboObject", menuName = "ScriptableObjects/Combo", order = 1)]
 public class SO_Combo : ScriptableObject
 {
-    public List<ComboData> comboDatas = new List<ComboData>();
     private int comboCount;
-    public DoActionData subActionData;
+
+    public List<ComboData> comboDatas = new List<ComboData>();
+
+    public ActionData subActionData;
     public event Action OnFinishCombo;
 
     public void SetOnFinishCombo(Action onFinishCombo)

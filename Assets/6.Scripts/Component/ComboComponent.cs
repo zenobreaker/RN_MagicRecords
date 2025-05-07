@@ -86,7 +86,7 @@ public partial class ComboComponent : MonoBehaviour
         {
             if (bDebug)
             {
-                Debug.Log($"Execute Combodata {data.ComboIndex} / {data.StateName} / Time stamp {inputElement.TimeStamp}");
+                Debug.Log($"Execute Combodata {data.ComboIndex} / {data.Action?.StateName} / Time stamp {inputElement.TimeStamp}");
             }
             weapon.DoAction(data.ComboIndex);
 

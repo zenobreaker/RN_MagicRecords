@@ -23,11 +23,11 @@ public class Weapon_Combo : Weapon
     {
         base.Awake();
 
-        doActionDatas = new DoActionData[so_Combo.comboDatas.Count];
+        doActionDatas = new ActionData[so_Combo.comboDatas.Count];
         int count = 0; 
         foreach (var data in so_Combo?.comboDatas)
         {
-            doActionDatas[count] = data.DoAction;
+            doActionDatas[count] = data.Action;
             count++;
         }
     }
@@ -62,24 +62,29 @@ public class Weapon_Combo : Weapon
 
         // Set Override 
         {
-            animator.runtimeAnimatorController = so_Combo.comboDatas[index].AnimatorOv;
-            weaponController?.SetWeaponAnimation(so_Combo.comboDatas[index].WeaponAnimOv);
+            animator.runtimeAnimatorController = so_Combo.comboDatas[index].Action?.AnimatorOv;
+            weaponController?.SetWeaponAnimation(so_Combo.comboDatas[index].Action?.WeaponAnimOv);
         }
 
         // Play Animation 
         {
-            animator.SetFloat(so_Combo.comboDatas[index].ActionSpeedHash, so_Combo.comboDatas[index].ActionSpeed);
-            animator.Play(so_Combo.comboDatas[index].StateName, 0, 0);
-            weaponController?.DoAction(so_Combo.comboDatas[index].StateName);
-        }
+            ActionData actionData = so_Combo.comboDatas[index].Action;
+            if (actionData != null)
+            {
+                animator.SetFloat(actionData.ActionSpeedHash, actionData.ActionSpeed);
+                animator.Play(actionData.StateName, 0, 0);
+                weaponController?.DoAction(actionData.StateName);
+
 
 #if UNITY_EDITOR
-        if (bDebug)
-            Debug.Log($"Combo Play: {this.index} {so_Combo.comboDatas[index].StateName}");
+                if (bDebug)
+                    Debug.Log($"Combo Play: {this.index} {actionData.StateName}");
 #endif
+            }
+        }
     }
 
-    public virtual void Play_Impulse(DoActionData data)
+    public virtual void Play_Impulse(ActionData data)
     {
         if (impulse == null || data == null)
             return;

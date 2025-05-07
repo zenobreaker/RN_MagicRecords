@@ -112,7 +112,7 @@ public class Player
 
     public WeaponController GetWeaponController() => weaponController;
 
-    public void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, DoActionData data)
+    public void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, ActionData data)
     {
         //if (isInvicible)
         //    return;
@@ -127,19 +127,19 @@ public class Player
 
         //OnDamaged?.Invoke();
 
-        healthPoint.Damage(data.Power);
+        //healthPoint.Damage(data.Power);
 
         // 스킬 액션 중이라면 데미지만 닳도록
         if (weapon != null /*&& weapon.InSkillAction*/)
             return;
 
-        if (data != null && data.damageInfo != null)
-        {
-            //TODO: 옵젝풀러한테 불러오게할까
-            GameObject obj = Instantiate<GameObject>(data.damageInfo.HitParticle, transform, false);
-            obj.transform.localPosition = hitPoint + data.damageInfo.HitParticlePositionOffset;
-            obj.transform.localScale = data.damageInfo.HitParticleSacleOffset;
-        }
+        //if (data != null && data.damageInfo != null)
+        //{
+        //    //TODO: 옵젝풀러한테 불러오게할까
+        //    GameObject obj = Instantiate<GameObject>(data.damageInfo.HitParticle, transform, false);
+        //    obj.transform.localPosition = hitPoint + data.damageInfo.HitParticlePositionOffset;
+        //    obj.transform.localScale = data.damageInfo.HitParticleSacleOffset;
+        //}
 
         if (healthPoint.Dead == false)
         {

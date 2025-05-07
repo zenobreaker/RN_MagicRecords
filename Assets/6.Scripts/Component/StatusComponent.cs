@@ -81,4 +81,11 @@ public class StatusComponent : MonoBehaviour
         status.ApplyBuff(type, value);
     }
 
+    public float GetStatusValue(StatusType type)
+    {
+        if (status == null || status.Get(type) == null) return 0;
+
+        return status.Get(type).FinalValue;
+    }
+
 }

@@ -44,16 +44,16 @@ public class Enemy
     }
 
 
-    public void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, DoActionData data)
+    public void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, ActionData data)
     {
         if (healthPoint != null && healthPoint.Dead)
             return;
 
-        healthPoint.Damage(data.Power);
+        //healthPoint.Damage(data.Power);
         DamageText dt = ObjectPooler.SpawnFromPool<DamageText>("DamageText", transform);
         if(dt != null)
         {
-            dt.DrawDamage(transform.position, data.Power);
+          //  dt.DrawDamage(transform.position, data.Power);
         }
         
         StartCoroutine(Change_Color(changeColorTime));
