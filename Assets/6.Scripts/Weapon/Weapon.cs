@@ -8,7 +8,7 @@ public class DamageData
 {
     [Header("Power Settings")]
     public DamageType damageType;
-    public float Power;
+    public float Power = 1.0f;
     public float Distance;
     public float HeightValue;
     public int StopFrame;
@@ -31,6 +31,20 @@ public class DamageData
     public GameObject HitParticle;
     public Vector3 HitParticlePositionOffset = Vector3.zero;
     public Vector3 HitParticleSacleOffset = Vector3.one;
+
+
+
+    public DamageEvent GetMyDamageEvent(GameObject attacker, StatusComponent status, bool bFirstHit = false)
+    {
+        if (attacker == null)
+            return null;
+
+        if (status == null)
+            return null;
+
+        return DamageCalculator.GetMyDamageEvent(status, this, bFirstHit);
+    }
+
 }
 
 
@@ -98,12 +112,27 @@ public class ActionData : ICloneable, IEquatable<ActionData>
 
     public virtual object Clone()
     {
-       return this.MemberwiseClone();
+        return this.MemberwiseClone();
     }
 
     public bool Equals(ActionData other)
     {
         throw new NotImplementedException();
+    }
+}
+
+public class DamageEvent
+{
+    public float value;
+    public bool isCrit;
+    public bool isFisrtHit;
+
+
+    public DamageEvent(float value, bool isCrit = false, bool isFisrtHit = false)
+    {
+        this.value = value;
+        this.isCrit = isCrit;
+        this.isFisrtHit = isFisrtHit;
     }
 }
 
@@ -116,6 +145,7 @@ public class Weapon : MonoBehaviour
     [Header("Weapon Settings")]
     [SerializeField] protected WeaponType type;
     protected ActionData[] doActionDatas;
+    protected DamageEvent[] damageEvents;
     public WeaponType Type { get => type; }
 
     private bool bEquipped;
@@ -129,6 +159,7 @@ public class Weapon : MonoBehaviour
     protected WeaponController weaponController;
 
     protected StateComponent state;
+    protected StatusComponent status;
     protected PlayerMovingComponent moving;
 
     private DashComponent dash;
@@ -139,6 +170,7 @@ public class Weapon : MonoBehaviour
         Debug.Assert(rootObject != null);
 
         state = rootObject.GetComponent<StateComponent>();
+        status = rootObject.GetComponent<StatusComponent>();
         animator = rootObject.GetComponent<Animator>();
         moving = rootObject.GetComponent<PlayerMovingComponent>();
         dash = rootObject.GetComponent<DashComponent>();
@@ -151,7 +183,7 @@ public class Weapon : MonoBehaviour
 
     protected virtual void Start()
     {
-        
+
     }
 
     public void Equip()
@@ -175,7 +207,7 @@ public class Weapon : MonoBehaviour
 
     public virtual void End_Equip()
     {
-        bEquipped = true; 
+        bEquipped = true;
     }
 
     public virtual void Unequip()
@@ -215,7 +247,7 @@ public class Weapon : MonoBehaviour
     {
         state.SetIdleMode();
 
-        if(bDirtyMove)
+        if (bDirtyMove)
         {
             bDirtyMove = false;
             Move();
@@ -229,7 +261,7 @@ public class Weapon : MonoBehaviour
 
 
     ////////////////////////////////////////////////////////////////////////////////////
-    
+
     protected void Move()
     {
         moving?.Move();
@@ -245,7 +277,7 @@ public class Weapon : MonoBehaviour
         if (doActionDatas[index].bCanMove == false)
         {
             Stop();
-            bDirtyMove = true; 
+            bDirtyMove = true;
         }
     }
 }

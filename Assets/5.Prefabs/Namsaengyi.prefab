@@ -806,6 +806,8 @@ GameObject:
   - component: {fileID: 704691316153073704}
   - component: {fileID: 2896751346478917629}
   - component: {fileID: 3816881467583088079}
+  - component: {fileID: 4310217945004993034}
+  - component: {fileID: 7950985210200753739}
   m_Layer: 0
   m_Name: Namsaengyi
   m_TagString: Untagged
@@ -1059,6 +1061,57 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   statusEffectType: 0
+--- !u!114 &4310217945004993034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2169032415967224289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 325140a287da846448369964d28b1d8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  status:
+    statusEntries:
+    - type: 0
+      value:
+        baseValue: 10
+        buffedValue: 0
+    - type: 1
+      value:
+        baseValue: 1
+        buffedValue: 0
+    - type: 2
+      value:
+        baseValue: 10
+        buffedValue: 0
+    - type: 3
+      value:
+        baseValue: 0.2
+        buffedValue: 0
+    - type: 4
+      value:
+        baseValue: 1.5
+        buffedValue: 0
+    - type: 5
+      value:
+        baseValue: 1
+        buffedValue: 0
+--- !u!114 &7950985210200753739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2169032415967224289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55e6c09eea2891b4bb6343b91672230e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageMotions: []
 --- !u!1 &2324507759493812046
 GameObject:
   m_ObjectHideFlags: 0

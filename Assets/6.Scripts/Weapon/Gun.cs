@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 public class Gun : Weapon_Combo
@@ -80,7 +81,11 @@ public class Gun : Weapon_Combo
         {
             Vector3 hitPoint = self.ClosestPoint(other.transform.position);
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
-            damage?.OnDamage(rootObject, this, hitPoint, doActionDatas[myIndex]);
+
+            if(doActionDatas[myIndex].damageDatas.Count > 0)
+            {
+                damage?.OnDamage(rootObject, this, hitPoint, doActionDatas[myIndex].damageDatas[0].GetMyDamageEvent(self.gameObject, status));
+            }
 
         }
 

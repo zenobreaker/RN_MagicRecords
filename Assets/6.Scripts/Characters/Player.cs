@@ -18,6 +18,9 @@ public class Player
 
     private WeaponController weaponController;
 
+    private DamageHandleComponent damageHandle; 
+
+
     private bool bIsSkillInput = false;
 
     protected override void Awake()
@@ -35,6 +38,8 @@ public class Player
         skill.OnSkillUse += OnSkillUse;
         skill.skillEventHandler.OnBeginUseSkill += weapon.OnBeginSkillAction;
         skill.skillEventHandler.OnEndUseSkill += weapon.OnEndSkillAction;
+
+        damageHandle = GetComponent<DamageHandleComponent>();
 
         PlayerInput input = GetComponent<PlayerInput>();
         Debug.Assert(input != null);
@@ -112,7 +117,7 @@ public class Player
 
     public WeaponController GetWeaponController() => weaponController;
 
-    public void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, ActionData data)
+    public void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, DamageEvent damageEvent)
     {
         //if (isInvicible)
         //    return;
@@ -124,10 +129,8 @@ public class Player
             return;
         }
 
-
-        //OnDamaged?.Invoke();
-
-        //healthPoint.Damage(data.Power);
+        if (damageHandle != null)
+            damageHandle.OnDamage(damageEvent);
 
         // 스킬 액션 중이라면 데미지만 닳도록
         if (weapon != null /*&& weapon.InSkillAction*/)

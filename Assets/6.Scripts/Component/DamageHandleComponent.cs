@@ -28,10 +28,6 @@ public class DamageHandleComponent : MonoBehaviour
         status = GetComponent<StatusComponent>(); 
     }
 
-    private void Start()
-    {
-
-    }
 
     public float CalcDamage(float value)
     {
@@ -47,12 +43,19 @@ public class DamageHandleComponent : MonoBehaviour
     }
 
 
-    public void OnDamage(ActionData action)
+    public void OnDamage(DamageEvent damageEvent)
     {
-        if (action == null) return;
+        if (damageEvent == null) return;
 
-        //float value = CalcDamage(action.Power); 
+        float value = CalcDamage(damageEvent.value);
 
-        //health?.Damage()
+        health?.Damage(value);
+        DamageText dt = ObjectPooler.SpawnFromPool<DamageText>("DamageText", transform);
+        if (dt != null)
+        {
+            dt.DrawDamage(transform.position, damageEvent);
+        }
+
+        // Damage Animation
     }
 }

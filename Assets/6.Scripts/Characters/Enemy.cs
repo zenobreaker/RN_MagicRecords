@@ -14,7 +14,7 @@ public class Enemy
     private Color[] originColors;
     private Material[] skinMaterials;
 
-
+    private DamageHandleComponent damageHandle;
     protected override void Awake()
     {
         base.Awake();
@@ -36,6 +36,8 @@ public class Enemy
 
             index++;
         }
+
+        damageHandle = GetComponent<DamageHandleComponent>();
     }
 
     protected override void Start()
@@ -44,21 +46,20 @@ public class Enemy
     }
 
 
-    public void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, ActionData data)
+    public void OnDamage(GameObject attacker,
+        Weapon causer, Vector3 hitPoint, DamageEvent damageEvent)
     {
         if (healthPoint != null && healthPoint.Dead)
             return;
 
-        //healthPoint.Damage(data.Power);
-        DamageText dt = ObjectPooler.SpawnFromPool<DamageText>("DamageText", transform);
-        if(dt != null)
+        if (damageHandle != null)
         {
-          //  dt.DrawDamage(transform.position, data.Power);
+            damageHandle.OnDamage(damageEvent);
         }
-        
+
         StartCoroutine(Change_Color(changeColorTime));
 
-        if(healthPoint.Dead == false)
+        if (healthPoint.Dead == false)
         {
             state?.SetDamagedMode();
 
@@ -69,7 +70,7 @@ public class Enemy
         state?.SetDeadMode();
         Collider collider = GetComponent<Collider>();
         collider.isTrigger = true;
-        rigidbody.isKinematic = true; 
+        rigidbody.isKinematic = true;
 
         animator.SetTrigger("Dead");
         MovableStopper.Instance.Delete(this);

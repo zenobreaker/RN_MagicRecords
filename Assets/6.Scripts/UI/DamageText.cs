@@ -9,6 +9,7 @@ public class DamageText : MonoBehaviour
     private float lifeTime = 3.0f;
     private float currentTime; 
     private Vector3 tdPos;
+    [SerializeField] Color critColor; 
 
     private void Awake()
     {
@@ -35,13 +36,25 @@ public class DamageText : MonoBehaviour
     }
 
     
+    public void DrawDamage(Vector3 position, DamageEvent damageEvent)
+    {
+        DrawDamage(position, damageEvent.value, damageEvent.isCrit);
+    }
 
     public void DrawDamage(Vector3 position, float value, bool isCrit = false)
     {
         if (text == null) return;
 
         int finalValue = Mathf.RoundToInt(value);
-        text.text = finalValue.ToString();
+
+        string colorTag = "FFFFFF"; 
+        if(isCrit)
+        {
+            colorTag = ColorUtility.ToHtmlStringRGB(critColor);
+            Debug.Log("is Critical");
+        }
+
+        text.text = $"<color=#{colorTag}>{finalValue}</color>";
 
         currentTime = lifeTime;
 
