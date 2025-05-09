@@ -58,10 +58,10 @@ public class SkillComponent : MonoBehaviour
         {
             if (pair.Value == null) continue;
 
+            skillEventHandler?.OnInCoolDown(pair.Value.IsOnCooldown);
             if (pair.Value.IsOnCooldown == false) continue;
 
             pair.Value.SetCooldown(Time.deltaTime);
-            skillEventHandler?.OnInCoolDown(pair.Value.IsOnCooldown);
             skillEventHandler?.OnCooldown(pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
         }
     }

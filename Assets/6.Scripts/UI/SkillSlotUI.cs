@@ -26,8 +26,8 @@ public class SkillSlotUI : MonoBehaviour
     private void OnDrawSkill(ActiveSkill activeSkill)
     {
         bool bCheck = true;
-        bCheck &= activeSkill == null;
-        bCheck &= activeSkill.SO_SkillData == null;
+        bCheck &= activeSkill != null;
+        bCheck &= activeSkill.SO_SkillData != null;
 
         if (bCheck == false)
             return;
@@ -56,6 +56,7 @@ public class SkillSlotUI : MonoBehaviour
         if (isCooldown == false)
             currCooldown = 0;
 
+        img_Cooldown.gameObject.SetActive(isCooldown);
         txt_Cooldown.gameObject.SetActive(isCooldown);
     }
 
