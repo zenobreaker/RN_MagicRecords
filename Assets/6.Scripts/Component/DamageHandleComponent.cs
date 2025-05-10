@@ -28,7 +28,6 @@ public class DamageHandleComponent : MonoBehaviour
         status = GetComponent<StatusComponent>(); 
     }
 
-
     public float CalcDamage(float value)
     {
         float result = value;
@@ -41,7 +40,6 @@ public class DamageHandleComponent : MonoBehaviour
 
         return result;
     }
-
 
     public void OnDamage(DamageEvent damageEvent)
     {

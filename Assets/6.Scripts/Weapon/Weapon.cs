@@ -32,7 +32,13 @@ public class DamageData
     public Vector3 HitParticlePositionOffset = Vector3.zero;
     public Vector3 HitParticleSacleOffset = Vector3.one;
 
+    public DamageEvent GetMyDamageEvent(GameObject attacker, bool bFirstHit = false)
+    {
+        if (attacker == null)
+            return null;
 
+        return GetMyDamageEvent(attacker, attacker.GetComponent<StatusComponent>(), bFirstHit);
+    }
 
     public DamageEvent GetMyDamageEvent(GameObject attacker, StatusComponent status, bool bFirstHit = false)
     {
@@ -45,6 +51,13 @@ public class DamageData
         return DamageCalculator.GetMyDamageEvent(status, this, bFirstHit);
     }
 
+}
+
+[Serializable]
+public class DamageSequence
+{
+    public float hitDelay = -1.0f; 
+    public List<DamageData> damageDatas = new List<DamageData>();
 }
 
 
@@ -89,9 +102,6 @@ public class ActionData : ICloneable, IEquatable<ActionData>
     public Vector3 impulseDirection;
     //TODO: Noise 가져오기
     public Unity.Cinemachine.NoiseSettings settings;
-
-    [Header("Damage Datas")]
-    public List<DamageData> damageDatas;
 
 
     [Header("ETC")]
@@ -144,9 +154,15 @@ public class Weapon : MonoBehaviour
 
     [Header("Weapon Settings")]
     [SerializeField] protected WeaponType type;
-    protected ActionData[] doActionDatas;
-    protected DamageEvent[] damageEvents;
     public WeaponType Type { get => type; }
+
+    [SerializeField] protected SO_Action so_Action;
+    public SO_Action GetActionData { get => so_Action; }
+    [SerializeField] protected SO_Damage so_Damage;
+    public SO_Damage GetDamageData { get => so_Damage; }
+
+    protected List<ActionData> actionDatas;
+    protected List<DamageData> damageDatas;
 
     private bool bEquipped;
     public bool Equipped { get => bEquipped; }
@@ -179,6 +195,11 @@ public class Weapon : MonoBehaviour
 
         //TODO : 아직은 시기 상조 공격 후, 대쉬로 후딜 캔슬
         //dash.OnBeginDash += End_DoAction;
+
+        if (so_Action != null)
+            actionDatas = so_Action.actionDatas;
+        if (so_Damage != null)
+            damageDatas = so_Damage.damageDatas;
     }
 
     protected virtual void Start()
@@ -274,7 +295,7 @@ public class Weapon : MonoBehaviour
 
     protected void CheckStop(int index)
     {
-        if (doActionDatas[index].bCanMove == false)
+        if(so_Action != null && so_Action.GetCanMove(index) == false)
         {
             Stop();
             bDirtyMove = true;

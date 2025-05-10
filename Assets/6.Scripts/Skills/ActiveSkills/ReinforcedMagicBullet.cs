@@ -20,8 +20,20 @@ public class ReinforcedMagicBullet : ActiveSkill
 
 
         phaseSkill = skillData.phaseList[phaseIndex];
+        if (phaseSkill == null || phaseSkill.actionData == null)
+            return; 
+
         string animName = phaseSkill.skillActionPrefix + "." + phaseSkill.skillActionAnimation;
-        animator?.Play(animName);
+        //animator?.Play(animName);
+
+        animator.runtimeAnimatorController = phaseSkill?.actionData?.AnimatorOv;
+        weaponController?.SetWeaponAnimation(phaseSkill?.actionData?.WeaponAnimOv);
+
+
+        animator.SetFloat(phaseSkill.actionData.ActionSpeedHash, phaseSkill.actionData.ActionSpeed);
+        animator.Play(phaseSkill?.actionData?.StateName, 0, 0);
+        weaponController?.DoAction(phaseSkill?.actionData?.StateName);
+
     }
 
     public override void Begin_DoAction()
@@ -50,7 +62,7 @@ public class ReinforcedMagicBullet : ActiveSkill
         Debug.Log($"self : {self} other : {other}");
 
         // hit Sound Play
-        //SoundManager.Instance.PlaySFX(doActionDatas[index].hitSoundName);
+        //SoundManager.Instance.PlaySFX(doactionData[index].hitSoundName);
 
         // Damage 
         IDamagable damage = other.GetComponent<IDamagable>();
@@ -58,10 +70,10 @@ public class ReinforcedMagicBullet : ActiveSkill
         {
             Vector3 hitPoint = self.ClosestPoint(other.transform.position);
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
-         //   damage?.OnDamage(ownerObject, this, hitPoint, doActionDatas[index]);
+            damage?.OnDamage(ownerObject, null, hitPoint, phaseSkill.damageData.GetMyDamageEvent(self.gameObject));
         }
 
-        //Instantiate<GameObject>(doActionDatas[index].HitParticle, point, rootObject.transform.rotation);
+        //Instantiate<GameObject>(doactionData[index].HitParticle, point, rootObject.transform.rotation);
     }
 
     public override void End_DoAction()

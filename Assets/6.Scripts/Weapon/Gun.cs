@@ -50,7 +50,7 @@ public class Gun : Weapon_Combo
             projectile.OnProjectileHit += OnProjectileHit;
         }
 
-        Play_Impulse(doActionDatas[index]);
+        Play_Impulse(actionDatas[index]);
     }
 
 
@@ -58,7 +58,7 @@ public class Gun : Weapon_Combo
     {
         base.Begin_PlaySound();
 
-        SoundManager.Instance.PlaySFX(doActionDatas[index].SoundName);
+        SoundManager.Instance.PlaySFX(actionDatas[index].SoundName);
     }
 
 
@@ -73,7 +73,7 @@ public class Gun : Weapon_Combo
         int myIndex = projectile.Index;  // 충돌한 총알의 index 사용
 
         // hit Sound Play
-        //SoundManager.Instance.PlaySFX(doActionDatas[index].hitSoundName);
+        //SoundManager.Instance.PlaySFX(actionDatas[index].hitSoundName);
 
         // Damage 
         IDamagable damage = other.GetComponent<IDamagable>();
@@ -82,13 +82,13 @@ public class Gun : Weapon_Combo
             Vector3 hitPoint = self.ClosestPoint(other.transform.position);
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
 
-            if(doActionDatas[myIndex].damageDatas.Count > 0)
+            if (damageDatas.Count > 0)
             {
-                damage?.OnDamage(rootObject, this, hitPoint, doActionDatas[myIndex].damageDatas[0].GetMyDamageEvent(self.gameObject, status));
+                damage?.OnDamage(rootObject, this, hitPoint, damageDatas[myIndex].GetMyDamageEvent(self.gameObject, status));
             }
 
         }
 
-        //Instantiate<GameObject>(doActionDatas[index].HitParticle, point, rootObject.transform.rotation);
+        //Instantiate<GameObject>(actionDatas[index].HitParticle, point, rootObject.transform.rotation);
     }
 }

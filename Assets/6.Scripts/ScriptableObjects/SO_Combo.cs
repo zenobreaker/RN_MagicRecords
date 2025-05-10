@@ -31,14 +31,9 @@ public class ComboData
     /// </summary>
     [SerializeField] private float comboMaintainTime = 0.2f;
     public float ComboMaintainTime { get => comboMaintainTime; }
-
-    [Header("Action Data")]
-    [SerializeField] private ActionData actionData;
-    public ActionData Action { get => actionData; }
-
 }
 
-[CreateAssetMenu(fileName = "ComboObject", menuName = "ScriptableObjects/Combo", order = 1)]
+[CreateAssetMenu(fileName = "ComboObject", menuName = "Scriptable Objects/Combo", order = 1)]
 public class SO_Combo : ScriptableObject
 {
     private int comboCount;

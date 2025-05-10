@@ -4,7 +4,6 @@ using UnityEngine;
 public class Weapon_Combo : Weapon
 {
     [SerializeField] protected SO_Combo so_Combo;
-    //[SerializeField] protected string comboPrefixName = "";
     public SO_Combo ComboData { get => so_Combo; }
 
 
@@ -22,14 +21,6 @@ public class Weapon_Combo : Weapon
     protected override void Awake()
     {
         base.Awake();
-
-        doActionDatas = new ActionData[so_Combo.comboDatas.Count];
-        int count = 0; 
-        foreach (var data in so_Combo?.comboDatas)
-        {
-            doActionDatas[count] = data.Action;
-            count++;
-        }
     }
 
     protected override void Start()
@@ -62,25 +53,23 @@ public class Weapon_Combo : Weapon
 
         // Set Override 
         {
-            animator.runtimeAnimatorController = so_Combo.comboDatas[index].Action?.AnimatorOv;
-            weaponController?.SetWeaponAnimation(so_Combo.comboDatas[index].Action?.WeaponAnimOv);
+            animator.runtimeAnimatorController = actionDatas[index].AnimatorOv;
+            weaponController?.SetWeaponAnimation(actionDatas[index].WeaponAnimOv);
         }
 
         // Play Animation 
         {
-            ActionData actionData = so_Combo.comboDatas[index].Action;
-            if (actionData != null)
-            {
-                animator.SetFloat(actionData.ActionSpeedHash, actionData.ActionSpeed);
-                animator.Play(actionData.StateName, 0, 0);
-                weaponController?.DoAction(actionData.StateName);
+
+            animator.SetFloat(actionDatas[index].ActionSpeedHash, actionDatas[index].ActionSpeed);
+            animator.Play(actionDatas[index].StateName, 0, 0);
+            weaponController?.DoAction(actionDatas[index].StateName);
 
 
 #if UNITY_EDITOR
-                if (bDebug)
-                    Debug.Log($"Combo Play: {this.index} {actionData.StateName}");
+            if (bDebug)
+                Debug.Log($"Combo Play: {this.index} {actionDatas[index].StateName}");
 #endif
-            }
+
         }
     }
 

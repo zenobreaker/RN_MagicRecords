@@ -260,8 +260,9 @@ namespace UserEditor
                     foreach (PhaseSkillData phaseSkill in phaseList)
                     {
                         PhaseSkill phase = new PhaseSkill();
-                        phase.basePower = phaseSkill.baseDamage;
+                        phase.baseDamage = phaseSkill.baseDamage;
                         phase.confficient = phaseSkill.coefficient;
+                        phase.SetDamageData(phaseSkill.baseDamage, phaseSkill.coefficient);
                         phase.hitDelay = phaseSkill.hitDelay;
                         phase.duration = phaseSkill.duration;
                         

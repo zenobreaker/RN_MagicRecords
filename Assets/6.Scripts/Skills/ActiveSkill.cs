@@ -1,5 +1,15 @@
 using UnityEngine;
 
+
+public enum SkillPhase
+{
+    Start = 0,
+    Casting,
+    Action,
+    Finish,
+    MAX,
+}
+
 [System.Serializable]
 public abstract class ActiveSkill : ISkill
 {
@@ -8,7 +18,8 @@ public abstract class ActiveSkill : ISkill
     protected float currentCooldown;
 
     protected GameObject ownerObject;
-    protected Animator animator; 
+    protected Animator animator;
+    protected WeaponController weaponController;
 
     public bool IsOnCooldown => currentCooldown > 0;
     public float CurrentCooldown { get => currentCooldown; }
@@ -16,13 +27,18 @@ public abstract class ActiveSkill : ISkill
 
     public void SetOwner(GameObject gameObject)
     {
-        ownerObject = gameObject; 
+        ownerObject = gameObject;
         animator = gameObject.GetComponent<Animator>();
+
+        if (ownerObject.TryGetComponent(out IWeaponUser user))
+        {
+            weaponController = user.GetWeaponController();
+        }
     }
 
     public void SetCooldown(float cooldown)
     {
-        if(currentCooldown > 0)
+        if (currentCooldown > 0)
             currentCooldown -= cooldown;
     }
 
