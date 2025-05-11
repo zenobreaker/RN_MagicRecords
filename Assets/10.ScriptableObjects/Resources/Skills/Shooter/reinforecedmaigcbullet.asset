@@ -52,13 +52,13 @@ MonoBehaviour:
     skillActionAnimation: Skill_Action_Gun_4
     weaponActionAnimation: 
     actionData:
-      stateName: 
-      actionSpeed: 1
-      animatorOv: {fileID: 0}
-      weaponAnimOv: {fileID: 0}
-      SoundName: 
+      stateName: Action
+      actionSpeed: 1.5
+      animatorOv: {fileID: 22100000, guid: 5e695aec898769a46968fed50ba90ade, type: 2}
+      weaponAnimOv: {fileID: 22100000, guid: e7eb14accfef4a54fa846b85fe6f74a8, type: 2}
+      SoundName: Gun_Normal2
       impulseDirection: {x: 0, y: 0, z: 0}
-      settings: {fileID: 0}
+      settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
       bCanMove: 0
     soundName: Gun_Normal2
     spawnPosition: {x: 0, y: 1, z: 1}

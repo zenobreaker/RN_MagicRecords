@@ -50,7 +50,7 @@ public class Gun : Weapon_Combo
             projectile.OnProjectileHit += OnProjectileHit;
         }
 
-        Play_Impulse(actionDatas[index]);
+        actionDatas[index].Play_CameraShake();
     }
 
 
@@ -84,7 +84,7 @@ public class Gun : Weapon_Combo
 
             if (damageDatas.Count > 0)
             {
-                damage?.OnDamage(rootObject, this, hitPoint, damageDatas[myIndex].GetMyDamageEvent(self.gameObject, status));
+                damage?.OnDamage(rootObject, this, hitPoint, damageDatas[myIndex].GetMyDamageEvent(rootObject, status));
             }
 
         }

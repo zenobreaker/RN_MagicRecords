@@ -62,7 +62,7 @@ public class DamageSequence
 
 
 [Serializable]
-public class ActionData : ICloneable, IEquatable<ActionData>
+public class ActionData
 {
 
     [Header("Action State")]
@@ -120,14 +120,10 @@ public class ActionData : ICloneable, IEquatable<ActionData>
         return actionData;
     }
 
-    public virtual object Clone()
+    public void Play_CameraShake()
     {
-        return this.MemberwiseClone();
-    }
-
-    public bool Equals(ActionData other)
-    {
-        throw new NotImplementedException();
+        if (MovableCameraShaker.Instance != null)
+            MovableCameraShaker.Instance.Play_Impulse(settings);
     }
 }
 

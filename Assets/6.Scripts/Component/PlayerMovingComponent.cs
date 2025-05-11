@@ -121,7 +121,7 @@ public class PlayerMovingComponent : MonoBehaviour
         direction = direction.normalized * speed;
         deltaSpeed = direction.magnitude / movement.WalkSpeed * movement.Ratio;
         transform.Translate(direction * Time.deltaTime, Space.World);
-        
+        Debug.Log($"Move : {deltaSpeed}");
         animator?.SetFloat(SPEED, deltaSpeed);
     }
 

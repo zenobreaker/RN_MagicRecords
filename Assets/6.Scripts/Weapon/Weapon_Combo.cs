@@ -53,7 +53,7 @@ public class Weapon_Combo : Weapon
 
         // Set Override 
         {
-            animator.runtimeAnimatorController = actionDatas[index].AnimatorOv;
+            //animator.runtimeAnimatorController = actionDatas[index].AnimatorOv;
             weaponController?.SetWeaponAnimation(actionDatas[index].WeaponAnimOv);
         }
 
@@ -61,7 +61,8 @@ public class Weapon_Combo : Weapon
         {
 
             animator.SetFloat(actionDatas[index].ActionSpeedHash, actionDatas[index].ActionSpeed);
-            animator.Play(actionDatas[index].StateName, 0, 0);
+            //animator.Play(actionDatas[index].StateName, 0, 0);
+            animator.SetTrigger(actionDatas[index].StateName);
             weaponController?.DoAction(actionDatas[index].StateName);
 
 
@@ -71,18 +72,5 @@ public class Weapon_Combo : Weapon
 #endif
 
         }
-    }
-
-    public virtual void Play_Impulse(ActionData data)
-    {
-        if (impulse == null || data == null)
-            return;
-        if (data.settings == null)
-            return;
-#if UNITY_EDITOR
-        Debug.Log("Shake!");
-#endif
-        listener.ReactionSettings.m_SecondaryNoise = data.settings;
-        impulse.GenerateImpulse();
     }
 }

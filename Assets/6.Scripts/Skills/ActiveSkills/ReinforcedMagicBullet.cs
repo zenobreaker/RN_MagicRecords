@@ -34,6 +34,7 @@ public class ReinforcedMagicBullet : ActiveSkill
         animator.Play(phaseSkill?.actionData?.StateName, 0, 0);
         weaponController?.DoAction(phaseSkill?.actionData?.StateName);
 
+        phaseSkill?.actionData?.Play_CameraShake();
     }
 
     public override void Begin_DoAction()
@@ -70,7 +71,7 @@ public class ReinforcedMagicBullet : ActiveSkill
         {
             Vector3 hitPoint = self.ClosestPoint(other.transform.position);
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
-            damage?.OnDamage(ownerObject, null, hitPoint, phaseSkill.damageData.GetMyDamageEvent(self.gameObject));
+            damage?.OnDamage(ownerObject, null, hitPoint, phaseSkill.damageData.GetMyDamageEvent(ownerObject));
         }
 
         //Instantiate<GameObject>(doactionData[index].HitParticle, point, rootObject.transform.rotation);
