@@ -52,8 +52,8 @@ public class Weapon_Combo : Weapon
         Debug.Assert(so_Combo.comboDatas[index] != null);
 
         // Set Override 
-        {
-            //animator.runtimeAnimatorController = actionDatas[index].AnimatorOv;
+        { 
+            animator.runtimeAnimatorController = actionDatas[index].AnimatorOv;
             weaponController?.SetWeaponAnimation(actionDatas[index].WeaponAnimOv);
         }
 
