@@ -13,14 +13,6 @@ public class WheelRolling : MonoBehaviour
         Debug.Log(movingComponent != null);
     }
 
-    //private void Update()
-    //{
-    //    if (movingComponent == null)
-    //        return;
-
-    //    RollingWheel(movingComponent.DeltaSpeed);
-    //}
-
     private void LateUpdate()
     {
         if (movingComponent == null)
@@ -34,7 +26,6 @@ public class WheelRolling : MonoBehaviour
         if (tireObject == null)
             return; 
 
-        Debug.Log($"Wheel : {speed * Time.deltaTime * torque}");
         tireObject.transform.Rotate(speed  * Time.deltaTime * torque, 0, 0);
     }
 }

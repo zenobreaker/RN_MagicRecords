@@ -15,61 +15,65 @@ MonoBehaviour:
   damageDatas:
   - damageType: 0
     Power: 1
-    Distance: 0
-    HeightValue: 0
-    StopFrame: 0
     bDownable: 0
     bLauncher: 0
     SoundName: 
     impulseDirection: {x: 0, y: 0, z: 0}
     settings: {fileID: 0}
-    HitImpactIndex: 0
-    HitSoundName: 
-    HitParticle: {fileID: 0}
-    HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-    HitParticleSacleOffset: {x: 0, y: 0, z: 0}
+    hitData:
+      Distance: 1
+      HeightValue: 0
+      StopFrame: 0
+      HitImpactIndex: 0
+      HitSoundName: 
+      HitParticle: {fileID: 0}
+      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
   - damageType: 0
     Power: 1
-    Distance: 0
-    HeightValue: 0
-    StopFrame: 0
     bDownable: 0
     bLauncher: 0
     SoundName: 
     impulseDirection: {x: 0, y: 0, z: 0}
     settings: {fileID: 0}
-    HitImpactIndex: 0
-    HitSoundName: 
-    HitParticle: {fileID: 0}
-    HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-    HitParticleSacleOffset: {x: 0, y: 0, z: 0}
+    hitData:
+      Distance: 1
+      HeightValue: 0
+      StopFrame: 0
+      HitImpactIndex: 0
+      HitSoundName: 
+      HitParticle: {fileID: 0}
+      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
   - damageType: 0
     Power: 1
-    Distance: 0
-    HeightValue: 0
-    StopFrame: 0
     bDownable: 0
     bLauncher: 0
     SoundName: 
     impulseDirection: {x: 0, y: 0, z: 0}
     settings: {fileID: 0}
-    HitImpactIndex: 0
-    HitSoundName: 
-    HitParticle: {fileID: 0}
-    HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-    HitParticleSacleOffset: {x: 0, y: 0, z: 0}
+    hitData:
+      Distance: 1
+      HeightValue: 0
+      StopFrame: 0
+      HitImpactIndex: 0
+      HitSoundName: 
+      HitParticle: {fileID: 0}
+      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
   - damageType: 0
     Power: 1.2
-    Distance: 0
-    HeightValue: 0
-    StopFrame: 0
     bDownable: 0
     bLauncher: 0
     SoundName: 
     impulseDirection: {x: 0, y: 0, z: 0}
     settings: {fileID: 0}
-    HitImpactIndex: 0
-    HitSoundName: 
-    HitParticle: {fileID: 0}
-    HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-    HitParticleSacleOffset: {x: 0, y: 0, z: 0}
+    hitData:
+      Distance: 3
+      HeightValue: 0
+      StopFrame: 0
+      HitImpactIndex: 0
+      HitSoundName: 
+      HitParticle: {fileID: 0}
+      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+      HitParticleSacleOffset: {x: 1, y: 1, z: 1}

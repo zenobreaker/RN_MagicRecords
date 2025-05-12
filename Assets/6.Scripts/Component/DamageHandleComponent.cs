@@ -54,6 +54,7 @@ public class DamageHandleComponent : MonoBehaviour
             dt.DrawDamage(transform.position, damageEvent);
         }
 
-        // Damage Animation
+        //TODO: Damage Animation
     }
+
 }

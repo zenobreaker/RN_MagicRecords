@@ -4,6 +4,7 @@ using UnityEngine;
 public class Enemy
     : Character
     , IDamagable
+    , ILaunchable
 {
 
     [Header("Material Settings")]
@@ -15,6 +16,7 @@ public class Enemy
     private Material[] skinMaterials;
 
     private DamageHandleComponent damageHandle;
+    private LaunchComponent launch;
     protected override void Awake()
     {
         base.Awake();
@@ -38,6 +40,7 @@ public class Enemy
         }
 
         damageHandle = GetComponent<DamageHandleComponent>();
+        launch = GetComponent<LaunchComponent>();
     }
 
     protected override void Start()
@@ -56,6 +59,8 @@ public class Enemy
         {
             damageHandle.OnDamage(damageEvent);
         }
+
+        ApplyLauch(attacker, causer, damageEvent?.hitData);
 
         StartCoroutine(Change_Color(changeColorTime));
 
@@ -104,5 +109,10 @@ public class Enemy
         base.End_Damaged();
 
         state?.SetIdleMode();
+    }
+
+    public void ApplyLauch(GameObject attacker, Weapon causer, HitData hitData)
+    {
+        launch?.ApplyLaunch(attacker, causer, hitData);
     }
 }

@@ -19,6 +19,6 @@ public static class DamageCalculator
         if (crit)
             result *= critDmg;
 
-        return new DamageEvent(result, crit, bFirstHit);
+        return new DamageEvent(result, crit, bFirstHit, data.hitData);
     }
 }

@@ -4,14 +4,26 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
+public class HitData
+{
+    public float Distance;
+    public float HeightValue;
+    public int StopFrame;
+    public int HitImpactIndex;
+    public string HitSoundName;
+    public GameObject HitParticle;
+    public Vector3 HitParticlePositionOffset = Vector3.zero;
+    public Vector3 HitParticleSacleOffset = Vector3.one;
+}
+
+
+[Serializable]
 public class DamageData
 {
     [Header("Power Settings")]
     public DamageType damageType;
     public float Power = 1.0f;
-    public float Distance;
-    public float HeightValue;
-    public int StopFrame;
+
 
     [Header("Launch & Down Settings")]
     public bool bDownable = false;
@@ -25,12 +37,8 @@ public class DamageData
     //TODO: Noise 가져오기
     public Unity.Cinemachine.NoiseSettings settings;
 
-
-    public int HitImpactIndex;
-    public string HitSoundName;
-    public GameObject HitParticle;
-    public Vector3 HitParticlePositionOffset = Vector3.zero;
-    public Vector3 HitParticleSacleOffset = Vector3.one;
+    [Header("Hit")]
+    public HitData hitData;
 
     public DamageEvent GetMyDamageEvent(GameObject attacker, bool bFirstHit = false)
     {
@@ -133,12 +141,14 @@ public class DamageEvent
     public bool isCrit;
     public bool isFisrtHit;
 
+    public HitData hitData; 
 
-    public DamageEvent(float value, bool isCrit = false, bool isFisrtHit = false)
+    public DamageEvent(float value, bool isCrit = false, bool isFisrtHit = false, HitData hitData= null)
     {
         this.value = value;
         this.isCrit = isCrit;
         this.isFisrtHit = isFisrtHit;
+        this.hitData = hitData;
     }
 }
 
