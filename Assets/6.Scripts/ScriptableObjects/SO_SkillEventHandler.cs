@@ -25,68 +25,32 @@ public class SO_SkillEventHandler : ScriptableObject
     public event Action OnDisableSkill;
 
 #region EQUIP SKILL
-    public void OnSetting_ActiveSkill(ActiveSkill skill)
-    {
-        OnSetActiveSkill?.Invoke(skill);  
-    }
+    public void OnSetting_ActiveSkill(ActiveSkill skill) => OnSetActiveSkill?.Invoke(skill);  
 
     // ½½·Ô 1¿¡ ÀåÂø
-    public void OnEquipSkill_Slot1(ActiveSkill activeSkill)
-    {
-        OnSkillData_Slot1?.Invoke(activeSkill);
-    }
+    public void OnEquipSkill_Slot1(ActiveSkill activeSkill) => OnSkillData_Slot1?.Invoke(activeSkill);
 
-    public void OnEquipSkill_Slot2(ActiveSkill activeSkill)
-    {
-        OnSkillData_Slot2?.Invoke(activeSkill);
-    }
+    public void OnEquipSkill_Slot2(ActiveSkill activeSkill) => OnSkillData_Slot2?.Invoke(activeSkill);
 
-    public void OnEquipSkill_Slot3(ActiveSkill activeSkill)
-    {
-        OnSkillData_Slot3?.Invoke(activeSkill);
-    }
+    public void OnEquipSkill_Slot3(ActiveSkill activeSkill) => OnSkillData_Slot3?.Invoke(activeSkill);
 
-    public void OnEquipSkill_Slot4(ActiveSkill activeSkill)
-    {
-        OnSkillData_Slot4?.Invoke(activeSkill);
-    }
+    public void OnEquipSkill_Slot4(ActiveSkill activeSkill) => OnSkillData_Slot4?.Invoke(activeSkill);
 
     #endregion
 
 #region COOLDOWN
     // ÄðÅ¸ÀÓ 
-
-    public void OnInCoolDown(bool inCooldown)
-    {
-        OnInSkillCooldown?.Invoke(inCooldown);
-    }
-
-    public void OnCooldown(float InCooldown)
-    {
-        OnSkillCooldown?.Invoke(InCooldown);
-    }
-
-    public void OnCooldown(float cooldown, float maxCooldown)
-    {
-        OnSkillCooldown_TwoParam?.Invoke(cooldown, maxCooldown);
-    }
+    public void OnInCoolDown(bool inCooldown) => OnInSkillCooldown?.Invoke(inCooldown);
+    public void OnCooldown(float InCooldown) => OnSkillCooldown?.Invoke(InCooldown);
+    public void OnCooldown(float cooldown, float maxCooldown) => OnSkillCooldown_TwoParam?.Invoke(cooldown, maxCooldown);
     #endregion
 
 #region USE SKILL
-    public void OnBegin_UseSkill()
-    {
-        OnBeginUseSkill?.Invoke();
-    }
+    public void OnBegin_UseSkill() => OnBeginUseSkill?.Invoke();
 
-    public void OnEnd_UseSkill()
-    {
-        OnEndUseSkill?.Invoke();
-    }
+    public void OnEnd_UseSkill() => OnEndUseSkill?.Invoke();
 #endregion
 
     // ÀåÂø ÇØÁ¦ 
-    public void OnUnequipment()
-    {
-        OnDisableSkill?.Invoke();
-    }
+    public void OnUnequipment() => OnDisableSkill?.Invoke();
 }

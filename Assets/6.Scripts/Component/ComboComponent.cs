@@ -1,34 +1,50 @@
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+public enum InputCommandType
+{
+    None = 0,   
+    Action = 1,
+    Move,
+    Dash,
+    Max,
+}
+
 
 public partial class ComboComponent : MonoBehaviour
 {
     class InputElement
     {
-        public string InputType; // ÀÔ·Â Å¸ÀÔ
-        public float TimeStamp;  // ÀÔ·ÂÀÌ ¹ß»ıÇÑ ½Ã°£
+        public string InputType; // ì…ë ¥ íƒ€ì…
+        public float TimeStamp;  // ì…ë ¥ì´ ë°œìƒí•œ ì‹œê°„
         public int comboCount;
+    }
+
+    class InputCommand
+    {
+        public InputCommandType InputType; public float TimeStamp;
     }
 
     public bool bDebug;
 
-    //[Header("Timer Settings")]
-    private float comboCheckTime = 0.5f;         // °ø°İ ÈÄ ´ÙÀ½ °ø°İÀÌ ÀÖ´ÂÁö È®ÀÎÇÒ ½Ã°£
-    private float lastInputCheckTime = 0.25f;    // ´ÙÀ½ ÄŞº¸¸¦ ÀÔ·ÂÀ» ¹Ù¶ó´Â Á¦ÇÑ ½Ã°£
-    private float comboMaintainTime = 1.0f;        // ÄŞº¸(ÀÔ·Â Å¥) À¯Áö ½Ã°£ 
-    private float curr_MaintainTime;
+    private float comboResetTime = 1.0f;        // ì½¤ë³´(ì…ë ¥ í) ìœ ì§€ ì‹œê°„ 
 
-    private float lastInputTime = 0.0f;             // ¸¶Áö¸·¿¡ ÀÔ·ÂÇÑ ÄŞº¸ ÀÔ·Â ½Ã°£  
-    private float lastComboEnd = 0.0f;              // ¸¶Áö¸· µ¿ÀÛ Á¾·á ½Ã°£
-    private int comboCount = 0;
+    private float lastInputTime = 0.0f;             // ë§ˆì§€ë§‰ì— ì…ë ¥í•œ ì½¤ë³´ ì…ë ¥ ì‹œê°„  
+    private float lastComboEnd = 0.0f;              // ë§ˆì§€ë§‰ ë™ì‘ ì¢…ë£Œ ì‹œê°„
+    private int comboIndex = 0;
 
-    private Queue<InputElement> inputQueue;
+    private Queue<InputCommand> inputQueue;
 
     [SerializeField] private SO_Combo currComboObj;
+    [SerializeField] private SO_ComboInputHanlder comboInputHandler;
+    public SO_ComboInputHanlder ComboInputHanlder {get => comboInputHandler;  }
+
+
     private WeaponComponent weapon;
 
-    private Coroutine comboMaintainCoroutine;
+    private Coroutine comboResetCoroutine;
 
     private void Awake()
     {
@@ -38,19 +54,9 @@ public partial class ComboComponent : MonoBehaviour
         weapon.OnBeginDoAction += OnBeginDoAction;
         weapon.OnEndDoAction += OnEndDoAction;
 
-        inputQueue = new Queue<InputElement>();
+        inputQueue = new Queue<InputCommand>();
 
         lastInputTime = -999f;
-        lastInputTime = -999f; 
-
-        //Awake_Draw();
-    }
-
-    private void ResetTimerValue(ComboData data)
-    {
-        comboCheckTime = data.LastComboCheckTime;
-        lastInputCheckTime = data.LastInputCheckTime;
-        comboMaintainTime = data.ComboMaintainTime;
     }
 
     private void OnWeaponTypeChanged_Combo(SO_Combo comboData)
@@ -60,88 +66,95 @@ public partial class ComboComponent : MonoBehaviour
 
         currComboObj = comboData;
         ResetCombo();
-
-
-        // comboMaintainTimeGauge?.InitializeGauge(comboMaintainTime);
-
     }
 
+    private bool CanExecuteNextAction()
+    {
+        if (weapon == null) return false; 
 
+        return weapon.InAction == false;
+    }
 
+    private void TryProcessInput(InputCommand newInput)
+    {
+        if (newInput == null) return;
 
-    private void ExecuteAttack(ref InputElement inputElement)
+        comboIndex %= currComboObj.MaxComboIndex();
+        ComboData comboData = currComboObj.GetComboData(comboIndex);
+        float currentTime = newInput.TimeStamp;
+
+        // ì½¤ë³´ ìœ ì§€ ì‹œê°„ ì´ˆê³¼ ì‹œ ë¦¬ì…‹
+        if (inputQueue.Count > 0 && currentTime - lastComboEnd >= comboData.ComboResetTime)
+        {
+            ResetCombo();
+            return;
+        }
+
+        // ìœ íš¨í•œ ì…ë ¥ì¸ì§€ ì²´í¬
+        bool isWithinLastInputTime = (currentTime - lastInputTime) <= comboData.LastInputCheckTime;
+        bool isBuffered = (currentTime - lastInputTime) <= comboData.InputBufferTime;
+        bool isFirstInput = lastInputTime < 0;
+
+        // ì§€ê¸ˆ ì‹œê°„ì„ ê¸°ë¡ 
+        lastInputTime = Time.time;
+
+        if (isFirstInput || isWithinLastInputTime || isBuffered) 
+        {
+            inputQueue.Enqueue(newInput);
+
+            if (newInput.InputType == InputCommandType.Action && CanExecuteNextAction())
+            {
+                ExecuteAttack(comboIndex);
+                comboIndex++;
+            }
+        }
+    }
+
+    private void ExecuteAttack(int index)
     {
         if (currComboObj == null)
             return;
 
-        ComboData data = currComboObj.GetComboDataByRewind(comboCount);
-        //Create_ComboUI();
+        ComboData data = currComboObj.GetComboData(index);
+      
+        comboResetTime = data.ComboResetTime;
 
-        // ½Ã°£ ÃÊ±âÈ­ 
-        {
-            ResetTimerValue(data);
-        }
-
-        // Action ½ÇÇà
-        {
-            if (bDebug)
-            {
-                Debug.Log($"Execute Combodata {data.ComboIndex} /  Time stamp {inputElement.TimeStamp}");
-            }
-            weapon.DoAction(data.ComboIndex);
-
-            if (comboMaintainCoroutine == null)
-                comboMaintainCoroutine = StartCoroutine(ComboMaintainCoroutine());
-        }
-
-        //UI Ã³¸® 
-        {
-            //  comboMaintainTimeGauge?.SetMaxValue(data.comboMaintainTime);
-        }
+        // Action ì‹¤í–‰
+#if UNITY_EDITOR
+        if (bDebug)
+            Debug.Log($"Execute Combodata {index}");
+#endif
+        weapon.DoAction(index);
     }
 
 
-
-    public void InputCombo(KeyCode keycode)
+    // ì…ë ¥ ì •ë³´ë¥¼ InputCommandë¡œ ë³€í™˜ í›„ íì‰ 
+    public void InputQueue(InputCommandType commandType)
     {
-        // ¸¶Áö¸· ÄŞº¸°¡ ³¡³­ ÈÄ ÇØ´ç ½Ã°£ÀÌ °æ°úÇß´ÂÁö È®ÀÎ
-        if (Time.time - lastComboEnd >= comboCheckTime)
+        float currentTime = Time.time;
+        var inputCommand = new InputCommand
         {
-            // ÄŞº¸ Å¸ÀÌ¸Ó Ã¼Å©¸¦ Áß´Ü
-            if (comboMaintainCoroutine != null)
-            {
-                StopCoroutine(comboMaintainCoroutine);
-                comboMaintainCoroutine = null;
-            }
+            InputType = commandType,
+            TimeStamp = currentTime,
+        };
 
-            // ¸¶Áö¸· ÀÔ·Â ÈÄ ÇØ´ç ½Ã°£ ¸¸Å­ Áö³µ´ÂÁö 
-            if (Time.time - lastInputTime >= lastInputCheckTime)
-            {
-                // ´ÙÀ½ ÄŞº¸ ½ÇÇà 
-                float currentTime = Time.time;
-                var inputElement = new InputElement
-                {
-                    InputType = keycode.ToString(),
-                    TimeStamp = currentTime,
-                    comboCount = this.comboCount
-                };
-
-                ExecuteAttack(ref inputElement);
-                comboCount++;
-
-                lastInputTime = Time.time; // °ª ÃÖ½ÅÈ­ 
-            }
-        }
+        TryProcessInput(inputCommand);
     }
 
 
-    // ÀÔ·Â Á¦ÇÑ ½Ã°£ ¾È¿¡ ÀÔ·Â ¹Ş¾Ò´ÂÁö °Ë»çÇÑ´Ù. 
-    private IEnumerator ComboMaintainCoroutine()
+    // ì…ë ¥ ì œí•œ ì‹œê°„ ì•ˆì— ì…ë ¥ ë°›ì•˜ëŠ”ì§€ ê²€ì‚¬í•œë‹¤. 
+    private IEnumerator Rest_ComboTime()
     {
-        curr_MaintainTime = comboMaintainTime;
-        while (curr_MaintainTime > 0)
+#if UNITY_EDITOR
+        if (bDebug)
+            Debug.Log($"Reset Start:  {comboIndex}");
+#endif
+
+        float currentRestTime = comboResetTime;
+        while (currentRestTime > 0)
         {
-            curr_MaintainTime -= Time.deltaTime;
+            currentRestTime -= Time.deltaTime;
+            comboInputHandler?.HandleComboRemainTime(currentRestTime);
             yield return null;
         }
 
@@ -150,29 +163,38 @@ public partial class ComboComponent : MonoBehaviour
 
     public void OnBeginDoAction()
     {
-
+  
     }
 
+    //TODO : Cancel íƒ€ì´ë°ë¶€í„° ë¦¬ì…‹ ì¹´ìš´íŠ¸ ë‚´ìš© ì¶”ê°€í•˜ê¸°
     public void OnEndDoAction()
     {
-        // ÁøÇàÇß´ø ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ³¡³ª°í ÀÌ°÷À» È£ÃâÇÏ°Ô µÇ¸é Á¾·áÀÚ¸¦ È£ÃâÇÑ´Ù. 
-        comboMaintainCoroutine = StartCoroutine(ComboMaintainCoroutine());
+        lastComboEnd = Time.time;
+
+        // ì§„í–‰í–ˆë˜ ì• ë‹ˆë©”ì´ì…˜ì´ ëë‚˜ê³  ì´ê³³ì„ í˜¸ì¶œí•˜ê²Œ ë˜ë©´ ì¢…ë£Œìë¥¼ í˜¸ì¶œí•œë‹¤. 
+        if (comboResetCoroutine != null)
+            StopCoroutine(comboResetCoroutine);
+
+        comboResetCoroutine = StartCoroutine(Rest_ComboTime());
     }
 
 
     private void ResetCombo()
     {
-        comboCount = 0;
-        var data = currComboObj?.GetComboDataByRewind(0);
-        ResetTimerValue(data);
+        comboIndex = 0;
+#if UNITY_EDITOR
+        if (bDebug)
+            Debug.Log($"Reset Combo :  {comboIndex}");
+#endif
 
+        var data = currComboObj?.GetComboData(0);
+        comboResetTime = data.ComboResetTime;
 
         lastComboEnd = Time.time;
-        comboMaintainCoroutine = null;
+        lastInputTime = -999;
+        comboResetCoroutine = null;
 
         inputQueue.Clear();
-        currComboObj?.ResetComboIndex();
-
         DestroyComboUIObjs();
     }
 

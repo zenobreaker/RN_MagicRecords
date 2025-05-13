@@ -5,17 +5,25 @@ using UnityEngine.UI;
 public class DebugUI : MonoBehaviour
 {
 
-    [SerializeField] private bool bDebugView = false; 
-
+    [SerializeField] private bool bDebugView = false;
+    [Header("State Text")]
     [SerializeField] private TextMeshProUGUI stateText;
     //[SerializeField] private string PlayeName = "Namsaengyi";
+    [Header("Time Scale")]
     [SerializeField] private Slider timescaleSlider;
+
+    [Header("Combo & Input")]
+    [SerializeField] private TextMeshProUGUI inputText;
+    [SerializeField] private TextMeshProUGUI ComboText;
+    [SerializeField] private Image remainGauge;
+
+
     private Character debug_Character;
 
     private void Awake()
     {
         debug_Character = FindAnyObjectByType<Player>();
-        timescaleSlider.onValueChanged.AddListener( OnValueChanged);
+        timescaleSlider.onValueChanged.AddListener(OnValueChanged);
     }
 
     private void OnEnable_DebugUI(bool bView)
@@ -85,4 +93,25 @@ public class DebugUI : MonoBehaviour
             }
         }
     }
+
+
+#region Input & Comob
+
+    private void Draw_InputText()
+    {
+
+    }
+
+    private void Draw_ComboText()
+    {
+
+    }
+
+    private void Draw_RemainGauge()
+    {
+
+    }
+
+
+#endregion
 }

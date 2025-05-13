@@ -13,28 +13,15 @@ MonoBehaviour:
   m_Name: SO_Gun_Combo
   m_EditorClassIdentifier: 
   comboDatas:
-  - comboIndex: 0
-    lastComboCheckTime: 0.1
+  - inputBufferTime: 0.5
     lastInputCheckTime: 0.5
-    comboMaintainTime: 1
-  - comboIndex: 1
-    lastComboCheckTime: 0.25
+    comboResetTime: 10
+  - inputBufferTime: 0.5
     lastInputCheckTime: 0.5
-    comboMaintainTime: 1
-  - comboIndex: 2
-    lastComboCheckTime: 0.25
+    comboResetTime: 10
+  - inputBufferTime: 0.5
     lastInputCheckTime: 0.5
-    comboMaintainTime: 1
-  - comboIndex: 3
-    lastComboCheckTime: 0.25
-    lastInputCheckTime: 1
-    comboMaintainTime: 1
-  subActionData:
-    stateName: 
-    actionSpeed: 1
-    animatorOv: {fileID: 0}
-    weaponAnimOv: {fileID: 0}
-    SoundName: 
-    impulseDirection: {x: 0, y: 0, z: 0}
-    settings: {fileID: 0}
-    bCanMove: 0
+    comboResetTime: 10
+  - inputBufferTime: 0.5
+    lastInputCheckTime: 0.5
+    comboResetTime: 10

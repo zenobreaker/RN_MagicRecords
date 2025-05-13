@@ -49,8 +49,7 @@ public class Player
         //TODO: 게임시작하고 바로 안나가는 버그 있음
         actionMap.FindAction("Action").started += (context) =>
         {
-            Debug.Log("Action!");
-            comboComponent.InputCombo(KeyCode.X);
+            comboComponent.InputQueue(InputCommandType.Action);
         };
 
         Awake_SkillAcitonInput(actionMap);

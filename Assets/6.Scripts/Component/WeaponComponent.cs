@@ -101,7 +101,6 @@ public class WeaponComponent : ActionComponent
 
     private Animator animator;
 
-    private bool bCanAction = true; 
     private bool bUseSkill = false;
 
     private Dictionary<WeaponType, Weapon> weaponTable;
@@ -192,7 +191,7 @@ public class WeaponComponent : ActionComponent
     {
         if (animator == null)
             return;
-        if (bCanAction == false)
+        if (InAction == true)
             return; 
         if (bUseSkill)
             return;
@@ -234,11 +233,11 @@ public class WeaponComponent : ActionComponent
 
         if (bNotActionable)
         {
-            bCanAction = false;
+            bInAction = false;
             return; 
         }
 
-        bCanAction = true;
+        bInAction = true;
     }
 
 }

@@ -1,90 +1,60 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// °¢ ¹«±âº° ±¸°£ º° ÄŞº¸ ÀÔ·Â ½Ã°£ ¹× °ø°İ µîÀÇ ´ëÇÑ Á¤º¸¸¦ ÀúÀåÇÑ´Ù. 
+/// ê° ë¬´ê¸°ë³„ êµ¬ê°„ ë³„ ì½¤ë³´ ì…ë ¥ ì‹œê°„ ë° ê³µê²© ë“±ì˜ ëŒ€í•œ ì •ë³´ë¥¼ ì €ì¥í•œë‹¤. 
 /// </summary>
 [System.Serializable]
 public class ComboData
 {
-    [Header("Combo Index")]
-    [SerializeField]
-    private int comboIndex;
-    public int ComboIndex { get => comboIndex; }
-
     [Header("Combo Input")]
-    /// <summary>
-    ///  ÄŞº¸ Á¾·á ½Ã°£ 
-    /// - Ã³À½ ÄŞº¸ Á¾·á ½Ã°£Àº Âª¾Æ¾ß ÇÑ´Ù.
-    /// </summary>
-    [SerializeField] private float lastComboCheckTime = 0.1f;
-    public float LastComboCheckTime { get => lastComboCheckTime; }
-    /// <summary>
-    /// ´ÙÀ½ ÄŞº¸¸¦ ÀÔ·ÂÀ» ¹Ù¶ó´Â Á¦ÇÑ ½Ã°£
-    /// </summary>
-    [SerializeField] private float lastInputCheckTime = 0.5f;
+    [SerializeField, Tooltip("ì„ ì…ë ¥ í—ˆìš© ì‹œê°„")] 
+    private float inputBufferTime = 0.5f;
+    public float InputBufferTime { get => inputBufferTime; }
+
+    [SerializeField, Tooltip("ì´ì „ ì…ë ¥ì´ ì´í›„ ë‹¤ìŒ ì…ë ¥ì´ ìœ íš¨í•œ ìµœëŒ€ ì‹œê°„")]
+    private float lastInputCheckTime = 0.5f;
     public float LastInputCheckTime { get => lastInputCheckTime; }
-    /// <summary>
-    /// ÄŞº¸ À¯Áö ½Ã°£ 
-    /// - ÇØ´ç ½Ã°£Àº ÄŞº¸ Å¥ µîÀÇ ´ëÇÑ Á¤º¸¸¦ À¯ÁöÇÏ´Â ½Ã°£ÀÌ´Ù Á¾·á ½Ã ÄŞº¸ ÃÊ±âÈ­
-    /// </summary>
-    [SerializeField] private float comboMaintainTime = 0.2f;
-    public float ComboMaintainTime { get => comboMaintainTime; }
+
+    [SerializeField, Tooltip("ì…ë ¥ì´ ì—†ì„ ê²½ìš° ì½¤ë³´ë¥¼ ì´ˆê¸°í™”í•˜ëŠ” ì‹œê°„")]
+    private float comboResetTime = 0.5f;
+    public float ComboResetTime { get => comboResetTime; }
 }
 
 [CreateAssetMenu(fileName = "ComboObject", menuName = "Scriptable Objects/Combo", order = 1)]
 public class SO_Combo : ScriptableObject
 {
-    private int comboCount;
-
     public List<ComboData> comboDatas = new List<ComboData>();
 
-    public ActionData subActionData;
-    public event Action OnFinishCombo;
-
-    public void SetOnFinishCombo(Action onFinishCombo)
+    private Action onFinissCombo;
+    public event Action OnFinishCombo
     {
-        if (OnFinishCombo != null)
+        add
         {
-            foreach (Action action in OnFinishCombo.GetInvocationList())
+            if (onFinissCombo == null || !onFinissCombo.GetInvocationList().Contains(value))
             {
-                if (action == OnFinishCombo)
-                    return;
+                onFinissCombo += value;
             }
         }
-
-        OnFinishCombo = onFinishCombo;
+        remove
+        {
+            onFinissCombo -= value;
+        }
     }
 
     public ComboData GetComboData(int index)
     {
+        if (index >= comboDatas.Count)
+            index = 0;
+
         return comboDatas[index];
     }
 
-    public ComboData GetComboDataByRewind(int index)
+    public int MaxComboIndex()
     {
-        index %= (comboDatas.Count);
-
-        return GetComboData(index);
+        return comboDatas.Count; 
     }
 
-    public ComboData GetNextComboData()
-    {
-        return GetComboDataByRewind(comboCount++);
-    }
-
-    public void ResetComboIndex()
-    {
-        comboCount = 0;
-    }
-
-
-    public void OnChangeCombo(int combo)
-    {
-        if (combo >= (comboDatas.Count))
-        {
-            OnFinishCombo?.Invoke();
-        }
-    }
 }
