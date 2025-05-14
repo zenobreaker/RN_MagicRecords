@@ -1,6 +1,10 @@
+ï»¿using System;
+using System.Collections;
+using System.Drawing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Color = UnityEngine.Color;
 
 public class DebugUI : MonoBehaviour
 {
@@ -14,9 +18,18 @@ public class DebugUI : MonoBehaviour
 
     [Header("Combo & Input")]
     [SerializeField] private TextMeshProUGUI inputText;
-    [SerializeField] private TextMeshProUGUI ComboText;
-    [SerializeField] private Image remainGauge;
+    [SerializeField] private TextMeshProUGUI comboText;
+    [SerializeField] private Image resetTimeGauge;
+    [SerializeField] private TextMeshProUGUI inputEnabledText;
+    [SerializeField] private Image enableTimeGauge;
+    [SerializeField] private TextMeshProUGUI inputBufferedText;
+    [SerializeField] private Image bufferTimeGauge;
 
+    Color inputEnabledOriginColor;
+    Color inputBufferdOriginColor;
+
+    Coroutine enableTimeCoroutine;
+    Coroutine bufferTimeCoroutine;
 
     private Character debug_Character;
 
@@ -24,6 +37,21 @@ public class DebugUI : MonoBehaviour
     {
         debug_Character = FindAnyObjectByType<Player>();
         timescaleSlider.onValueChanged.AddListener(OnValueChanged);
+
+        if (debug_Character != null)
+        {
+            ComboComponent combo = debug_Character.GetComponent<ComboComponent>();
+            Debug.Assert(combo != null);
+            Debug.Assert(combo.ComboInputHanlder != null);
+            combo.ComboInputHanlder.OnInputResetTime += Draw_InputResetTime;
+            combo.ComboInputHanlder.OnComboIndex += Draw_ComboText;
+            combo.ComboInputHanlder.OnInputCommandType += Draw_InputText;
+            combo.ComboInputHanlder.OnInputEnabled += Draw_InputEnabled;
+            combo.ComboInputHanlder.OnInputEnableTime += Draw_InputEnableTime;
+            combo.ComboInputHanlder.OnInputBuffered += Draw_InputBuffered;
+            combo.ComboInputHanlder.OnInputBufferTime += Draw_InputBufferTime;
+            combo.ComboInputHanlder.OnInputReset+= Draw_InputReset;
+        }
     }
 
     private void OnEnable_DebugUI(bool bView)
@@ -37,10 +65,23 @@ public class DebugUI : MonoBehaviour
         OnEnable_DebugUI(bDebugView);
     }
 
+    private void OnEnable()
+    {
+        if (inputEnabledText != null)
+        {
+            inputEnabledOriginColor = inputEnabledText.color;
+        }
+
+        if (inputBufferedText != null)
+        {
+            inputBufferdOriginColor = inputBufferedText.color;
+        }
+    }
+
 
     private void LateUpdate()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             bDebugView = !bDebugView;
         }
@@ -49,7 +90,7 @@ public class DebugUI : MonoBehaviour
 
         Draw_PlayerState();
 
-        if(Input.GetKeyDown(KeyCode.Alpha9))
+        if (Input.GetKeyDown(KeyCode.Alpha9))
         {
             Test_SetSkill();
         }
@@ -89,7 +130,7 @@ public class DebugUI : MonoBehaviour
             {
                 activeSkill.SO_SkillData = so_ActiveSkillData;
                 skill.SetActiveSkill(SkillSlot.Slot1, activeSkill);
-                Debug.Log($"skill ÀåÂø ¿Ï·á");
+                Debug.Log($"skill ìž¥ì°© ì™„ë£Œ");
             }
         }
     }
@@ -97,21 +138,135 @@ public class DebugUI : MonoBehaviour
 
 #region Input & Comob
 
-    private void Draw_InputText()
+    private void Draw_InputText(InputCommandType inputCommandType)
     {
-
+        if (inputText == null) return; 
+        inputText.text ="Input : " + inputCommandType.ToString(); 
     }
 
-    private void Draw_ComboText()
+    private void Draw_ComboText(int count)
     {
-
+        if (comboText == null) return;
+        comboText.text = "Combo : " + count.ToString(); 
     }
 
-    private void Draw_RemainGauge()
+    private void Draw_InputResetTime(float time, float maxTime)
     {
+        if (resetTimeGauge == null) return; 
+        resetTimeGauge.fillAmount = time / maxTime; 
+    }
 
+    private void Draw_InputEnabled(bool enabled)
+    {
+        if (inputEnabledText == null) return;
+
+      
+        if (enabled)
+        {
+            inputEnabledText.color = inputEnabledOriginColor;
+            inputEnabledText.text = "Combo Timing In";
+        }
+        else
+        {
+            inputEnabledText.color = Color.red;
+            inputEnabledText.text = "Combo Timing Out";
+        }
     }
 
 
-#endregion
+    private void Draw_InputEnableTime(float time)
+    {
+        ResetEnableTime();
+
+        enableTimeCoroutine = StartCoroutine(Time_Gauage(enableTimeGauge, time));
+    }
+
+    private void ResetEnableTime()
+    {
+        if (enableTimeGauge != null)
+            enableTimeGauge.fillAmount = 0;
+
+        if (enableTimeCoroutine != null)
+        {
+            StopCoroutine(enableTimeCoroutine);
+            enableTimeCoroutine = null;
+        }
+    }
+
+    private void Draw_InputBuffered(bool inBuffered)
+    {
+        if (inputBufferedText== null) return;
+
+        inputBufferdOriginColor = inputBufferedText.color;
+        if (inBuffered)
+        {
+            inputBufferedText.color = inputBufferdOriginColor;
+            inputBufferedText.text = "Combo Buffered In";
+        }
+        else
+        {
+            inputBufferedText.color = Color.red;
+            inputBufferedText.text = "Combo Buffered Out";
+        }
+    }
+
+
+    private void Draw_InputBufferTime(float time)
+    {
+        ResetBufferTime();
+
+        bufferTimeCoroutine = StartCoroutine(Time_Gauage(bufferTimeGauge, time));
+    }
+
+    private void ResetBufferTime()
+    {
+        if (bufferTimeGauge != null)
+            bufferTimeGauge.fillAmount = 0;
+
+
+        if (bufferTimeCoroutine != null)
+        {
+            StopCoroutine(bufferTimeCoroutine);
+            bufferTimeCoroutine = null;
+        }
+    }
+
+    private IEnumerator Time_Gauage(Image gauge, float time)
+    {
+        if (gauge == null)
+            yield break; 
+
+        float currentTime = time;
+        while (currentTime >= 0.0f)
+        {
+            currentTime -= Time.deltaTime;
+            gauge.fillAmount = currentTime / time;
+            yield return null;
+        }
+    }
+
+
+    private void Draw_InputReset()
+    {
+        if (inputText == null) return;
+        if (comboText == null) return;
+        if (resetTimeGauge == null) return;
+        if (inputEnabledText == null) return;
+        if (inputBufferedText == null) return;
+
+        //inputText.text = "Input :";
+        comboText.text = "Combo : ";
+        resetTimeGauge.fillAmount = 0;
+        inputEnabledText.color = inputEnabledOriginColor;
+        inputEnabledText.text = "Combo Enabled";
+        inputBufferedText.color = inputBufferdOriginColor;
+        inputBufferedText.text = "Combo Buffered";
+
+        ResetEnableTime();
+        ResetBufferTime();
+    }
+
+ 
+
+    #endregion
 }

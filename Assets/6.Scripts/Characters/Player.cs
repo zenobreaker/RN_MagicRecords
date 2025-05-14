@@ -35,10 +35,8 @@ public class Player
 
         skill = GetComponent<SkillComponent>();
         Debug.Assert(skill != null);
-        skill.OnSkillUse += OnSkillUse;
-        skill.skillEventHandler.OnBeginUseSkill += weapon.OnBeginSkillAction;
-        skill.skillEventHandler.OnEndUseSkill += weapon.OnEndSkillAction;
-
+        Awake_SkillEventHandle(skill, weapon);
+        
         damageHandle = GetComponent<DamageHandleComponent>();
 
         PlayerInput input = GetComponent<PlayerInput>();
@@ -46,7 +44,7 @@ public class Player
 
         InputActionMap actionMap = input.actions.FindActionMap("Player");
         Debug.Assert(actionMap != null);
-        //TODO: 게임시작하고 바로 안나가는 버그 있음
+        
         actionMap.FindAction("Action").started += (context) =>
         {
             comboComponent.InputQueue(InputCommandType.Action);
@@ -59,12 +57,19 @@ public class Player
             //TODO: 공격 중 캔슬 기능하려면 여기를 수정
             if (state.IdleMode == false)
                 return;
-
+            comboComponent.InputQueue(InputCommandType.Dash);
             state.SetEvadeMode();
         };
     }
 
+    private void Awake_SkillEventHandle(SkillComponent skill, WeaponComponent weapon)
+    {
+        if (skill == null || weapon == null) return;
 
+        skill.OnSkillUse += OnSkillUse;
+        skill.skillEventHandler.OnBeginUseSkill += weapon.OnBeginSkillAction;
+        skill.skillEventHandler.OnEndUseSkill += weapon.OnEndSkillAction;
+    }
     private void Awake_SkillAcitonInput(InputActionMap actionMap)
     {
         if (actionMap == null || skill == null)
@@ -112,6 +117,9 @@ public class Player
     public void OnSkillUse(bool bIsUse)
     {
         bIsSkillInput = bIsUse;
+        
+        if(bIsSkillInput)
+            comboComponent.InputQueue(InputCommandType.Skill);
     }
 
     public WeaponController GetWeaponController() => weaponController;

@@ -7,6 +7,7 @@ public enum InputCommandType
 {
     None = 0,   
     Action = 1,
+    Skill,
     Move,
     Dash,
     Max,
@@ -79,28 +80,41 @@ public partial class ComboComponent : MonoBehaviour
     {
         if (newInput == null) return;
 
-        comboIndex %= currComboObj.MaxComboIndex();
+       
         ComboData comboData = currComboObj.GetComboData(comboIndex);
         float currentTime = newInput.TimeStamp;
 
-        // 콤보 유지 시간 초과 시 리셋
-        if (inputQueue.Count > 0 && currentTime - lastComboEnd >= comboData.ComboResetTime)
+        bool isResetTimeExceeded = currentTime - lastInputTime >= comboData.ComboResetTime;
+        bool isWithinLastInputTime = (currentTime - lastInputTime) <= comboData.LastInputCheckTime;
+        bool isBuffered = (currentTime - lastInputTime) <= comboData.InputBufferTime;
+        bool isFirstInput = lastInputTime < 0;
+        
+        lastInputTime = Time.time;
+
+        if (inputQueue.Count > 0 && isResetTimeExceeded && (isWithinLastInputTime || isBuffered) == false)
         {
+#if UNITY_EDITOR
+            if (bDebug)
+                Debug.Log($"Invalid Time Reset");
+#endif
             ResetCombo();
             return;
         }
 
-        // 유효한 입력인지 체크
-        bool isWithinLastInputTime = (currentTime - lastInputTime) <= comboData.LastInputCheckTime;
-        bool isBuffered = (currentTime - lastInputTime) <= comboData.InputBufferTime;
-        bool isFirstInput = lastInputTime < 0;
-
-        // 지금 시간을 기록 
-        lastInputTime = Time.time;
+        comboInputHandler?.HandleInputEnabled(isFirstInput | isWithinLastInputTime); 
+        comboInputHandler?.HandleInputBuffered(isBuffered);
+        comboInputHandler?.HandleInputEnableTime(comboData.LastInputCheckTime);
+        comboInputHandler?.HandleInputBufferTime(comboData.InputBufferTime);
 
         if (isFirstInput || isWithinLastInputTime || isBuffered) 
         {
             inputQueue.Enqueue(newInput);
+
+            if(newInput.InputType != InputCommandType.Action && CanExecuteNextAction() == false)
+            {
+                ResetCombo();
+                return;
+            }
 
             if (newInput.InputType == InputCommandType.Action && CanExecuteNextAction())
             {
@@ -116,7 +130,7 @@ public partial class ComboComponent : MonoBehaviour
             return;
 
         ComboData data = currComboObj.GetComboData(index);
-      
+        comboInputHandler?.HandleComboIndex(index);
         comboResetTime = data.ComboResetTime;
 
         // Action 실행
@@ -138,6 +152,7 @@ public partial class ComboComponent : MonoBehaviour
             TimeStamp = currentTime,
         };
 
+        comboInputHandler?.HandleInputCommandType(commandType);
         TryProcessInput(inputCommand);
     }
 
@@ -150,11 +165,11 @@ public partial class ComboComponent : MonoBehaviour
             Debug.Log($"Reset Start:  {comboIndex}");
 #endif
 
-        float currentRestTime = comboResetTime;
-        while (currentRestTime > 0)
+        float currentResetTime = comboResetTime;
+        while (currentResetTime > 0)
         {
-            currentRestTime -= Time.deltaTime;
-            comboInputHandler?.HandleComboRemainTime(currentRestTime);
+            currentResetTime -= Time.deltaTime;
+            comboInputHandler?.HandleInputResetTime(currentResetTime, comboResetTime);
             yield return null;
         }
 
@@ -173,7 +188,16 @@ public partial class ComboComponent : MonoBehaviour
 
         // 진행했던 애니메이션이 끝나고 이곳을 호출하게 되면 종료자를 호출한다. 
         if (comboResetCoroutine != null)
+        {
             StopCoroutine(comboResetCoroutine);
+            comboResetCoroutine = null;
+        }
+
+        if (comboIndex >= currComboObj.MaxComboIndex())
+        {
+            ResetCombo();
+            return;
+        }
 
         comboResetCoroutine = StartCoroutine(Rest_ComboTime());
     }
@@ -181,6 +205,12 @@ public partial class ComboComponent : MonoBehaviour
 
     private void ResetCombo()
     {
+        if (comboResetCoroutine != null)
+        {
+            StopCoroutine(comboResetCoroutine);
+            comboResetCoroutine = null;
+        }
+
         comboIndex = 0;
 #if UNITY_EDITOR
         if (bDebug)
@@ -190,12 +220,11 @@ public partial class ComboComponent : MonoBehaviour
         var data = currComboObj?.GetComboData(0);
         comboResetTime = data.ComboResetTime;
 
-        lastComboEnd = Time.time;
         lastInputTime = -999;
         comboResetCoroutine = null;
 
         inputQueue.Clear();
-        DestroyComboUIObjs();
+        comboInputHandler?.HadleInputReset();
     }
 
 }
