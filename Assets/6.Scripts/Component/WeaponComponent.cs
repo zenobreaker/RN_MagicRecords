@@ -227,6 +227,27 @@ public class WeaponComponent : ActionComponent
         weaponTable[type]?.End_DoAction();
     }
 
+    public void Begin_AttackJudge() 
+    {
+        weaponTable[type]?.Begin_AttackJudge(); 
+    }
+
+    public void End_AttackJudge() 
+    {
+        weaponTable[type]?.End_AttackJudge(); 
+    }
+
+    public override void Play_Sound()
+    {
+        base.Play_Sound();
+        weaponTable[type]?.Play_PlaySound();
+    }
+    public override void Play_CameraShake()
+    {
+        base.Play_CameraShake();
+        weaponTable[type]?.Play_CameraShake();
+    }
+
     private void OnStatusEffectChanged(StatusEffectType prevType, StatusEffectType newType)
     {
         bool bNotActionable = (prevType & newType) != 0;

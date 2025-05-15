@@ -24,6 +24,10 @@ public class Projectile : MonoBehaviour
     public event Action<Collider, Collider, Vector3> OnProjectileHit;
 
     private List<GameObject> ignores = new List<GameObject>();
+
+    private GameObject ownerObject; 
+    private DamageEvent damageEvent; 
+
     public void AddIgnore(GameObject ignore)
     {
         if (ignores.Contains(ignore) == true)
@@ -75,7 +79,7 @@ public class Projectile : MonoBehaviour
 
         OnTriggerEnterAction?.Invoke(other);
 
-        OnProjectileHit?.Invoke(collider,other, transform.position);
+        OnProjectileHit?.Invoke(collider, other, transform.position);
 
         this.gameObject.SetActive(false);
 
@@ -83,6 +87,24 @@ public class Projectile : MonoBehaviour
         {
             ObjectPooler.SpawnFromPool(bombEffectName, this.transform.position);
         }
+
+        // Damage 
+        IDamagable damage = other.GetComponent<IDamagable>();
+        if (damage != null)
+        {
+            Vector3 hitPoint = collider.ClosestPoint(other.transform.position);
+            hitPoint = other.transform.InverseTransformPoint(hitPoint);
+            damage?.OnDamage(ownerObject, null, hitPoint, damageEvent);
+        }
+    }
+
+    public void SetDamageInfo(GameObject attacker, DamageData damageData)
+    {
+        if (attacker == null) return;
+        if (damageData == null) return;
+
+        ownerObject = attacker.gameObject;
+        damageEvent = damageData.GetMyDamageEvent(attacker);
     }
 
 }

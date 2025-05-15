@@ -64,7 +64,7 @@ public class DamageData
 [Serializable]
 public class DamageSequence
 {
-    public float hitDelay = -1.0f; 
+    public float hitDelay = -1.0f;
     public List<DamageData> damageDatas = new List<DamageData>();
 }
 
@@ -141,9 +141,9 @@ public class DamageEvent
     public bool isCrit;
     public bool isFisrtHit;
 
-    public HitData hitData; 
+    public HitData hitData;
 
-    public DamageEvent(float value, bool isCrit = false, bool isFisrtHit = false, HitData hitData= null)
+    public DamageEvent(float value, bool isCrit = false, bool isFisrtHit = false, HitData hitData = null)
     {
         this.value = value;
         this.isCrit = isCrit;
@@ -227,10 +227,7 @@ public class Weapon : MonoBehaviour
         Begin_Equip();
     }
 
-    public virtual void Begin_Equip()
-    {
-
-    }
+    public virtual void Begin_Equip() { }
 
     public virtual void End_Equip()
     {
@@ -240,12 +237,6 @@ public class Weapon : MonoBehaviour
     public virtual void Unequip()
     {
         bEquipped = false;
-    }
-
-
-    public void DoIdleAction()
-    {
-        //animator?.Play
     }
 
     public virtual void DoAction()
@@ -265,10 +256,7 @@ public class Weapon : MonoBehaviour
         CheckStop(index);
     }
 
-    public virtual void Begin_DoAction()
-    {
-
-    }
+    public virtual void Begin_DoAction() { }
 
     public virtual void End_DoAction()
     {
@@ -281,11 +269,12 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    public virtual void Begin_PlaySound()
-    {
+    public virtual void Begin_AttackJudge() { }
+    public virtual void End_AttackJudge() { }
 
-    }
+    public virtual void Play_PlaySound() { }
 
+    public virtual void Play_CameraShake() { }
 
     ////////////////////////////////////////////////////////////////////////////////////
 
@@ -301,7 +290,7 @@ public class Weapon : MonoBehaviour
 
     protected void CheckStop(int index)
     {
-        if(so_Action != null && so_Action.GetCanMove(index) == false)
+        if (so_Action != null && so_Action.GetCanMove(index) == false)
         {
             Stop();
             bDirtyMove = true;

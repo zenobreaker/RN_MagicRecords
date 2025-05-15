@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Rigidbody))]
-public class Character 
+public class Character
     : MonoBehaviour
     , IStoppable
     , ISlowable
@@ -16,7 +17,8 @@ public class Character
     protected StateComponent state;
     protected HealthPointComponent healthPoint;
 
-    private float originAnimSpeed; 
+    private float originAnimSpeed;
+
 
     protected virtual void Awake()
     {
@@ -24,7 +26,7 @@ public class Character
         Debug.Assert(animator != null);
         originAnimSpeed = animator.speed;
 
-        rigidbody = GetComponent<Rigidbody>();  
+        rigidbody = GetComponent<Rigidbody>();
         Debug.Assert(rigidbody != null);
 
         state = GetComponent<StateComponent>();
@@ -37,19 +39,19 @@ public class Character
         Regist_MovableSlower();
     }
 
+    protected virtual void End_Damaged() { }
 
-    protected virtual void End_Damaged()
-    {
 
-    }
+    #region AnimationEvent
+    public virtual void Begin_Action() { }
 
-    public virtual void Begin_Action()
-    {
-    }
+    public virtual void End_Action() { }
 
-    public virtual void End_Action()
-    {
-    }
+    public virtual void Begin_Skill() { }
+    
+    public virtual void End_Skill() { }
+
+    #endregion
 
     #region Slow
     private void Regist_MovableSlower()

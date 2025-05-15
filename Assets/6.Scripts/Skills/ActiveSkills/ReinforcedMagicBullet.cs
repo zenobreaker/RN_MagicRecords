@@ -48,9 +48,9 @@ public class ReinforcedMagicBullet : ActiveSkill
         Quaternion rotation = ownerObject.transform.rotation * phaseSkill.spwanQuaternion;
 
         GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
-        //GameObject.Instantiate<GameObject>(phaseSkill.skillObject, position, rotation);
         if (obj.TryGetComponent<Projectile>(out var projectile))
         {
+            projectile.SetDamageInfo(ownerObject, phaseSkill.damageData);
             projectile.AddIgnore(ownerObject);
             projectile.OnProjectileHit -= OnProjectileHit;
             projectile.OnProjectileHit += OnProjectileHit;
@@ -65,20 +65,11 @@ public class ReinforcedMagicBullet : ActiveSkill
         // hit Sound Play
         //SoundManager.Instance.PlaySFX(doactionData[index].hitSoundName);
 
-        // Damage 
-        IDamagable damage = other.GetComponent<IDamagable>();
-        if (damage != null)
-        {
-            Vector3 hitPoint = self.ClosestPoint(other.transform.position);
-            hitPoint = other.transform.InverseTransformPoint(hitPoint);
-            damage?.OnDamage(ownerObject, null, hitPoint, phaseSkill.damageData.GetMyDamageEvent(ownerObject));
-        }
-
         //Instantiate<GameObject>(doactionData[index].HitParticle, point, rootObject.transform.rotation);
     }
 
     public override void End_DoAction()
     {
-        phaseSkill = null;
+         phaseSkill = null;
     }
 }

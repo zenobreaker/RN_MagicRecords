@@ -171,17 +171,31 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.093446076
-        functionName: Begin_DoAction
+      - time: 0.19827586
+        functionName: Play_Sound
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 8db4a338cb0d05d40a0475dfc7c4ebbb, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.21551724
+        functionName: Begin_AttackJudge
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: b9390b2db8381934eba058cebcb26d33, type: 3}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.94827586
-        functionName: End_DoAction
+      - time: 0.8189363
+        functionName: Begin_Action
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: b9390b2db8381934eba058cebcb26d33, type: 3}
+        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.94827586
+        functionName: End_Action
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
@@ -215,16 +229,30 @@ ModelImporter:
       curves: []
       events:
       - time: 0.92241377
-        functionName: End_DoAction
+        functionName: End_Action
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.20402299
+        functionName: Begin_AttackJudge
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: b9390b2db8381934eba058cebcb26d33, type: 3}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.1637931
-        functionName: Begin_DoAction
+      - time: 0.17816092
+        functionName: Play_Sound
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: b9390b2db8381934eba058cebcb26d33, type: 3}
+        objectReferenceParameter: {fileID: 11500000, guid: 8db4a338cb0d05d40a0475dfc7c4ebbb, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.2356322
+        functionName: Play_CameraShake
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 8db4a338cb0d05d40a0475dfc7c4ebbb, type: 3}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0

@@ -43,11 +43,6 @@ public class SkillComponent : MonoBehaviour
         };
     }
 
-    private void Start()
-    {
-        
-    }
-
     private void Update()
     {
         if (skillSlotTable == null)

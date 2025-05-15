@@ -29,4 +29,7 @@ public abstract class ActionComponent
         InAction = false;
     }
 
+    public virtual void Play_Sound() { }
+    public virtual void Play_CameraShake() { }
+
 }

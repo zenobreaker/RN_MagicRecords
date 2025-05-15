@@ -34,6 +34,13 @@ public class Gun : Weapon_Combo
             return;
 
         base.Begin_DoAction();
+     
+        actionDatas[index].Play_CameraShake();
+    }
+
+    public override void Begin_AttackJudge()
+    {
+        base.Begin_AttackJudge();
 
         if (muzzleFlashPrefab != null)
         {
@@ -41,53 +48,36 @@ public class Gun : Weapon_Combo
         }
 
         GameObject obj = ObjectPooler.SpawnFromPool(bulletName, muzzleTransform.position, rootObject.transform.rotation);
-        //TODO: TryGetComponent가 너무 자주 호출되서 비용이 높다면 이벤트 처리를 다르게 생각.
         if (obj.TryGetComponent<Projectile>(out var projectile))
         {
+            projectile.SetDamageInfo(rootObject, damageDatas[index]);
             projectile.AddIgnore(rootObject);
-            projectile.Index = index;
             projectile.OnProjectileHit -= OnProjectileHit;
             projectile.OnProjectileHit += OnProjectileHit;
         }
+    }
+
+    public override void Play_PlaySound()
+    {
+        base.Play_PlaySound();
+
+        //SoundManager.Instance.PlaySFX(actionDatas[index].SoundName);
+    }
+
+    public override void Play_CameraShake()
+    {
+        base.Play_CameraShake();
 
         actionDatas[index].Play_CameraShake();
     }
-
-
-    public override void Begin_PlaySound()
-    {
-        base.Begin_PlaySound();
-
-        SoundManager.Instance.PlaySFX(actionDatas[index].SoundName);
-    }
-
 
     private void OnProjectileHit(Collider self, Collider other, Vector3 point)
     {
 #if UNITY_EDITOR
         Debug.Log($"self : {self} other : {other} Index : {index}");
 #endif
-        var projectile = self.GetComponent<Projectile>();
-        if(projectile == null) return;
-
-        int myIndex = projectile.Index;  // 충돌한 총알의 index 사용
-
         // hit Sound Play
         //SoundManager.Instance.PlaySFX(actionDatas[index].hitSoundName);
-
-        // Damage 
-        IDamagable damage = other.GetComponent<IDamagable>();
-        if (damage != null)
-        {
-            Vector3 hitPoint = self.ClosestPoint(other.transform.position);
-            hitPoint = other.transform.InverseTransformPoint(hitPoint);
-
-            if (damageDatas.Count > 0)
-            {
-                damage?.OnDamage(rootObject, this, hitPoint, damageDatas[myIndex].GetMyDamageEvent(rootObject, status));
-            }
-
-        }
 
         //Instantiate<GameObject>(actionDatas[index].HitParticle, point, rootObject.transform.rotation);
     }

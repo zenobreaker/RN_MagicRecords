@@ -15,10 +15,9 @@ public class Player
     private ComboComponent comboComponent;
     private WeaponComponent weapon;
     private SkillComponent skill;
+    private DamageHandleComponent damageHandle; 
 
     private WeaponController weaponController;
-
-    private DamageHandleComponent damageHandle; 
 
 
     private bool bIsSkillInput = false;
@@ -61,7 +60,6 @@ public class Player
             state.SetEvadeMode();
         };
     }
-
     private void Awake_SkillEventHandle(SkillComponent skill, WeaponComponent weapon)
     {
         if (skill == null || weapon == null) return;
@@ -98,22 +96,35 @@ public class Player
 
     public override void Begin_Action()
     {
-        if (bIsSkillInput)
-        {
-            skill?.Begin_SkillAction();
-            return; 
-        }
-
         weapon?.Begin_DoAction();
     }
-
     public override void End_Action()
     {
+        if(bIsSkillInput)
+        {
+            End_Skill();
+
+            return;
+        }
+
         weapon?.End_DoAction();
+    }
+
+    public override void Begin_Skill() 
+    {
+        base.Begin_Skill();
+
+        skill?.Begin_SkillAction();
+    }
+
+    public override void End_Skill() 
+    {
+        base.End_Skill();
+
         skill?.End_SkillAction();
         bIsSkillInput = false;
     }
-
+     
     public void OnSkillUse(bool bIsUse)
     {
         bIsSkillInput = bIsUse;
@@ -143,28 +154,9 @@ public class Player
         if (weapon != null /*&& weapon.InSkillAction*/)
             return;
 
-        //if (data != null && data.damageInfo != null)
-        //{
-        //    //TODO: 옵젝풀러한테 불러오게할까
-        //    GameObject obj = Instantiate<GameObject>(data.damageInfo.HitParticle, transform, false);
-        //    obj.transform.localPosition = hitPoint + data.damageInfo.HitParticlePositionOffset;
-        //    obj.transform.localScale = data.damageInfo.HitParticleSacleOffset;
-        //}
-
         if (healthPoint.Dead == false)
         {
             state.SetDamagedMode();
-            // launch.DoHit(attacker, causer, data, false);
-
-            // if (data.bDownable == false)
-            // {
-            //     DownDamaged();
-
-            //     animator.SetInteger(HitIndex, data.HitImpactIndex);
-            //     animator.SetTrigger(HitImapact);
-            // }
-            // else
-            //     Begin_DownImpact();
 
             return;
         }

@@ -87,7 +87,7 @@ public partial class ComboComponent : MonoBehaviour
         bool isResetTimeExceeded = currentTime - lastInputTime >= comboData.ComboResetTime;
         bool isWithinLastInputTime = (currentTime - lastInputTime) <= comboData.LastInputCheckTime;
         bool isBuffered = (currentTime - lastInputTime) <= comboData.InputBufferTime;
-        bool isFirstInput = lastInputTime < 0;
+       
         
         lastInputTime = Time.time;
 
@@ -98,8 +98,9 @@ public partial class ComboComponent : MonoBehaviour
                 Debug.Log($"Invalid Time Reset");
 #endif
             ResetCombo();
-            return;
         }
+
+        bool isFirstInput = lastInputTime < 0 && comboIndex == 0;
 
         comboInputHandler?.HandleInputEnabled(isFirstInput | isWithinLastInputTime); 
         comboInputHandler?.HandleInputBuffered(isBuffered);
