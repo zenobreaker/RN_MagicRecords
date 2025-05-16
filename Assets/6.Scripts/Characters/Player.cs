@@ -1,10 +1,6 @@
-using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static StateComponent;
-using UnityEngine.WSA;
-using UnityEditor.Experimental.GraphView;
 
 public class Player
     : Character
@@ -18,9 +14,9 @@ public class Player
     private DamageHandleComponent damageHandle; 
 
     private WeaponController weaponController;
+    private ActionComponent currentAction; 
 
-
-    private bool bIsSkillInput = false;
+    private bool bIsUsedSkill = false;
 
     protected override void Awake()
     {
@@ -46,7 +42,8 @@ public class Player
         
         actionMap.FindAction("Action").started += (context) =>
         {
-            comboComponent.InputQueue(InputCommandType.Action);
+            currentAction = weapon;
+            comboComponent?.InputQueue(InputCommandType.Action);
         };
 
         Awake_SkillAcitonInput(actionMap);
@@ -56,10 +53,11 @@ public class Player
             //TODO: 공격 중 캔슬 기능하려면 여기를 수정
             if (state.IdleMode == false)
                 return;
-            comboComponent.InputQueue(InputCommandType.Dash);
-            state.SetEvadeMode();
+            comboComponent?.InputQueue(InputCommandType.Dash);
+            state?.SetEvadeMode();
         };
     }
+
     private void Awake_SkillEventHandle(SkillComponent skill, WeaponComponent weapon)
     {
         if (skill == null || weapon == null) return;
@@ -75,62 +73,72 @@ public class Player
 
         actionMap.FindAction("SkillAction1").started += (context) =>
         {
-            skill.UseSkill(SkillSlot.Slot1);
+            skill?.UseSkill(SkillSlot.Slot1);
         };
 
         actionMap.FindAction("SkillAction2").started += (context) =>
         {
-            skill.UseSkill(SkillSlot.Slot2);
+            skill?.UseSkill(SkillSlot.Slot2); 
         };
 
         actionMap.FindAction("SkillAction3").started += (context) =>
         {
-            skill.UseSkill(SkillSlot.Slot3);
+            skill?.UseSkill(SkillSlot.Slot3);
         };
 
         actionMap.FindAction("SkillAction4").started += (context) =>
         {
-            skill.UseSkill(SkillSlot.Slot4);
+            skill?.UseSkill(SkillSlot.Slot4); 
         };
     }
 
-    public override void Begin_Action()
-    {
-        weapon?.Begin_DoAction();
-    }
-    public override void End_Action()
-    {
-        if(bIsSkillInput)
-        {
-            End_Skill();
-
-            return;
-        }
-
-        weapon?.End_DoAction();
-    }
-
-    public override void Begin_Skill() 
-    {
-        base.Begin_Skill();
-
-        skill?.Begin_SkillAction();
-    }
-
-    public override void End_Skill() 
-    {
-        base.End_Skill();
-
-        skill?.End_SkillAction();
-        bIsSkillInput = false;
-    }
-     
     public void OnSkillUse(bool bIsUse)
     {
-        bIsSkillInput = bIsUse;
-        
-        if(bIsSkillInput)
+        bIsUsedSkill = bIsUse;
+
+        if (bIsUsedSkill)
+        {
+            currentAction = skill;
             comboComponent.InputQueue(InputCommandType.Skill);
+        }
+    }
+
+    public override void Begin_DoAction()
+    {
+        base.Begin_DoAction();
+
+        currentAction?.BeginDoAction();
+    }
+
+    public override void End_DoAction()
+    {
+        if (bIsUsedSkill)
+            bIsUsedSkill = false;
+        currentAction?.EndDoAction(); 
+    }
+
+    public override void Begin_JudgeAttack()
+    {
+        base.Begin_JudgeAttack();
+        currentAction?.BeginJudgeAttack();
+    }
+
+    public override void End_JudgeAttack()
+    {
+        base.End_JudgeAttack();
+        currentAction?.EndJudgeAttack();
+    }
+
+    public override void Play_Sound()
+    {
+        base.Play_Sound();
+        currentAction?.PlaySound();
+    }
+
+    public override void Play_CameraShake()
+    {
+        base.Play_CameraShake();
+        currentAction?.PlayCameraShake(); 
     }
 
     public WeaponController GetWeaponController() => weaponController;

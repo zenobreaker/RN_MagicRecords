@@ -37,7 +37,7 @@ public class HealthPointComponent : MonoBehaviour
         {
             handler = Resources.Load<SO_HUDHandler>(path);
         }
-      
+
         InitCurrentHealth();
 
         isShow = false;
@@ -67,19 +67,19 @@ public class HealthPointComponent : MonoBehaviour
                 return;
 
             if (currentHideTime > 0.0f)
-            { 
-                currentHideTime -= Time.deltaTime; 
+            {
+                currentHideTime -= Time.deltaTime;
             }
             else
             {
                 uiEnemyCanvas.gameObject.SetActive(false);
-                isShow = false; 
+                isShow = false;
                 currentHideTime = hideTime;
             }
 
-            if(hpGauge != null)
+            if (hpGauge != null)
             {
-                if(hpGauge.fillAmount != delayGauge.fillAmount)
+                if (hpGauge.fillAmount != delayGauge.fillAmount)
                 {
                     if (Mathf.Abs(delayGauge.fillAmount) > Mathf.Epsilon)
                         delayGauge.fillAmount = Mathf.Lerp(delayGauge.fillAmount, hpGauge.fillAmount, Time.deltaTime * speed);
@@ -93,12 +93,12 @@ public class HealthPointComponent : MonoBehaviour
     public void InitCurrentHealth()
     {
         currentHealthPoint = maxHealthPoint;
-        
+
         handler?.OnInitValue_HP(currentHealthPoint);
     }
 
 
-        public void Damage(float amount)
+    public void Damage(float amount)
     {
         if (amount < 1.0f)
             return;
@@ -106,12 +106,12 @@ public class HealthPointComponent : MonoBehaviour
         currentHealthPoint += (amount * -1.0f);
         currentHealthPoint = Mathf.Clamp(currentHealthPoint, 0, maxHealthPoint);
 
-        if(isEnemy == false)
+        if (isEnemy == false)
         {
             handler?.OnChangeValue_HP(currentHealthPoint, maxHealthPoint);
         }
 
-        if(hpGauge != null)
+        if (hpGauge != null)
         {
             isShow = true;
             currentHideTime = hideTime;

@@ -67,7 +67,7 @@ namespace BT.CustomBTNodes
                 return NodeState.Abort;
 
             state.SetIdleMode();
-            action.End_DoAction();
+            action.EndDoAction();
 
             Debug.Log($"{nodeName} action abort {state.IdleMode}");
 

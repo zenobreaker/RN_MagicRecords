@@ -11,10 +11,13 @@ public enum SkillPhase
 }
 
 [System.Serializable]
-public abstract class ActiveSkill : ISkill
+public abstract class ActiveSkill 
+    : ICooldownable
 {
     protected SO_ActiveSkillData skillData;
     public SO_ActiveSkillData SO_SkillData { get => skillData; set => skillData = value; }
+
+    protected SkillPhase skillPhase;
     protected float currentCooldown;
 
     protected GameObject ownerObject;
@@ -59,7 +62,13 @@ public abstract class ActiveSkill : ISkill
     protected abstract void StartPhase(int phaseIndex);
     protected abstract void ApplyEffects();     // 개별 효과 적용 
 
-    public abstract void Begin_DoAction();
+    public virtual void Begin_DoAction() { }
 
-    public abstract void End_DoAction();
+    public virtual void End_DoAction() { }
+
+    public virtual void Begin_JudgeAttack() { }
+    public virtual void End_JudgeAttack() { }
+
+    public virtual void Play_Sound () { }
+    public virtual void Play_CameraShake() { }
 }

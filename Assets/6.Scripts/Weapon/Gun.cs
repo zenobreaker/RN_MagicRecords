@@ -38,9 +38,9 @@ public class Gun : Weapon_Combo
         actionDatas[index].Play_CameraShake();
     }
 
-    public override void Begin_AttackJudge()
+    public override void Begin_JudgeAttack()
     {
-        base.Begin_AttackJudge();
+        base.Begin_JudgeAttack();
 
         if (muzzleFlashPrefab != null)
         {
@@ -61,7 +61,7 @@ public class Gun : Weapon_Combo
     {
         base.Play_PlaySound();
 
-        //SoundManager.Instance.PlaySFX(actionDatas[index].SoundName);
+        actionDatas[index].Play_Sound(); 
     }
 
     public override void Play_CameraShake()

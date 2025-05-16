@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public interface ISkill
+public interface ICooldownable
 {
     bool IsOnCooldown { get; }
 }

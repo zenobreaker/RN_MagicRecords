@@ -143,7 +143,6 @@ public class WeaponComponent : ActionComponent
         }
     }
 
-
     private void OnEnable()
     {
         if (statusEffect != null)
@@ -213,38 +212,42 @@ public class WeaponComponent : ActionComponent
         bUseSkill = false;
     }
 
-    public void Begin_DoAction()
+    public override void BeginDoAction()
     {
+        base.BeginDoAction();
+
         OnBeginDoAction?.Invoke();
         weaponTable[type]?.Begin_DoAction();
     }
 
-    public override void End_DoAction()
+    public override void EndDoAction()
     {
-        base.End_DoAction();
+        base.EndDoAction();
 
         OnEndDoAction?.Invoke();
         weaponTable[type]?.End_DoAction();
     }
 
-    public void Begin_AttackJudge() 
+    public override void BeginJudgeAttack() 
     {
-        weaponTable[type]?.Begin_AttackJudge(); 
+        base.BeginJudgeAttack(); 
+        weaponTable[type]?.Begin_JudgeAttack(); 
     }
 
-    public void End_AttackJudge() 
+    public override void EndJudgeAttack() 
     {
-        weaponTable[type]?.End_AttackJudge(); 
+        base.EndJudgeAttack(); 
+        weaponTable[type]?.End_JudgeAttack(); 
     }
 
-    public override void Play_Sound()
+    public override void PlaySound()
     {
-        base.Play_Sound();
+        base.PlaySound();
         weaponTable[type]?.Play_PlaySound();
     }
-    public override void Play_CameraShake()
+    public override void PlayCameraShake()
     {
-        base.Play_CameraShake();
+        base.PlayCameraShake();
         weaponTable[type]?.Play_CameraShake();
     }
 

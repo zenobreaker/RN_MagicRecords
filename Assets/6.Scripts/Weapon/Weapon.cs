@@ -128,6 +128,11 @@ public class ActionData
         return actionData;
     }
 
+    public void Play_Sound()
+    {
+        SoundManager.Instance.PlaySFX(SoundName);
+    }
+
     public void Play_CameraShake()
     {
         if (MovableCameraShaker.Instance != null)
@@ -269,8 +274,8 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    public virtual void Begin_AttackJudge() { }
-    public virtual void End_AttackJudge() { }
+    public virtual void Begin_JudgeAttack() { }
+    public virtual void End_JudgeAttack() { }
 
     public virtual void Play_PlaySound() { }
 

@@ -43,14 +43,14 @@ public class Character
 
 
     #region AnimationEvent
-    public virtual void Begin_Action() { }
+    public virtual void Begin_DoAction() { }
 
-    public virtual void End_Action() { }
+    public virtual void End_DoAction() { }
 
-    public virtual void Begin_Skill() { }
-    
-    public virtual void End_Skill() { }
-
+    public virtual void Begin_JudgeAttack() { }
+    public virtual void End_JudgeAttack() { }
+    public virtual void Play_Sound() { }
+    public virtual void Play_CameraShake() { }
     #endregion
 
     #region Slow

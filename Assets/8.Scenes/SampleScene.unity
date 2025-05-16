@@ -2505,6 +2505,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerUI
       objectReference: {fileID: 0}
+    - target: {fileID: 2500661191851465582, guid: c1d31a37f6bfd784d9e5b5db65d3e081, type: 3}
+      propertyPath: handler
+      value: 
+      objectReference: {fileID: 11400000, guid: 505ecbaae7d79c840a63b63fa41f2a96, type: 2}
+    - target: {fileID: 3087466899825712443, guid: c1d31a37f6bfd784d9e5b5db65d3e081, type: 3}
+      propertyPath: handler
+      value: 
+      objectReference: {fileID: 11400000, guid: 505ecbaae7d79c840a63b63fa41f2a96, type: 2}
     - target: {fileID: 4597534035726720278, guid: c1d31a37f6bfd784d9e5b5db65d3e081, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -4972,6 +4980,14 @@ PrefabInstance:
     - target: {fileID: 2169032415967224289, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
       propertyPath: m_Name
       value: Namsaengyi
+      objectReference: {fileID: 0}
+    - target: {fileID: 2697475741795237462, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
+      propertyPath: handler
+      value: 
+      objectReference: {fileID: 11400000, guid: 505ecbaae7d79c840a63b63fa41f2a96, type: 2}
+    - target: {fileID: 2697475741795237462, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
+      propertyPath: maxHealthPoint
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 8763096052454413957, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
       propertyPath: bDebug

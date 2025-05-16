@@ -1,21 +1,21 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkillComponent : MonoBehaviour
+public class SkillComponent : ActionComponent
 {
     private StateComponent state;
     private WeaponComponent weapon;
 
-    private GameObject rootObject; 
+   
 
     private bool bIsSkillAction = false;
     private SkillSlot currentSlot = SkillSlot.MAX;
 
-    // ÀåÂø ½ºÅ³ Á¤º¸ 
+    // ì¥ì°© ìŠ¤í‚¬ ì •ë³´ 
     private Dictionary<SkillSlot, ActiveSkill> skillSlotTable;
 
-    // ½ºÅ³ »ç¿ë °ü·Ã ÀÌº¥Æ® ÇÚµé·¯
+    // ìŠ¤í‚¬ ì‚¬ìš© ê´€ë ¨ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬
     public SO_SkillEventHandler skillEventHandler;
 
     public event Action<bool> OnSkillUse;
@@ -48,7 +48,7 @@ public class SkillComponent : MonoBehaviour
         if (skillSlotTable == null)
             return;
 
-        // Äğ´Ù¿î ¾÷µ¥ÀÌÆ® 
+        // ì¿¨ë‹¤ìš´ ì—…ë°ì´íŠ¸ 
         foreach (KeyValuePair<SkillSlot, ActiveSkill> pair in skillSlotTable)
         {
             if (pair.Value == null) continue;
@@ -62,7 +62,7 @@ public class SkillComponent : MonoBehaviour
     }
 
 
-    // ½ºÅ³ ÀåÂø 
+    // ìŠ¤í‚¬ ì¥ì°© 
     public void SetActiveSkill(SkillSlot slot , ActiveSkill skill)
     {
         if(skill == null) return;
@@ -73,7 +73,7 @@ public class SkillComponent : MonoBehaviour
         skillEventHandler?.OnSetting_ActiveSkill(skill);
     }
 
-    // ½½·ÔÀÇ ÀÖ´Â ½ºÅ³ »ç¿ë 
+    // ìŠ¬ë¡¯ì˜ ìˆëŠ” ìŠ¤í‚¬ ì‚¬ìš© 
     public void UseSkill(SkillSlot slot)
     {
         if (bIsSkillAction)
@@ -83,13 +83,21 @@ public class SkillComponent : MonoBehaviour
         }
 
         currentSlot = slot;
-        skillSlotTable[slot]?.Cast();
-        OnSkillUse?.Invoke(true); 
+        OnSkillUse?.Invoke(true);
+        DoAction();
     }
 
-    public void Begin_SkillAction()
+    public override void DoAction()
+    {
+        base.DoAction();
+        
+        skillSlotTable[currentSlot]?.Cast();
+    }
+
+    public override void BeginDoAction()
     {
         if(currentSlot == SkillSlot.MAX) return;
+        base.BeginDoAction();
         
         bIsSkillAction = true;
         skillSlotTable[currentSlot]?.Begin_DoAction();
@@ -97,14 +105,39 @@ public class SkillComponent : MonoBehaviour
         skillEventHandler?.OnBegin_UseSkill();
     }
 
-    public void End_SkillAction()
+    public override void EndDoAction()
     {
         if (currentSlot == SkillSlot.MAX) return;
+        base.EndDoAction();
 
         bIsSkillAction = false; 
         skillSlotTable[currentSlot]?.End_DoAction();
         currentSlot = SkillSlot.MAX;
 
         skillEventHandler?.OnEnd_UseSkill();
+    }
+
+    public override void BeginJudgeAttack() 
+    {
+        base.BeginJudgeAttack();
+        skillSlotTable[currentSlot]?.Begin_JudgeAttack();
+    }
+
+    public override void EndJudgeAttack() 
+    {
+        base.EndJudgeAttack();
+        skillSlotTable[currentSlot]?.End_JudgeAttack();
+    }
+
+    public override void PlaySound()
+    {
+        base.PlaySound();
+        skillSlotTable[currentSlot]?.Play_Sound();
+    }
+
+    public override void PlayCameraShake()
+    {
+        base.PlayCameraShake();
+        skillSlotTable[currentSlot]?.Play_CameraShake();
     }
 }

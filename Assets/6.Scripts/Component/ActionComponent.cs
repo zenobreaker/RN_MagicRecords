@@ -2,20 +2,14 @@
 using System;
 using UnityEngine;
 
-public interface IActionable
-{
-    public void DoAction();
-
-    public void End_DoAction();
-}
 
 public abstract class ActionComponent
     : MonoBehaviour
-    , IActionable
 {
     public Action OnBeginDoAction;
     public Action OnEndDoAction;
 
+    protected GameObject rootObject;
     protected bool bInAction;
     public bool InAction { get => bInAction; private set => bInAction = value; }
 
@@ -24,12 +18,17 @@ public abstract class ActionComponent
         InAction = true;
     }
 
-    public virtual void End_DoAction()
+    public virtual void BeginDoAction() { }
+        
+    public virtual void EndDoAction()
     {
         InAction = false;
     }
 
-    public virtual void Play_Sound() { }
-    public virtual void Play_CameraShake() { }
+    public virtual void BeginJudgeAttack() { }
+    public virtual void EndJudgeAttack() { }
+
+    public virtual void PlaySound() { }
+    public virtual void PlayCameraShake() { }
 
 }

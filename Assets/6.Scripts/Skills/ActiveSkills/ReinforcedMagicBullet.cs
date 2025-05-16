@@ -1,8 +1,8 @@
-using System;
+ï»¿using System;
 using UnityEngine;
 
 /// <summary>
-/// °­È­ ¸¶Åº - Àü¹æÀ¸·Î ¿©·¯ È¿°ú°¡ ³»ÀåµÈ °­È­µÈ ¸¶ÅºÀ» ¹ß»çÇÑ´Ù.
+/// ê°•í™” ë§ˆíƒ„ - ì „ë°©ìœ¼ë¡œ ì—¬ëŸ¬ íš¨ê³¼ê°€ ë‚´ì¥ëœ ê°•í™”ëœ ë§ˆíƒ„ì„ ë°œì‚¬í•œë‹¤.
 /// </summary>
 public class ReinforcedMagicBullet : ActiveSkill
 {
@@ -28,23 +28,40 @@ public class ReinforcedMagicBullet : ActiveSkill
 
         animator.runtimeAnimatorController = phaseSkill?.actionData?.AnimatorOv;
         weaponController?.SetWeaponAnimation(phaseSkill?.actionData?.WeaponAnimOv);
-
-
+       
         animator.SetFloat(phaseSkill.actionData.ActionSpeedHash, phaseSkill.actionData.ActionSpeed);
         animator.Play(phaseSkill?.actionData?.StateName, 0, 0);
         weaponController?.DoAction(phaseSkill?.actionData?.StateName);
-
-        phaseSkill?.actionData?.Play_CameraShake();
     }
 
-    public override void Begin_DoAction()
+    private void OnProjectileHit(Collider self, Collider other, Vector3 point)
+    {
+        Debug.Log($"self : {self} other : {other}");
+
+        // hit Sound Play
+        //SoundManager.Instance.PlaySFX(doactionData[index].hitSoundName);
+
+        //Instantiate<GameObject>(doactionData[index].HitParticle, point, rootObject.transform.rotation);
+    }
+
+
+    public override void End_DoAction()
+    {
+        base.End_DoAction();
+
+        phaseSkill = null;
+    }
+
+    public override void Begin_JudgeAttack() 
     {
         if (phaseSkill == null) return;
 
-        // ¸¶Åº ¿ÀºêÁ§Æ® »ı¼º 
+        base.Begin_JudgeAttack();
 
-        Vector3 localOffset = phaseSkill.spawnPosition; // ½ºÆù À§Ä¡(·ÎÄÃ ±âÁØ)
-        Vector3 position = ownerObject.transform.TransformPoint(localOffset); // ·ÎÄÃ -> ¿ùµå ÁÂÇ¥·Î º¯°æ
+
+        // ë§ˆíƒ„ ì˜¤ë¸Œì íŠ¸ ìƒì„± 
+        Vector3 localOffset = phaseSkill.spawnPosition; // ìŠ¤í° ìœ„ì¹˜(ë¡œì»¬ ê¸°ì¤€)
+        Vector3 position = ownerObject.transform.TransformPoint(localOffset); // ë¡œì»¬ -> ì›”ë“œ ì¢Œí‘œë¡œ ë³€ê²½
         Quaternion rotation = ownerObject.transform.rotation * phaseSkill.spwanQuaternion;
 
         GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
@@ -57,19 +74,19 @@ public class ReinforcedMagicBullet : ActiveSkill
         }
     }
 
-
-    private void OnProjectileHit(Collider self, Collider other, Vector3 point)
+    public override void Play_Sound()
     {
-        Debug.Log($"self : {self} other : {other}");
+        if (phaseSkill == null) return;
+        base.Play_Sound();
 
-        // hit Sound Play
-        //SoundManager.Instance.PlaySFX(doactionData[index].hitSoundName);
-
-        //Instantiate<GameObject>(doactionData[index].HitParticle, point, rootObject.transform.rotation);
+        phaseSkill.actionData.Play_Sound();
     }
 
-    public override void End_DoAction()
+    public override void Play_CameraShake()
     {
-         phaseSkill = null;
+        if (phaseSkill == null) return;
+        base.Play_CameraShake();
+
+        phaseSkill.actionData.Play_CameraShake();
     }
 }
