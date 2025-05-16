@@ -56,8 +56,6 @@ public partial class ComboComponent : MonoBehaviour
         weapon.OnEndDoAction += OnEndDoAction;
 
         inputQueue = new Queue<InputCommand>();
-
-        lastInputTime = -999f;
     }
 
     private void OnWeaponTypeChanged_Combo(SO_Combo comboData)
@@ -95,12 +93,12 @@ public partial class ComboComponent : MonoBehaviour
         {
 #if UNITY_EDITOR
             if (bDebug)
-                Debug.Log($"Invalid Time Reset");
+                Debug.Log($"Invalid Time Reset:{currentTime} /  {currentTime - lastInputTime}");
 #endif
             ResetCombo();
         }
 
-        bool isFirstInput = lastInputTime < 0 && comboIndex == 0;
+        bool isFirstInput = lastInputTime < 0 || comboIndex == 0;
 
         comboInputHandler?.HandleInputEnabled(isFirstInput | isWithinLastInputTime); 
         comboInputHandler?.HandleInputBuffered(isBuffered);
@@ -221,7 +219,6 @@ public partial class ComboComponent : MonoBehaviour
         var data = currComboObj?.GetComboData(0);
         comboResetTime = data.ComboResetTime;
 
-        lastInputTime = -999;
         comboResetCoroutine = null;
 
         inputQueue.Clear();
