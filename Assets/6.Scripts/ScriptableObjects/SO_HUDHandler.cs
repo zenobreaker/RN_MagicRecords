@@ -16,23 +16,11 @@ public class SO_HUDHandler : ScriptableObject
     public void OnInitValue_HP(float value) => OnInitHP?.Invoke(value);
     public void OnInitValue_MP(float value) => OnInitMP?.Invoke(value);
 
-    public void OnChangeValue_HP(float value)
-    {
-        OnChangeHP?.Invoke(value);
-    }
+    public void OnChangeValue_HP(float value) => OnChangeHP?.Invoke(value);
 
-    public void OnChangeValue_HP(float value1, float value2)
-    {
-        OnChangeHP_TwoParam?.Invoke(value1, value2);
-    }
+    public void OnChangeValue_HP(float value1, float value2) => OnChangeHP_TwoParam?.Invoke(value1, value2);
 
-    public void OnChangeValue_MP(float value)
-    {
-        OnChangeMP.Invoke(value);
-    }
+    public void OnChangeValue_MP(float value) => OnChangeMP.Invoke(value);
 
-    public void OnChangeValue_MP(float value1, float value2)
-    {
-        OnChangeMP_TwoParam?.Invoke(value1, value2);
-    }
+    public void OnChangeValue_MP(float value1, float value2) => OnChangeMP_TwoParam?.Invoke(value1, value2);
 }

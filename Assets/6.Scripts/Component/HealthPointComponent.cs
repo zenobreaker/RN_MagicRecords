@@ -37,7 +37,7 @@ public class HealthPointComponent : MonoBehaviour
         {
             handler = Resources.Load<SO_HUDHandler>(path);
         }
-
+        Debug.Log($"[{gameObject.name}] maxHealthPoint (Awake) = {maxHealthPoint}");
         InitCurrentHealth();
 
         isShow = false;
@@ -94,7 +94,8 @@ public class HealthPointComponent : MonoBehaviour
     {
         currentHealthPoint = maxHealthPoint;
 
-        handler?.OnInitValue_HP(currentHealthPoint);
+        if(GetComponent<Player>() != null ) 
+            handler?.OnInitValue_HP(currentHealthPoint);
     }
 
 
