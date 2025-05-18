@@ -57,4 +57,9 @@ public class DamageHandleComponent : MonoBehaviour
         //TODO: Damage Animation
     }
 
+    public void OnPlayDamagedAnimation()
+    {
+
+    }
+
 }

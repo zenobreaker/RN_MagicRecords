@@ -2525,6 +2525,10 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4597534035726720278, guid: c1d31a37f6bfd784d9e5b5db65d3e081, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8312557885548543211, guid: c1d31a37f6bfd784d9e5b5db65d3e081, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -4399,6 +4403,7 @@ GameObject:
   - component: {fileID: 2024612430}
   - component: {fileID: 2024612429}
   - component: {fileID: 2024612428}
+  - component: {fileID: 2024612432}
   m_Layer: 0
   m_Name: Plane
   m_TagString: Untagged
@@ -4500,6 +4505,38 @@ Transform:
   - {fileID: 1492735769}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2024612432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2024612427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_AgentTypeID: 0
+  m_CollectObjects: 2
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: dd191d46715c5814faa6fb70a6516345, type: 2}
+  m_BuildHeightMesh: 0
 --- !u!224 &2070644742 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2444162501667843283, guid: c1d31a37f6bfd784d9e5b5db65d3e081, type: 3}
@@ -4624,6 +4661,12 @@ GameObject:
   - component: {fileID: 3494887771282111760}
   - component: {fileID: 3494887771282111761}
   - component: {fileID: 3494887771282111762}
+  - component: {fileID: 3494887771282111763}
+  - component: {fileID: 3494887771282111764}
+  - component: {fileID: 3494887771282111766}
+  - component: {fileID: 3494887771282111765}
+  - component: {fileID: 3494887771282111768}
+  - component: {fileID: 3494887771282111767}
   m_Layer: 0
   m_Name: Slime
   m_TagString: Untagged
@@ -4741,7 +4784,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55e6c09eea2891b4bb6343b91672230e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageMotions: []
+  damageMotions:
+  - damageType: 0
+    AO_DamageMotion: {fileID: 0}
 --- !u!114 &3494887771282111761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4789,6 +4834,107 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ChangeFrame: 5
+--- !u!114 &3494887771282111763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2669360006707248590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0038c16c34866b4f9e25c9c0dc0f7e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Graph: {fileID: 5663370945778764342, guid: a316f99350c3d524f8bd471b3d36e2f2, type: 2}
+  m_BlackboardVariableOverridesList:
+  - rid: 6694591355817296086
+  m_IsInitialised: 0
+  m_IsStarted: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 6694591355817296086
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Self
+        m_Value: {fileID: 2669360006707248590}
+--- !u!114 &3494887771282111764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2669360006707248590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f53ae699252000c468663b062b072afd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  distance: 5
+  angle: 45
+  lostTime: 2
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  bDrawCheckDebug: 1
+--- !u!114 &3494887771282111765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2669360006707248590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9866de94719c52840ac1a17bf41d6ae2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bgAgent: {fileID: 3494887771282111763}
+  attackRange: 3
+--- !u!114 &3494887771282111766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2669360006707248590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0e38e0165b16364b87b992616542fee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CanMoveName: CanMove
+  AIStateTypeName: State
+  TargetName: Target
+--- !u!114 &3494887771282111767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2669360006707248590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6f2f178497d6c45a82fa0f94736ac9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3494887771282111768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2669360006707248590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a60bf1049ab74d346b7fd37d9eca2dd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  statusEffectType: 0
 --- !u!1 &3559592651181170621
 GameObject:
   m_ObjectHideFlags: 0
@@ -4981,17 +5127,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Namsaengyi
       objectReference: {fileID: 0}
+    - target: {fileID: 2169032415967224289, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169032415967224289, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 2697475741795237462, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
       propertyPath: handler
       value: 
       objectReference: {fileID: 11400000, guid: 505ecbaae7d79c840a63b63fa41f2a96, type: 2}
-    - target: {fileID: 2697475741795237462, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
-      propertyPath: maxHealthPoint
-      value: 100
-      objectReference: {fileID: 0}
     - target: {fileID: 8763096052454413957, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
       propertyPath: bDebug
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8763096052454413957, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
       propertyPath: bDebugDraw

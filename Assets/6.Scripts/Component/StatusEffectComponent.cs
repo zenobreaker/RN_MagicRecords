@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using UnityEngine;
 
 [System.Flags]
@@ -12,17 +12,17 @@ public enum StatusEffectType
     Max,
 }
 
+/// <summary>
+/// ìºë¦­í„°ì— ìƒíƒœì´ìƒ ê´€ë¦¬ìš© ì»´í¬ë„ŒíŠ¸ 
+/// </summary>
 public class StatusEffectComponent : MonoBehaviour
 {
-    /// <summary>
-    /// Ä³¸¯ÅÍ¿¡ »óÅÂÀÌ»ó °ü¸®¿ë ÄÄÆ÷³ÍÆ® 
-    /// </summary>
-
     [SerializeField] private StatusEffectType statusEffectType;
 
     public event Action<StatusEffectType, StatusEffectType> OnStatusEffectChanged;
 
-    GameObject OwnerCharacter; 
+    private GameObject rootObject;
+
 
     private void Start()
     {
@@ -60,6 +60,18 @@ public class StatusEffectComponent : MonoBehaviour
         return (statusEffectType & inType) != 0;
     }
 
+    // ì›€ì§ì¼ ìˆ˜ ìˆëŠ” ìƒíƒœì´ìƒì¸ê°€ì— ëŒ€í•œ ë°˜í™˜ 
+    public bool GetMovableCondition()
+    {
+        bool check = false;
+        check |= HasCondition(StatusEffectType.Stun);
+        check |= HasCondition(StatusEffectType.Down);
+        check |= HasCondition(StatusEffectType.Ice);
+        check |= HasCondition(StatusEffectType.Airborne);
+
+        return check == false; 
+    }
+
     private void ApplyStatusEffect()
     {
         foreach(StatusEffectType type in Enum.GetValues(typeof(StatusEffectType)))
@@ -82,4 +94,6 @@ public class StatusEffectComponent : MonoBehaviour
                 break; 
         }
     }
+
+
 }

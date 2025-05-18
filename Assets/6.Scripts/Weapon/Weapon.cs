@@ -6,6 +6,7 @@ using UnityEngine;
 [Serializable]
 public class HitData
 {
+    public DamageType DamageType;
     public float Distance;
     public float HeightValue;
     public int StopFrame;
