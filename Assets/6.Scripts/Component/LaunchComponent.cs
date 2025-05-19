@@ -18,7 +18,6 @@ public class LaunchComponent : MonoBehaviour
     {
         if (rigid == null || hitData == null || attacker == null) return;
 
-        //TODO: 런치될 수 있는 상태인지도 검사 
         Vector3 dir = attacker.transform.forward; 
         float lauch = rigid.mass * hitData.Distance;
 
@@ -30,6 +29,7 @@ public class LaunchComponent : MonoBehaviour
 
         StartCoroutine(Change_IsKinematics(ChangeFrame));
     }
+
 
     private IEnumerator Change_IsKinematics(int frame)
     {

@@ -60,7 +60,6 @@ public class StateComponent : MonoBehaviour
         OnStateTypeChanged?.Invoke(prevType, type);
     }
 
-
     private void OnStatusEffectChanged(StatusEffectType oldSE, StatusEffectType newSE)
     {
         if (statusEffect == null) return;

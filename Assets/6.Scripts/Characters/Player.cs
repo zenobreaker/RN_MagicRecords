@@ -5,6 +5,7 @@ using static StateComponent;
 public class Player
     : Character
     , IDamagable
+    , ILaunchable
     , IWeaponUser
 {
 
@@ -12,10 +13,10 @@ public class Player
     private WeaponComponent weapon;
     private SkillComponent skill;
     private DamageHandleComponent damageHandle; 
+    private LaunchComponent launch;
 
     private WeaponController weaponController;
-    private ActionComponent currentAction; 
-
+    private ActionComponent currentAction;
     private bool bIsUsedSkill = false;
 
     protected override void Awake()
@@ -33,6 +34,7 @@ public class Player
         Awake_SkillEventHandle(skill, weapon);
         
         damageHandle = GetComponent<DamageHandleComponent>();
+        launch = GetComponent<LaunchComponent>();
 
         PlayerInput input = GetComponent<PlayerInput>();
         Debug.Assert(input != null);
@@ -155,12 +157,8 @@ public class Player
             return;
         }
 
-        if (damageHandle != null)
-            damageHandle.OnDamage(damageEvent);
-
-        // 스킬 액션 중이라면 데미지만 닳도록
-        if (weapon != null /*&& weapon.InSkillAction*/)
-            return;
+        ApplyLaunch(attacker, causer, damageEvent?.hitData);
+        damageHandle?.OnDamage(damageEvent);
 
         if (healthPoint.Dead == false)
         {
@@ -179,5 +177,10 @@ public class Player
         MovableStopper.Instance.Delete(this);
         MovableSlower.Instance.Delete(this);
         Destroy(gameObject, 5);
+    }
+
+    public void ApplyLaunch(GameObject attacker, Weapon causer, HitData hitData)
+    {
+        launch?.ApplyLaunch(attacker, causer, hitData);
     }
 }

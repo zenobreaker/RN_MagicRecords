@@ -55,12 +55,11 @@ public class Enemy
         if (healthPoint != null && healthPoint.Dead)
             return;
 
-        if (damageHandle != null)
-        {
-            damageHandle.OnDamage(damageEvent);
-        }
-
-        ApplyLauch(attacker, causer, damageEvent?.hitData);
+        // Look Attacker 
+        LookAttacker(attacker);
+        ApplyLaunch(attacker, causer, damageEvent?.hitData);
+        
+        damageHandle?.OnDamage(damageEvent);
 
         StartCoroutine(Change_Color(changeColorTime));
 
@@ -111,7 +110,14 @@ public class Enemy
         state?.SetIdleMode();
     }
 
-    public void ApplyLauch(GameObject attacker, Weapon causer, HitData hitData)
+    private void LookAttacker(GameObject attacker)
+    {
+        if (attacker == null) return;
+
+        transform.LookAt(attacker.transform, Vector3.up);
+    }
+
+    public void ApplyLaunch(GameObject attacker, Weapon causer, HitData hitData)
     {
         launch?.ApplyLaunch(attacker, causer, hitData);
     }

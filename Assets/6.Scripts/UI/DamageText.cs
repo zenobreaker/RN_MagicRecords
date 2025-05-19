@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.UIElements;
 
 public class DamageText : MonoBehaviour
 {
@@ -23,10 +24,9 @@ public class DamageText : MonoBehaviour
 
     private void LateUpdate()
     {
-        Vector3 upper = new Vector3(0, 1.0f * Time.deltaTime, 0);
-        tdPos += upper;
+        tdPos += Vector3.up * Time.deltaTime;
         this.transform.position = Camera.main.WorldToScreenPoint(tdPos);
-
+        
         currentTime -= Time.deltaTime;
         if (currentTime <= 0.0f)
         {
@@ -59,6 +59,7 @@ public class DamageText : MonoBehaviour
         currentTime = lifeTime;
 
         tdPos = position;
+        transform.position = tdPos;
 
         gameObject.SetActive(true);
 

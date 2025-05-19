@@ -83,7 +83,7 @@ public class PatrolComponent : MonoBehaviour
 
         bArrived = true;
 
-        //TODO: Wait Mode �� ������
+        //TODO: Wait Mode 
         float waitTime = goalDelay + UnityEngine.Random.Range(-goalDelayRandom, goalDelayRandom);
 
         IEnumerator waitRoutine = WaitDelay(waitTime);
@@ -120,7 +120,7 @@ public class PatrolComponent : MonoBehaviour
 
         Vector3 prevGoalPosition = goalPosition;
 
-        // �� �� �ִ� ��ġ�� ���� ������ ������.
+   
         while (true)
         {
             while (true)
@@ -139,7 +139,7 @@ public class PatrolComponent : MonoBehaviour
             path = new NavMeshPath();
 
 
-            // �� �� �ִ� ��ΰ� ������ ��ƾ ���� 
+          
             if (navMeshAgent.CalculatePath(goalPosition, path) == true)
             {
                 navMeshPath = path;
@@ -148,7 +148,7 @@ public class PatrolComponent : MonoBehaviour
             }
 
 
-            yield return null;  // �������� ���� 
+            yield return null; 
         }
     }
 

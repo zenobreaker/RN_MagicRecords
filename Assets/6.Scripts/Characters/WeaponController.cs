@@ -11,7 +11,7 @@ public class WeaponController : MonoBehaviour
 
     public void SetWeaponAnimation(AnimatorOverrideController overrideController)
     {
-        if (weaponAnimator == null)
+        if (weaponAnimator == null || overrideController == null)
             return;
 
         weaponAnimator.runtimeAnimatorController = overrideController;

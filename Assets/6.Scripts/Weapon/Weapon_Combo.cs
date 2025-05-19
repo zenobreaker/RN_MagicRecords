@@ -53,24 +53,22 @@ public class Weapon_Combo : Weapon
 
         // Set Override 
         { 
-            animator.runtimeAnimatorController = actionDatas[index].AnimatorOv;
+            if(actionDatas[index].AnimatorOv != null)
+                animator.runtimeAnimatorController = actionDatas[index].AnimatorOv;
             weaponController?.SetWeaponAnimation(actionDatas[index].WeaponAnimOv);
         }
 
         // Play Animation 
         {
-
             animator.SetFloat(actionDatas[index].ActionSpeedHash, actionDatas[index].ActionSpeed);
             //animator.Play(actionDatas[index].StateName, 0, 0);
             animator.SetTrigger(actionDatas[index].StateName);
             weaponController?.DoAction(actionDatas[index].StateName);
 
-
 #if UNITY_EDITOR
             if (bDebug)
                 Debug.Log($"Combo Play: {this.index} {actionDatas[index].StateName}");
 #endif
-
         }
     }
 }

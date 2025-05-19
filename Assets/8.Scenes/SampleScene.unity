@@ -4787,6 +4787,7 @@ MonoBehaviour:
   damageMotions:
   - damageType: 0
     AO_DamageMotion: {fileID: 0}
+  DamageAnimStateName: Hit
 --- !u!114 &3494887771282111761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5139,6 +5140,14 @@ PrefabInstance:
       propertyPath: handler
       value: 
       objectReference: {fileID: 11400000, guid: 505ecbaae7d79c840a63b63fa41f2a96, type: 2}
+    - target: {fileID: 7950985210200753739, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
+      propertyPath: DamageAnimStateName
+      value: Hit
+      objectReference: {fileID: 0}
+    - target: {fileID: 7950985210200753739, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
+      propertyPath: damageMotions.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8763096052454413957, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
       propertyPath: bDebug
       value: 0

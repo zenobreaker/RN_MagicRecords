@@ -2,5 +2,5 @@ using UnityEngine;
 
 public interface ILaunchable
 {
-    void ApplyLauch(GameObject attacker, Weapon causer, HitData hitData);
+    void ApplyLaunch(GameObject attacker, Weapon causer, HitData hitData);
 }
