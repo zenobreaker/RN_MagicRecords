@@ -17,20 +17,20 @@ public class AIController_Melee : AIController
         GameObject target = perception.GetTarget();
         aiBehaivour.SetTarget(target); 
   
-        if (target == null)
-        {
-            aiBehaivour.SetWaitMode();
-            //aiBehaivour.SetPatrolMode(); 
-            return; 
-        }
+        //if (target == null)
+        //{
+        //    aiBehaivour.SetWaitMode();
+        //    //aiBehaivour.SetPatrolMode(); 
+        //    return; 
+        //}
         
-        float distance = Vector3.Distance(target.transform.position, transform.position); 
-        if(distance <= attackRange)
-        {
-            aiBehaivour.SetActionMode();
-            return;
-        }
+        //float distance = Vector3.Distance(target.transform.position, transform.position); 
+        //if(distance <= attackRange)
+        //{
+        //    aiBehaivour.SetActionMode();
+        //    return;
+        //}
 
-        aiBehaivour.SetApproachMode();    
+        //aiBehaivour.SetApproachMode();    
     }
 }

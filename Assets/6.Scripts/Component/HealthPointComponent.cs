@@ -56,7 +56,7 @@ public class HealthPointComponent : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (uiEnemyCanvas != null)
             uiEnemyCanvas.transform.rotation = Camera.main.transform.rotation;
