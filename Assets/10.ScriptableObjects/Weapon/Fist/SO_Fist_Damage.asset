@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3625fae27c19a6642977f1131c75e757, type: 3}
+  m_Name: SO_Fist_Damage
+  m_EditorClassIdentifier: 
+  damageDatas:
+  - damageType: 0
+    Power: 1
+    bDownable: 0
+    bLauncher: 0
+    SoundName: 
+    impulseDirection: {x: 0, y: 0, z: 0}
+    settings: {fileID: 0}
+    hitData:
+      Distance: 1
+      HeightValue: 0
+      StopFrame: 0
+      HitImpactIndex: 0
+      HitSoundName: 
+      HitParticle: {fileID: 0}
+      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
+  - damageType: 0
+    Power: 1
+    bDownable: 0
+    bLauncher: 0
+    SoundName: 
+    impulseDirection: {x: 0, y: 0, z: 0}
+    settings: {fileID: 0}
+    hitData:
+      Distance: 1
+      HeightValue: 0
+      StopFrame: 0
+      HitImpactIndex: 0
+      HitSoundName: 
+      HitParticle: {fileID: 0}
+      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
+  - damageType: 0
+    Power: 1
+    bDownable: 0
+    bLauncher: 0
+    SoundName: 
+    impulseDirection: {x: 0, y: 0, z: 0}
+    settings: {fileID: 0}
+    hitData:
+      Distance: 1
+      HeightValue: 0
+      StopFrame: 0
+      HitImpactIndex: 0
+      HitSoundName: 
+      HitParticle: {fileID: 0}
+      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
+  - damageType: 0
+    Power: 1.2
+    bDownable: 0
+    bLauncher: 0
+    SoundName: 
+    impulseDirection: {x: 0, y: 0, z: 0}
+    settings: {fileID: 0}
+    hitData:
+      Distance: 3
+      HeightValue: 0
+      StopFrame: 0
+      HitImpactIndex: 0
+      HitSoundName: 
+      HitParticle: {fileID: 0}
+      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+      HitParticleSacleOffset: {x: 1, y: 1, z: 1}

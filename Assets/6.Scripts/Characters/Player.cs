@@ -119,16 +119,16 @@ public class Player
         currentAction?.EndDoAction(); 
     }
 
-    public override void Begin_JudgeAttack()
+    public override void Begin_JudgeAttack(AnimationEvent e)
     {
-        base.Begin_JudgeAttack();
-        currentAction?.BeginJudgeAttack();
+        base.Begin_JudgeAttack(e);
+        currentAction?.BeginJudgeAttack(e);
     }
 
-    public override void End_JudgeAttack()
+    public override void End_JudgeAttack(AnimationEvent e)
     {
-        base.End_JudgeAttack();
-        currentAction?.EndJudgeAttack();
+        base.End_JudgeAttack(e);
+        currentAction?.EndJudgeAttack(e);
     }
 
     public override void Play_Sound()

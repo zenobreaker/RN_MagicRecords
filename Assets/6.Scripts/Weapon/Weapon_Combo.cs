@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 
@@ -13,6 +14,8 @@ public class Weapon_Combo : Weapon
     protected CinemachineBrain brain;
     #endregion
 
+    protected Collider[] colliders;
+    protected List<GameObject> hitList;
 
     protected int index;
     protected bool bEnable;
@@ -21,6 +24,9 @@ public class Weapon_Combo : Weapon
     protected override void Awake()
     {
         base.Awake();
+
+        colliders = GetComponentsInChildren<Collider>();
+        hitList = new List<GameObject>();
     }
 
     protected override void Start()
@@ -39,12 +45,7 @@ public class Weapon_Combo : Weapon
     {
         base.DoAction(index);
 
-        //this.index = index &= so_Combo.comboDatas.Count;
-        if (animator == null)
-        {
-            Debug.LogError("Animator is Null");
-            return;
-        }
+        Debug.Assert(animator != null, "Animation is null");
 
         this.index = index;
 
@@ -61,7 +62,6 @@ public class Weapon_Combo : Weapon
         // Play Animation 
         {
             animator.SetFloat(actionDatas[index].ActionSpeedHash, actionDatas[index].ActionSpeed);
-            //animator.Play(actionDatas[index].StateName, 0, 0);
             animator.SetTrigger(actionDatas[index].StateName);
             weaponController?.DoAction(actionDatas[index].StateName);
 
@@ -69,6 +69,29 @@ public class Weapon_Combo : Weapon
             if (bDebug)
                 Debug.Log($"Combo Play: {this.index} {actionDatas[index].StateName}");
 #endif
+        }
+    }
+
+    protected virtual void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject == rootObject) return;
+        if (other.gameObject.CompareTag(rootObject.tag)) return;
+        if (hitList.Contains(other.gameObject)) return;
+
+        hitList.Add(other.gameObject);
+
+        OnDamage(other);
+    }
+
+    protected virtual void OnDamage(Collider other)
+    {
+        damageDatas[index].PlayHitSound(); 
+
+        if(other.TryGetComponent<IDamagable>(out IDamagable damage))
+        {
+            Vector3 hitPoint = colliders[index].ClosestPoint(other.transform.position);
+            hitPoint = other.transform.InverseTransformPoint(hitPoint);
+            damage.OnDamage(rootObject, this, hitPoint, damageDatas[index].GetMyDamageEvent(rootObject)); 
         }
     }
 }

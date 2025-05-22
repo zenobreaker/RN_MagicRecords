@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 
 [Serializable]
@@ -14,7 +15,12 @@ public class HitData
     public string HitSoundName;
     public GameObject HitParticle;
     public Vector3 HitParticlePositionOffset = Vector3.zero;
-    public Vector3 HitParticleSacleOffset = Vector3.one;
+    public Vector3 HitParticleScaleOffset = Vector3.one;
+
+    public void PlayHitSound()
+    {
+        SoundManager.Instance.PlaySFX(HitSoundName);
+    }
 }
 
 
@@ -60,6 +66,12 @@ public class DamageData
         return DamageCalculator.GetMyDamageEvent(status, this, bFirstHit);
     }
 
+    public void PlayHitSound()
+    {
+        if (hitData == null) return;
+        
+        hitData.PlayHitSound(); 
+    }
 }
 
 [Serializable]
@@ -275,8 +287,8 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    public virtual void Begin_JudgeAttack() { }
-    public virtual void End_JudgeAttack() { }
+    public virtual void Begin_JudgeAttack(AnimationEvent e) { }
+    public virtual void End_JudgeAttack(AnimationEvent e) { }
 
     public virtual void Play_PlaySound() { }
 

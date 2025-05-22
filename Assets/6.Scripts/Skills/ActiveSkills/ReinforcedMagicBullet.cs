@@ -52,11 +52,11 @@ public class ReinforcedMagicBullet : ActiveSkill
         phaseSkill = null;
     }
 
-    public override void Begin_JudgeAttack() 
+    public override void Begin_JudgeAttack(AnimationEvent e) 
     {
         if (phaseSkill == null) return;
 
-        base.Begin_JudgeAttack();
+        base.Begin_JudgeAttack(e);
 
 
         // 마탄 오브젝트 생성 

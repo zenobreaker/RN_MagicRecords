@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11047d4ab850e444d87ac2846cc6f086, type: 3}
+  m_Name: SO_Slime_Fist_Action
+  m_EditorClassIdentifier: 
+  actionDatas:
+  - stateName: Action
+    actionSpeed: 1.5
+    animatorOv: {fileID: 0}
+    weaponAnimOv: {fileID: 0}
+    SoundName: Gun_Normal1
+    impulseDirection: {x: 0, y: 0, z: 0}
+    settings: {fileID: 0}
+    bCanMove: 0
