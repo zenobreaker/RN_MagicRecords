@@ -25,8 +25,8 @@ public abstract class ActionComponent
         InAction = false;
     }
 
-    public virtual void BeginJudgeAttack() { }
-    public virtual void EndJudgeAttack() { }
+    public virtual void BeginJudgeAttack(AnimationEvent e) { }
+    public virtual void EndJudgeAttack(AnimationEvent e) { }
 
     public virtual void PlaySound() { }
     public virtual void PlayCameraShake() { }

@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 public enum WeaponType
 {
-    Unarmed = 0, Sword, Gun, MAX,
+    Unarmed = 0, Fist, Sword, Gun, MAX,
 }
 
 public enum SkillSlot
@@ -31,10 +31,19 @@ public class WeaponComponent : ActionComponent
 
     #region Equipment 
     public bool UnarmedMode { get => type == WeaponType.Unarmed; }
+    public bool FistMode { get => type == WeaponType.Fist; }
     public bool SwordMode { get => type == WeaponType.Sword; }
     public bool GunMode { get => type == WeaponType.Gun; }
 
 
+
+    public void SetFistMode()
+    {
+        if (state.IdleMode == false)
+            return;
+
+        SetMode(WeaponType.Fist);
+    }
 
     public void SetSwordMode()
     {
@@ -133,6 +142,8 @@ public class WeaponComponent : ActionComponent
 
         for (int i = 0; i < originPrefabs.Length; i++)
         {
+            if (originPrefabs[i] == null) continue; 
+
             GameObject obj = Instantiate<GameObject>(originPrefabs[i], transform);
             Weapon weapon = obj.GetComponent<Weapon>();
             if (weapon != null)
@@ -160,6 +171,9 @@ public class WeaponComponent : ActionComponent
         // Equip
         switch (initType)
         {
+            case WeaponType.Fist:
+                SetFistMode();
+                break; 
             case WeaponType.Sword:
                 SetSwordMode();
                 break;
@@ -228,16 +242,16 @@ public class WeaponComponent : ActionComponent
         weaponTable[type]?.End_DoAction();
     }
 
-    public override void BeginJudgeAttack() 
+    public override void BeginJudgeAttack(AnimationEvent e) 
     {
-        base.BeginJudgeAttack(); 
-        weaponTable[type]?.Begin_JudgeAttack(); 
+        base.BeginJudgeAttack(e); 
+        weaponTable[type]?.Begin_JudgeAttack(e); 
     }
 
-    public override void EndJudgeAttack() 
+    public override void EndJudgeAttack(AnimationEvent e) 
     {
-        base.EndJudgeAttack(); 
-        weaponTable[type]?.End_JudgeAttack(); 
+        base.EndJudgeAttack(e); 
+        weaponTable[type]?.End_JudgeAttack(e); 
     }
 
     public override void PlaySound()

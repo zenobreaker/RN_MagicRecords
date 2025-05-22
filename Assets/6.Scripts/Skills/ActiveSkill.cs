@@ -66,8 +66,8 @@ public abstract class ActiveSkill
 
     public virtual void End_DoAction() { }
 
-    public virtual void Begin_JudgeAttack() { }
-    public virtual void End_JudgeAttack() { }
+    public virtual void Begin_JudgeAttack(AnimationEvent e) { }
+    public virtual void End_JudgeAttack(AnimationEvent e) { }
 
     public virtual void Play_Sound () { }
     public virtual void Play_CameraShake() { }

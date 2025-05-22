@@ -17,6 +17,9 @@ public class Enemy
 
     private DamageHandleComponent damageHandle;
     private LaunchComponent launch;
+
+    private ActionComponent currentAction;
+
     protected override void Awake()
     {
         base.Awake();
@@ -39,6 +42,7 @@ public class Enemy
             index++;
         }
 
+        currentAction = GetComponent<ActionComponent>();
         damageHandle = GetComponent<DamageHandleComponent>();
         launch = GetComponent<LaunchComponent>();
     }
@@ -46,6 +50,23 @@ public class Enemy
     protected override void Start()
     {
         base.Start();
+    }
+
+    public override void End_DoAction()
+    {
+        currentAction?.EndDoAction();
+    }
+
+    public override void Begin_JudgeAttack(AnimationEvent e)
+    {
+        base.Begin_JudgeAttack(e);
+        currentAction?.BeginJudgeAttack(e);
+    }
+
+    public override void End_JudgeAttack(AnimationEvent e)
+    {
+        base.End_JudgeAttack(e);
+        currentAction?.EndJudgeAttack(e);
     }
 
 

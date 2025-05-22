@@ -117,16 +117,16 @@ public class SkillComponent : ActionComponent
         skillEventHandler?.OnEnd_UseSkill();
     }
 
-    public override void BeginJudgeAttack() 
+    public override void BeginJudgeAttack(AnimationEvent e) 
     {
-        base.BeginJudgeAttack();
-        skillSlotTable[currentSlot]?.Begin_JudgeAttack();
+        base.BeginJudgeAttack(e);
+        skillSlotTable[currentSlot]?.Begin_JudgeAttack(e);
     }
 
-    public override void EndJudgeAttack() 
+    public override void EndJudgeAttack(AnimationEvent e) 
     {
-        base.EndJudgeAttack();
-        skillSlotTable[currentSlot]?.End_JudgeAttack();
+        base.EndJudgeAttack(e);
+        skillSlotTable[currentSlot]?.End_JudgeAttack(e);
     }
 
     public override void PlaySound()

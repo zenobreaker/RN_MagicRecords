@@ -26,6 +26,8 @@ public class Gun : Weapon_Combo
             return;
 
         muzzleTransform = rootObject.transform.FindChildByName(muzzle_name);
+        
+        End_Equip();
     }
 
     public override void Begin_DoAction()
@@ -38,9 +40,9 @@ public class Gun : Weapon_Combo
         actionDatas[index].Play_CameraShake();
     }
 
-    public override void Begin_JudgeAttack()
+    public override void Begin_JudgeAttack(AnimationEvent e)
     {
-        base.Begin_JudgeAttack();
+        base.Begin_JudgeAttack(e);
 
         if (muzzleFlashPrefab != null)
         {

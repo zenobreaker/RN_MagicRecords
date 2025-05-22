@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3126351601299179236
+--- !u!1 &8948294764985675116
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,23 +8,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1624255698068293056}
-  - component: {fileID: 1176076393861642679}
-  - component: {fileID: 3636411342500667701}
+  - component: {fileID: 6527811670200936542}
+  - component: {fileID: 6560578619830358910}
+  - component: {fileID: 3271230353263757382}
   m_Layer: 0
-  m_Name: Gun
+  m_Name: Fist
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1624255698068293056
+--- !u!4 &6527811670200936542
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3126351601299179236}
+  m_GameObject: {fileID: 8948294764985675116}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -33,33 +33,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1176076393861642679
+--- !u!114 &6560578619830358910
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3126351601299179236}
+  m_GameObject: {fileID: 8948294764985675116}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4786bc13e7ef114b90e2db400e07634, type: 3}
+  m_Script: {fileID: 11500000, guid: 9d50460d34bd1504a8cd896d8a9c308e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bDebug: 0
-  type: 3
-  so_Action: {fileID: 11400000, guid: a2298c060e13c964db76768d8a535f10, type: 2}
-  so_Damage: {fileID: 11400000, guid: dceb0ba8e038ab34f85ee9a29f4ed661, type: 2}
-  so_Combo: {fileID: 11400000, guid: 207852ad9b1672f41a2da5e18ddf0bc4, type: 2}
-  muzzleFlashPrefab: {fileID: 183874007921423211, guid: 1574dcd3866ae6048a2ad399d17aca84, type: 3}
-  muzzle_name: Gun_Muzzle
-  bulletName: Bullet
---- !u!114 &3636411342500667701
+  type: 1
+  so_Action: {fileID: 0}
+  so_Damage: {fileID: 0}
+  so_Combo: {fileID: 0}
+--- !u!114 &3271230353263757382
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3126351601299179236}
+  m_GameObject: {fileID: 8948294764985675116}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
@@ -67,7 +64,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ImpulseDefinition:
     ImpulseChannel: 1
-    ImpulseShape: 1
+    ImpulseShape: 2
     CustomImpulseShape:
       serializedVersion: 2
       m_Curve: []
@@ -105,4 +102,4 @@ MonoBehaviour:
     DissipationMode: 2
     DissipationDistance: 100
     PropagationSpeed: 343
-  DefaultVelocity: {x: 0, y: -0.5, z: 0}
+  DefaultVelocity: {x: 0, y: -1, z: 0}
