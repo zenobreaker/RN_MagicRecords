@@ -121,7 +121,8 @@ public class MovableSlower : MonoBehaviour
     private IEnumerator Adjusting_Lighting(float duration, float targetIntensity)
     {
         float elapsedTime = 0f;
-
+        if (mainLight == null)
+            yield break; 
         float currentIntesity = mainLight.intensity;
 
         while (elapsedTime < duration)
