@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -83,10 +83,10 @@ public class DamageHandleComponent : MonoBehaviour
 
         health?.Damage(value);
         
-        // ¿ùµå ÁÂÇ¥·Î º¯È¯ÇØ¼­ º¸³»¾ß ÀûÀÌ È¸ÀüÇÏ´Â °æ¿ì¿¡µµ µ¥¹ÌÁö ÅØ½ºÆ®°¡ ¿ÂÀüÈ÷ È­¸éÀ¸·Î º¸ÀÓ 
+        // ì›”ë“œ ì¢Œí‘œë¡œ ë³€í™˜í•´ì„œ ë³´ë‚´ì•¼ ì ì´ íšŒì „í•˜ëŠ” ê²½ìš°ì—ë„ ë°ë¯¸ì§€ í…ìŠ¤íŠ¸ê°€ ì˜¨ì „íˆ í™”ë©´ìœ¼ë¡œ ë³´ì„ 
         Vector3 pos = transform.position + Vector3.up * dmgFontOffsetY;
         DamageText dt = ObjectPooler.SpawnFromPool<DamageText>("DamageText", pos);
-        dt?.DrawDamage(pos, damageEvent);
+        dt?.DrawDamage(pos, value, damageEvent.isCrit);
 
         // Play Damage Animation
         PlayDamageAnimation(damageEvent.hitData);
