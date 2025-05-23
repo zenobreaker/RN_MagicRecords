@@ -1,5 +1,6 @@
 using UnityEngine;
 
+#if UNITY_EDITOR
 public class Cheater : MonoBehaviour
 {
     Player player;
@@ -22,8 +23,31 @@ public class Cheater : MonoBehaviour
         // 스턴 테스트 
         if (Input.GetKeyDown(KeyCode.Keypad7))
             Test_Stun();
+
+        // 필드에 모든 적 체력 0 
+        if(Input.GetKeyDown(KeyCode.Keypad8))
+        {
+            Test_AllEnemyDead(); 
+        }
     }
 
+    private void Test_AllEnemyDead()
+    {
+        Debug.Log("All Enemy Kill!");
+        Enemy[] enemies = GameObject.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+        
+        foreach(var enemy in enemies)
+        {
+            if (enemy != null)
+            {
+                if(enemy.TryGetComponent<HealthPointComponent>(out var health))
+                {
+                    DamageEvent e = new DamageEvent(health.GetMaxHP);
+                    enemy.OnDamage(null, null, Vector3.zero, e);
+                }
+            }
+        }
+    }
 
     private void Test_Stun()
     {
@@ -39,3 +63,5 @@ public class Cheater : MonoBehaviour
         }
     }
 }
+
+#endif
