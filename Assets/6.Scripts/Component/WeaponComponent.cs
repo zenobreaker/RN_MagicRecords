@@ -106,7 +106,8 @@ public class WeaponComponent : ActionComponent
 
     private StateComponent state;
     private SkillComponent skill;
-    private StatusEffectComponent statusEffect; 
+    private StatusEffectComponent statusEffect;
+    private DashComponent dash; 
 
     private Animator animator;
 
@@ -127,9 +128,12 @@ public class WeaponComponent : ActionComponent
         state = GetComponent<StateComponent>();
         skill = GetComponent<SkillComponent>();
         statusEffect = GetComponent<StatusEffectComponent>();
-        Debug.Log(skill != null);
 
         Awake_InitWeapon();
+
+        dash = GetComponent<DashComponent>(); 
+        if( dash != null) 
+            dash.OnEndDash += EndDoAction;
     } 
 
     private void Awake_InitWeapon()

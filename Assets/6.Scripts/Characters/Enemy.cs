@@ -119,9 +119,6 @@ public class Enemy
             mat.color = originColors[index];
             index++;
         }
-
-        //TODO: 임시로 여기에 호출한다.
-        End_Damaged();
     }
 
     protected override void End_Damaged()
@@ -129,6 +126,7 @@ public class Enemy
         base.End_Damaged();
 
         state?.SetIdleMode();
+        currentAction?.EndDoAction();
     }
 
     private void LookAttacker(GameObject attacker)

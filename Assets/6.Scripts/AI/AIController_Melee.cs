@@ -33,4 +33,12 @@ public class AIController_Melee : AIController
 
         //aiBehaivour.SetApproachMode();    
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        
+    }
+
+#endif
 }
