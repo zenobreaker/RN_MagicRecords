@@ -71,6 +71,23 @@ public class Enemy
         currentAction?.EndJudgeAttack(e);
     }
 
+    public override void End_DoAction()
+    {
+        currentAction?.EndDoAction();
+    }
+
+    public override void Begin_JudgeAttack(AnimationEvent e)
+    {
+        base.Begin_JudgeAttack(e);
+        currentAction?.BeginJudgeAttack(e);
+    }
+
+    public override void End_JudgeAttack(AnimationEvent e)
+    {
+        base.End_JudgeAttack(e);
+        currentAction?.EndJudgeAttack(e);
+    }
+
 
     public void OnDamage(GameObject attacker,
         Weapon causer, Vector3 hitPoint, DamageEvent damageEvent)
