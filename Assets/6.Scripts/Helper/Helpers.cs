@@ -63,6 +63,15 @@ public static class Extend_TransformHelpers
     
 }
 
+public static class Extend_List
+{
+    public static void Unique<T>(this List<T> list, T item)
+    {
+        if (list.Contains(item)) return; 
+        list.Add(item);
+    }
+}
+
 public static class Extend_Vector3
 {
     public static float GetAngle(Vector3 Start, Vector3 End)
@@ -73,18 +82,6 @@ public static class Extend_Vector3
     }
 
 }
-
-public static class SkillEventHelpers
-{
-    //public static SkillEvent CreateSkillEvent(string reso
-    //urceName)
-    //{
-    //    SkillEvent skillEvent = Resources.Load<SkillEvent>(resourceName);
-
-    //    return skillEvent;
-    //}
-}
-
 
 public static class UIHelpers
 {
@@ -156,8 +153,3 @@ public static class MathHelpers
     }
 
 }
-
-//public static class BTNodeFactory
-//{
-
-//}
