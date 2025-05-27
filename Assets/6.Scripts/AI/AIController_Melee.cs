@@ -12,26 +12,13 @@ public class AIController_Melee : AIController
         if (perception == null || aiBehaivour == null) return;
 
         if (aiBehaivour.GetCanMove() == false)
-            return; 
+            return;
 
-        GameObject target = perception.GetTarget();
-        aiBehaivour.SetTarget(target); 
-  
-        //if (target == null)
-        //{
-        //    aiBehaivour.SetWaitMode();
-        //    //aiBehaivour.SetPatrolMode(); 
-        //    return; 
-        //}
-        
-        //float distance = Vector3.Distance(target.transform.position, transform.position); 
-        //if(distance <= attackRange)
-        //{
-        //    aiBehaivour.SetActionMode();
-        //    return;
-        //}
-
-        //aiBehaivour.SetApproachMode();    
+        if (aiBehaivour.GetTarget() == null)
+        {
+            GameObject target = perception.GetTarget();
+            aiBehaivour.SetTarget(target);
+        }
     }
 
 #if UNITY_EDITOR

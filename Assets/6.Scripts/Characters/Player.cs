@@ -94,6 +94,13 @@ public class Player
         };
     }
 
+    protected override void Start()
+    {
+        base.Start();
+
+        BattleManager.Instance.ResistPlayer(this);
+    }
+
     public void OnSkillUse(bool bIsUse)
     {
         bIsUsedSkill = bIsUse;

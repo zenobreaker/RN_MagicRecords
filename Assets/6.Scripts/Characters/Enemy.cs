@@ -50,6 +50,8 @@ public class Enemy
     protected override void Start()
     {
         base.Start();
+
+        BattleManager.Instance.ResistEnemy(this);
     }
 
     public override void End_DoAction()

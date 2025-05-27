@@ -68,10 +68,18 @@ public class AIBehaviourComponent : MonoBehaviour
         return true;
     }
 
+    public GameObject GetTarget()
+    {
+        if(bgAgent.GetVariable<GameObject>(TargetName, out BlackboardVariable<GameObject> target))
+            return target;
+        return null;
+    }
+
     public void SetTarget(GameObject target)
     {
         bgAgent?.SetVariableValue<GameObject>(TargetName, target); 
     }
+
 
     private void ChangedState(AIState state)
     {
@@ -92,4 +100,6 @@ public class AIBehaviourComponent : MonoBehaviour
             case StateType.Stop: SetWaitMode(); SetCanMove(false); break; 
         }
     }
+
+  
 }
