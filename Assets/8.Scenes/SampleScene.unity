@@ -4735,19 +4735,20 @@ GameObject:
   - component: {fileID: 3494887771282111756}
   - component: {fileID: 502355672814788411}
   - component: {fileID: 2769996781618196047}
+  - component: {fileID: 3494887771282111763}
   - component: {fileID: 3494887771282111759}
   - component: {fileID: 3494887771282111758}
   - component: {fileID: 3494887771282111757}
   - component: {fileID: 3494887771282111760}
   - component: {fileID: 3494887771282111761}
   - component: {fileID: 3494887771282111762}
-  - component: {fileID: 3494887771282111763}
   - component: {fileID: 3494887771282111764}
   - component: {fileID: 3494887771282111766}
   - component: {fileID: 3494887771282111765}
   - component: {fileID: 3494887771282111768}
   - component: {fileID: 3494887771282111767}
   - component: {fileID: 3494887771282111769}
+  - component: {fileID: 3494887771282111770}
   m_Layer: 0
   m_Name: Slime
   m_TagString: Untagged
@@ -5051,6 +5052,28 @@ MonoBehaviour:
   originPrefabs:
   - {fileID: 3178941285683598763, guid: 81aab8d4e1ae1924b9e793a2af89abfd, type: 3}
   initType: 1
+--- !u!195 &3494887771282111770
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2669360006707248590}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &3559592651181170621
 GameObject:
   m_ObjectHideFlags: 0
@@ -5258,6 +5281,10 @@ PrefabInstance:
     - target: {fileID: 4310217945004993034, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
       propertyPath: status.statusEntries.Array.data[2].value.baseValue
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4893751878293026052, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
+      propertyPath: maxHealthPoint
+      value: 999
       objectReference: {fileID: 0}
     - target: {fileID: 7950985210200753739, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
       propertyPath: DamageAnimStateName

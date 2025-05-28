@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -29,6 +30,17 @@ public class Cheater : MonoBehaviour
         {
             Test_AllEnemyDead(); 
         }
+
+        // 플레이이어 무적
+        if(Input.GetKeyDown(KeyCode.Keypad9))
+        {
+            Test_PlayerInvicible();
+        }
+    }
+
+    private void Test_PlayerInvicible()
+    {
+        
     }
 
     private void Test_AllEnemyDead()

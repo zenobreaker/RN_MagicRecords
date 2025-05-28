@@ -1,9 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class Extend_TransformHelpers
 {
-
     public static Transform FindChildByName(this Transform transform, string name)
     {
         Transform[] trasnforms = transform.GetComponentsInChildren<Transform>();
@@ -29,15 +29,15 @@ public static class Extend_TransformHelpers
             FindChildByNameDeeper(t, name);
         }
 
-        return null; 
+        return null;
     }
     public static GameObject[] FindChildrenByComponentType<T>(this Transform transform) where T : Component
     {
         T[] trasnforms = transform.GetComponentsInChildren<T>();
 
-        List<GameObject> gameObjects = new List<GameObject>(); 
+        List<GameObject> gameObjects = new List<GameObject>();
 
-        foreach(T t in trasnforms)
+        foreach (T t in trasnforms)
         {
             gameObjects.Add(t.gameObject);
         }
@@ -49,25 +49,25 @@ public static class Extend_TransformHelpers
     {
         Renderer[] renderers = transform.GetComponentsInChildren<Renderer>();
 
-        Vector3 result = Vector3.zero; 
-        foreach(Renderer r in renderers)
+        Vector3 result = Vector3.zero;
+        foreach (Renderer r in renderers)
         {
             Vector3 size = r.bounds.size;
-            if(size.magnitude > result.magnitude)
+            if (size.magnitude > result.magnitude)
                 result = size;
         }
 
         return result;
     }
 
-    
+
 }
 
 public static class Extend_List
 {
     public static void Unique<T>(this List<T> list, T item)
     {
-        if (list.Contains(item)) return; 
+        if (list.Contains(item)) return;
         list.Add(item);
     }
 }
@@ -152,4 +152,38 @@ public static class MathHelpers
         return Mathf.Abs(a) <= tolarmace;
     }
 
+}
+
+public static class PositionHelpers
+{
+    /// <summary>
+    /// 중심점 기준으로 반지름만큼 떨어진 위치들을 각도 간격으로 생성
+    /// </summary>
+    /// <param name="center">중심 좌표</param>
+    /// <param name="radius">반지름</param>
+    /// <param name="count">포인트 개수 (기본값 8)</param>
+    /// <param name="angleOffset">회전 오프셋 (기본값 0)</param>
+    /// <param name="randomize">무작위 섞기 여부</param>
+    public static List<Vector3> GenerateCirclePoints(Vector3 center, float radius, int count = 8, float angleOffset = 0f, bool randomize = false)
+    {
+        List<Vector3> points = new List<Vector3>();
+        float angleStep = 360f / count;
+
+        for (int i = 0; i < count; i++)
+        {
+            float angle = angleOffset + angleStep * i;
+            float radian = angle * Mathf.Deg2Rad;
+            float x = Mathf.Cos(radian) * radius;
+            float z = Mathf.Sin(radian) * radius;
+
+            points.Add(center + new Vector3(x, 0, z));
+        }
+
+        if(randomize)
+        {
+            points = points.OrderBy(_ => UnityEngine.Random.value).ToList();
+        }
+
+        return points;
+    }
 }
