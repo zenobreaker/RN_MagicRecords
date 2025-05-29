@@ -76,12 +76,12 @@ public class Enemy
     {
         if (healthPoint != null && healthPoint.Dead)
             return;
+        
+        damageHandle?.OnDamage(damageEvent);
 
         // Look Attacker 
         LookAttacker(attacker);
         ApplyLaunch(attacker, causer, damageEvent?.hitData);
-        
-        damageHandle?.OnDamage(damageEvent);
 
         StartCoroutine(Change_Color(changeColorTime));
 

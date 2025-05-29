@@ -100,6 +100,4 @@ public class AIBehaviourComponent : MonoBehaviour
             case StateType.Stop: SetWaitMode(); SetCanMove(false); break; 
         }
     }
-
-  
 }
