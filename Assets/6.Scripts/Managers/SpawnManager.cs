@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    public event Action OnStartSpawn;
     public event Action OnCompleteSpawn;
 
     private void Awake()

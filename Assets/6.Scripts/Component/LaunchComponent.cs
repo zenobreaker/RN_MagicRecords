@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class LaunchComponent : MonoBehaviour
 {
@@ -7,11 +8,11 @@ public class LaunchComponent : MonoBehaviour
     private int ChangeFrame = 5; 
 
     private Rigidbody rigid;
-
+    private NavMeshAgent agent; 
     private void Awake()
     {
         rigid = GetComponent<Rigidbody>();
-        Debug.Assert(rigid != null); 
+        agent = GetComponent<NavMeshAgent>();
     }
 
     public void ApplyLaunch(GameObject attacker, Weapon causer, HitData hitData)
@@ -24,6 +25,8 @@ public class LaunchComponent : MonoBehaviour
 #if UNITY_EDITOR
         Debug.Log("Launch Start");
 #endif
+        if (agent != null)
+            agent.enabled = false;
         rigid.isKinematic = false;
         rigid.AddForce(dir * lauch, ForceMode.Impulse);
 
@@ -37,6 +40,8 @@ public class LaunchComponent : MonoBehaviour
         for (int i = 0; i < frame; i++)
             yield return new WaitForFixedUpdate();
 
+        if (agent != null)
+            agent.enabled = true;
         rigid.isKinematic = true;
 
 #if UNITY_EDITOR

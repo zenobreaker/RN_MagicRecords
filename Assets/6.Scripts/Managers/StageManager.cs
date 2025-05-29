@@ -18,7 +18,7 @@ public class StageManager : MonoBehaviour
     public event Action OnBeginSpawn;
 
     public event Action OnFinishedBeginStage;
-    public event Action OnFinishedEndSpawn;
+    //public event Action OnFinishedEndSpawn;
 
     private Action OnBeginState;
     private Action OnWaitState;

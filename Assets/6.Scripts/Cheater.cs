@@ -1,12 +1,26 @@
 using System;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 #if UNITY_EDITOR
 public class Cheater : MonoBehaviour
 {
+    private static Cheater instance;
+    public static Cheater Instance { get 
+        { 
+            return instance; 
+        } }
+
     Player player;
 
     bool bStunToggle = false;
+
+    private void Awake()
+    {
+        if(instance == null)
+            instance = this;
+    }
 
     private void Start()
     {
@@ -72,6 +86,27 @@ public class Cheater : MonoBehaviour
                 sfc.AddStunEffect();
             else if( sfc!=null && bStunToggle == false)
                 sfc.RemoveStunEffect();
+        }
+    }
+
+    List<Vector3> gizmoPoints = new List<Vector3>();
+    public void DrawSphereWithPoints(List<Vector3> points)
+    {
+        gizmoPoints.Clear();
+        gizmoPoints = points;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (gizmoPoints.Count == 0) return;
+
+        Gizmos.color = Color.green;
+        int cnt = 1; 
+        foreach(var point in gizmoPoints)
+        {
+            Gizmos.DrawWireSphere(point, 0.5f);
+            Handles.color = Color.white;
+            Handles.Label(point + Vector3.up * 0.5f, $"#{cnt++}");
         }
     }
 }
