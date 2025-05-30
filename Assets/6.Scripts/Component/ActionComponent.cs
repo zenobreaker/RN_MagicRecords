@@ -6,6 +6,7 @@ using UnityEngine;
 public abstract class ActionComponent
     : MonoBehaviour
 {
+    public Action OnDoAction;
     public Action OnBeginDoAction;
     public Action OnEndDoAction;
 
@@ -15,6 +16,7 @@ public abstract class ActionComponent
 
     public virtual void DoAction()
     {
+        OnDoAction?.Invoke(); 
         InAction = true;
     }
 
@@ -22,7 +24,9 @@ public abstract class ActionComponent
         
     public virtual void EndDoAction()
     {
+        Debug.Log($"Current : {bInAction}");
         InAction = false;
+        Debug.Log($"Affter : {bInAction}");
     }
 
     public virtual void BeginJudgeAttack(AnimationEvent e) { }

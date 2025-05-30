@@ -36,8 +36,6 @@ public class ReinforcedMagicBullet : ActiveSkill
 
     private void OnProjectileHit(Collider self, Collider other, Vector3 point)
     {
-        Debug.Log($"self : {self} other : {other}");
-
         // hit Sound Play
         //SoundManager.Instance.PlaySFX(doactionData[index].hitSoundName);
 

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static StateComponent;
@@ -12,11 +14,13 @@ public class Player
     private ComboComponent comboComponent;
     private WeaponComponent weapon;
     private SkillComponent skill;
-    private DamageHandleComponent damageHandle; 
+    private DamageHandleComponent damageHandle;
     private LaunchComponent launch;
 
     private WeaponController weaponController;
     private ActionComponent currentAction;
+    private List<ActionComponent> actionComponents = new();
+
     private bool bIsUsedSkill = false;
 
     protected override void Awake()
@@ -28,11 +32,15 @@ public class Player
         comboComponent = GetComponent<ComboComponent>();
         weapon = GetComponent<WeaponComponent>();
         Debug.Assert(weapon != null);
+        weapon.OnDoAction += OnDoAction;
+        actionComponents.Add(weapon);
 
         skill = GetComponent<SkillComponent>();
         Debug.Assert(skill != null);
         Awake_SkillEventHandle(skill, weapon);
-        
+        skill.OnDoAction += OnDoAction;
+        actionComponents.Add(skill);
+
         damageHandle = GetComponent<DamageHandleComponent>();
         launch = GetComponent<LaunchComponent>();
 
@@ -41,7 +49,7 @@ public class Player
 
         InputActionMap actionMap = input.actions.FindActionMap("Player");
         Debug.Assert(actionMap != null);
-        
+
         actionMap.FindAction("Action").started += (context) =>
         {
             currentAction = weapon;
@@ -80,7 +88,7 @@ public class Player
 
         actionMap.FindAction("SkillAction2").started += (context) =>
         {
-            skill?.UseSkill(SkillSlot.Slot2); 
+            skill?.UseSkill(SkillSlot.Slot2);
         };
 
         actionMap.FindAction("SkillAction3").started += (context) =>
@@ -90,7 +98,7 @@ public class Player
 
         actionMap.FindAction("SkillAction4").started += (context) =>
         {
-            skill?.UseSkill(SkillSlot.Slot4); 
+            skill?.UseSkill(SkillSlot.Slot4);
         };
     }
 
@@ -100,6 +108,8 @@ public class Player
 
         BattleManager.Instance.ResistPlayer(this);
     }
+
+    public void OnDoAction() => bInAction = true;
 
     public void OnSkillUse(bool bIsUse)
     {
@@ -123,7 +133,15 @@ public class Player
     {
         if (bIsUsedSkill)
             bIsUsedSkill = false;
-        currentAction?.EndDoAction(); 
+        
+        bInAction = false;
+        Debug.Log("Player End DoAction");
+        currentAction?.EndDoAction();
+        foreach(var  ac in actionComponents)
+        {
+            if (ac != currentAction)
+                ac.EndDoAction(); 
+        }
     }
 
     public override void Begin_JudgeAttack(AnimationEvent e)
@@ -147,7 +165,7 @@ public class Player
     public override void Play_CameraShake()
     {
         base.Play_CameraShake();
-        currentAction?.PlayCameraShake(); 
+        currentAction?.PlayCameraShake();
     }
 
     public WeaponController GetWeaponController() => weaponController;

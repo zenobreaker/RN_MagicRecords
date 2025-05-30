@@ -19,7 +19,8 @@ public enum SkillSlot
 /// 무기 관리 - 유사 커맨더 패턴 이용 
 /// </summary>
 
-public class WeaponComponent : ActionComponent
+public class WeaponComponent 
+    : ActionComponent
 {
     [Header("Weapons")]
     [SerializeField] private GameObject[] originPrefabs;
@@ -214,9 +215,6 @@ public class WeaponComponent : ActionComponent
             return;
 
         base.DoAction();
-
-        //animator.SetBool(IsAction, true);
-
         weaponTable[type]?.DoAction(index);
     }
 
@@ -242,6 +240,7 @@ public class WeaponComponent : ActionComponent
     {
         base.EndDoAction();
 
+        Debug.Log($"Weapon End DoAction");
         OnEndDoAction?.Invoke();
         weaponTable[type]?.End_DoAction();
     }
@@ -281,5 +280,4 @@ public class WeaponComponent : ActionComponent
 
         bInAction = true;
     }
-
 }

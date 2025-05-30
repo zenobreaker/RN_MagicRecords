@@ -47,27 +47,27 @@ public class Weapon_Combo : Weapon
 
         Debug.Assert(animator != null, "Animation is null");
 
-        this.index = index;
+        this.index = index % so_Combo.MaxComboIndex();
 
         Debug.Assert(so_Combo.comboDatas.Count > 0);
-        Debug.Assert(so_Combo.comboDatas[index] != null);
+        Debug.Assert(so_Combo.comboDatas[this.index] != null);
 
         // Set Override 
         { 
-            if(actionDatas[index].AnimatorOv != null)
-                animator.runtimeAnimatorController = actionDatas[index].AnimatorOv;
-            weaponController?.SetWeaponAnimation(actionDatas[index].WeaponAnimOv);
+            if(actionDatas[this.index].AnimatorOv != null)
+                animator.runtimeAnimatorController = actionDatas[this.index].AnimatorOv;
+            weaponController?.SetWeaponAnimation(actionDatas[this.index].WeaponAnimOv);
         }
 
         // Play Animation 
         {
-            animator.SetFloat(actionDatas[index].ActionSpeedHash, actionDatas[index].ActionSpeed);
-            animator.SetTrigger(actionDatas[index].StateName);
-            weaponController?.DoAction(actionDatas[index].StateName);
+            animator.SetFloat(actionDatas[this.index].ActionSpeedHash, actionDatas[this.index].ActionSpeed);
+            animator.SetTrigger(actionDatas[this.index].StateName);
+            weaponController?.DoAction(actionDatas[this.index].StateName);
 
 #if UNITY_EDITOR
             if (bDebug)
-                Debug.Log($"Combo Play: {this.index} {actionDatas[index].StateName}");
+                Debug.Log($"Combo Play: {this.index} {actionDatas[this.index].StateName}");
 #endif
         }
     }
@@ -85,13 +85,13 @@ public class Weapon_Combo : Weapon
 
     protected virtual void OnDamage(Collider other)
     {
-        damageDatas[index].PlayHitSound(); 
+        damageDatas[this.index].PlayHitSound(); 
 
         if(other.TryGetComponent<IDamagable>(out IDamagable damage))
         {
-            Vector3 hitPoint = colliders[index].ClosestPoint(other.transform.position);
+            Vector3 hitPoint = colliders[this.index].ClosestPoint(other.transform.position);
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
-            damage.OnDamage(rootObject, this, hitPoint, damageDatas[index].GetMyDamageEvent(rootObject)); 
+            damage.OnDamage(rootObject, this, hitPoint, damageDatas[this.index].GetMyDamageEvent(rootObject)); 
         }
     }
 }

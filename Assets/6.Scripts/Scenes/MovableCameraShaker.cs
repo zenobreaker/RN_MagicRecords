@@ -41,9 +41,6 @@ public class MovableCameraShaker : MonoBehaviour
     {
         if (settings == null) return;
 
-#if UNITY_EDITOR
-        Debug.Log("Shake!");
-#endif
         listener.ReactionSettings.m_SecondaryNoise = settings;
         impulse.GenerateImpulse();
     }

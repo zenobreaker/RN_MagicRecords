@@ -17,9 +17,12 @@ public class Character
     protected StateComponent state;
     protected HealthPointComponent healthPoint;
 
-    private float originAnimSpeed;
+    protected float originAnimSpeed;
+    protected bool bInAction = false; 
+    public virtual bool InAction { get { return bInAction; } protected set { bInAction = value; } }
 
-
+    public Action OnBeginDoAction;
+    public Action OnEndDoAction;
     protected virtual void Awake()
     {
         animator = GetComponent<Animator>();
@@ -43,9 +46,9 @@ public class Character
 
 
     #region AnimationEvent
-    public virtual void Begin_DoAction() { }
+    public virtual void Begin_DoAction() { OnBeginDoAction?.Invoke(); }
 
-    public virtual void End_DoAction() { }
+    public virtual void End_DoAction() { OnEndDoAction?.Invoke(); }
 
     public virtual void Begin_JudgeAttack(AnimationEvent e = null) { }
     public virtual void End_JudgeAttack(AnimationEvent e = null) { }

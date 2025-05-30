@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkillComponent : ActionComponent
+public class SkillComponent 
+    : ActionComponent
 {
     private StateComponent state;
     private WeaponComponent weapon;
-
-   
 
     private bool bIsSkillAction = false;
     private SkillSlot currentSlot = SkillSlot.MAX;
@@ -76,7 +75,7 @@ public class SkillComponent : ActionComponent
     // 슬롯의 있는 스킬 사용 
     public void UseSkill(SkillSlot slot)
     {
-        if (bIsSkillAction)
+        if (bIsSkillAction || skillSlotTable.TryGetValue(currentSlot, out var skill) == false)
         {
             OnSkillUse?.Invoke(false);
             return;
@@ -101,7 +100,8 @@ public class SkillComponent : ActionComponent
         
         bIsSkillAction = true;
         skillSlotTable[currentSlot]?.Begin_DoAction();
-
+        
+        OnBeginDoAction?.Invoke();
         skillEventHandler?.OnBegin_UseSkill();
     }
 
@@ -114,6 +114,8 @@ public class SkillComponent : ActionComponent
         skillSlotTable[currentSlot]?.End_DoAction();
         currentSlot = SkillSlot.MAX;
 
+        Debug.Log($"Skill End DoAction");
+        OnEndDoAction?.Invoke(); 
         skillEventHandler?.OnEnd_UseSkill();
     }
 

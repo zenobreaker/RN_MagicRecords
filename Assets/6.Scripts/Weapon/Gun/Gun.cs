@@ -75,9 +75,6 @@ public class Gun : Weapon_Combo
 
     private void OnProjectileHit(Collider self, Collider other, Vector3 point)
     {
-#if UNITY_EDITOR
-        Debug.Log($"self : {self} other : {other} Index : {index}");
-#endif
         // hit Sound Play
         //SoundManager.Instance.PlaySFX(actionDatas[index].hitSoundName);
 

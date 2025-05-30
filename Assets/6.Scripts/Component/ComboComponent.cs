@@ -30,10 +30,10 @@ public partial class ComboComponent : MonoBehaviour
 
     public bool bDebug;
 
+    private bool bCanInput = true; 
     private float comboResetTime = 1.0f;        // 콤보(입력 큐) 유지 시간 
 
     private float lastInputTime = 0.0f;             // 마지막에 입력한 콤보 입력 시간  
-    private float lastComboEnd = 0.0f;              // 마지막 동작 종료 시간
     private int comboIndex = 0;
 
     private Queue<InputCommand> inputQueue;
@@ -42,21 +42,29 @@ public partial class ComboComponent : MonoBehaviour
     [SerializeField] private SO_ComboInputHanlder comboInputHandler;
     public SO_ComboInputHanlder ComboInputHanlder {get => comboInputHandler;  }
 
-
     private WeaponComponent weapon;
+    private Character ownerCharacter; 
 
     private Coroutine comboResetCoroutine;
 
     private void Awake()
     {
         weapon = GetComponent<WeaponComponent>();
-        Debug.Assert(weapon != null);
-        weapon.OnWeaponTypeChanged_Combo += OnWeaponTypeChanged_Combo;
-        weapon.OnBeginDoAction += OnBeginDoAction;
-        weapon.OnEndDoAction += OnEndDoAction;
+        if(weapon != null)
+            weapon.OnWeaponTypeChanged_Combo += OnWeaponTypeChanged_Combo;
+
+        ownerCharacter = GetComponent<Character>();
+        if (ownerCharacter != null)
+        {
+            ownerCharacter.OnBeginDoAction += OnBeginDoAction;
+            ownerCharacter.OnEndDoAction += OnEndDoAction;
+        }
 
         inputQueue = new Queue<InputCommand>();
     }
+
+    private void EnableInput() => bCanInput = true;
+    private void UnableInput() => bCanInput = false; 
 
     private void OnWeaponTypeChanged_Combo(SO_Combo comboData)
     {
@@ -69,16 +77,20 @@ public partial class ComboComponent : MonoBehaviour
 
     private bool CanExecuteNextAction()
     {
-        if (weapon == null) return false; 
-
-        return weapon.InAction == false;
+        if (ownerCharacter == null) return false; 
+        return ownerCharacter.InAction == false;
     }
 
     private void TryProcessInput(InputCommand newInput)
     {
         if (newInput == null) return;
 
-       
+        if (newInput.InputType != InputCommandType.Action)
+        {
+            //ResetCombo();
+            return;
+        }
+
         ComboData comboData = currComboObj.GetComboData(comboIndex);
         float currentTime = newInput.TimeStamp;
 
@@ -86,7 +98,6 @@ public partial class ComboComponent : MonoBehaviour
         bool isWithinLastInputTime = (currentTime - lastInputTime) <= comboData.LastInputCheckTime;
         bool isBuffered = (currentTime - lastInputTime) <= comboData.InputBufferTime;
        
-        
         lastInputTime = Time.time;
 
         if (inputQueue.Count > 0 && isResetTimeExceeded && (isWithinLastInputTime || isBuffered) == false)
@@ -108,12 +119,6 @@ public partial class ComboComponent : MonoBehaviour
         if (isFirstInput || isWithinLastInputTime || isBuffered) 
         {
             inputQueue.Enqueue(newInput);
-
-            if(newInput.InputType != InputCommandType.Action && CanExecuteNextAction() == false)
-            {
-                ResetCombo();
-                return;
-            }
 
             if (newInput.InputType == InputCommandType.Action && CanExecuteNextAction())
             {
@@ -183,7 +188,6 @@ public partial class ComboComponent : MonoBehaviour
     //TODO : Cancel 타이밍부터 리셋 카운트 내용 추가하기
     public void OnEndDoAction()
     {
-        lastComboEnd = Time.time;
 
         // 진행했던 애니메이션이 끝나고 이곳을 호출하게 되면 종료자를 호출한다. 
         if (comboResetCoroutine != null)
@@ -215,10 +219,10 @@ public partial class ComboComponent : MonoBehaviour
         if (bDebug)
             Debug.Log($"Reset Combo :  {comboIndex}");
 #endif
-
         var data = currComboObj?.GetComboData(0);
+        
+        lastInputTime = Time.time;
         comboResetTime = data.ComboResetTime;
-
         comboResetCoroutine = null;
 
         inputQueue.Clear();

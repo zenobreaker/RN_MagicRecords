@@ -22,9 +22,6 @@ public class LaunchComponent : MonoBehaviour
         Vector3 dir = attacker.transform.forward; 
         float lauch = rigid.mass * hitData.Distance;
 
-#if UNITY_EDITOR
-        Debug.Log("Launch Start");
-#endif
         if (agent != null)
             agent.enabled = false;
         rigid.isKinematic = false;
@@ -43,10 +40,5 @@ public class LaunchComponent : MonoBehaviour
         if (agent != null)
             agent.enabled = true;
         rigid.isKinematic = true;
-
-#if UNITY_EDITOR
-        Debug.Log("Launch End");
-#endif
     }
-
 }

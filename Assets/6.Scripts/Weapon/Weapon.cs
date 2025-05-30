@@ -257,20 +257,12 @@ public class Weapon : MonoBehaviour
         bEquipped = false;
     }
 
-    public virtual void DoAction()
-    {
-        if (state.IdleMode == false)
-            return;
-
-        state.SetActionMode();
-        CheckStop(0);
-    }
-
     public virtual void DoAction(int index = 0)
     {
         if (state.IdleMode == false)
             return;
 
+        state.SetActionMode();
         CheckStop(index);
     }
 
