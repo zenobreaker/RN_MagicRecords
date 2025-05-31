@@ -1,4 +1,4 @@
-using NUnit.Framework;
+ï»¿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -41,7 +41,7 @@ public class DamageData
 
     [Header("Camera Shake")]
     public Vector3 impulseDirection;
-    //TODO: Noise °¡Á®¿À±â
+
     public Unity.Cinemachine.NoiseSettings settings;
 
     [Header("Hit")]
@@ -94,7 +94,7 @@ public class ActionData
     [Header("Action Speed")]
     [SerializeField] private float actionSpeed = 1.0f;
     public float ActionSpeed { get => actionSpeed; }
-    // StateNameÀ» ÇØ½Ã °ªÀ¸·Î ÀúÀå
+    // StateNameì„ í•´ì‹œ ê°’ìœ¼ë¡œ ì €ì¥
     private int actionSpeedHash = -1;
     public int ActionSpeedHash
     {
@@ -121,7 +121,7 @@ public class ActionData
 
     [Header("Camera Shake")]
     public Vector3 impulseDirection;
-    //TODO: Noise °¡Á®¿À±â
+
     public Unity.Cinemachine.NoiseSettings settings;
 
 
@@ -194,7 +194,7 @@ public class Weapon : MonoBehaviour
 
     private bool bDirtyMove = false;
 
-    protected GameObject rootObject;    // ¹«±â¸¦ °¡Áø ´ë»ó
+    protected GameObject rootObject;    // ë¬´ê¸°ë¥¼ ê°€ì§„ ëŒ€ìƒ
     protected Animator animator;
     protected WeaponController weaponController;
 
@@ -217,7 +217,7 @@ public class Weapon : MonoBehaviour
         Debug.Assert(dash != null);
 
 
-        //TODO : ¾ÆÁ÷Àº ½Ã±â »óÁ¶ °ø°İ ÈÄ, ´ë½¬·Î ÈÄµô Äµ½½
+        //TODO : ì•„ì§ì€ ì‹œê¸° ìƒì¡° ê³µê²© í›„, ëŒ€ì‰¬ë¡œ í›„ë”œ ìº”ìŠ¬
         //dash.OnBeginDash += End_DoAction;
 
         if (so_Action != null)
@@ -235,7 +235,7 @@ public class Weapon : MonoBehaviour
     {
         Debug.Log($"Equip : {type.ToString()}");
 
-        //TODO : ÀåÂø ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ¾øÀ¸¹Ç·Î ¿©±â¼­ ÀÌ ÇÔ¼ö¸¦ ÄİÇÔ
+        //TODO : ì¥ì°© ì• ë‹ˆë©”ì´ì…˜ì´ ì—†ìœ¼ë¯€ë¡œ ì—¬ê¸°ì„œ ì´ í•¨ìˆ˜ë¥¼ ì½œí•¨
 
         if (rootObject.TryGetComponent(out IWeaponUser user))
         {

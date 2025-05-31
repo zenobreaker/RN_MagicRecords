@@ -16,24 +16,17 @@ public enum InputCommandType
 
 public partial class ComboComponent : MonoBehaviour
 {
-    class InputElement
-    {
-        public string InputType; // 입력 타입
-        public float TimeStamp;  // 입력이 발생한 시간
-        public int comboCount;
-    }
-
     class InputCommand
     {
-        public InputCommandType InputType; public float TimeStamp;
+        public InputCommandType InputType;
+        public int SkillSlotIndex = -1; // 스킬 SkillSlot 1~4 대응
+        public float TimeStamp;
     }
 
     public bool bDebug;
 
-    private bool bCanInput = true; 
     private float comboResetTime = 1.0f;        // 콤보(입력 큐) 유지 시간 
-
-    private float lastInputTime = 0.0f;             // 마지막에 입력한 콤보 입력 시간  
+    private float lastInputTime = 0.0f;         // 마지막에 입력한 콤보 입력 시간  
     private int comboIndex = 0;
 
     private Queue<InputCommand> inputQueue;
@@ -43,28 +36,30 @@ public partial class ComboComponent : MonoBehaviour
     public SO_ComboInputHanlder ComboInputHanlder {get => comboInputHandler;  }
 
     private WeaponComponent weapon;
+    private SkillComponent skill; 
+    private DashComponent dash;
     private Character ownerCharacter; 
 
     private Coroutine comboResetCoroutine;
 
     private void Awake()
     {
-        weapon = GetComponent<WeaponComponent>();
-        if(weapon != null)
-            weapon.OnWeaponTypeChanged_Combo += OnWeaponTypeChanged_Combo;
-
         ownerCharacter = GetComponent<Character>();
         if (ownerCharacter != null)
         {
             ownerCharacter.OnBeginDoAction += OnBeginDoAction;
             ownerCharacter.OnEndDoAction += OnEndDoAction;
+
+            weapon = ownerCharacter.GetComponent<WeaponComponent>();
+            if(weapon != null)
+                weapon.OnWeaponTypeChanged_Combo += OnWeaponTypeChanged_Combo;
+
+            skill = ownerCharacter.GetComponent<SkillComponent>();
+            dash = ownerCharacter.GetComponent<DashComponent>();
         }
 
         inputQueue = new Queue<InputCommand>();
     }
-
-    private void EnableInput() => bCanInput = true;
-    private void UnableInput() => bCanInput = false; 
 
     private void OnWeaponTypeChanged_Combo(SO_Combo comboData)
     {
@@ -85,74 +80,29 @@ public partial class ComboComponent : MonoBehaviour
     {
         if (newInput == null) return;
 
-        if (newInput.InputType != InputCommandType.Action)
+        //if(inputQueue.Count > 0 && inputQueue.Peek().InputType != newInput.InputType)
+        //{
+        //    ResetCombo();
+        //    return; 
+        //}
+
+        switch(newInput.InputType)
         {
-            //ResetCombo();
-            return;
-        }
-
-        ComboData comboData = currComboObj.GetComboData(comboIndex);
-        float currentTime = newInput.TimeStamp;
-
-        bool isResetTimeExceeded = currentTime - lastInputTime >= comboData.ComboResetTime;
-        bool isWithinLastInputTime = (currentTime - lastInputTime) <= comboData.LastInputCheckTime;
-        bool isBuffered = (currentTime - lastInputTime) <= comboData.InputBufferTime;
-       
-        lastInputTime = Time.time;
-
-        if (inputQueue.Count > 0 && isResetTimeExceeded && (isWithinLastInputTime || isBuffered) == false)
-        {
-#if UNITY_EDITOR
-            if (bDebug)
-                Debug.Log($"Invalid Time Reset:{currentTime} /  {currentTime - lastInputTime}");
-#endif
-            ResetCombo();
-        }
-
-        bool isFirstInput = lastInputTime < 0 || comboIndex == 0;
-
-        comboInputHandler?.HandleInputEnabled(isFirstInput | isWithinLastInputTime); 
-        comboInputHandler?.HandleInputBuffered(isBuffered);
-        comboInputHandler?.HandleInputEnableTime(comboData.LastInputCheckTime);
-        comboInputHandler?.HandleInputBufferTime(comboData.InputBufferTime);
-
-        if (isFirstInput || isWithinLastInputTime || isBuffered) 
-        {
-            inputQueue.Enqueue(newInput);
-
-            if (newInput.InputType == InputCommandType.Action && CanExecuteNextAction())
-            {
-                ExecuteAttack(comboIndex);
-                comboIndex++;
-            }
+            case InputCommandType.Action:   TryProcess_Action(newInput); break;
+            case InputCommandType.Skill:    TryProcess_Skill(newInput);  break;
+            case InputCommandType.Move:     TryProcess_Move(newInput);   break; 
+            case InputCommandType.Dash:     TryProcess_Dash(newInput);   break;
         }
     }
-
-    private void ExecuteAttack(int index)
-    {
-        if (currComboObj == null)
-            return;
-
-        ComboData data = currComboObj.GetComboData(index);
-        comboInputHandler?.HandleComboIndex(index);
-        comboResetTime = data.ComboResetTime;
-
-        // Action 실행
-#if UNITY_EDITOR
-        if (bDebug)
-            Debug.Log($"Execute Combodata {index}");
-#endif
-        weapon.DoAction(index);
-    }
-
 
     // 입력 정보를 InputCommand로 변환 후 큐잉 
-    public void InputQueue(InputCommandType commandType)
+    public void InputQueue(InputCommandType commandType, int skillIndex = -1)
     {
         float currentTime = Time.time;
         var inputCommand = new InputCommand
         {
             InputType = commandType,
+            SkillSlotIndex = skillIndex,
             TimeStamp = currentTime,
         };
 
@@ -228,5 +178,4 @@ public partial class ComboComponent : MonoBehaviour
         inputQueue.Clear();
         comboInputHandler?.HadleInputReset();
     }
-
 }

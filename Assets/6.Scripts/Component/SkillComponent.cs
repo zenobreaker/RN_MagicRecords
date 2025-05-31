@@ -75,7 +75,8 @@ public class SkillComponent
     // 슬롯의 있는 스킬 사용 
     public void UseSkill(SkillSlot slot)
     {
-        if (bIsSkillAction || skillSlotTable.TryGetValue(currentSlot, out var skill) == false)
+        if (bIsSkillAction || skillSlotTable.TryGetValue(slot, out var skill) == false 
+            || skill == null || skill.IsOnCooldown)
         {
             OnSkillUse?.Invoke(false);
             return;

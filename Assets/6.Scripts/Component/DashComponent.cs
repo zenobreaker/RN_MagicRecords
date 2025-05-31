@@ -37,7 +37,7 @@ public class DashComponent : MonoBehaviour
         moving = GetComponent<PlayerMovingComponent>();
         state = GetComponent<StateComponent>();
         Debug.Assert(state != null);
-        state.OnStateTypeChanged += OnStateTypeChanged;
+        //state.OnStateTypeChanged += OnStateTypeChanged;
     }
 
 
@@ -109,35 +109,38 @@ public class DashComponent : MonoBehaviour
         state.SetIdleMode();
     }
 
-
-    public void OnStateTypeChanged(StateType prevType, StateType newType)
+    public void TryDash()
     {
-        if (newType == StateType.Evade)
+        // 이미 회피 상태나 그런 경우엔 시도 하지 않는다.
+        if (state == null || state.EvadeMode == true) return;
+
+        // 상태 변경
+        state.SetEvadeMode(); 
+
+        Vector2 value = moving.InputMove;
+
+        // 기본적으론 캐릭터가 보는 방향 이동
+        DashDirection dd = DashDirection.Forward;
+
+        // 아무것도 누르지 않은 상태 
+        if (value.magnitude == 0.0f)
         {
-            Vector2 value = moving.InputMove;
-
-            // 기본적으론 캐릭터가 보는 방향 이동
-            DashDirection dd = DashDirection.Forward;
-
-            // 아무것도 누르지 않은 상태 
-            if (value.magnitude == 0.0f)
-            {
-                // 캐릭터가 백스텝에 가까운 무빙을 보인다.
-                dd = DashDirection.Backward;
-                animator?.SetTrigger(EVADE);
-            }
-            // 방향키를 누른 상태 
-            else
-            {
-                // 그 방향으로 대쉬한다. 
-                // 방향별로 대쉬 애니메이션이 다르다면 새로이 값을 전달해야 한다.
-                //animator.SetInteger("Direction", (int)direction);
-                animator?.SetTrigger(DASH);
-            }
-
-            DoAction_Dash(dd);
+            // 캐릭터가 백스텝에 가까운 무빙을 보인다.
+            dd = DashDirection.Backward;
+            animator?.SetTrigger(EVADE);
         }
+        // 방향키를 누른 상태 
+        else
+        {
+            // 그 방향으로 대쉬한다. 
+            // 방향별로 대쉬 애니메이션이 다르다면 새로이 값을 전달해야 한다.
+            //animator.SetInteger("Direction", (int)direction);
+            animator?.SetTrigger(DASH);
+        }
+
+        DoAction_Dash(dd);
     }
+
 
     // 대쉬 시전 시, 기타 기능 캔슬 
     private void Begin_Dash()

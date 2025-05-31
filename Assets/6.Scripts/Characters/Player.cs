@@ -52,6 +52,8 @@ public class Player
 
         actionMap.FindAction("Action").started += (context) =>
         {
+            if (bIsUsedSkill) return;
+                
             currentAction = weapon;
             comboComponent?.InputQueue(InputCommandType.Action);
         };
@@ -60,11 +62,7 @@ public class Player
 
         actionMap.FindAction("Dash").started += (context) =>
         {
-            //TODO: 공격 중 캔슬 기능하려면 여기를 수정
-            if (state.IdleMode == false)
-                return;
             comboComponent?.InputQueue(InputCommandType.Dash);
-            state?.SetEvadeMode();
         };
     }
 
@@ -83,22 +81,22 @@ public class Player
 
         actionMap.FindAction("SkillAction1").started += (context) =>
         {
-            skill?.UseSkill(SkillSlot.Slot1);
+            comboComponent.InputQueue(InputCommandType.Skill, (int)SkillSlot.Slot1);
         };
 
         actionMap.FindAction("SkillAction2").started += (context) =>
         {
-            skill?.UseSkill(SkillSlot.Slot2);
+            comboComponent.InputQueue(InputCommandType.Skill, (int)SkillSlot.Slot2);
         };
 
         actionMap.FindAction("SkillAction3").started += (context) =>
         {
-            skill?.UseSkill(SkillSlot.Slot3);
+            comboComponent.InputQueue(InputCommandType.Skill, (int)SkillSlot.Slot3);
         };
 
         actionMap.FindAction("SkillAction4").started += (context) =>
         {
-            skill?.UseSkill(SkillSlot.Slot4);
+            comboComponent.InputQueue(InputCommandType.Skill, (int)SkillSlot.Slot4);
         };
     }
 
@@ -118,7 +116,6 @@ public class Player
         if (bIsUsedSkill)
         {
             currentAction = skill;
-            comboComponent.InputQueue(InputCommandType.Skill);
         }
     }
 
@@ -126,6 +123,7 @@ public class Player
     {
         base.Begin_DoAction();
 
+        OnBeginDoAction?.Invoke();
         currentAction?.BeginDoAction();
     }
 
@@ -133,9 +131,10 @@ public class Player
     {
         if (bIsUsedSkill)
             bIsUsedSkill = false;
-        
+
         bInAction = false;
         Debug.Log("Player End DoAction");
+        OnEndDoAction?.Invoke();
         currentAction?.EndDoAction();
         foreach(var  ac in actionComponents)
         {
