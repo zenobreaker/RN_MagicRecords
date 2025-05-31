@@ -25,6 +25,7 @@ public partial class ComboComponent : MonoBehaviour
 
     public bool bDebug;
 
+    private bool bCanComboInput = true; 
     private float comboResetTime = 1.0f;        // 콤보(입력 큐) 유지 시간 
     private float lastInputTime = 0.0f;         // 마지막에 입력한 콤보 입력 시간  
     private int comboIndex = 0;
@@ -148,8 +149,7 @@ public partial class ComboComponent : MonoBehaviour
 
         if (comboIndex >= currComboObj.MaxComboIndex())
         {
-            ResetCombo();
-            return;
+            bCanComboInput = false; 
         }
 
         comboResetCoroutine = StartCoroutine(Rest_ComboTime());
@@ -174,6 +174,7 @@ public partial class ComboComponent : MonoBehaviour
         lastInputTime = Time.time;
         comboResetTime = data.ComboResetTime;
         comboResetCoroutine = null;
+        bCanComboInput = true; 
 
         inputQueue.Clear();
         comboInputHandler?.HadleInputReset();

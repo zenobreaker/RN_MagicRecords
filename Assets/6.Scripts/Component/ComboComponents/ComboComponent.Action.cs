@@ -4,6 +4,8 @@ public partial class ComboComponent: MonoBehaviour
 {
     private void TryProcess_Action(InputCommand newInput)
     {
+        if (bCanComboInput == false) return; 
+
         ComboData comboData = currComboObj.GetComboData(comboIndex);
         float currentTime = newInput.TimeStamp;
 
