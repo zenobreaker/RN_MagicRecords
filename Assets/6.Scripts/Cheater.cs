@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -50,6 +51,37 @@ public class Cheater : MonoBehaviour
         {
             Test_PlayerInvicible();
         }
+
+        // 플레이어 공격력 버프 온
+        if (Input.GetKeyDown(KeyCode.Keypad4))
+            Test_PlayerAttackBuff();
+
+        if (Input.GetKeyDown(KeyCode.Keypad5))
+            Test_PlayerRemoveBuff();
+    }
+
+    private void Test_PlayerRemoveBuff()
+    {
+        if (player == null) return;
+
+        BuffComponent buff = player.GetComponent<BuffComponent>();
+        if (buff == null) return;
+
+        buff.RemoveBuff("AttackBuff");
+        Debug.Log("Buff Off");
+    }
+
+    private void Test_PlayerAttackBuff()
+    {
+        if (player == null) return;
+
+        BuffComponent buff = player.GetComponent<BuffComponent>();
+        if (buff == null) return;
+
+        Debug.Log("Buff On");
+
+        StatBuff attackbuff = new StatBuff("AttackBuff", 30.0f, StatusType.Attack, 0.2f);
+        buff.ApplyBuff(attackbuff); 
     }
 
     private void Test_PlayerInvicible()

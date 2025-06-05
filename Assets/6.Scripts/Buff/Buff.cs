@@ -1,79 +1,139 @@
+using System;
 using TMPro;
-using UnityEngine;
 using UnityEngine.UI;
+public enum BuffStackPolicy
+{
+    RefreshOnly = 0,
+    Stackable,
+    IgnoreIfExsist,
+}
+
+public enum BuffValueType
+{
+    Percent = 0,
+    Fixed,
+}
 
 public struct BuffUI
 {
-    public int BuffID;
+    public string BuffID;
 
     public Image BuffImg;
     public TextMeshProUGUI BuffNameText;
     public TextMeshProUGUI BuffStackText;
 
-
-    public string buffName; 
-    public float durtaion;
-    public float elapsed;
-    public int stackCount;
+    // View에서 BaseBuff에서 정보를 받아옴.
+    //public string buffName; 
+    //public float durtaion;
+    //public float elapsed;
+    //public int stackCount;
 }
 
 
-public abstract class BaseBuff :IBuff
+public abstract class BaseBuff : IBuff
 {
-    public int BuffID;
+    public string BuffID;
 
     protected float elapsed;
-    protected float durtaion;
+    public float Elapsed => elapsed;
+    protected float duration;
+    public float Duration => duration;
 
-    public BaseBuff(int buffID, float elapsed, float durtaion)
+    public virtual BuffStackPolicy StackPolicy => BuffStackPolicy.RefreshOnly;
+
+    public Action<BaseBuff> OnExpired;
+
+    public BaseBuff(string buffID, float elapsed, float duration)
     {
         BuffID = buffID;
         this.elapsed = elapsed;
-        this.durtaion = durtaion;
+        this.duration = duration;
     }
 
-    public bool IsExpired => elapsed >= durtaion;
+    public int StackCount { get; protected set; } = 1;
+    public virtual int MaxStack => 1;
+    public virtual bool CanStack => MaxStack > 1;
 
-    public virtual void OnApply(Character target)
+    public virtual bool NeedTick => true;
+    public float TickInterval { get; set; } = 0.1f;
+
+    protected float tickTimer;
+    public virtual void AddStack()
     {
-        elapsed = 0.0f; 
+        if (CanStack && StackCount < MaxStack)
+        {
+            StackCount++;
+            ResetDuration();
+        }
+        else
+            ResetDuration();
     }
+
+    public void ResetDuration() => elapsed = 0;
+
+    public bool IsExpired => elapsed >= duration;
 
     public virtual void OnUpdate(float deltaTime)
     {
+        tickTimer += deltaTime;
+        if (tickTimer >= TickInterval)
+        {
+            tickTimer -= TickInterval;
+            Tick();
+        }
+
         elapsed += deltaTime;
+        if (IsExpired)
+            OnExpired?.Invoke(this);
     }
 
+    public virtual void Tick() { }
+    public abstract void OnApply(Character target);
+
     public abstract void OnRemove();
+
 }
 
 public class StatBuff : BaseBuff
 {
     protected StatusType type;
     protected float amount;
+    protected BuffValueType valueType; 
 
-    protected StatusComponent status; 
+    protected StatusComponent status;
 
-    public StatBuff(int buffID, float elapsed, float durtaion) 
-        : base(buffID, elapsed, durtaion)
+    public StatBuff(string buffID, float duration, StatusType type, float amount,
+        BuffValueType valueType = BuffValueType.Percent)
+        : base(buffID, 0f, duration)
     {
+        this.type = type;
+        this.amount = amount;
+        this.valueType = valueType;
     }
 
     public override void OnApply(Character target)
     {
-        base.OnApply(target);
+        if (NeedTick)
+            tickTimer = 0.0f;
 
-        if(target.TryGetComponent<StatusComponent>(out StatusComponent status))
+        if (target.TryGetComponent<StatusComponent>(out StatusComponent status))
         {
-            this.status = status; 
-            status.ApplyBuff(type, amount);
+            this.status = status;
+            status.ApplyBuff(type, amount * StackCount);
         }
     }
 
     public override void OnRemove()
     {
         if (status == null) return;
+        status.ApplyBuff(type, amount * -StackCount);
+    }
 
-        status.ApplyBuff(type, amount * -1.0f);
+    private void CalcBuffValue()
+    {
+        if(valueType == BuffValueType.Percent)
+        {
+
+        }
     }
 }
