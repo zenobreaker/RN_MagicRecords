@@ -1,5 +1,6 @@
 using System;
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 public enum BuffStackPolicy
 {
@@ -41,7 +42,6 @@ public abstract class BaseBuff : IBuff
 
     public virtual BuffStackPolicy StackPolicy => BuffStackPolicy.RefreshOnly;
 
-    public Action<BaseBuff> OnExpired;
 
     public BaseBuff(string buffID, float elapsed, float duration)
     {
@@ -83,8 +83,6 @@ public abstract class BaseBuff : IBuff
         }
 
         elapsed += deltaTime;
-        if (IsExpired)
-            OnExpired?.Invoke(this);
     }
 
     public virtual void Tick() { }
@@ -119,21 +117,25 @@ public class StatBuff : BaseBuff
         if (target.TryGetComponent<StatusComponent>(out StatusComponent status))
         {
             this.status = status;
-            status.ApplyBuff(type, amount * StackCount);
+            float finalValue = amount; 
+
+            if(valueType == BuffValueType.Percent)
+            {
+                finalValue = status.GetStatusValue(type) * amount; 
+            }
+
+            finalValue *= StackCount;
+            this.amount = finalValue;
+            this.status.ApplyBuff(type, finalValue);
         }
     }
 
     public override void OnRemove()
     {
         if (status == null) return;
-        status.ApplyBuff(type, amount * -StackCount);
-    }
-
-    private void CalcBuffValue()
-    {
-        if(valueType == BuffValueType.Percent)
-        {
-
-        }
+        status.ApplyBuff(type, amount * -1.0f);
+#if UNITY_EDITOR
+        Debug.Log("Buff Off");
+#endif
     }
 }

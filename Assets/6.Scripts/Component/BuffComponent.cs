@@ -5,10 +5,12 @@ using UnityEngine;
 public class BuffComponent : MonoBehaviour
 {
     [SerializeField]
-    private float tickInterval = 0.1f; 
+    private float tickInterval = 0.1f;
+
+    private Character owner;
 
     private Dictionary<string, BaseBuff> activeBuffs = new Dictionary<string, BaseBuff>();
-    private Character owner;
+    private List<BaseBuff> expiredBuffs = new List<BaseBuff>();
 
     private void Awake()
     {
@@ -20,26 +22,34 @@ public class BuffComponent : MonoBehaviour
     {
         if (activeBuffs.Count == 0) return;
 
-        foreach(BaseBuff buff in activeBuffs.Values)
+        expiredBuffs.Clear();
+
+        foreach (BaseBuff buff in activeBuffs.Values)
         {
-            if(buff.NeedTick)
+            if (buff.NeedTick && buff.IsExpired == false)
                 buff.OnUpdate(Time.deltaTime);
+
+            if (buff.IsExpired)
+                expiredBuffs.Add(buff);
         }
+
+        foreach(BaseBuff buff in expiredBuffs)
+            RemoveBuff(buff);
     }
 
     public void ApplyBuff(BaseBuff newBuff)
     {
-        if (newBuff == null) return; 
+        if (newBuff == null) return;
 
-        if(activeBuffs.TryGetValue(newBuff.BuffID,out var existingBuff))
+        if (activeBuffs.TryGetValue(newBuff.BuffID, out var existingBuff))
         {
-            switch(newBuff.StackPolicy)
+            switch (newBuff.StackPolicy)
             {
                 case BuffStackPolicy.RefreshOnly:
                     existingBuff.ResetDuration();
                     break;
                 case BuffStackPolicy.Stackable:
-                    existingBuff.AddStack(); 
+                    existingBuff.AddStack();
                     break;
                 case BuffStackPolicy.IgnoreIfExsist:
                     return;
@@ -50,7 +60,6 @@ public class BuffComponent : MonoBehaviour
             activeBuffs.Add(newBuff.BuffID, newBuff);
             newBuff.TickInterval = tickInterval;
             newBuff.OnApply(owner);
-            newBuff.OnExpired += RemoveBuff;
         }
     }
 
@@ -62,7 +71,7 @@ public class BuffComponent : MonoBehaviour
 
     public void RemoveBuff(string buffID)
     {
-        if(string.IsNullOrEmpty(buffID)) return;
+        if (string.IsNullOrEmpty(buffID)) return;
 
         if (activeBuffs.TryGetValue(buffID, out BaseBuff baseBuff))
         {

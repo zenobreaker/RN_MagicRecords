@@ -68,7 +68,7 @@ public class Cheater : MonoBehaviour
         if (buff == null) return;
 
         buff.RemoveBuff("AttackBuff");
-        Debug.Log("Buff Off");
+        Debug.Log("Cheater - Buff Off");
     }
 
     private void Test_PlayerAttackBuff()
@@ -80,7 +80,7 @@ public class Cheater : MonoBehaviour
 
         Debug.Log("Buff On");
 
-        StatBuff attackbuff = new StatBuff("AttackBuff", 30.0f, StatusType.Attack, 0.2f);
+        StatBuff attackbuff = new StatBuff("AttackBuff", 10.0f, StatusType.Attack, 0.2f);
         buff.ApplyBuff(attackbuff); 
     }
 
