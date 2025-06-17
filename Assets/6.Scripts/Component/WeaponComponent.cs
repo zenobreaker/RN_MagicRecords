@@ -10,10 +10,6 @@ public enum WeaponType
     Unarmed = 0, Fist, Sword, Gun, MAX,
 }
 
-public enum SkillSlot
-{
-    Slot1 = 0, Slot2, Slot3, Slot4, MAX,
-}
 
 /// <summary>
 /// 무기 관리 - 유사 커맨더 패턴 이용 

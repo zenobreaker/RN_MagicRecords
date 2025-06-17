@@ -14,6 +14,8 @@ public class AIBehaviourComponent : MonoBehaviour
     [SerializeField]
     private string CanMoveName = "CanMove";
     [SerializeField]
+    private string MoveEnableName = "MoveEnable";
+    [SerializeField]
     private string AIStateTypeName = "State";
     [SerializeField]
     private string TargetName = "Target";
@@ -55,11 +57,6 @@ public class AIBehaviourComponent : MonoBehaviour
     public void SetDeadMode() => ChangedState(AIState.Dead);
 
 
-    public void SetCanMove(bool canMove)
-    {
-        bgAgent?.SetVariableValue<bool>(CanMoveName, canMove);
-    }
-
     public bool GetCanMove()
     {
         if (bgAgent.GetVariable<bool>(CanMoveName, out BlackboardVariable<bool> result))
@@ -67,11 +64,28 @@ public class AIBehaviourComponent : MonoBehaviour
 
         return true;
     }
+    public void SetCanMove(bool canMove)
+    {
+        bgAgent?.SetVariableValue<bool>(CanMoveName, canMove);
+    }
+
+    public bool GetMoveEnable()
+    {
+        if (bgAgent.GetVariable<bool>(MoveEnableName, out BlackboardVariable<bool> result))
+            return result.Value;
+
+        return true; 
+    }
+
+    public void SetMoveEnable(bool moveEnable)
+    {
+        bgAgent?.SetVariableValue<bool> (MoveEnableName, moveEnable);
+    }
 
     public GameObject GetTarget()
     {
         if(bgAgent.GetVariable<GameObject>(TargetName, out BlackboardVariable<GameObject> target))
-            return target;
+            return target.Value;
         return null;
     }
 
@@ -91,13 +105,17 @@ public class AIBehaviourComponent : MonoBehaviour
 
     private void OnStateTypeChanged(StateType oldType, StateType newType)
     {
+        bool bCanMove = false; 
         switch(newType)
         {
-            case StateType.Idle: SetWaitMode(); SetCanMove(true); break; 
-            case StateType.Action: SetActionMode(); SetCanMove(false); break; 
-            case StateType.Damaged: SetDamagedMode(); SetCanMove(false); break; 
-            case StateType.Dead: SetDeadMode(); SetCanMove(false); break; 
-            case StateType.Stop: SetWaitMode(); SetCanMove(false); break; 
+            case StateType.Idle: SetWaitMode(); bCanMove = true; break; 
+            case StateType.Action: SetActionMode(); bCanMove = false; break; 
+            case StateType.Damaged: SetDamagedMode(); bCanMove = false; break; 
+            case StateType.Dead: SetDeadMode(); bCanMove = false; break; 
+            case StateType.Stop: SetWaitMode(); bCanMove = false; break; 
         }
+
+        bCanMove &= GetMoveEnable();
+        SetCanMove(bCanMove);
     }
 }

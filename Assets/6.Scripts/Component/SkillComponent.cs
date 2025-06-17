@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//TODO: 확장성을 위하여 enum이 아닌 string으로 처리해보기
+public enum SkillSlot
+{
+    Slot1 = 0, Slot2, Slot3, Slot4, MAX,
+}
+
 public class SkillComponent 
     : ActionComponent
 {
@@ -9,10 +15,10 @@ public class SkillComponent
     private WeaponComponent weapon;
 
     private bool bIsSkillAction = false;
-    private SkillSlot currentSlot = SkillSlot.MAX;
+    private string currentSlot = "";
 
     // 장착 스킬 정보 
-    private Dictionary<SkillSlot, ActiveSkill> skillSlotTable;
+    private Dictionary<string, ActiveSkill> skillSlotTable;
 
     // 스킬 사용 관련 이벤트 핸들러
     public SO_SkillEventHandler skillEventHandler;
@@ -33,12 +39,12 @@ public class SkillComponent
 
     private void Awake_SkillSlotTable()
     {
-        skillSlotTable = new Dictionary<SkillSlot, ActiveSkill>
+        skillSlotTable = new Dictionary<string, ActiveSkill>
         {
-            {SkillSlot.Slot1, null },
-            {SkillSlot.Slot2, null },
-            {SkillSlot.Slot3, null },
-            {SkillSlot.Slot4, null },
+            {"Slot1", null },
+            {"Slot2", null },
+            {"Slot3", null },
+            {"Slot4", null },
         };
     }
 
@@ -48,7 +54,7 @@ public class SkillComponent
             return;
 
         // 쿨다운 업데이트 
-        foreach (KeyValuePair<SkillSlot, ActiveSkill> pair in skillSlotTable)
+        foreach (KeyValuePair<string, ActiveSkill> pair in skillSlotTable)
         {
             if (pair.Value == null) continue;
 
@@ -66,7 +72,18 @@ public class SkillComponent
     {
         if(skill == null) return;
 
-        skillSlotTable[slot] = skill;
+        SetActiveSkill(slot.ToString(), skill);
+    }
+
+    public void SetActiveSkill(string slot, ActiveSkill skill)
+    {
+        if (skill == null) return;
+
+        if(skillSlotTable.ContainsKey(slot))
+            skillSlotTable[slot] = skill;
+        else 
+            skillSlotTable.Add(slot, skill);
+        
         skillSlotTable[slot].SetOwner(rootObject);
 
         skillEventHandler?.OnSetting_ActiveSkill(skill);
@@ -75,7 +92,12 @@ public class SkillComponent
     // 슬롯의 있는 스킬 사용 
     public void UseSkill(SkillSlot slot)
     {
-        if (bIsSkillAction || skillSlotTable.TryGetValue(slot, out var skill) == false 
+        UseSkill(slot.ToString());
+    }
+
+    public void UseSkill(string slot)
+    {
+        if (bIsSkillAction || skillSlotTable.TryGetValue(slot, out var skill) == false
             || skill == null || skill.IsOnCooldown)
         {
             OnSkillUse?.Invoke(false);
@@ -90,17 +112,19 @@ public class SkillComponent
     public override void DoAction()
     {
         base.DoAction();
-        
+
+        if (!skillSlotTable.ContainsKey(currentSlot)) return; 
+
         skillSlotTable[currentSlot]?.Cast();
     }
 
     public override void BeginDoAction()
     {
-        if(currentSlot == SkillSlot.MAX) return;
+        if(string.IsNullOrEmpty(currentSlot)) return;
         base.BeginDoAction();
         
         bIsSkillAction = true;
-        skillSlotTable[currentSlot]?.Begin_DoAction();
+        skillSlotTable[currentSlot.ToString()]?.Begin_DoAction();
         
         OnBeginDoAction?.Invoke();
         skillEventHandler?.OnBegin_UseSkill();
@@ -108,12 +132,12 @@ public class SkillComponent
 
     public override void EndDoAction()
     {
-        if (currentSlot == SkillSlot.MAX) return;
+        if(string.IsNullOrEmpty(currentSlot)) return;
         base.EndDoAction();
 
         bIsSkillAction = false; 
-        skillSlotTable[currentSlot]?.End_DoAction();
-        currentSlot = SkillSlot.MAX;
+        skillSlotTable[currentSlot.ToString()]?.End_DoAction();
+        currentSlot = string.Empty;
 
         Debug.Log($"Skill End DoAction");
         OnEndDoAction?.Invoke(); 
@@ -123,24 +147,24 @@ public class SkillComponent
     public override void BeginJudgeAttack(AnimationEvent e) 
     {
         base.BeginJudgeAttack(e);
-        skillSlotTable[currentSlot]?.Begin_JudgeAttack(e);
+        skillSlotTable[currentSlot.ToString()]?.Begin_JudgeAttack(e);
     }
 
     public override void EndJudgeAttack(AnimationEvent e) 
     {
         base.EndJudgeAttack(e);
-        skillSlotTable[currentSlot]?.End_JudgeAttack(e);
+        skillSlotTable[currentSlot.ToString()]?.End_JudgeAttack(e);
     }
 
     public override void PlaySound()
     {
         base.PlaySound();
-        skillSlotTable[currentSlot]?.Play_Sound();
+        skillSlotTable[currentSlot.ToString()]?.Play_Sound();
     }
 
     public override void PlayCameraShake()
     {
         base.PlayCameraShake();
-        skillSlotTable[currentSlot]?.Play_CameraShake();
+        skillSlotTable[currentSlot.ToString()]?.Play_CameraShake();
     }
 }

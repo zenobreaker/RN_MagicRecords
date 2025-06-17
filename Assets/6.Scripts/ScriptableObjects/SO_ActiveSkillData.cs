@@ -43,6 +43,7 @@ public class PhaseSkill
     }
 }
 
+[CreateAssetMenu(fileName = "SO_SkillData", menuName = "Scriptable Objects/SO_ActiveSkillData")]
 public class SO_ActiveSkillData : SO_SkillData
 {
     [Header("Skill Settings")]

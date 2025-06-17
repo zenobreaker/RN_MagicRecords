@@ -12,7 +12,6 @@ public class ReinforcedMagicBullet : ActiveSkill
         
     }
 
-
     protected override void StartPhase(int phaseIndex)
     {
         if (phaseIndex < 0 || phaseIndex >= skillData.phaseList.Count)
