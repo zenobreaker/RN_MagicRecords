@@ -1,13 +1,9 @@
-Ôªøusing System;
 using UnityEngine;
 
-/// <summary>
-/// Í∞ïÌôî ÎßàÌÉÑ - Ï†ÑÎ∞©ÏúºÎ°ú Ïó¨Îü¨ Ìö®Í≥ºÍ∞Ä ÎÇ¥Ïû•Îêú Í∞ïÌôîÎêú ÎßàÌÉÑÏùÑ Î∞úÏÇ¨ÌïúÎã§.
-/// </summary>
-public class ReinforcedMagicBullet 
+public class SpikeShot 
     : ActiveSkill
+
 {
-  
     protected override void ApplyEffects()
     {
         
@@ -19,19 +15,9 @@ public class ReinforcedMagicBullet
         if (phaseSkill == null || phaseSkill.actionData == null)
             return;
 
-        int layer = AnimatorLayerCache.GetLayerIndex(animator, phaseSkill?.actionData?.LayerName);
-
         animator.SetFloat(phaseSkill.actionData.ActionSpeedHash, phaseSkill.actionData.ActionSpeed);
-        animator.Play(phaseSkill?.actionData?.StateName, layer, 0);
-        weaponController?.DoAction(phaseSkill?.actionData?.WeaponActionName, layer);
-    }
-
-    private void OnProjectileHit(Collider self, Collider other, Vector3 point)
-    {
-        // hit Sound Play
-        //SoundManager.Instance.PlaySFX(doactionData[index].hitSoundName);
-
-        //Instantiate<GameObject>(doactionData[index].HitParticle, point, rootObject.transform.rotation);
+        animator.Play(phaseSkill?.actionData?.StateName, 0, 0);
+        weaponController?.DoAction(phaseSkill?.actionData?.StateName);
     }
 
 
@@ -42,16 +28,16 @@ public class ReinforcedMagicBullet
         phaseSkill = null;
     }
 
-    public override void Begin_JudgeAttack(AnimationEvent e) 
+    public override void Begin_JudgeAttack(AnimationEvent e)
     {
         if (phaseSkill == null) return;
 
         base.Begin_JudgeAttack(e);
 
 
-        // ÎßàÌÉÑ Ïò§Î∏åÏ†ùÌä∏ ÏÉùÏÑ± 
-        Vector3 localOffset = phaseSkill.spawnPosition; // Ïä§Ìè∞ ÏúÑÏπò(Î°úÏª¨ Í∏∞Ï§Ä)
-        Vector3 position = ownerObject.transform.TransformPoint(localOffset); // Î°úÏª¨ -> ÏõîÎìú Ï¢åÌëúÎ°ú Î≥ÄÍ≤Ω
+        // ∞°Ω√ ø¿∫Í¡ß∆Æ ª˝º∫ 
+        Vector3 localOffset = phaseSkill.spawnPosition; // Ω∫∆˘ ¿ßƒ°(∑Œƒ√ ±‚¡ÿ)
+        Vector3 position = ownerObject.transform.TransformPoint(localOffset); // ∑Œƒ√ -> ø˘µÂ ¡¬«•∑Œ ∫Ø∞Ê
         Quaternion rotation = ownerObject.transform.rotation * phaseSkill.spwanQuaternion;
 
         GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
@@ -59,8 +45,8 @@ public class ReinforcedMagicBullet
         {
             projectile.SetDamageInfo(ownerObject, phaseSkill.damageData);
             projectile.AddIgnore(ownerObject);
-            projectile.OnProjectileHit -= OnProjectileHit;
-            projectile.OnProjectileHit += OnProjectileHit;
+            //projectile.OnProjectileHit -= OnProjectileHit;
+            //projectile.OnProjectileHit += OnProjectileHit;
         }
     }
 

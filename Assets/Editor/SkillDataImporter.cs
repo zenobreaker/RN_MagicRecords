@@ -266,10 +266,6 @@ namespace UserEditor
                         phase.hitDelay = phaseSkill.hitDelay;
                         phase.duration = phaseSkill.duration;
                         
-                        //skillActionAnimation 
-                        phase.skillActionPrefix = phaseSkill.skillActionPrefix;
-                        phase.skillActionAnimation = phaseSkill.skillActionAnimation;
-                        
                         // Skill Object
                         phase.objectName = phaseSkill.objectName;
 

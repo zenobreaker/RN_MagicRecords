@@ -187,3 +187,29 @@ public static class PositionHelpers
         return points;
     }
 }
+
+public static class AnimatorLayerCache
+{
+    private static readonly Dictionary<Animator, Dictionary<string, int>> cache
+        = new();
+
+    public static int GetLayerIndex(Animator animator, string layerName)
+    {
+        if (string.IsNullOrEmpty(layerName))
+            return 0; // 기본 레이어 인덱스는 0
+
+        if (!cache.TryGetValue(animator, out var animatorCache))
+        {
+            animatorCache = new Dictionary<string, int>();
+            cache[animator] = animatorCache;
+        }
+
+        if (!animatorCache.TryGetValue(layerName, out var index))
+        {
+            index = animator.GetLayerIndex(layerName);
+            animatorCache[layerName] = index;
+        }
+
+        return index;
+    }
+}

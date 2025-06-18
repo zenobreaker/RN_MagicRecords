@@ -52,18 +52,12 @@ public class Weapon_Combo : Weapon
         Debug.Assert(so_Combo.comboDatas.Count > 0);
         Debug.Assert(so_Combo.comboDatas[this.index] != null);
 
-        // Set Override 
-        { 
-            if(actionDatas[this.index].AnimatorOv != null)
-                animator.runtimeAnimatorController = actionDatas[this.index].AnimatorOv;
-            weaponController?.SetWeaponAnimation(actionDatas[this.index].WeaponAnimOv);
-        }
-
+  
         // Play Animation 
         {
             animator.SetFloat(actionDatas[this.index].ActionSpeedHash, actionDatas[this.index].ActionSpeed);
-            animator.SetTrigger(actionDatas[this.index].StateName);
-            weaponController?.DoAction(actionDatas[this.index].StateName);
+            animator.Play(actionDatas[this.index].StateName);
+            weaponController?.DoAction(actionDatas[this.index].WeaponActionName);
 
 #if UNITY_EDITOR
             if (bDebug)

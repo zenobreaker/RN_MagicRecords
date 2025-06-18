@@ -18,6 +18,7 @@ public abstract class ActiveSkill
     public SO_ActiveSkillData SO_SkillData { get => skillData; set => skillData = value; }
 
     protected SkillPhase skillPhase;
+    protected PhaseSkill phaseSkill;
     protected float currentCooldown;
 
     protected GameObject ownerObject;
@@ -37,6 +38,18 @@ public abstract class ActiveSkill
         {
             weaponController = user.GetWeaponController();
         }
+
+        foreach(var phase in skillData.phaseList)
+        {
+            phase.actionData?.Initialize();
+        }
+    }
+    protected void SetCurrentPhaseSkill(int phaseIndex)
+    {
+        if (skillData == null || phaseIndex < 0 || phaseIndex >= skillData.phaseList.Count)
+            return;
+
+        phaseSkill = skillData.phaseList[phaseIndex];
     }
 
     public void SetCooldown(float cooldown)
@@ -56,10 +69,11 @@ public abstract class ActiveSkill
         currentCooldown = skillData.cooldown;
 
         // 첫 번째 페이즈 
-        StartPhase(0);
+        ExecutePhase(0);
     }
 
-    protected abstract void StartPhase(int phaseIndex);
+
+    protected abstract void ExecutePhase(int phaseIndex);
     protected abstract void ApplyEffects();     // 개별 효과 적용 
 
     public virtual void Begin_DoAction() { }

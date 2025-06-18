@@ -23,9 +23,6 @@ public class PhaseSkill
     public string objectName;
 
     [Header("Skill Action")]
-    public string skillActionPrefix = "Skills";
-    public string skillActionAnimation;
-    public string weaponActionAnimation;
     public ActionData actionData; 
 
     [Header("Skill Sounds")]

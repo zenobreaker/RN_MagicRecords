@@ -17,12 +17,12 @@ public class WeaponController : MonoBehaviour
         weaponAnimator.runtimeAnimatorController = overrideController;
     }
 
-    public void DoAction(string stateName)
+    public void DoAction(string stateName, int layerIndex = 0)
     {
         if (weaponAnimator == null)
             return;
 
-        weaponAnimator.Play(stateName);
+        weaponAnimator.Play(stateName, layerIndex);
     }
 
 

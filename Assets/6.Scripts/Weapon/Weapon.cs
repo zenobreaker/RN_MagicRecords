@@ -85,11 +85,21 @@ public class DamageSequence
 [Serializable]
 public class ActionData
 {
+    [Header("SubState Name")]
+    [SerializeField]
+    private string subStateName;
+    public string SubStateName { get => subStateName; }
 
     [Header("Action State")]
     [SerializeField]
     private string stateName;
-    public string StateName { get => stateName; }
+    private string state;
+    public string StateName { get => state; }
+
+    [Header("Layer")]
+    private string layerName;
+    public string LayerName { get => layerName; }
+    
 
     [Header("Action Speed")]
     [SerializeField] private float actionSpeed = 1.0f;
@@ -106,15 +116,10 @@ public class ActionData
         }
     }
 
-    [Header("Character Anim")]
+    [Header("Weapon Action Name")]
     [SerializeField]
-    private AnimatorOverrideController animatorOv;
-    public AnimatorOverrideController AnimatorOv => animatorOv;
-
-    [Header("Weapon Anim")]
-    [SerializeField]
-    private AnimatorOverrideController weaponAnimOv;
-    public AnimatorOverrideController WeaponAnimOv => weaponAnimOv;
+    private string weaponActionName; 
+    public string WeaponActionName { get => weaponActionName; }
 
     [Header("Sound")]
     public string SoundName;
@@ -133,12 +138,19 @@ public class ActionData
     {
         ActionData actionData = new ActionData();
 
-        actionData.animatorOv = animatorOv;
-        actionData.weaponAnimOv = weaponAnimOv;
-
         actionData.bCanMove = bCanMove;
 
         return actionData;
+    }
+
+    public void Initialize()
+    {
+        if (string.IsNullOrEmpty(SubStateName) == false)
+        {
+            state = stateName + '.' + SubStateName;
+            return;
+        }
+        state = stateName;
     }
 
     public void Play_Sound()
@@ -228,7 +240,8 @@ public class Weapon : MonoBehaviour
 
     protected virtual void Start()
     {
-
+        foreach (var actionData in actionDatas)
+            actionData.Initialize();
     }
 
     public void Equip()
