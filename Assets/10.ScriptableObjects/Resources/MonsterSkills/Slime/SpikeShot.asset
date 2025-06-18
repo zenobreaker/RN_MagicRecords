@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a45f9791fc77e874c9cfd4fd8604a80c, type: 3}
-  m_Name: SO_SpikeShot
+  m_Name: SpikeShot
   m_EditorClassIdentifier: 
   id: 0
-  skillName: 
+  skillName: SpikeShot
   skillDescription: 
   skillLevel: 0
   maxLevel: 0
@@ -22,12 +22,12 @@ MonoBehaviour:
   leadingSkillList: 
   cost: 0
   cooldown: 0
-  limitCooldown: 0
-  castingTime: 0
+  limitCooldown: 5
+  castingTime: 0.3
   phaseList:
-  - baseDamage: 0
+  - baseDamage: 10
     confficient: 0
-    hitDelay: 0
+    hitDelay: 0.015
     duration: 0
     damageData:
       damageType: 0
@@ -49,13 +49,13 @@ MonoBehaviour:
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
     bonusOptionList: 
     skillObject: {fileID: 0}
-    objectName: 
+    objectName: SpikeShot
     skillActionPrefix: 
     skillActionAnimation: 
     weaponActionAnimation: 
     actionData:
-      stateName: 
-      actionSpeed: 0
+      stateName: Action
+      actionSpeed: 1
       animatorOv: {fileID: 0}
       weaponAnimOv: {fileID: 0}
       SoundName: 
@@ -63,5 +63,5 @@ MonoBehaviour:
       settings: {fileID: 0}
       bCanMove: 0
     soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
+    spawnPosition: {x: 0, y: 1, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}

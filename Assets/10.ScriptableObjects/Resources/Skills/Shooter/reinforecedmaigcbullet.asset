@@ -32,30 +32,30 @@ MonoBehaviour:
     damageData:
       damageType: 0
       Power: 5
-      Distance: 0
-      HeightValue: 0
-      StopFrame: 0
       bDownable: 0
       bLauncher: 0
       SoundName: 
       impulseDirection: {x: 0, y: 0, z: 0}
       settings: {fileID: 0}
-      HitImpactIndex: 0
-      HitSoundName: 
-      HitParticle: {fileID: 0}
-      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 1, y: 1, z: 1}
     bonusOptionList: 
     skillObject: {fileID: 0}
     objectName: ReinForcedMagicBullet
-    skillActionPrefix: Skills
-    skillActionAnimation: Skill_Action_Gun_4
-    weaponActionAnimation: 
+    skillActionLayer: 
     actionData:
-      stateName: Action
+      subStateName: Attack_Final
+      stateName: Skill
       actionSpeed: 1.5
-      animatorOv: {fileID: 22100000, guid: 5e695aec898769a46968fed50ba90ade, type: 2}
-      weaponAnimOv: {fileID: 22100000, guid: e7eb14accfef4a54fa846b85fe6f74a8, type: 2}
+      weaponActionName: Attack_Final
       SoundName: Gun_Normal2
       impulseDirection: {x: 0, y: 0, z: 0}
       settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
