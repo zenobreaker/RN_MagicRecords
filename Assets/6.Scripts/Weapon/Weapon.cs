@@ -85,23 +85,19 @@ public class DamageSequence
 [Serializable]
 public class ActionData
 {
-    [Header("SubState Name")]
     [SerializeField]
     private string subStateName;
     public string SubStateName { get => subStateName; }
 
-    [Header("Action State")]
     [SerializeField]
     private string stateName;
     private string state;
     public string StateName { get => state; }
 
-    [Header("Layer")]
+    [SerializeField]
     private string layerName;
     public string LayerName { get => layerName; }
     
-
-    [Header("Action Speed")]
     [SerializeField] private float actionSpeed = 1.0f;
     public float ActionSpeed { get => actionSpeed; }
     // StateName을 해시 값으로 저장
@@ -116,7 +112,6 @@ public class ActionData
         }
     }
 
-    [Header("Weapon Action Name")]
     [SerializeField]
     private string weaponActionName; 
     public string WeaponActionName { get => weaponActionName; }
@@ -128,7 +123,6 @@ public class ActionData
     public Vector3 impulseDirection;
 
     public Unity.Cinemachine.NoiseSettings settings;
-
 
     [Header("ETC")]
     public bool bCanMove;

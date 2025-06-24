@@ -48,7 +48,6 @@ public partial class ComboComponent : MonoBehaviour
         ownerCharacter = GetComponent<Character>();
         if (ownerCharacter != null)
         {
-            ownerCharacter.OnBeginDoAction += OnBeginDoAction;
             ownerCharacter.OnEndDoAction += OnEndDoAction;
 
             weapon = ownerCharacter.GetComponent<WeaponComponent>();
@@ -129,11 +128,6 @@ public partial class ComboComponent : MonoBehaviour
         }
 
         ResetCombo();
-    }
-
-    public void OnBeginDoAction()
-    {
-  
     }
 
     //TODO : Cancel 타이밍부터 리셋 카운트 내용 추가하기

@@ -16,11 +16,21 @@ public partial class SkillCooldownModifier : Modifier
         if (SkillComponent == null || SkillComponent.Value == null || SkillKey == null)
             return Status.Failure;
 
+        return Status.Running;
+    }
+
+    protected override Status OnUpdate()
+    {
         bool bCanSkill = SkillComponent.Value.CanUseSkill(SkillKey.Value);
-        if(bCanSkill)
-            return Status.Success;
-        else 
+        if (bCanSkill == false)
             return Status.Failure;
+
+        return Child.CurrentStatus switch
+        {
+            Status.Success => Status.Success,
+            Status.Failure => Status.Failure,
+            _ => Status.Running
+        };
     }
 }
 

@@ -13,6 +13,8 @@ public class Character
 {
     protected Animator animator;
     protected new Rigidbody rigidbody;
+    protected CharacterVisual visual;
+    public CharacterVisual Visual { get => visual; }
 
     protected StateComponent state;
     protected HealthPointComponent healthPoint;
@@ -34,6 +36,8 @@ public class Character
 
         state = GetComponent<StateComponent>();
         healthPoint = GetComponent<HealthPointComponent>();
+
+        visual = GetComponentInChildren<CharacterVisual>();
     }
 
     protected virtual void Start()
@@ -46,10 +50,9 @@ public class Character
 
 
     #region AnimationEvent
+    public virtual void Start_DoAction() { }
     public virtual void Begin_DoAction() { OnBeginDoAction?.Invoke(); }
-
     public virtual void End_DoAction() { OnEndDoAction?.Invoke(); }
-
     public virtual void Begin_JudgeAttack(AnimationEvent e = null) { }
     public virtual void End_JudgeAttack(AnimationEvent e = null) { }
     public virtual void Play_Sound() { }

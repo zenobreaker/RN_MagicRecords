@@ -21,17 +21,17 @@ MonoBehaviour:
   skillImage: {fileID: 0}
   leadingSkillList: 
   cost: 0
-  cooldown: 0
+  cooldown: 5
   limitCooldown: 5
   castingTime: 0.3
   phaseList:
-  - baseDamage: 10
+  - baseDamage: 0
     confficient: 0
     hitDelay: 0.015
     duration: 0
     damageData:
       damageType: 0
-      Power: 0
+      Power: 4
       bDownable: 0
       bLauncher: 0
       SoundName: 
@@ -50,14 +50,12 @@ MonoBehaviour:
     bonusOptionList: 
     skillObject: {fileID: 0}
     objectName: SpikeShot
-    skillActionPrefix: 
-    skillActionAnimation: 
-    weaponActionAnimation: 
     actionData:
-      stateName: Action
+      subStateName: Attack01
+      stateName: Skill
+      layerName: 
       actionSpeed: 1
-      animatorOv: {fileID: 0}
-      weaponAnimOv: {fileID: 0}
+      weaponActionName: 
       SoundName: 
       impulseDirection: {x: 0, y: 0, z: 0}
       settings: {fileID: 0}

@@ -18,7 +18,7 @@ public class Enemy
     private DamageHandleComponent damageHandle;
     private LaunchComponent launch;
 
-    private ActionComponent currentAction;
+    protected ActionComponent currentAction;
 
     protected override void Awake()
     {
@@ -52,6 +52,12 @@ public class Enemy
         base.Start();
 
         BattleManager.Instance.ResistEnemy(this);
+    }
+
+    public override void Start_DoAction()
+    {
+        base.Start_DoAction();
+        currentAction?.StartAction();
     }
 
     public override void End_DoAction()

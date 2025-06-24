@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Enemy_Pattern 
+public abstract class Enemy_Pattern
     : Enemy
 {
     protected SkillComponent skillComp;
@@ -10,6 +10,14 @@ public abstract class Enemy_Pattern
     protected override void Awake()
     {
         base.Awake();
+
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+
+        Initialized(GetComponent<SkillComponent>());
     }
 
     /// <summary>
@@ -20,6 +28,17 @@ public abstract class Enemy_Pattern
     {
         skillComp = skill;
         DefinePatterns();
+
+        if (skillComp != null)
+        {
+            skillComp.OnSkillUse += OnSkillUse;
+        }
+    }
+
+    private void OnSkillUse(bool bIsUse)
+    {
+        if (bIsUse)
+            currentAction = skillComp;
     }
 
     protected abstract void DefinePatterns();
@@ -33,11 +52,6 @@ public abstract class Enemy_Pattern
 
         skillComp.SetActiveSkill(slot, skill);
 
-        patterns.Add(new PatternEntry
-        {
-            conditions = conditions,
-            skill = skill,
-        });
-
+        patterns.Add(new PatternEntry(conditions, skill));
     }
 }

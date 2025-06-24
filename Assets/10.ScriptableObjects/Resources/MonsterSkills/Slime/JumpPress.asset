@@ -1,0 +1,141 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a45f9791fc77e874c9cfd4fd8604a80c, type: 3}
+  m_Name: JumpPress
+  m_EditorClassIdentifier: 
+  id: 0
+  skillName: JumpPress
+  skillDescription: 
+  skillLevel: 0
+  maxLevel: 0
+  skillUpgradeCost: 
+  skillImage: {fileID: 0}
+  leadingSkillList: 
+  cost: 0
+  cooldown: 5
+  limitCooldown: 5
+  castingTime: 0.3
+  phaseList:
+  - baseDamage: 0
+    confficient: 0
+    hitDelay: 0.015
+    duration: 0
+    damageData:
+      damageType: 0
+      Power: 0
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    skillObject: {fileID: 0}
+    objectName: 
+    actionData:
+      subStateName: Begin_Jump
+      stateName: Skill
+      layerName: 
+      actionSpeed: 1
+      weaponActionName: 
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      bCanMove: 0
+    soundName: 
+    spawnPosition: {x: 0, y: 1, z: 0}
+    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+  - baseDamage: 0
+    confficient: 0
+    hitDelay: 0.015
+    duration: 0
+    damageData:
+      damageType: 0
+      Power: 0
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    skillObject: {fileID: 0}
+    objectName: 
+    actionData:
+      subStateName: 
+      stateName: Skill
+      layerName: 
+      actionSpeed: 1
+      weaponActionName: 
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      bCanMove: 0
+    soundName: 
+    spawnPosition: {x: 0, y: 1, z: 0}
+    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+  - baseDamage: 0
+    confficient: 0
+    hitDelay: 0.015
+    duration: 0
+    damageData:
+      damageType: 0
+      Power: 0
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    skillObject: {fileID: 0}
+    objectName: 
+    actionData:
+      subStateName: End_Jump
+      stateName: Skill
+      layerName: 
+      actionSpeed: 1
+      weaponActionName: 
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      bCanMove: 0
+    soundName: 
+    spawnPosition: {x: 0, y: 1, z: 0}
+    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}

@@ -4,6 +4,14 @@ public class SpikeShot
     : ActiveSkill
 
 {
+    public SpikeShot(string path) : base(path)
+    {
+    }
+
+    public SpikeShot(SO_ActiveSkillData skillData) : base(skillData)
+    {
+    }
+
     protected override void ApplyEffects()
     {
         
@@ -38,7 +46,7 @@ public class SpikeShot
         // 가시 오브젝트 생성 
         Vector3 localOffset = phaseSkill.spawnPosition; // 스폰 위치(로컬 기준)
         Vector3 position = ownerObject.transform.TransformPoint(localOffset); // 로컬 -> 월드 좌표로 변경
-        Quaternion rotation = ownerObject.transform.rotation * phaseSkill.spwanQuaternion;
+        Quaternion rotation = ownerObject.transform.localRotation * phaseSkill.ValidSpawnQuaternion;
 
         GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
         if (obj.TryGetComponent<Projectile>(out var projectile))

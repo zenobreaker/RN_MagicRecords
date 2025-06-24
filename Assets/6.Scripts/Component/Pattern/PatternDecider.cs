@@ -39,6 +39,20 @@ public class PatternEntry
     public List<PatternCondition> conditions = new List<PatternCondition>();
     public ActiveSkill skill;
 
+    public PatternEntry(List<PatternCondition> conditions, ActiveSkill skill)
+    {
+        this.conditions = conditions;
+        this.skill = skill;
+
+        foreach (var condition in conditions)
+        {
+            if (condition.type == PatternConditionType.Cooldown)
+                skill.SetCooldown(condition.value);
+        }
+
+        InitiaizePattern();
+    }
+
     private bool bCanUse = false;
     public bool CanUse => bCanUse;
 

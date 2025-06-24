@@ -15,6 +15,9 @@ public partial class SkillAction : Action
     protected override Status OnStart()
     {
         if (SkillComponent == null || SkillComponent.Value == null) return Status.Failure;
+        
+        if (SkillComponent.Value.CanUseSkill(SkillKey.Value) == false)
+            return Status.Failure;
 
         SkillComponent.Value.UseSkill(SkillKey.Value);
 
@@ -23,11 +26,10 @@ public partial class SkillAction : Action
 
     protected override Status OnUpdate()
     {
-        return Status.Success;
-    }
+        if (SkillComponent.Value.IsSkillAction)
+            return Status.Running;
 
-    protected override void OnEnd()
-    {
+        return Status.Success;
     }
 }
 

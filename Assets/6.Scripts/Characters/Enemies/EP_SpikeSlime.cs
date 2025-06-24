@@ -5,10 +5,10 @@ public class EP_SpikeSlime
     : Enemy_Pattern
 {
     [SerializeField]
-    private ActiveSkill spikeShot;
+    private SO_ActiveSkillData spikeShot;
 
     [SerializeField]
-    private ActiveSkill normalAttack;
+    private SO_ActiveSkillData jumpPress;
 
 
 
@@ -26,7 +26,9 @@ public class EP_SpikeSlime
                 value = 5.0f}
         };
 
-        AddPattern("Slot1", spikeShot, patternConditions);
+        ActiveSkill spikeShotSkill = new SpikeShot(spikeShot);
+
+        AddPattern("Slot1", spikeShotSkill, patternConditions);
 
 
         patternConditions.Clear();
@@ -36,13 +38,14 @@ public class EP_SpikeSlime
             new PatternCondition {
                 type = PatternConditionType.Distance, 
                 ctype = ComparisonType.LessThanOrEqual,
-                value = 5.0f },
+                value = 3.0f },
             new PatternCondition {
                 type = PatternConditionType.Cooldown, 
                 ctype = ComparisonType.Equal,
                 value = 5.0f }
         };
 
-        AddPattern("Slot2", normalAttack, patternConditions);
+        ActiveSkill jumpPressSkill = new JumpPress(jumpPress);
+        AddPattern("Slot2", jumpPressSkill, patternConditions);
     }
 }

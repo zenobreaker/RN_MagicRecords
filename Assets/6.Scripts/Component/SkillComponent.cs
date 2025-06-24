@@ -13,8 +13,10 @@ public class SkillComponent
 {
     private StateComponent state;
     private WeaponComponent weapon;
+    private DamageHandleComponent damageHandle;
 
     private bool bIsSkillAction = false;
+    public bool IsSkillAction { get { return bIsSkillAction; } }
     private string currentSkillName = "";
 
     // 장착 스킬 정보 
@@ -34,7 +36,17 @@ public class SkillComponent
         weapon = GetComponent<WeaponComponent>();
         Debug.Assert(weapon != null);
 
+        damageHandle = GetComponent<DamageHandleComponent>();
+        if (damageHandle != null)
+            damageHandle.OnDamaged += OnDamaged; 
+
         Awake_SkillSlotTable();
+    }
+
+    private void OnDamaged()
+    {
+        if (IsSkillAction)
+            EndDoAction();
     }
 
     private void Awake_SkillSlotTable()
@@ -58,10 +70,12 @@ public class SkillComponent
         {
             if (pair.Value == null) continue;
 
+            pair.Value.Update(Time.deltaTime);
+
             skillEventHandler?.OnInCoolDown(pair.Value.IsOnCooldown);
             if (pair.Value.IsOnCooldown == false) continue;
 
-            pair.Value.SetCooldown(Time.deltaTime);
+            pair.Value.Update_Cooldown(Time.deltaTime);
             skillEventHandler?.OnCooldown(pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
         }
     }
@@ -70,7 +84,7 @@ public class SkillComponent
     public bool CanUseSkill(string skillName)
     {
         if(skillSlotTable.TryGetValue(skillName, out var skill))
-            return skill != null && skill.IsOnCooldown;
+            return skill != null && skill.IsOnCooldown == false && bIsSkillAction == false;
 
         return false; 
     }
@@ -93,6 +107,7 @@ public class SkillComponent
             skillSlotTable.Add(skillName, skill);
         
         skillSlotTable[skillName].SetOwner(rootObject);
+        skillSlotTable[skillName].InitializedData();
 
         skillEventHandler?.OnSetting_ActiveSkill(skill);
     }
@@ -105,7 +120,7 @@ public class SkillComponent
 
     public void UseSkill(string skillName)
     {
-        if (bIsSkillAction || CanUseSkill(skillName))
+        if (bIsSkillAction || CanUseSkill(skillName) == false)
         {
             OnSkillUse?.Invoke(false);
             return;
@@ -120,9 +135,17 @@ public class SkillComponent
     {
         base.DoAction();
 
-        if (!skillSlotTable.ContainsKey(currentSkillName)) return; 
+        if (!skillSlotTable.ContainsKey(currentSkillName)) return;
 
+        bIsSkillAction = true;
         skillSlotTable[currentSkillName]?.Cast();
+    }
+
+    public override void StartAction()
+    {
+        base.StartAction();
+
+        skillSlotTable[currentSkillName]?.Start_DoAction();
     }
 
     public override void BeginDoAction()
@@ -130,7 +153,6 @@ public class SkillComponent
         if(string.IsNullOrEmpty(currentSkillName)) return;
         base.BeginDoAction();
         
-        bIsSkillAction = true;
         skillSlotTable[currentSkillName]?.Begin_DoAction();
         
         OnBeginDoAction?.Invoke();

@@ -19,6 +19,7 @@ public abstract class ActionComponent
         OnDoAction?.Invoke(); 
         InAction = true;
     }
+    public virtual void StartAction() { }
 
     public virtual void BeginDoAction() { }
         

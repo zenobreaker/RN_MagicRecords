@@ -38,6 +38,8 @@ public class DamageHandleComponent : MonoBehaviour
     private HealthPointComponent health;
     private StatusComponent status;
 
+    public Action OnDamaged;
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -78,6 +80,8 @@ public class DamageHandleComponent : MonoBehaviour
     public void OnDamage(DamageEvent damageEvent)
     {
         if (damageEvent == null) return;
+
+        OnDamaged?.Invoke();
 
         float value = CalcDamage(damageEvent.value);
 

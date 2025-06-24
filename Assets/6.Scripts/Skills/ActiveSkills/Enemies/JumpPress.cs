@@ -1,0 +1,149 @@
+using NUnit.Framework.Constraints;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.AI;
+
+public class JumpPress
+    : ActiveSkill
+{
+
+    private float soarSpeed = 10.0f;
+    private float maxSoar = 20.0f;
+    private bool isSoaring = false;
+
+    private float fallSpeed = 10.0f;
+    private bool isFalling = false; 
+    private float groundCheckDistance = 0.2f;
+    private LayerMask groundMask;
+
+    private bool isGrounded;
+    private bool wasGrounded;
+
+    private CharacterVisual visual;
+    private NavMeshAgent agent;
+
+    public JumpPress(string path) : base(path)
+    {
+        groundMask = 1 << LayerMask.NameToLayer("Default");
+    }
+
+    public JumpPress(SO_ActiveSkillData skillData) : base(skillData)
+    {
+        groundMask = 1 << LayerMask.NameToLayer("Default");
+    }
+
+    public override void SetOwner(GameObject gameObject)
+    {
+        base.SetOwner(gameObject);
+        agent = gameObject.GetComponent<NavMeshAgent>();
+        visual = gameObject.GetComponent<Character>()?.Visual;
+    }
+
+    protected override void ApplyEffects()
+    {
+        
+    }
+
+    public override void Update(float deltaTime)
+    {
+        base.Update(deltaTime);
+
+        if (phaseIndex == 0  && isSoaring)
+        {
+            Soaring(deltaTime); 
+        }
+        else if(phaseIndex == 1 && isFalling)
+        {
+            Press(deltaTime);
+        }
+    }
+
+    protected override void ExecutePhase(int phaseIndex)
+    {
+        SetCurrentPhaseSkill(phaseIndex);
+        if (phaseSkill == null || phaseSkill.actionData == null)
+            return;
+
+        if (phaseIndex == 1)
+            visual?.ShowModel();
+
+        animator.SetFloat(phaseSkill.actionData.ActionSpeedHash, phaseSkill.actionData.ActionSpeed);
+        animator.Play(phaseSkill?.actionData?.StateName, 0, 0);
+        weaponController?.DoAction(phaseSkill?.actionData?.StateName);
+    }
+
+    private void Soaring(float deltaTime)
+    {
+        if (ownerObject.transform.position.y >= maxSoar)
+        {
+            visual?.HideModel();
+            isFalling = true; 
+            ExecutePhase(phaseIndex + 1);
+        }
+        else
+        {
+            ownerObject.transform.position += Vector3.up * deltaTime * soarSpeed;
+        }
+    }
+
+    private void Press(float deltaTime)
+    {
+        if (IsCurrentlyOnGround() == false)
+        {
+            ownerObject.transform.position += Vector3.down * deltaTime * fallSpeed;
+            return;
+        }
+        
+        isFalling = false; 
+        ExecutePhase(phaseIndex + 1);
+    }
+
+
+    private bool CheckGround()
+    {
+        wasGrounded = isGrounded;
+        isGrounded = Physics.CheckSphere(ownerObject.transform.position, groundCheckDistance, groundMask);
+
+        return !wasGrounded && isGrounded;
+    }
+
+    private bool IsCurrentlyOnGround()
+    {
+        Collider[] hits = Physics.OverlapSphere(ownerObject.transform.position, groundCheckDistance, groundMask);
+
+        foreach(var hit in hits)
+        {
+            if (hit.gameObject == ownerObject 
+                || hit.gameObject.transform.root == ownerObject.transform) continue;
+            return true;
+        }
+
+        return false;
+    }
+
+    public override void Start_DoAction()
+    {
+        if (phaseIndex == 0)
+        {
+            isGrounded = true; 
+            isSoaring = true;
+            
+            if(agent != null)
+                agent.enabled = false;
+        }
+        else if(phaseIndex == 2)
+        {
+            // Create Effect and Judge
+
+        }
+    }
+
+    public override void End_DoAction()
+    {
+        base.End_DoAction();
+
+        if (phaseIndex == 2)
+            agent.enabled = true; 
+    }
+
+}

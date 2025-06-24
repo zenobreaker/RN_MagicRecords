@@ -122,13 +122,10 @@ public class DebugUI : MonoBehaviour
         SkillComponent skill = debug_Character.GetComponent<SkillComponent>();
         if (skill != null)
         {
-            ActiveSkill activeSkill = new ReinforcedMagicBullet();
-            SO_ActiveSkillData so_ActiveSkillData =
-                Resources.Load<SO_ActiveSkillData>("Skills/Shooter/reinforecedmaigcbullet");
+            ActiveSkill activeSkill = new ReinforcedMagicBullet("Skills/Shooter/reinforecedmaigcbullet");
 
-            if (so_ActiveSkillData != null)
+            if (activeSkill != null)
             {
-                activeSkill.SO_SkillData = so_ActiveSkillData;
                 skill.SetActiveSkill(SkillSlot.Slot1, activeSkill);
                 Debug.Log($"skill 장착 완료");
             }

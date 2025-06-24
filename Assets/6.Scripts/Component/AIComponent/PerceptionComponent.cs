@@ -28,20 +28,23 @@ public class PerceptionComponent
     }
     private void Update()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, distance, layerMask);
+        //Collider[] colliders = Physics.OverlapSphere(transform.position, distance, layerMask);
 
-        Vector3 forward = transform.forward;
+        //Vector3 forward = transform.forward;
+        //List<Collider> candidateList = new List<Collider>();
+
+        ////1. 조건에 맞는 후보자 검색
+        //foreach (Collider collider in colliders)
+        //{
+        //    Vector3 direction = collider.transform.position - transform.position;
+        //    float signedAngle = Vector3.SignedAngle(forward, direction.normalized, Vector3.up);
+
+        //    if (Mathf.Abs(signedAngle) <= angle)
+        //        candidateList.Add(collider);
+        //}
+
         List<Collider> candidateList = new List<Collider>();
-
-        //1. 조건에 맞는 후보자 검색
-        foreach (Collider collider in colliders)
-        {
-            Vector3 direction = collider.transform.position - transform.position;
-            float signedAngle = Vector3.SignedAngle(forward, direction.normalized, Vector3.up);
-
-            if (Mathf.Abs(signedAngle) <= angle)
-                candidateList.Add(collider);
-        }
+        GetLooAtTagetList(angle, ref candidateList);
 
         //candidateList.ForEach(collider => print(collider.name));
 
@@ -79,6 +82,29 @@ public class PerceptionComponent
         }
 
         return null;
+    }
+
+    private void GetLooAtTagetList(float angle, ref List<Collider> candidateList)
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, distance, layerMask);
+
+        //1. 조건에 맞는 후보자 검색
+        foreach (Collider collider in colliders)
+        {
+            if (GetLooAtTarget(angle, collider.transform.position))
+                candidateList.Add(collider);
+        }
+    }
+
+    public bool GetLooAtTarget(float angle, Vector3 targetPos)
+    {
+        Vector3 forward = transform.forward;
+        Vector3 direction  = targetPos - transform.position;
+        float signedAngle = Vector3.SignedAngle(forward, direction.normalized, Vector3.up);
+
+        if (Mathf.Abs(signedAngle) <= angle)
+            return true;
+        return false; 
     }
 
 #if UNITY_EDITOR

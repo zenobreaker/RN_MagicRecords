@@ -30,7 +30,16 @@ public class PhaseSkill
 
     [Header("Spawn Data")]
     public Vector3 spawnPosition;
-    public Quaternion spwanQuaternion = Quaternion.identity;
+    
+    [SerializeField]
+    private Quaternion spwanQuaternion;
+    public Quaternion ValidSpawnQuaternion =>
+        spwanQuaternion.Equals(new Quaternion(0, 0, 0, 0)) ? Quaternion.identity : spwanQuaternion;
+
+    public PhaseSkill() 
+    {
+        spwanQuaternion = Quaternion.identity;
+    }
 
 
     public void SetDamageData(float baseDamage, float coefficient = 1.0f)
@@ -51,4 +60,6 @@ public class SO_ActiveSkillData : SO_SkillData
 
     [Header("Phase")]
     public List<PhaseSkill> phaseList;
+
+    public SO_ActiveSkillData Clone() => Instantiate(this);
 }
