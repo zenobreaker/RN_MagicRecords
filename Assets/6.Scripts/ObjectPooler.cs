@@ -24,7 +24,7 @@ public class ObjectPoolerEditor : Editor
 
 public partial class ObjectPooler : MonoBehaviour
 {
-	static ObjectPooler Instance;
+	public static ObjectPooler Instance;
 	void Awake() => Instance = this;
 
 	[Serializable]
@@ -82,6 +82,52 @@ public partial class ObjectPooler : MonoBehaviour
     public static T SpawnFromPool<T>(string tag, Transform trasnform) where T : Component
     {
         GameObject obj = Instance._SpawnFromPool(tag, trasnform.position, trasnform.rotation);
+        if (obj.TryGetComponent(out T component))
+            return component;
+        else
+        {
+            obj.SetActive(false);
+            throw new Exception($"Component not found");
+        }
+    }
+    #endregion
+    #region DeferedSpawn
+    public static GameObject DeferedSpawnFromPool(string tag, Transform trasnform) =>
+       Instance._DeferedSpawnFromPool(tag, trasnform.position, trasnform.rotation);
+
+    public static GameObject DeferedSpawnFromPool(string tag, Vector3 position) =>
+        Instance._DeferedSpawnFromPool(tag, position, Quaternion.identity);
+
+    public static GameObject DeferedSpawnFromPool(string tag, Vector3 position, Quaternion rotation) =>
+        Instance._DeferedSpawnFromPool(tag, position, rotation);
+
+    public static T DeferedSpawnFromPool<T>(string tag, Vector3 position) where T : Component
+    {
+        GameObject obj = Instance._DeferedSpawnFromPool(tag, position, Quaternion.identity);
+        if (obj.TryGetComponent(out T component))
+            return component;
+        else
+        {
+            obj.SetActive(false);
+            throw new Exception($"Component not found");
+        }
+    }
+
+    public static T DeferedSpawnFromPool<T>(string tag, Vector3 position, Quaternion rotation) where T : Component
+    {
+        GameObject obj = Instance._DeferedSpawnFromPool(tag, position, rotation);
+        if (obj.TryGetComponent(out T component))
+            return component;
+        else
+        {
+            obj.SetActive(false);
+            throw new Exception($"Component not found");
+        }
+    }
+
+    public static T DeferedSpawnFromPool<T>(string tag, Transform trasnform) where T : Component
+    {
+        GameObject obj = Instance._DeferedSpawnFromPool(tag, trasnform.position, trasnform.rotation);
         if (obj.TryGetComponent(out T component))
             return component;
         else
@@ -155,7 +201,47 @@ public partial class ObjectPooler : MonoBehaviour
 		return objectToSpawn;
 	}
 
-	private void Start()
+	// Defered Spawn 
+	private GameObject _DeferedSpawnFromPool(string tag, Vector3 position, Quaternion rotation)
+	{
+        if (!poolDictionary.ContainsKey(tag))
+            throw new Exception($"Pool with tag {tag} doesn't exist.");
+
+        // 큐에 없으면 새로 추가
+        Queue<GameObject> poolQueue = poolDictionary[tag];
+        if (poolQueue.Count <= 0)
+        {
+            Pool pool = Array.Find(pools, x => x.tag == tag);
+            //var obj = CreateNewObject(pool.tag, pool.prefab);
+            GameObject obj = CreateNewObjectSetParent(pool.tag, pool.prefab);
+            ArrangePool(tag, obj);
+        }
+
+        // 큐에서 꺼내서 사용
+        GameObject objectToSpawn = poolQueue.Peek();
+        objectToSpawn.transform.position = position;
+        objectToSpawn.transform.rotation = rotation;
+
+        return objectToSpawn;
+    }
+
+	public void FinishSpawn(GameObject obj)
+	{
+		FinishSpawn(obj.name);
+    }
+
+	public void FinishSpawn(string tag)
+	{
+		if (!poolDictionary.ContainsKey(tag))
+			throw new Exception($"Pool with tag {tag} doesn't exist.");
+
+		Queue<GameObject> poolQueue = poolDictionary[tag];
+		GameObject objectToSpawn = poolQueue.Dequeue();
+		objectToSpawn.SetActive(true);
+	}
+
+
+    private void Start()
 	{
 		spawnObjects = new List<GameObject>();
 		poolDictionary = new Dictionary<string, Queue<GameObject>>();
