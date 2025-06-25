@@ -65,11 +65,30 @@ public class JumpPress
             return;
 
         if (phaseIndex == 1)
-            visual?.ShowModel();
+            ExecutePhase_1();
 
-        animator.SetFloat(phaseSkill.actionData.ActionSpeedHash, phaseSkill.actionData.ActionSpeed);
-        animator.Play(phaseSkill?.actionData?.StateName, 0, 0);
-        weaponController?.DoAction(phaseSkill?.actionData?.StateName);
+        if (string.IsNullOrEmpty(phaseSkill?.actionData?.StateName) == false)
+        {
+            animator.SetFloat(phaseSkill.actionData.ActionSpeedHash, phaseSkill.actionData.ActionSpeed);
+            animator.Play(phaseSkill?.actionData?.StateName, 0, 0);
+            weaponController?.DoAction(phaseSkill?.actionData?.StateName);
+        }
+    }
+
+    private void ExecutePhase_1()
+    {
+        visual?.ShowModel();
+        PerceptionComponent percept = ownerObject.GetComponent<PerceptionComponent>();
+        if (percept != null)
+        {
+            GameObject target = percept.GetTarget();
+            if (target != null)
+            {
+                WarningSign sign = ObjectPooler.DeferedSpawnFromPool<WarningSign>("WarningSign_Circle", target.transform.position);
+                sign.SetData(0.5f, 2.0f);
+                ObjectPooler.Instance.FinishSpawn(sign.gameObject);
+            }
+        }
     }
 
     private void Soaring(float deltaTime)
