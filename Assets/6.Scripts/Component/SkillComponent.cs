@@ -176,24 +176,29 @@ public class SkillComponent
     public override void BeginJudgeAttack(AnimationEvent e) 
     {
         base.BeginJudgeAttack(e);
+        if (string.IsNullOrEmpty(currentSkillName)) return; 
+
         skillSlotTable[currentSkillName]?.Begin_JudgeAttack(e);
     }
 
     public override void EndJudgeAttack(AnimationEvent e) 
     {
         base.EndJudgeAttack(e);
+        if (string.IsNullOrEmpty(currentSkillName)) return;
         skillSlotTable[currentSkillName]?.End_JudgeAttack(e);
     }
 
     public override void PlaySound()
     {
         base.PlaySound();
+        if (string.IsNullOrEmpty(currentSkillName)) return;
         skillSlotTable[currentSkillName]?.Play_Sound();
     }
 
     public override void PlayCameraShake()
     {
         base.PlayCameraShake();
+        if (string.IsNullOrEmpty(currentSkillName)) return;
         skillSlotTable[currentSkillName]?.Play_CameraShake();
     }
 }
