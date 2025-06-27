@@ -84,6 +84,7 @@ public class JumpPress
             GameObject target = percept.GetTarget();
             if (target != null)
             {
+                ownerObject.transform.position = new Vector3(target.transform.position.x, ownerObject.transform.position.y, target.transform.position.z);
                 WarningSign sign = ObjectPooler.DeferedSpawnFromPool<WarningSign>("WarningSign_Circle", target.transform.position);
                 sign.SetData(0.5f, 2.0f);
                 ObjectPooler.Instance.FinishSpawn(sign.gameObject);
@@ -150,11 +151,6 @@ public class JumpPress
             if(agent != null)
                 agent.enabled = false;
         }
-        else if(phaseIndex == 2)
-        {
-            // Create Effect and Judge
-
-        }
     }
 
     public override void End_DoAction()
@@ -165,4 +161,22 @@ public class JumpPress
             agent.enabled = true; 
     }
 
+
+    public override void Begin_JudgeAttack(AnimationEvent e)
+    {
+        base.Begin_JudgeAttack(e);
+        // Create Effect and Judge
+        Collider[] colliders = Physics.OverlapSphere(ownerObject.transform.position, 2.0f);
+        foreach (var collider in colliders)
+        {
+            var other = collider.gameObject;
+            if (TeamUtility.IsSameTeam(other, ownerObject))
+                continue;
+
+            if (other.TryGetComponent<IDamagable>(out var damage))
+            {
+                damage.OnDamage(ownerObject, null, other.transform.position, phaseSkill.damageData.GetMyDamageEvent(ownerObject));
+            }
+        }
+    }
 }

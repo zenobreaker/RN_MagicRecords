@@ -101,13 +101,13 @@ MonoBehaviour:
     soundName: 
     spawnPosition: {x: 0, y: 1, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
-  - baseDamage: 0
+  - baseDamage: 20
     confficient: 0
     hitDelay: 0.015
     duration: 0
     damageData:
       damageType: 0
-      Power: 0
+      Power: 2
       bDownable: 0
       bLauncher: 0
       SoundName: 
@@ -115,7 +115,7 @@ MonoBehaviour:
       settings: {fileID: 0}
       hitData:
         DamageType: 0
-        Distance: 0
+        Distance: 20
         HeightValue: 0
         StopFrame: 0
         HitImpactIndex: 0
