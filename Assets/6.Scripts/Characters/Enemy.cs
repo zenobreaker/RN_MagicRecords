@@ -50,7 +50,7 @@ public class Enemy
     protected override void Start()
     {
         base.Start();
-
+        SetGenericTeamId(2);
         BattleManager.Instance.ResistEnemy(this);
     }
 

@@ -103,7 +103,8 @@ public class Player
     protected override void Start()
     {
         base.Start();
-
+        
+        SetGenericTeamId(1); 
         BattleManager.Instance.ResistPlayer(this);
     }
 
@@ -201,6 +202,15 @@ public class Player
         MovableStopper.Instance.Delete(this);
         MovableSlower.Instance.Delete(this);
         Destroy(gameObject, 5);
+    }
+
+    protected override void End_Damaged()
+    {
+        base.End_Damaged();
+        
+        state?.SetIdleMode();
+        foreach(var action in actionComponents)
+            action.EndDoAction();
     }
 
     public void ApplyLaunch(GameObject attacker, Weapon causer, HitData hitData)

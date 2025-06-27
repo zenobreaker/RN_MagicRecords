@@ -10,7 +10,10 @@ public class Character
     : MonoBehaviour
     , IStoppable
     , ISlowable
+    , ITeamAgent
 {
+    protected GenenricTeamId genericTeamId; 
+
     protected Animator animator;
     protected new Rigidbody rigidbody;
     protected CharacterVisual visual;
@@ -46,7 +49,18 @@ public class Character
         Regist_MovableSlower();
     }
 
-    protected virtual void End_Damaged() { }
+    protected virtual void End_Damaged() { bInAction = false; }
+
+
+    public void SetGenericTeamId(GenenricTeamId id)
+    {
+        genericTeamId = id; 
+    }
+
+    public GenenricTeamId GetGeneriTeamId()
+    {
+        return genericTeamId;
+    }
 
 
     #region AnimationEvent
