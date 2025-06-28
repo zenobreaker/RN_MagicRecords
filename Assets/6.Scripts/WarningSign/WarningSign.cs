@@ -2,17 +2,16 @@ using UnityEngine;
 
 public class WarningSign : MonoBehaviour
 {
-    [SerializeField] private Transform mainPlane;
-    [SerializeField] private Transform subPlane;
+    [SerializeField] protected Transform mainPlane;
+    [SerializeField] protected Transform subPlane;
 
-    [SerializeField] public float growSpeed = 1.0f;
-    [SerializeField] public float maxScale = 2.0f;
-    [SerializeField] public float duration = 1.0f;
+    protected float duration = 1.0f;
+    protected float startTime;
 
-    private float startTime;
+    private float maxScale = 2.0f;
     private float currentScale;
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         startTime = Time.time;
         currentScale = 0.0f; 
@@ -20,12 +19,12 @@ public class WarningSign : MonoBehaviour
         mainPlane.localScale = Vector3.one * maxScale;
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         ObjectPooler.ReturnToPool(gameObject);
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (currentScale < maxScale)
         {

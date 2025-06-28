@@ -4017,7 +4017,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
       propertyPath: pools.Array.size
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
       propertyPath: pools.Array.data[0].tag
@@ -4044,6 +4044,10 @@ PrefabInstance:
       value: WarningSign_Circle
       objectReference: {fileID: 0}
     - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
+      propertyPath: pools.Array.data[6].tag
+      value: WarningSign_Rect
+      objectReference: {fileID: 0}
+    - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
       propertyPath: pools.Array.data[3].size
       value: 5
       objectReference: {fileID: 0}
@@ -4053,6 +4057,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
       propertyPath: pools.Array.data[5].size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
+      propertyPath: pools.Array.data[6].size
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
@@ -4079,6 +4087,10 @@ PrefabInstance:
       propertyPath: pools.Array.data[5].prefab
       value: 
       objectReference: {fileID: 4095088222910462062, guid: 962a486fbaf7ce54da7e5722cb6586d4, type: 3}
+    - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
+      propertyPath: pools.Array.data[6].prefab
+      value: 
+      objectReference: {fileID: 3034081837585540095, guid: 4df45fde81695154687c79673d30dd7c, type: 3}
     - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
       propertyPath: pools.Array.data[0].parentTransform
       value: 
@@ -5400,7 +5412,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!195 &1930638149
 NavMeshAgent:
   m_ObjectHideFlags: 0
