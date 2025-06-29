@@ -1,18 +1,19 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 
 public class WarningSign_Rect : WarningSign
 {
     private Vector2 maxRectScale;
     private Vector2 currentScale;
 
-    MeshFilter mainPlaneMehsFilter; 
+    MeshFilter mainPlaneMeshFilter; 
     MeshFilter subPlaneMeshFilter;
 
     private Vector2 initScale;
     private Vector3 initialSubPlaneCenterPosition;
+    private Vector3 lookForward;
     private void Awake()
     {
-        mainPlaneMehsFilter = mainPlane.GetComponent<MeshFilter>();
+        mainPlaneMeshFilter = mainPlane.GetComponent<MeshFilter>();
         subPlaneMeshFilter = subPlane.GetComponent<MeshFilter>();
     }
 
@@ -47,7 +48,10 @@ public class WarningSign_Rect : WarningSign
         maxRectScale = new Vector2(maxWidth , maxHeight);
         currentScale = new Vector2(width, height);
         this.duration = duration;
-        
+
+        subPlane.localScale = new Vector3(currentScale.x, 1f, currentScale.y);
+        mainPlane.localScale = new Vector3(maxRectScale.x, 1f, maxRectScale.y);
+
         SetMainPlanePosition();
         SetSubPosBottom();
     }
@@ -57,22 +61,23 @@ public class WarningSign_Rect : WarningSign
         subPlane.transform.localScale = new Vector3(currentScale.x, 1.0f, currentScale.y);
 
         float currentRealHeight = subPlaneMeshFilter.mesh.bounds.size.z * currentScale.y;
-        subPlane.position = initialSubPlaneCenterPosition + subPlane.transform.forward * (currentRealHeight / 2f);
+        subPlane.localPosition = initialSubPlaneCenterPosition + subPlane.transform.forward * (currentRealHeight / 2f);
     }
 
     private void SetMainPlanePosition()
     {
-        float mainPlaneRealHeight = mainPlaneMehsFilter.mesh.bounds.size.z * mainPlane.localScale.z;
-        mainPlane.position = mainPlane.forward * (mainPlaneRealHeight / 2f);
+        float mainPlaneRealHeight = mainPlaneMeshFilter.mesh.bounds.size.z * mainPlane.localScale.z;
+
+        mainPlane.localPosition =  Vector3.forward * (mainPlaneRealHeight / 2f);
     }
 
-    // height ±‚¡ÿ¿∏∑Œ ¿ßƒ°∏¶ ø≈±‰¥Ÿ. 
-    // sub ¿ßƒ°∏¶ main ¿« ªÁ¿Ã¡Ó ±‚¡ÿ¿∏∑Œ bottomø° ∫Ÿ∞‘ ≥ı¥¬ «Ô∆€ «‘ºˆ
+    // height Í∏∞Ï§ÄÏúºÎ°ú ÏúÑÏπòÎ•º ÏòÆÍ∏¥Îã§. 
+    // sub ÏúÑÏπòÎ•º main Ïùò ÏÇ¨Ïù¥Ï¶à Í∏∞Ï§ÄÏúºÎ°ú bottomÏóê Î∂ôÍ≤å ÎÜìÎäî Ìó¨Ìçº Ìï®Ïàò
     private void SetSubPosBottom()
     {
-        float mainPlaneRealHeight = mainPlaneMehsFilter.mesh.bounds.size.z * mainPlane.localScale.z;
+        float mainPlaneRealHeight = mainPlaneMeshFilter.mesh.bounds.size.z * mainPlane.localScale.z;
 
-        initialSubPlaneCenterPosition = mainPlane.position - mainPlane.forward * (mainPlaneRealHeight / 2f);
-        subPlane.position = initialSubPlaneCenterPosition;
+        initialSubPlaneCenterPosition = mainPlane.localPosition - mainPlane.forward * (mainPlaneRealHeight / 2f);
+        subPlane.localPosition = initialSubPlaneCenterPosition;
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class WarningSign : MonoBehaviour
@@ -11,6 +12,8 @@ public class WarningSign : MonoBehaviour
     private float maxScale = 2.0f;
     private float currentScale;
 
+    public Action OnEndSign;
+
     protected virtual void OnEnable()
     {
         startTime = Time.time;
@@ -21,7 +24,9 @@ public class WarningSign : MonoBehaviour
 
     protected virtual void OnDisable()
     {
+        OnEndSign?.Invoke();
         ObjectPooler.ReturnToPool(gameObject);
+        OnEndSign = null;
     }
 
     protected virtual void Update()
