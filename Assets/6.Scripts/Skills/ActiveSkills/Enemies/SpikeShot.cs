@@ -4,6 +4,8 @@ public class SpikeShot
     : ActiveSkill
 
 {
+    private WarningSign_Rect rectSign; 
+
     public SpikeShot(string path) : base(path)
     {
     }
@@ -20,6 +22,21 @@ public class SpikeShot
     protected override void ExecutePhase(int phaseIndex)
     {
         SetCurrentPhaseSkill(phaseIndex);
+        if (phaseSkill == null || phaseSkill.actionData == null)
+            return;
+
+        Vector3 pos = ownerObject.transform.position;
+        pos.y = 0.01f; 
+
+
+        rectSign = ObjectPooler.DeferedSpawnFromPool<WarningSign_Rect>("WarningSign_Rect", pos, ownerObject.transform.rotation);
+        rectSign.SetRectData(0.5f, 2, 0, 2, 2.0f);
+        rectSign.OnEndSign += OnEndSign;
+        ObjectPooler.Instance.FinishSpawn(rectSign.gameObject);
+    }
+
+    public void OnEndSign()
+    {
         if (phaseSkill == null || phaseSkill.actionData == null)
             return;
 

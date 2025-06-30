@@ -42,7 +42,7 @@ public class EP_SpikeSlime
             new PatternCondition {
                 type = PatternConditionType.Cooldown, 
                 ctype = ComparisonType.Equal,
-                value = 5.0f }
+                value = 10.0f }
         };
 
         ActiveSkill jumpPressSkill = new JumpPress(jumpPress);

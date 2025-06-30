@@ -133,9 +133,9 @@ public class SkillComponent
 
     public override void DoAction()
     {
+        if (!skillSlotTable.ContainsKey(currentSkillName)) return;
         base.DoAction();
 
-        if (!skillSlotTable.ContainsKey(currentSkillName)) return;
 
         bIsSkillAction = true;
         skillSlotTable[currentSkillName]?.Cast();
@@ -143,6 +143,7 @@ public class SkillComponent
 
     public override void StartAction()
     {
+        if(string.IsNullOrEmpty(currentSkillName)) return;
         base.StartAction();
 
         skillSlotTable[currentSkillName]?.Start_DoAction();
@@ -175,30 +176,32 @@ public class SkillComponent
 
     public override void BeginJudgeAttack(AnimationEvent e) 
     {
-        base.BeginJudgeAttack(e);
         if (string.IsNullOrEmpty(currentSkillName)) return; 
+        base.BeginJudgeAttack(e);
 
         skillSlotTable[currentSkillName]?.Begin_JudgeAttack(e);
     }
 
     public override void EndJudgeAttack(AnimationEvent e) 
     {
-        base.EndJudgeAttack(e);
         if (string.IsNullOrEmpty(currentSkillName)) return;
+        base.EndJudgeAttack(e);
         skillSlotTable[currentSkillName]?.End_JudgeAttack(e);
     }
 
     public override void PlaySound()
     {
-        base.PlaySound();
         if (string.IsNullOrEmpty(currentSkillName)) return;
+        base.PlaySound();
+
         skillSlotTable[currentSkillName]?.Play_Sound();
     }
 
     public override void PlayCameraShake()
     {
-        base.PlayCameraShake();
         if (string.IsNullOrEmpty(currentSkillName)) return;
+        base.PlayCameraShake();
+
         skillSlotTable[currentSkillName]?.Play_CameraShake();
     }
 }

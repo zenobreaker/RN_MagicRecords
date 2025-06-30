@@ -22,6 +22,8 @@ public class JumpPress
     private CharacterVisual visual;
     private NavMeshAgent agent;
 
+    private GameObject targetObject; 
+
     public JumpPress(string path) : base(path)
     {
         groundMask = 1 << LayerMask.NameToLayer("Default");
@@ -64,7 +66,9 @@ public class JumpPress
         if (phaseSkill == null || phaseSkill.actionData == null)
             return;
 
-        if (phaseIndex == 1)
+        if (phaseIndex == 0)
+            ExecutePhase_0();
+        else if (phaseIndex == 1)
             ExecutePhase_1();
 
         if (string.IsNullOrEmpty(phaseSkill?.actionData?.StateName) == false)
@@ -75,21 +79,38 @@ public class JumpPress
         }
     }
 
-    private void ExecutePhase_1()
+    private void ExecutePhase_0()
     {
-        visual?.ShowModel();
         PerceptionComponent percept = ownerObject.GetComponent<PerceptionComponent>();
         if (percept != null)
         {
-            GameObject target = percept.GetTarget();
-            if (target != null)
+            targetObject = percept.GetTarget();
+
+            if (targetObject == null)
             {
-                ownerObject.transform.position = new Vector3(target.transform.position.x, ownerObject.transform.position.y, target.transform.position.z);
-                WarningSign sign = ObjectPooler.DeferedSpawnFromPool<WarningSign>("WarningSign_Circle", target.transform.position);
-                sign.SetData(0.5f, 2.0f);
-                ObjectPooler.Instance.FinishSpawn(sign.gameObject);
+                var ai = ownerObject.GetComponent<AIBehaviourComponent>();
+                if(ai != null) 
+                    targetObject = ai.GetTarget(); 
             }
+
+            return; 
         }
+        Debug.Log("No Percep");
+    }
+
+    private void ExecutePhase_1()
+    {
+        visual?.ShowModel();
+        if (targetObject != null)
+        {
+            ownerObject.transform.position = new Vector3(targetObject.transform.position.x, ownerObject.transform.position.y, targetObject.transform.position.z);
+            WarningSign sign = ObjectPooler.DeferedSpawnFromPool<WarningSign>("WarningSign_Circle", targetObject.transform.position);
+            sign.SetData(0.5f, 2.0f);
+            ObjectPooler.Instance.FinishSpawn(sign.gameObject);
+            return; 
+        }
+
+        Debug.Log("No Target");
     }
 
     private void Soaring(float deltaTime)

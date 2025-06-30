@@ -23,7 +23,10 @@ public class LaunchComponent : MonoBehaviour
         float lauch = rigid.mass * hitData.Distance;
 
         if (agent != null)
+        {
+            agent.ResetPath();
             agent.enabled = false;
+        }
         rigid.isKinematic = false;
         rigid.AddForce(dir * lauch, ForceMode.Impulse);
 
