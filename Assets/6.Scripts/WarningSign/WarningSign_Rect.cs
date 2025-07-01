@@ -3,7 +3,7 @@
 public class WarningSign_Rect : WarningSign
 {
     private Vector2 maxRectScale;
-    private Vector2 currentScale;
+    private Vector2 currentRectScale;
 
     MeshFilter mainPlaneMeshFilter; 
     MeshFilter subPlaneMeshFilter;
@@ -20,8 +20,8 @@ public class WarningSign_Rect : WarningSign
     protected override void OnEnable()
     {
         startTime = Time.time;
-        initScale = currentScale;
-        subPlane.localScale = new Vector3(currentScale.x, 1f, currentScale.y);
+        initScale = currentRectScale;
+        subPlane.localScale = new Vector3(currentRectScale.x, 1f, currentRectScale.y);
         mainPlane.localScale = new Vector3(maxRectScale.x, 1f, maxRectScale.y);
 
         SetMainPlanePosition();
@@ -30,11 +30,11 @@ public class WarningSign_Rect : WarningSign
 
     protected override void Update()
     {
-        if (currentScale.x < maxRectScale.x || currentScale.y < maxRectScale.y)
+        if (currentRectScale.x < maxRectScale.x || currentRectScale.y < maxRectScale.y)
         {
             float elapsedTime = Time.time - startTime;
             float t = Mathf.Clamp01(elapsedTime / duration);
-            currentScale = Vector2.Lerp(initScale, maxRectScale, t);
+            currentRectScale = Vector2.Lerp(initScale, maxRectScale, t);
 
             UpdateSubPlanePositionAndScale();
         }
@@ -46,10 +46,10 @@ public class WarningSign_Rect : WarningSign
         float width = 0.0f, float height = 0.0f, float duration = 1.0f)
     {
         maxRectScale = new Vector2(maxWidth , maxHeight);
-        currentScale = new Vector2(width, height);
+        currentRectScale = new Vector2(width, height);
         this.duration = duration;
 
-        subPlane.localScale = new Vector3(currentScale.x, 1f, currentScale.y);
+        subPlane.localScale = new Vector3(currentRectScale.x, 1f, currentRectScale.y);
         mainPlane.localScale = new Vector3(maxRectScale.x, 1f, maxRectScale.y);
 
         SetMainPlanePosition();
@@ -58,9 +58,9 @@ public class WarningSign_Rect : WarningSign
 
     private void UpdateSubPlanePositionAndScale()
     {
-        subPlane.transform.localScale = new Vector3(currentScale.x, 1.0f, currentScale.y);
+        subPlane.transform.localScale = new Vector3(currentRectScale.x, 1.0f, currentRectScale.y);
 
-        float currentRealHeight = subPlaneMeshFilter.mesh.bounds.size.z * currentScale.y;
+        float currentRealHeight = subPlaneMeshFilter.mesh.bounds.size.z * currentRectScale.y;
         subPlane.localPosition = initialSubPlaneCenterPosition + subPlane.transform.forward * (currentRealHeight / 2f);
     }
 

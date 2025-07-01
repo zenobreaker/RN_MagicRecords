@@ -178,6 +178,9 @@ public class JumpPress
     {
         base.End_DoAction();
 
+        isSoaring = false; 
+        isFalling = false; 
+
         if (phaseIndex == 2)
             agent.enabled = true; 
     }
