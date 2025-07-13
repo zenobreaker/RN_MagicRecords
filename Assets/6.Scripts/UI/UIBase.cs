@@ -1,10 +1,10 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
 
-// UI ±âÃÊ Å¬·¡½º
+// UI ê¸°ì´ˆ í´ë˜ìŠ¤
 public abstract class UiBase : MonoBehaviour
 {
     private GameObject content;
@@ -23,19 +23,23 @@ public abstract class UiBase : MonoBehaviour
         UIClosed?.Invoke();
     }
 
+    public virtual void CloseUI()
+    {
+        gameObject.SetActive(false);
+    }
 
-    // °»½Å ½Ã ¾Æ·¡ ÇÔ¼ö°¡ È£ÃâµÇ¾î Áø´Ù.
+    // ê°±ì‹  ì‹œ ì•„ë˜ í•¨ìˆ˜ê°€ í˜¸ì¶œë˜ì–´ ì§„ë‹¤.
     public virtual void RefreshUI()
     {
 
     }
 
-    // ½ºÅ©·Ñ ¿ÀºêÁ§Æ® ¹èÄ¡
+    // ìŠ¤í¬ë¡¤ ì˜¤ë¸Œì íŠ¸ ë°°ì¹˜
     public void InitScrollviewObject(int count = 0)
     {
         if (content == null || childObject == null) return;
 
-        // ÀÌ¹Ì ÀÚ½ÄµéÀÌ ÀÕ´ÂÁö °Ë»ç 
+        // ì´ë¯¸ ìì‹ë“¤ì´ ì‡ëŠ”ì§€ ê²€ì‚¬ 
         if (content.transform.childCount > 0)
         {
             for (int i = 0; i < content.transform.childCount; i++)
@@ -48,7 +52,7 @@ public abstract class UiBase : MonoBehaviour
         }
 
 
-        // ÀÌ¹Ì ¿øÇÏ´Â ÀÚ½ÄµéÀÌ ÀÖ´Ù¸é °¡Áö°í ÀÖ´Â ÀÚ½ÄÀ» ¾²µµ·Ï
+        // ì´ë¯¸ ì›í•˜ëŠ” ìì‹ë“¤ì´ ìˆë‹¤ë©´ ê°€ì§€ê³  ìˆëŠ” ìì‹ì„ ì“°ë„ë¡
         if (content.transform.childCount >= count)
         {
             return;
@@ -60,7 +64,7 @@ public abstract class UiBase : MonoBehaviour
         }
     }
 
-    // ½ºÅ©·Ñºä ¿ÀºêÁ§Æ®¿¡ ÀÚ½Ä Ãß°¡ÇÏ±â 
+    // ìŠ¤í¬ë¡¤ë·° ì˜¤ë¸Œì íŠ¸ì— ìì‹ ì¶”ê°€í•˜ê¸° 
     public void AddScrollviewObject(int count = 0)
     {
         if (content == null || childObject == null) return;
@@ -74,7 +78,7 @@ public abstract class UiBase : MonoBehaviour
 
 
 
-    // ÀÚ½Ä ¿ÀºêÁ§Æ®µéÀ» ¼³Á¤ÇÏ°í Äİ¹é ±â´ÉÀ» ÇÒ´çÇÑ´Ù.
+    // ìì‹ ì˜¤ë¸Œì íŠ¸ë“¤ì„ ì„¤ì •í•˜ê³  ì½œë°± ê¸°ëŠ¥ì„ í• ë‹¹í•œë‹¤.
     public virtual void SetScrollviewChildObjectCallback(Action callback)
     {
         if (content == null || childObject == null) return;

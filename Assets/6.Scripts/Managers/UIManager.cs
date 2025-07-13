@@ -1,8 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
+
+    private Stack<UiBase> openedUIs = new Stack<UiBase>();
 
     public UiBase soundUI; 
 
@@ -26,6 +29,30 @@ public class UIManager : MonoBehaviour
         
     }
 
+    public void OpenUI (UiBase ui)
+    {
+        if (ui == null) return; 
+        ui.gameObject.SetActive(true);
+        openedUIs.Push(ui); 
+    }
+
+    public void CloseTopUI()
+    {
+        if(openedUIs.Count > 0)
+        {
+            var top = openedUIs.Pop();
+            top.CloseUI();
+        }
+    }
+
+    public void CloseAllOpenedUI()
+    {
+        while(openedUIs.Count > 0)
+        {
+            var top = openedUIs.Pop();
+            top.CloseUI();
+        }
+    }
 
     #region GameOver
     //-------------------------------------------------------------------------
