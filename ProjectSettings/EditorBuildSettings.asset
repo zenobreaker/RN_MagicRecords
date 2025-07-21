@@ -6,7 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/8.Scenes/SampleScene.unity
+    path: Assets/8.Scenes/Lobby.unity
+    guid: d05935b903d666d45b266c27232f846a
+  - enabled: 1
+    path: Assets/8.Scenes/StageSelectScene.unity
+    guid: 22472f672c1993f4fa3de98b0e4671a4
+  - enabled: 1
+    path: Assets/8.Scenes/Stage.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 99f9c9493070a9d4c979a8fec7c5a8d3, type: 2}
