@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -15,6 +16,7 @@ public class UIMapReplacer : MonoBehaviour
     private MapReplacer mapReplacer;
 
     private List<MapNode> mapNodes = new List<MapNode>();
+    private List<UIMapNode> uiMapNodes = new List<UIMapNode>();
 
     private void Awake()
     {
@@ -22,6 +24,11 @@ public class UIMapReplacer : MonoBehaviour
     }
 
     private void Start()
+    {
+        //ReplaceStage();
+    }
+
+    public void ReplaceStage()
     {
         mapReplacer.Replace();
         mapReplacer.ConnectToNode();
@@ -40,6 +47,7 @@ public class UIMapReplacer : MonoBehaviour
 
         List<List<MapNode>> levels = mapReplacer.GetLevels();
         mapNodes.Clear();
+        uiMapNodes.Clear(); 
 
         for (int level = 0; level < levels.Count; level++)
         {
@@ -48,8 +56,17 @@ public class UIMapReplacer : MonoBehaviour
                 MapNode node = levels[level][n];
 
                 GameObject nodeObject = Instantiate<GameObject>(NodeObject, NodeContainer.transform);
+                
+                // 위치 맞추기
                 if (nodeObject.TryGetComponent<RectTransform>(out var rect))
                     rect.anchoredPosition = node.position;
+
+                // UI에 현재 MapNode 정보 연결
+                if (nodeObject.TryGetComponent<UIMapNode>(out var uiNode))
+                {
+                    uiNode.Init(node);
+                    uiMapNodes.Add(uiNode);
+                }
 
                 mapNodes.Add(node);
             }
@@ -92,4 +109,8 @@ public class UIMapReplacer : MonoBehaviour
         }
     }
 
+    public void GetUIMapNodes(ref List<UIMapNode> uiMapNodes)
+    {
+        uiMapNodes = this.uiMapNodes;
+    }
 }

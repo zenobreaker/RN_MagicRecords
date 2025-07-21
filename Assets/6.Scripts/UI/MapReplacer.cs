@@ -2,15 +2,16 @@
 using System.Linq;
 using UnityEngine;
 
+[System.Serializable]
 public class MapNode
 {
     public int id;
     public int level;
     public Vector2 position;
     public List<int> nextNodeIds = new List<int>(); // 연결된 다음 노드들
+
+    public int stageID;
 }
-
-
 
 public class MapReplacer
 {
@@ -64,10 +65,8 @@ public class MapReplacer
                 node.position = new Vector2(x, y);
                 currentLevel.Add(node);
             }
-
             levels.Add(currentLevel);
-        }
-
+        }//for(level)
     }
 
     // 노드 연결 

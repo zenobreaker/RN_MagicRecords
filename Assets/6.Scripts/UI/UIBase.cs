@@ -29,10 +29,7 @@ public abstract class UiBase : MonoBehaviour
     }
 
     // 갱신 시 아래 함수가 호출되어 진다.
-    public virtual void RefreshUI()
-    {
-
-    }
+    public virtual void RefreshUI() { }
 
     // 스크롤 오브젝트 배치
     public void InitScrollviewObject(int count = 0)

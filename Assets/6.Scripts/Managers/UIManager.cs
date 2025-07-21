@@ -1,10 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public enum UIType
+{
+    StageInfo,
+}
+
+
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
 
+    private Dictionary<UIType, UiBase> uiTable = new Dictionary<UIType, UiBase>();
     private Stack<UiBase> openedUIs = new Stack<UiBase>();
 
     public UiBase soundUI; 
@@ -53,6 +61,7 @@ public class UIManager : MonoBehaviour
             top.CloseUI();
         }
     }
+
 
     #region GameOver
     //-------------------------------------------------------------------------
