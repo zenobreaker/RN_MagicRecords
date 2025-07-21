@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5961586407382583412}
   - component: {fileID: 2266294392211901203}
   - component: {fileID: -4227278091116973647}
+  - component: {fileID: 5976582360654577693}
   m_Layer: 5
   m_Name: MapNode
   m_TagString: Untagged
@@ -120,15 +121,38 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 5976582360654577693}
+        m_TargetAssemblyTypeName: UIMapNode, Assembly-CSharp
+        m_MethodName: OnClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &5976582360654577693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2169335075612225388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1ca7a82026c4d845b1653263d1dbde2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapNode:
+    id: 0
+    level: 0
+    position: {x: 0, y: 0}
+    nextNodeIds: 
+    stageID: 0
+  stage:
+    id: 0
+    type: 0
+    enemyIds: 
+    rewardIds: 
