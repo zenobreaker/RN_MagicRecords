@@ -106,7 +106,7 @@ public class JumpPress
             ownerObject.transform.position = new Vector3(targetObject.transform.position.x, ownerObject.transform.position.y, targetObject.transform.position.z);
             WarningSign sign = ObjectPooler.DeferedSpawnFromPool<WarningSign>("WarningSign_Circle", targetObject.transform.position);
             sign.SetData(0.5f, 2.0f);
-            ObjectPooler.Instance.FinishSpawn(sign.gameObject);
+            ObjectPooler.FinishSpawn(sign.gameObject);
             return; 
         }
 

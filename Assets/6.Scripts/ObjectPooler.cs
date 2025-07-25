@@ -225,17 +225,17 @@ public partial class ObjectPooler : MonoBehaviour
         return objectToSpawn;
     }
 
-	public void FinishSpawn(GameObject obj)
+	public static void FinishSpawn(GameObject obj)
 	{
-		FinishSpawn(obj.name);
+        FinishSpawn(obj.name);
     }
 
-	public void FinishSpawn(string tag)
+	public static void FinishSpawn(string tag)
 	{
-		if (!poolDictionary.ContainsKey(tag))
+		if (!Instance.poolDictionary.ContainsKey(tag))
 			throw new Exception($"Pool with tag {tag} doesn't exist.");
 
-		Queue<GameObject> poolQueue = poolDictionary[tag];
+		Queue<GameObject> poolQueue = Instance.poolDictionary[tag];
 		GameObject objectToSpawn = poolQueue.Dequeue();
 		objectToSpawn.SetActive(true);
 	}

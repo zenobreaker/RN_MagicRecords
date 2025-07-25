@@ -32,7 +32,7 @@ public class SpikeShot
         rectSign = ObjectPooler.DeferedSpawnFromPool<WarningSign_Rect>("WarningSign_Rect", pos, ownerObject.transform.rotation);
         rectSign.SetRectData(0.5f, 2, 0, 2, 2.0f);
         rectSign.OnEndSign += OnEndSign;
-        ObjectPooler.Instance.FinishSpawn(rectSign.gameObject);
+        ObjectPooler.FinishSpawn(rectSign.gameObject);
     }
 
     public void OnEndSign()
