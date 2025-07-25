@@ -45,12 +45,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pools:
+  - tag: DamageText
+    prefab: {fileID: 7092802170994985122, guid: c92ffe5a60ad1f64aa5719e42638aed1, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
   - tag: Bullet
     prefab: {fileID: 2279059859523066276, guid: bddf0be12093797459da7022461c87e5, type: 3}
     size: 5
+    parentTransform: {fileID: 0}
   - tag: ReinForcedMagicBullet
     prefab: {fileID: 2006234525802268607, guid: 7f2142c16bdeec74dad86fb5f1d6e421, type: 3}
     size: 5
+    parentTransform: {fileID: 0}
   - tag: Explosion_01
     prefab: {fileID: 8072707120742324082, guid: 1f656291919e89f45a04804f51180112, type: 3}
     size: 5
+    parentTransform: {fileID: 0}
+  - tag: SpikeShot
+    prefab: {fileID: 43770051327573451, guid: 30e9ef05182218740878c5563aaf5a95, type: 3}
+    size: 9
+    parentTransform: {fileID: 0}
+  - tag: WarningSign_Circle
+    prefab: {fileID: 4095088222910462062, guid: 962a486fbaf7ce54da7e5722cb6586d4, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: WarningSign_Rect
+    prefab: {fileID: 3034081837585540095, guid: 4df45fde81695154687c79673d30dd7c, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
