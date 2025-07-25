@@ -5,9 +5,9 @@ public class UIMapNode
     : MonoBehaviour
 {
     [SerializeField] private MapNode mapNode;
-    [SerializeField] private Stage stage;
+    [SerializeField] private StageInfo stageInfo;
 
-    public event Action<Stage> OnClicked;
+    public event Action<StageInfo> OnClicked;
 
     private void Start()
     {
@@ -19,9 +19,16 @@ public class UIMapNode
         this.mapNode = mapNode;
     }
 
+    public void SetStage(int id)
+    {
+        this.mapNode.stageID = id;
+
+        stageInfo = GameManager.Instance.GetStageInfo(id);
+    }
+
     public void OnClick()
     {
         if(mapNode != null)
-            OnClicked?.Invoke(stage); 
+            OnClicked?.Invoke(stageInfo); 
     }
 }

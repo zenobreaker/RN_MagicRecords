@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -57,11 +57,11 @@ public class UIMapReplacer : MonoBehaviour
 
                 GameObject nodeObject = Instantiate<GameObject>(NodeObject, NodeContainer.transform);
                 
-                // À§Ä¡ ¸ÂÃß±â
+                // ìœ„ì¹˜ ë§ì¶”ê¸°
                 if (nodeObject.TryGetComponent<RectTransform>(out var rect))
                     rect.anchoredPosition = node.position;
 
-                // UI¿¡ ÇöÀç MapNode Á¤º¸ ¿¬°á
+                // UIì— í˜„ì¬ MapNode ì •ë³´ ì—°ê²°
                 if (nodeObject.TryGetComponent<UIMapNode>(out var uiNode))
                 {
                     uiNode.Init(node);

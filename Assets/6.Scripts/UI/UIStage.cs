@@ -1,10 +1,10 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class UIStage 
     : UiBase
 {
 
-    // ½ºÅ×ÀÌÁö ÀÔÀå UI ÄÑ±â 
+    // ìŠ¤í…Œì´ì§€ ì…ì¥ UI ì¼œê¸° 
     public void OpenStageUI()
     {
         //UIManager.Instance.OpenUI();

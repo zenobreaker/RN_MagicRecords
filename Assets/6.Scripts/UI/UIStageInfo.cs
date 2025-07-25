@@ -1,11 +1,15 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using TMPro;
 
 public class UIStageInfo 
     : UiBase
 {
-    RectTransform rect;
+    private StageInfo stageInfo; 
+    private RectTransform rect;
+
+    [SerializeField] private TextMeshProUGUI titleText;
 
     private void Awake()
     {
@@ -22,13 +26,28 @@ public class UIStageInfo
         rect.DOAnchorPosX(0, 0.25f);
     }
 
-    public void SetStageData(Stage stage)
+    public void SetStageData(StageInfo stageInfo)
     {
-        //TODO : ½ºÅ×ÀÌÁö ¾ÆÀÌµğ¸¦ ÀÌ¿ëÇØ¼­ µ¥ÀÌÅÍº£ÀÌ½º¿¡¼­ µ¥ÀÌÅÍ ÂüÁ¶ ÈÄ UI ¼¼ÆÃ
+        if (stageInfo == null) return; 
+
+        //TODO : ìŠ¤í…Œì´ì§€ ì•„ì´ë””ë¥¼ ì´ìš©í•´ì„œ ë°ì´í„°ë² ì´ìŠ¤ì—ì„œ ë°ì´í„° ì°¸ì¡° í›„ UI ì„¸íŒ…
+        this.stageInfo = stageInfo;
+
+        this.stageInfo.isOpened = true; 
+
+        if (titleText != null)
+        {
+            titleText.text = stageInfo.ToString();
+        }
     }
 
     public void EnterStage()
     {
+        if (stageInfo == null || stageInfo.isCleared || stageInfo.isOpened == false)
+            return;
+
+        GameManager.Instance.EnterStage(stageInfo);
+
         SceneManager.LoadScene(2); 
     }
 }

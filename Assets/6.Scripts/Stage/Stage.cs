@@ -1,8 +1,10 @@
+ï»¿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
-public enum StageType
+public enum NodeType
 {
     None, 
     Combat, 
@@ -12,49 +14,79 @@ public enum StageType
 }
 
 [System.Serializable]
-public class Stage 
+public class StageInfo 
 {
     public int id;
 
-    public StageType type; 
+    public int chapter; 
 
-    // µîÀåÇÒ Àû 
-    public List<int> enemyIds = new List<int>();
+    public NodeType type; 
 
-    // µîÀåÇÒ º¸»ó
+    // ë“±ì¥í•  ì  
+    public List<int> groupIds = new List<int>();
+
+    // ë“±ì¥í•  ë³´ìƒ
     public List<int> rewardIds = new List<int>();
+
+    public int wave = 0;
+
+    public bool isCleared = false;
+    public bool isOpened = false;
+
+    public override string ToString()
+    {
+        return chapter.ToString() + "-" + id.ToString();
+    }
 }
 
 
 public class StageReplacer
 {
-    public Stage GetStage(int id)
+    public StageInfo GetStage(int id)
     {
-        Stage temp = new Stage();
+        StageInfo temp = new StageInfo();
         temp.id = id;
-        //TODO : ½ºÅ×ÀÌÁö Å¸ÀÔ Á¤ÇÏ´Â ·ÎÁ÷ÀÌ ÇÊ¿äÇÔ.
+        //TODO : ìŠ¤í…Œì´ì§€ íƒ€ì… ì •í•˜ëŠ” ë¡œì§ì´ í•„ìš”í•¨.
 
-        // ½ºÅ×ÀÌÁö¸¦ °í¸£´Â ·ÎÁ÷ÀÌ ÇÊ¿äÇÑµ¥ 
-        // ¸ó½ºÅÍ °°Àº °æ¿ì¸¦ »ı°¢ÇÏ¸é ¾î´À Å×ÀÌºí¿¡ ¸ó½ºÅÍ°¡ ¹èÄ¡µÈ Å×ÀÌºíÀ» 
-        // ¹Ì¸® ¸¸µé¾î³õ°í ±× Å×ÀÌºíÀÇ id°ªÀ» °¡Á®´Ù°¡ ºÙ¿©³ÖÀ¸¸é µÉ µí 
+        // ìŠ¤í…Œì´ì§€ë¥¼ ê³ ë¥´ëŠ” ë¡œì§ì´ í•„ìš”í•œë° 
+        // ëª¬ìŠ¤í„° ê°™ì€ ê²½ìš°ë¥¼ ìƒê°í•˜ë©´ ì–´ëŠ í…Œì´ë¸”ì— ëª¬ìŠ¤í„°ê°€ ë°°ì¹˜ëœ í…Œì´ë¸”ì„ 
+        // ë¯¸ë¦¬ ë§Œë“¤ì–´ë†“ê³  ê·¸ í…Œì´ë¸”ì˜ idê°’ì„ ê°€ì ¸ë‹¤ê°€ ë¶™ì—¬ë„£ìœ¼ë©´ ë  ë“¯ 
 
-        CreateEnemyList(ref temp.enemyIds);
+        CreateEnemyList(ref temp.groupIds);
         CreateRewardList(ref temp.rewardIds);
 
         return temp; 
     }
 
 
-    public void CreateEnemyList(ref List<int> enemyIds)
+    public void CreateEnemyList(ref List<int> groupIds)
     {
-        //TODO : ½ºÅ×ÀÌÁö Å×¸¶º° µîÀå ¸ó½ºÅÍ Á¤º¸°¡ ÇÊ¿äÇÔ
-        enemyIds.Clear();
-        enemyIds.Add(0);
+        //TODO : ìŠ¤í…Œì´ì§€ í…Œë§ˆë³„ ë“±ì¥ ëª¬ìŠ¤í„° ì •ë³´ê°€ í•„ìš”í•¨
+        groupIds.Clear();
+        groupIds.Add(0);
     }
 
     public void CreateRewardList(ref List<int> rewardIds)
     {
         rewardIds.Clear();
         rewardIds.Add(0);
+    }
+
+    public void AssignStages(List<UIMapNode> uiMapNodes)
+    {
+        for(int i =0; i < uiMapNodes.Count; i++)
+        {
+            if (i == 0)
+                continue; 
+            else if(i == uiMapNodes.Count - 1)
+            {
+                //TODO: ë³´ìŠ¤ ìŠ¤í…Œì´ì§€ ì²˜ë¦¬
+                continue;
+            }
+
+            var node = uiMapNodes[i]; 
+            var randomID = GameManager.Instance.GetRandomStageID();
+            node.SetStage(randomID);
+        }
     }
 }
