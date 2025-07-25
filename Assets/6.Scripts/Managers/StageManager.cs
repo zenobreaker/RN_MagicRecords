@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class StageManager : MonoBehaviour
@@ -15,8 +16,14 @@ public class StageManager : MonoBehaviour
     };
     public StageStage stageState;
 
-    public event Action OnBeginSpawn;
+    private int currentStageChapter;
+    public int CurStageChapter {get => currentStageChapter; }
 
+    private StageDataBase stageDataBase;
+    private MonsterDataBase monsterDataBase;
+    private StageInfo currentStage;
+
+    public event Action OnBeginSpawn;
     public event Action OnFinishedBeginStage;
     //public event Action OnFinishedEndSpawn;
 
@@ -26,8 +33,7 @@ public class StageManager : MonoBehaviour
 
     private void Awake()
     {
-        SpawnManager spawnManager = GetComponent<SpawnManager>();
-        if (spawnManager != null)
+        if (TryGetComponent<SpawnManager>(out var spawnManager))
         {
             spawnManager.OnCompleteSpawn += OnCompleteSpawn;
         }
@@ -37,6 +43,15 @@ public class StageManager : MonoBehaviour
         OnBeginState += OnBeginStage_Begin;
         OnWaitState += OnBeginStage_Wait;
         OnFinishState += OnBeginStage_Finish;
+
+        if (TryGetComponent<StageDataBase>(out stageDataBase))
+            stageDataBase.InitializeStageData();
+
+        if (TryGetComponent<MonsterDataBase>(out monsterDataBase))
+        {
+            monsterDataBase.InitializeMonsterStatData();
+            monsterDataBase.InitializeMonsterData();
+        }
     }
 
     private void Start()
@@ -64,7 +79,33 @@ public class StageManager : MonoBehaviour
         }
     }
 
+    // 먼저 DB로부터 챕터별 값을 전달하면 그 챕터에 맞는 스테이지 아이디를 받는다./
+    // 이를 리스트로 한 꺼번에 받을지, 하나만 받을지? 
+    public int GetRandomStageID()
+    {
+        return GetRandomStageID(currentStageChapter);
+    }
 
+    public int GetRandomStageID(int chapter)
+    {
+        if (stageDataBase == null) return -1;
+
+        return stageDataBase.GetRandomStageIDByChater(chapter);
+    }
+
+    public StageInfo GetStageInfo(int stageID)
+    {
+        if (stageDataBase == null) return null;
+
+        return stageDataBase.GetStageInfo(stageID);
+    }
+    public void SetEnteredStage(StageInfo stageInfo)
+    {
+        currentStage = stageInfo;
+    }
+
+
+    #region Stage Flow 
     public void OnBeginStage()
     {
 #if UNITY_EDITOR
@@ -107,4 +148,7 @@ public class StageManager : MonoBehaviour
     {
         Debug.Log("Stage Manager End Stage");
     }
+
+    #endregion
+
 }

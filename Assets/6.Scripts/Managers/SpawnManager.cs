@@ -1,6 +1,19 @@
 using System;
 using UnityEngine;
 
+public class SpawnObject
+{
+    public string spawnTag; 
+    public Vector3 spawnPos;
+    public Quaternion spawnQuat;
+
+    public void Spawn()
+    {
+        ObjectPooler.DeferedSpawnFromPool(spawnTag, spawnPos, spawnQuat);
+    }
+}
+
+
 public class SpawnManager : MonoBehaviour
 {
     public event Action OnCompleteSpawn;
@@ -14,6 +27,11 @@ public class SpawnManager : MonoBehaviour
 
     private void SpawnObject()
     {
+        // Spawn Object
+        {
+
+        }
+
         OnCompleteSpawn?.Invoke(); 
     }
 

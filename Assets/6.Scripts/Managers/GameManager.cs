@@ -30,6 +30,8 @@ public class GameManager
     public event Action OnEndBoss;
     public event Action OnEndStage;
 
+    private StageManager stageManager;
+
     protected override void Awake()
     {
         base.Awake();
@@ -42,7 +44,7 @@ public class GameManager
     #region AWAKE_FUNC
     private void Awake_StageManager()
     {
-        StageManager stageManager = GetComponent<StageManager>();
+        stageManager = GetComponent<StageManager>();
         if (stageManager == null) return;
 
         OnBeginStage += stageManager.OnBeginStage;
@@ -120,4 +122,22 @@ public class GameManager
 
     }
 
+    public int GetRandomStageID()
+    {
+        if (stageManager == null) return -1;
+        return stageManager.GetRandomStageID();
+    }
+
+    public StageInfo GetStageInfo(int stageID)
+    {
+        if (stageManager == null) return null;
+        return stageManager.GetStageInfo(stageID);
+    }
+
+    public void EnterStage(StageInfo stageInfo)
+    {
+        if (stageInfo == null) return;
+
+        stageManager.SetEnteredStage(stageInfo);
+    }
 }
