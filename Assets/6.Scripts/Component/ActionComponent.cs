@@ -25,9 +25,7 @@ public abstract class ActionComponent
         
     public virtual void EndDoAction()
     {
-        Debug.Log($"Current : {bInAction}");
         InAction = false;
-        Debug.Log($"Affter : {bInAction}");
     }
 
     public virtual void BeginJudgeAttack(AnimationEvent e) { }
