@@ -36,11 +36,12 @@ public partial class ObjectPooler : MonoBehaviour
 		public Transform parentTransform;
 	}
 
-	[SerializeField] Pool[] pools;
-	List<GameObject> spawnObjects;
-	Dictionary<string, Queue<GameObject>> poolDictionary;
+	[SerializeField] private Pool[] pools;
+	private List<GameObject> spawnObjects;
+	private Dictionary<string, Queue<GameObject>> poolDictionary;
     // 부모 관리용 딕셔너리 추가
-    Dictionary<string, Transform> parentDictionary = new Dictionary<string, Transform>();
+    private Dictionary<string, Transform> parentDictionary = new Dictionary<string, Transform>();
+
     readonly string INFO = " 오브젝트에 다음을 적으세요 \nvoid OnDisable()\n{\n" +
 		"    ObjectPooler.ReturnToPool(gameObject);    // 한 객체에 한번만 \n" +
 		"    CancelInvoke();    // Monobehaviour에 Invoke가 있다면 \n}";
@@ -91,6 +92,7 @@ public partial class ObjectPooler : MonoBehaviour
         }
     }
     #endregion
+
     #region DeferedSpawn
     public static GameObject DeferedSpawnFromPool(string tag, Transform trasnform) =>
        Instance._DeferedSpawnFromPool(tag, trasnform.position, trasnform.rotation);

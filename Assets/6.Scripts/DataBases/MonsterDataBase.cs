@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -66,6 +67,29 @@ public class MonsterStatData
 }
 
 
+[System.Serializable]
+public class MonsterGroupData
+{
+    public int id;
+    public List<int> monsterIDs;
+    public List<int> counts; 
+}
+
+[System.Serializable]
+public class MonsterGroupJson
+{
+    public int id;
+    public string monsterID;
+    public string count;
+}
+
+
+[System.Serializable]
+public class MonsterGroupJsonAllData
+{
+    public List<MonsterGroupJson> monsterGroupJson;
+}
+
 
 public class MonsterDataBase : MonoBehaviour
 {
@@ -73,10 +97,28 @@ public class MonsterDataBase : MonoBehaviour
     [SerializeField] private TextAsset monsterStatJson;
     [SerializeField] private Dictionary<int, MonsterStatData> monsterStatDatas = new();
 
-
     [Header("몬스터 Data Json")]
     [SerializeField] private TextAsset monsterJson;
     [SerializeField] private List<MonsterData> monsterDatas = new();
+
+    [Header("몬스터 Group Data Json")]
+    [SerializeField] private TextAsset monsterGroupJson;
+    [SerializeField] private Dictionary<int, MonsterGroupData> monsterGroupDatas = new();
+
+    public void InitializeData()
+    {
+        Debug.Log("Monster Database Init");
+
+        InitializeMonsterGroupData();
+        InitializeMonsterStatData();
+        InitializeMonsterData();
+
+
+        Debug.Log("===================================================");
+        Debug.Log($"Complete Message => monsterStatDatas: {monsterStatDatas.Count}");
+        Debug.Log($"Complete Message => monsterGroupJson : {monsterGroupDatas.Count}");
+        Debug.Log($"Complete Message => monsterDatas: {monsterDatas.Count}");
+    }
 
     public void InitializeMonsterData()
     {
@@ -111,8 +153,6 @@ public class MonsterDataBase : MonoBehaviour
         if (monsterStatJson == null)
             return;
         
-        Debug.Log("Monster Database Init");
-
         JsonLoader.LoadJsonList<MonsterStatJsonAllData, MonsterStatJson, MonsterStatData>
             (
                 monsterStatJson,
@@ -137,9 +177,38 @@ public class MonsterDataBase : MonoBehaviour
                     monsterStatDatas.TryAdd(monsterStat.id, monsterStat);
                 }
             );
-
-        Debug.Log("===================================================");
-        Debug.Log($"Complete Message => monsterStatDatas: {monsterStatDatas.Count}");
     }
 
+    public void InitializeMonsterGroupData()
+    {
+        if (monsterGroupJson == null) return;
+
+        JsonLoader.LoadJsonList<MonsterGroupJsonAllData, MonsterGroupJson, MonsterGroupData>
+            (
+                monsterGroupJson,
+                root => root.monsterGroupJson,
+                json =>
+                {
+                    var monsterGroupData = new MonsterGroupData
+                    {
+                        id = json.id,
+                        monsterIDs = JsonLoader.ParseIntList(json.monsterID),
+                        counts = JsonLoader.ParseIntList(json.count),
+                    };
+                    return monsterGroupData;
+                },
+                monsterGroupData =>
+                {
+                    monsterGroupDatas.TryAdd(monsterGroupData.id, monsterGroupData);
+                }
+            );
+
+    }
+
+    public MonsterGroupData GetMonsterGroupData(int groupID)
+    {
+        if(monsterGroupDatas.TryGetValue(groupID, out var monsterGroupData))
+            return monsterGroupData;
+        return null;
+    }
 }

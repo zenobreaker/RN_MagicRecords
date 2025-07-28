@@ -67,7 +67,7 @@ public class GameManager
 
     private void Start()
     {
-        SetBeginStage(); 
+       // SetBeginStage(); 
     }
     private void Update()
     {
@@ -139,5 +139,13 @@ public class GameManager
         if (stageInfo == null) return;
 
         stageManager.SetEnteredStage(stageInfo);
+
+        SetBeginStage();
+    }
+
+    public MonsterGroupData GetGroupData(int groupID)
+    {
+        if (stageManager == null) return null;
+        return stageManager.GetMonsterGroupData(groupID);
     }
 }

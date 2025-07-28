@@ -23,7 +23,9 @@ public class StageManager : MonoBehaviour
     private MonsterDataBase monsterDataBase;
     private StageInfo currentStage;
 
-    public event Action OnBeginSpawn;
+    private int currentWave = 1; 
+
+    public event Action<int> OnBeginSpawn;
     public event Action OnFinishedBeginStage;
     //public event Action OnFinishedEndSpawn;
 
@@ -48,10 +50,7 @@ public class StageManager : MonoBehaviour
             stageDataBase.InitializeStageData();
 
         if (TryGetComponent<MonsterDataBase>(out monsterDataBase))
-        {
-            monsterDataBase.InitializeMonsterStatData();
-            monsterDataBase.InitializeMonsterData();
-        }
+            monsterDataBase.InitializeData();
     }
 
     private void Start()
@@ -99,11 +98,18 @@ public class StageManager : MonoBehaviour
 
         return stageDataBase.GetStageInfo(stageID);
     }
+
+    public MonsterGroupData GetMonsterGroupData(int groupID)
+    {
+        if (monsterDataBase == null) return null;
+
+        return monsterDataBase.GetMonsterGroupData(groupID);
+    }
+
     public void SetEnteredStage(StageInfo stageInfo)
     {
         currentStage = stageInfo;
     }
-
 
     #region Stage Flow 
     public void OnBeginStage()
@@ -133,7 +139,9 @@ public class StageManager : MonoBehaviour
 #if UNITY_EDITOR
         Debug.Log("BeginStage - Wait");
 #endif
-        OnBeginSpawn?.Invoke();
+        int groupID = currentStage.groupIds[currentWave - 1];
+
+        OnBeginSpawn?.Invoke(groupID);
     }
 
     private void OnBeginStage_Finish()
@@ -148,7 +156,5 @@ public class StageManager : MonoBehaviour
     {
         Debug.Log("Stage Manager End Stage");
     }
-
     #endregion
-
 }
