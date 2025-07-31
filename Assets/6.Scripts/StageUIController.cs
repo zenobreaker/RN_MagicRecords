@@ -28,8 +28,7 @@ public class StageUIController : MonoBehaviour
 
         // Set Stage Data 
         {
-            if(stageReplacer == null)
-                stageReplacer = new StageReplacer(); 
+            stageReplacer ??= new StageReplacer(); 
             stageReplacer.AssignStages(uiMapNodes);
         }
 

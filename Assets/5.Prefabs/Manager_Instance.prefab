@@ -1983,6 +1983,9 @@ GameObject:
   - component: {fileID: 9189312673431426071}
   - component: {fileID: 6910258513059624780}
   - component: {fileID: 2431585507717890734}
+  - component: {fileID: 4369129657105324478}
+  - component: {fileID: 3273726592977258853}
+  - component: {fileID: 7243516713511518165}
   m_Layer: 0
   m_Name: Manager_Instance
   m_TagString: Untagged
@@ -2109,6 +2112,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d563e39c38fbce49955049a3aea6556, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  soPlayerObject: {fileID: 11400000, guid: a761f4fddefcc1e4d86c46c115789591, type: 2}
+  soNpcObject: {fileID: 11400000, guid: 066a14d0300340d4991f619d490319cf, type: 2}
+--- !u!114 &4369129657105324478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7166081443188377970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7c303027e635f3478171fccdb5b710c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stageJson: {fileID: 4900000, guid: 9a4e7b29df426a74ea8d6c61f3a3ede8, type: 3}
+--- !u!114 &3273726592977258853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7166081443188377970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdbcedb21bc823245971d2c7baab9967, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterStatJson: {fileID: 4900000, guid: 1f291d41f0053a84b9b5ef33b0affeab, type: 3}
+  monsterJson: {fileID: 4900000, guid: 91df284a9acbabb49a2f51874f990cc3, type: 3}
+  monsterDatas: []
+  monsterGroupJson: {fileID: 4900000, guid: ae5fb2f48556c3b4ab7b8c90cdfefeb5, type: 3}
+--- !u!114 &7243516713511518165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7166081443188377970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f7dead18dc1ad54798fdaf1bc721173, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomInfos:
+  - id: 0
+    mapObject: {fileID: 4315248260856988482, guid: de42a6e5e97b2e04b9692cbae715b06c, type: 3}
 --- !u!1 &7562954322672544094
 GameObject:
   m_ObjectHideFlags: 0

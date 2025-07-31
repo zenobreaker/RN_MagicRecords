@@ -54,6 +54,11 @@ public class Enemy
         BattleManager.Instance.ResistEnemy(this);
     }
 
+    protected virtual void OnDisable()
+    {
+        ObjectPooler.ReturnToPool(gameObject);
+    }
+
     public override void Start_DoAction()
     {
         base.Start_DoAction();

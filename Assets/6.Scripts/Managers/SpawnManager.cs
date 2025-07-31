@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class SpawnObject
 {
@@ -17,41 +19,74 @@ public class SpawnObject
 
 public class SpawnManager : MonoBehaviour
 {
-    public NPCObjectsSO soNpcObject;
+    public SO_PlayerObjects soPlayerObject;
+    public SO_NPCObjects soNpcObject;
 
     public event Action OnCompleteSpawn;
 
     private void Awake()
     {
-        StageManager stage = GetComponent<StageManager>();
-        if (stage != null)
-            stage.OnBeginSpawn += OnBeginSpawn;
+        if (soPlayerObject != null)
+            soPlayerObject.Init();
+
+        if (soNpcObject != null)
+            soNpcObject.Init();
     }
 
-    private void SpawnObject(int groupID)
-    {
-        // Spawn Object
-        {
-            
-            MonsterGroupData data = GameManager.Instance.GetGroupData(groupID);
-            if (data == null) return; 
 
-            foreach(var id in data.monsterIDs)
-            {
-                Debug.Log($"Monster ID : {id}");
-                // TODO: 맵 위치 데이터가 필요하다.
-                //ObjectPooler.DeferedSpawnFromPool(id,);
-            }
+    public void SpawnCharacter(int id, List<Transform> spawnPoints)
+    {
+        if (spawnPoints == null || spawnPoints.Count <= 0)
+        {
+#if UNITY_EDITOR
+            Debug.Log($"Spawn Point Don't exist");
+#endif
+            return;
+        }
+
+#if UNITY_EDITOR
+        Debug.Log($"Spawn Player");
+#endif
+
+        //TODO : 여러 캐릭터를 조작해야하면 여기를 수정
+        GameObject playerObj = soPlayerObject.GetPlayerObject(id);
+        if (playerObj != null)
+        {
+            var player = Instantiate(playerObj, spawnPoints[0].position, spawnPoints[0].rotation);
             
+            if(Camera.main.TryGetComponent<CinemachineCamera>(out var cc))
+                cc.Target.TrackingTarget = player.transform;
+        }
+    }
+
+    public void SpawnNPC(int groupID, List<Transform> spawnPoints)
+    {
+        if (spawnPoints == null || spawnPoints.Count <= 0)
+        {
+#if UNITY_EDITOR
+            Debug.Log($"Spawn Point Don't exist");
+#endif
+            return;
+        }
+
+        MonsterGroupData data = GameManager.Instance.GetGroupData(groupID);
+        if (data == null) return;
+
+        foreach (var id in data.monsterIDs)
+        {
+#if UNITY_EDITOR
+            Debug.Log($"Monster ID : {id}");
+#endif
+            int idx = Random.Range(0, spawnPoints.Count);
+
+            string tag = $"NPC_{id}";
+            ObjectPooler.SpawnFromPool(tag, spawnPoints[idx]);
         }
 
         OnCompleteSpawn?.Invoke();
     }
 
-    public void OnBeginSpawn(int groupID)
-    {
-        SpawnObject(groupID);
-    }
+
 
     public void OnEndSpawn() { }
 }

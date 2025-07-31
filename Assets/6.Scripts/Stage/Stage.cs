@@ -30,6 +30,8 @@ public class StageInfo
 
     public int wave = 0;
 
+    public int mapID; 
+
     public bool isCleared = false;
     public bool isOpened = false;
 

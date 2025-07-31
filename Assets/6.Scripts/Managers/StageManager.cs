@@ -17,15 +17,18 @@ public class StageManager : MonoBehaviour
     public StageStage stageState;
 
     private int currentStageChapter;
-    public int CurStageChapter {get => currentStageChapter; }
+    public int CurStageChapter { get => currentStageChapter; }
 
     private StageDataBase stageDataBase;
     private MonsterDataBase monsterDataBase;
     private StageInfo currentStage;
 
-    private int currentWave = 1; 
+    private SpawnManager spawnManager;
+    private RoomManager roomManager;
 
-    public event Action<int> OnBeginSpawn;
+    private int currentWave = 1;
+
+    public event Action OnBeginSpawn;
     public event Action OnFinishedBeginStage;
     //public event Action OnFinishedEndSpawn;
 
@@ -37,11 +40,14 @@ public class StageManager : MonoBehaviour
     {
         if (TryGetComponent<SpawnManager>(out var spawnManager))
         {
+            this.spawnManager = spawnManager;
             spawnManager.OnCompleteSpawn += OnCompleteSpawn;
         }
 
+        roomManager = GetComponent<RoomManager>();
+
         OnFinishedBeginStage += GameManager.Instance.OnFinishedBeginStage;
-        
+
         OnBeginState += OnBeginStage_Begin;
         OnWaitState += OnBeginStage_Wait;
         OnFinishState += OnBeginStage_Finish;
@@ -53,9 +59,14 @@ public class StageManager : MonoBehaviour
             monsterDataBase.InitializeData();
     }
 
-    private void Start()
+    private void OnEnable()
     {
+        ObjectPooler.OnPoolInitialized += StartStage;
+    }
 
+    private void OnDisable()
+    {
+        ObjectPooler.OnPoolInitialized -= StartStage;
     }
 
     public void SetBeginState() => ChangedState(StageStage.Begin);
@@ -73,7 +84,7 @@ public class StageManager : MonoBehaviour
         switch (stageState)
         {
             case StageStage.Begin: OnBeginState?.Invoke(); break;
-            case StageStage.Wait: OnWaitState?.Invoke(); break; 
+            case StageStage.Wait: OnWaitState?.Invoke(); break;
             case StageStage.Finish: OnFinishState?.Invoke(); break;
         }
     }
@@ -111,13 +122,19 @@ public class StageManager : MonoBehaviour
         currentStage = stageInfo;
     }
 
+    private void StartStage()
+    {
+        SetBeginState();
+    }
+
+
     #region Stage Flow 
     public void OnBeginStage()
     {
 #if UNITY_EDITOR
         Debug.Log("Stage Manager Begin Stage");
 #endif
-        SetBeginState();    
+
     }
 
     // 스폰 피니쉬 콜백 
@@ -139,9 +156,28 @@ public class StageManager : MonoBehaviour
 #if UNITY_EDITOR
         Debug.Log("BeginStage - Wait");
 #endif
-        int groupID = currentStage.groupIds[currentWave - 1];
+        int groupID = 0;
+        int mapID = 0;
 
-        OnBeginSpawn?.Invoke(groupID);
+        // Set Stage Info 
+        if (currentStage != null)
+        {
+            groupID = currentStage.groupIds[currentWave - 1];
+            mapID = currentStage.mapID;
+        }
+
+        List<Transform> mainSpawnPoints = new();
+        List<Transform> spawnPoints = new();
+        // Load Map 
+        roomManager?.LoadRoom(mapID, ref mainSpawnPoints, ref spawnPoints);
+
+        // Spawn Character
+        spawnManager?.SpawnCharacter(1, mainSpawnPoints);
+
+        // Spawn Enemy
+        spawnManager?.SpawnNPC(groupID, spawnPoints);
+
+        OnBeginSpawn?.Invoke();
     }
 
     private void OnBeginStage_Finish()
