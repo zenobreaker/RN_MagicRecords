@@ -1,10 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public partial class ObjectPooler : MonoBehaviour
 {
-    public void Start_CreatePoolHierachy()
+    public IEnumerator Start_CreatePoolHierachy()
     {
         foreach(Pool pool in pools)
         {
@@ -16,6 +17,7 @@ public partial class ObjectPooler : MonoBehaviour
                 // Ver 25.05.04 : 하나의 함수로 처리하게 
                 GameObject obj = CreateNewObjectSetParent(pool.tag, pool.prefab, pool.parentTransform);
                 ArrangePool(pool.parentTransform, pool.tag, obj);
+                yield return null;
             }
 
             // OnDisable에 ReturnToPool 구현여부와 중복구현 검사

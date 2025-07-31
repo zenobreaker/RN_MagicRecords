@@ -44,6 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a3acd734fbf79a4997e456c3064e5ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerObjectSo: {fileID: 11400000, guid: a761f4fddefcc1e4d86c46c115789591, type: 2}
+  npcObjectSo: {fileID: 11400000, guid: 066a14d0300340d4991f619d490319cf, type: 2}
   pools:
   - tag: DamageText
     prefab: {fileID: 7092802170994985122, guid: c92ffe5a60ad1f64aa5719e42638aed1, type: 3}
