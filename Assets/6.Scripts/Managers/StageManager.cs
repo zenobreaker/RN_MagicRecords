@@ -56,7 +56,10 @@ public class StageManager : MonoBehaviour
             stageDataBase.InitializeStageData();
 
         if (TryGetComponent<MonsterDataBase>(out monsterDataBase))
+        {
             monsterDataBase.InitializeData();
+            spawnManager.MonsterDB = monsterDataBase;
+        }
     }
 
     private void OnEnable()
