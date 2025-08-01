@@ -51,6 +51,12 @@ public class Status
         return statusValueTable.TryGetValue(type, out var val) ? val : null;
     }
 
+    public void Set(StatusType type, float value)
+    {
+        if (statusValueTable == null) Init();
+        statusValueTable[type].baseValue = value; 
+    }
+
     public void ApplyBuff(StatusType type, float value)
     {
         if (Get(type) != null)
@@ -79,6 +85,12 @@ public class StatusComponent : MonoBehaviour
             return; 
 
         status.ApplyBuff(type, value);
+    }
+
+    public void SetStatusValue(StatusType type, float value)
+    {
+        if (status == null || status.Get(type) == null) return;
+        status.Set(type, value);
     }
 
     public float GetStatusValue(StatusType type)

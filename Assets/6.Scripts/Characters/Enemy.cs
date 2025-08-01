@@ -51,11 +51,16 @@ public class Enemy
     {
         base.Start();
         SetGenericTeamId(2);
+    }
+
+    protected void OnEnable()
+    {
         BattleManager.Instance.ResistEnemy(this);
     }
 
     protected virtual void OnDisable()
     {
+        BattleManager.Instance?.UnreistEnemy(this);
         ObjectPooler.ReturnToPool(gameObject);
     }
 
@@ -151,5 +156,18 @@ public class Enemy
     public void ApplyLaunch(GameObject attacker, Weapon causer, HitData hitData)
     {
         launch?.ApplyLaunch(attacker, causer, hitData);
+    }
+
+
+    public void SetStatData(MonsterStatData statData)
+    {
+        if (statData == null || status == null) return;
+
+        status.SetStatusValue(StatusType.Attack, statData.attack);
+        status.SetStatusValue(StatusType.Defense, statData.defense);
+        status.SetStatusValue(StatusType.Speed, statData.speed);
+
+        if(healthPoint != null)
+            healthPoint.SetMaxHP = statData.hp;
     }
 }

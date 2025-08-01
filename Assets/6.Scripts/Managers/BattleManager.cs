@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -40,6 +40,12 @@ public class BattleManager
 
     public void JoinBattle(Character player, Character enemy)
     {
+        if (player == null || enemy == null)
+        {
+            Debug.LogError("JoinBattle ì‹¤íŒ¨: playerë‚˜ enemyê°€ nullì„");
+            return;
+        }
+
         if (battleTable.TryGetValue(player, out List<Character> list))
         {
             list.Unique(enemy);
@@ -66,7 +72,7 @@ public class BattleManager
 
     private Character GetPrioritizedPlayer()
     {
-        //TODO: ÃÖÀûÀÇ ÇÃ·¹ÀÌ¾î¸¦ °è»êÇØ¼­ ´øÁ®ÁÖ±â 
+        //TODO: ìµœì ì˜ í”Œë ˆì´ì–´ë¥¼ ê³„ì‚°í•´ì„œ ë˜ì ¸ì£¼ê¸° 
         foreach(var player in players)
         {
             return player; 

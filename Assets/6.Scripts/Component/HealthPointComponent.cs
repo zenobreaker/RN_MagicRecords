@@ -24,6 +24,7 @@ public class HealthPointComponent : MonoBehaviour
     private bool isShow;
     private bool isEnemy;
 
+    public float SetMaxHP { set => maxHealthPoint = value; }
     public float GetMaxHP { get => maxHealthPoint; }
     public float GetCurrentHP { get => currentHealthPoint; }
     public float GetCurrentHpRatio { get => currentHealthPoint / maxHealthPoint; }

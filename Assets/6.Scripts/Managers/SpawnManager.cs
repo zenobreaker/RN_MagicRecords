@@ -22,6 +22,9 @@ public class SpawnManager : MonoBehaviour
     public SO_PlayerObjects soPlayerObject;
     public SO_NPCObjects soNpcObject;
 
+    private MonsterDataBase monsterDataBase; 
+    public MonsterDataBase MonsterDB { set =>  monsterDataBase = value; }
+
     public event Action OnCompleteSpawn;
 
     private void Awake()
@@ -80,8 +83,18 @@ public class SpawnManager : MonoBehaviour
             int idx = Random.Range(0, spawnPoints.Count);
 
             string tag = $"NPC_{id}";
-            ObjectPooler.SpawnFromPool(tag, spawnPoints[idx]);
-        }
+            GameObject npc = ObjectPooler.DeferedSpawnFromPool(tag, spawnPoints[idx]);
+
+            // Set Stat 
+            {
+                var statData = monsterDataBase.GetMonsterStatData(id);
+                if (npc.TryGetComponent<Enemy>(out Enemy enemy))
+                {
+                    enemy.SetStatData(statData);
+                    ObjectPooler.FinishSpawn(npc);
+                }
+            }
+        }//foreach(data)
 
         OnCompleteSpawn?.Invoke();
     }

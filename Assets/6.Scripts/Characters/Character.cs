@@ -21,6 +21,7 @@ public class Character
 
     protected StateComponent state;
     protected HealthPointComponent healthPoint;
+    protected StatusComponent status; 
 
     protected float originAnimSpeed;
     protected bool bInAction = false; 
@@ -39,6 +40,7 @@ public class Character
 
         state = GetComponent<StateComponent>();
         healthPoint = GetComponent<HealthPointComponent>();
+        status = GetComponent<StatusComponent>();
 
         visual = GetComponentInChildren<CharacterVisual>();
     }

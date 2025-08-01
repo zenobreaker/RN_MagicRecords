@@ -105,7 +105,15 @@ public class Player
         base.Start();
         
         SetGenericTeamId(1); 
+    }
+    protected void OnEnable()
+    {
         BattleManager.Instance.ResistPlayer(this);
+    }
+
+    protected void OnDisable()
+    {
+        BattleManager.Instance?.UnreistPlayer(this);
     }
 
     public void OnDoAction() => bInAction = true;

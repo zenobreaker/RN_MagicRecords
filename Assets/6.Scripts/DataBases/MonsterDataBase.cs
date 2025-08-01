@@ -174,7 +174,7 @@ public class MonsterDataBase : MonoBehaviour
 
                 monsterStat =>
                 {
-                    monsterStatDatas.TryAdd(monsterStat.id, monsterStat);
+                    monsterStatDatas.TryAdd(monsterStat.monsterID, monsterStat);
                 }
             );
     }
@@ -211,4 +211,12 @@ public class MonsterDataBase : MonoBehaviour
             return monsterGroupData;
         return null;
     }
+
+    public MonsterStatData GetMonsterStatData(int monsterID)
+    {
+        if (monsterStatDatas.TryGetValue(monsterID, out var monsterStatData))
+            return monsterStatData;
+        return null;
+    }
+
 }
