@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -23,6 +25,8 @@ public class Player
 
     private bool bIsUsedSkill = false;
 
+    public event Action<Player> OnDead;
+
     protected override void Awake()
     {
         base.Awake();
@@ -43,6 +47,9 @@ public class Player
 
         damageHandle = GetComponent<DamageHandleComponent>();
         launch = GetComponent<LaunchComponent>();
+
+        if (state != null)
+            state.OnStateTypeChanged += ChangeType;
 
         PlayerInput input = GetComponent<PlayerInput>();
         Debug.Assert(input != null);
@@ -207,9 +214,29 @@ public class Player
         collider.enabled = false;
 
         animator.SetTrigger("Dead");
-        MovableStopper.Instance.Delete(this);
-        MovableSlower.Instance.Delete(this);
-        Destroy(gameObject, 5);
+        //MovableStopper.Instance.Delete(this);
+        //MovableSlower.Instance.Delete(this);
+        //Destroy(gameObject, 5);
+    }
+
+    private IEnumerator HandleDeath()
+    {
+        yield return new WaitForSeconds(1.0f);
+        Dead(); 
+    }
+
+    protected override void Dead()
+    {
+        base.Dead();
+        Destroy(gameObject);
+    }
+
+    private void ChangeType(StateType prevType, StateType newType)
+    {
+        if (newType == StateType.Dead)
+        {
+            OnDead?.Invoke(this);
+        }
     }
 
     protected override void End_Damaged()

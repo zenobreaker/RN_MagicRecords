@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class Enemy
@@ -17,8 +18,9 @@ public class Enemy
 
     private DamageHandleComponent damageHandle;
     private LaunchComponent launch;
-
     protected ActionComponent currentAction;
+
+    public Action<Enemy> OnDead;
 
     protected override void Awake()
     {
@@ -45,6 +47,9 @@ public class Enemy
         currentAction = GetComponent<ActionComponent>();
         damageHandle = GetComponent<DamageHandleComponent>();
         launch = GetComponent<LaunchComponent>();
+
+        if (state != null)
+            state.OnStateTypeChanged += ChangeType;
     }
 
     protected override void Start()
@@ -115,9 +120,10 @@ public class Enemy
         rigidbody.isKinematic = true;
 
         animator.SetTrigger("Dead");
-        MovableStopper.Instance.Delete(this);
-        MovableSlower.Instance.Delete(this);
-        Destroy(gameObject, 5);
+        //MovableStopper.Instance.Delete(this);
+        //MovableSlower.Instance.Delete(this);
+        //Destroy(gameObject, 5);
+        StartCoroutine(HandleDeath());
     }
 
 
@@ -144,6 +150,26 @@ public class Enemy
 
         state?.SetIdleMode();
         currentAction?.EndDoAction();
+    }
+
+    private IEnumerator HandleDeath()
+    {
+        yield return new WaitForSeconds(2.0f);
+        Dead(); 
+    }
+
+    protected override void Dead()
+    {
+        base.Dead();
+        gameObject.SetActive(false);
+    }
+
+    private void ChangeType(StateType prevType, StateType newType)
+    {
+        if(newType == StateType.Dead)
+        {
+            OnDead?.Invoke(this); 
+        }
     }
 
     private void LookAttacker(GameObject attacker)

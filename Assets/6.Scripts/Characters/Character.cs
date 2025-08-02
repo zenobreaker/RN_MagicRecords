@@ -29,6 +29,7 @@ public class Character
 
     public Action OnBeginDoAction;
     public Action OnEndDoAction;
+
     protected virtual void Awake()
     {
         animator = GetComponent<Animator>();
@@ -116,4 +117,6 @@ public class Character
         animator.speed = originAnimSpeed;
     }
     #endregion
+
+    protected virtual void Dead() { }
 }

@@ -22,10 +22,15 @@ public class SpawnManager : MonoBehaviour
     public SO_PlayerObjects soPlayerObject;
     public SO_NPCObjects soNpcObject;
 
-    private MonsterDataBase monsterDataBase; 
-    public MonsterDataBase MonsterDB { set =>  monsterDataBase = value; }
+    private MonsterDataBase monsterDataBase;
+    public MonsterDataBase MonsterDB { set => monsterDataBase = value; }
+
+    private List<Player> spawnedPlayers = new();
+    private List<Enemy> spawnedEnemies = new();
 
     public event Action OnCompleteSpawn;
+    public event Action OnAllPlayersDead;
+    public event Action OnAllEnemiesDead;
 
     private void Awake()
     {
@@ -55,10 +60,20 @@ public class SpawnManager : MonoBehaviour
         GameObject playerObj = soPlayerObject.GetPlayerObject(id);
         if (playerObj != null)
         {
-            var player = Instantiate(playerObj, spawnPoints[0].position, spawnPoints[0].rotation);
-            
-            if(Camera.main.TryGetComponent<CinemachineCamera>(out var cc))
-                cc.Target.TrackingTarget = player.transform;
+            var playerGO = Instantiate(playerObj, spawnPoints[0].position, spawnPoints[0].rotation);
+
+            // Connect Camera
+            if (Camera.main.TryGetComponent<CinemachineCamera>(out var cc))
+                cc.Target.TrackingTarget = playerGO.transform;
+
+            if(playerGO.TryGetComponent<Player>(out var player))
+            {
+                // Add to List
+                spawnedPlayers.Add(player);
+
+                // Dead Event 
+                player.OnDead += OnPlayerDead;
+            }
         }
     }
 
@@ -90,7 +105,14 @@ public class SpawnManager : MonoBehaviour
                 var statData = monsterDataBase.GetMonsterStatData(id);
                 if (npc.TryGetComponent<Enemy>(out Enemy enemy))
                 {
+                    spawnedEnemies.Add(enemy);
+                    // Set Stat 
                     enemy.SetStatData(statData);
+
+                    // Dead Event
+                    enemy.OnDead += OnEnemyDead;
+
+                    // Return Object Pool
                     ObjectPooler.FinishSpawn(npc);
                 }
             }
@@ -100,6 +122,23 @@ public class SpawnManager : MonoBehaviour
     }
 
 
-
     public void OnEndSpawn() { }
+
+    private void OnPlayerDead(Player player)
+    {
+        player.OnDead -= OnPlayerDead;
+        spawnedPlayers.Remove(player);
+
+        if (spawnedPlayers.Count == 0)
+            OnAllPlayersDead?.Invoke();
+    }
+
+    private void OnEnemyDead(Enemy enemy)
+    {
+        enemy.OnDead -= OnEnemyDead;
+        spawnedEnemies.Remove(enemy);
+
+        if (spawnedEnemies.Count == 0)
+            OnAllEnemiesDead?.Invoke(); 
+    }
 }

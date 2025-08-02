@@ -42,6 +42,8 @@ public class StageManager : MonoBehaviour
         {
             this.spawnManager = spawnManager;
             spawnManager.OnCompleteSpawn += OnCompleteSpawn;
+            spawnManager.OnAllPlayersDead += OnStageFailure;
+            spawnManager.OnAllEnemiesDead += OnStageClear;
         }
 
         roomManager = GetComponent<RoomManager>();
@@ -196,4 +198,14 @@ public class StageManager : MonoBehaviour
         Debug.Log("Stage Manager End Stage");
     }
     #endregion
+
+    private void OnStageClear()
+    {
+        Debug.Log("Stage Clear!");
+    }
+
+    private void OnStageFailure()
+    {
+        Debug.Log("Stage Fail!");
+    }
 }
