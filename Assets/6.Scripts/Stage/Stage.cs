@@ -6,21 +6,21 @@ using UnityEngine;
 [System.Serializable]
 public enum NodeType
 {
-    None, 
-    Combat, 
-    Event, 
+    None,
+    Combat,
+    Event,
     Shop,
-    Boss_Combat, 
+    Boss_Combat,
 }
 
 [System.Serializable]
-public class StageInfo 
+public class StageInfo
 {
     public int id;
 
-    public int chapter; 
+    public int chapter;
 
-    public NodeType type; 
+    public NodeType type;
 
     // 등장할 적 
     public List<int> groupIds = new List<int>();
@@ -30,10 +30,10 @@ public class StageInfo
 
     public int wave = 0;
 
-    public int mapID; 
+    public int mapID;
 
-    public bool isCleared = false;
-    public bool isOpened = false;
+    public bool bIsCleared = false;
+    public bool bIsOpened = false;
 
     public override string ToString()
     {
@@ -57,7 +57,7 @@ public class StageReplacer
         CreateEnemyList(ref temp.groupIds);
         CreateRewardList(ref temp.rewardIds);
 
-        return temp; 
+        return temp;
     }
 
 
@@ -74,21 +74,23 @@ public class StageReplacer
         rewardIds.Add(0);
     }
 
-    public void AssignStages(List<UIMapNode> uiMapNodes)
+    public void AssignStages(List<List<MapNode>> levels)
     {
-        for(int i =0; i < uiMapNodes.Count; i++)
+        for(int level = 0; level < levels.Count; level++)
         {
-            if (i == 0)
-                continue; 
-            else if(i == uiMapNodes.Count - 1)
-            {
-                //TODO: 보스 스테이지 처리
+            if (level == 0)
                 continue;
-            }
+            else if (level == levels.Count - 1)
+                continue;
 
-            var node = uiMapNodes[i]; 
-            var randomID = GameManager.Instance.GetRandomStageID();
-            node.SetStage(randomID);
+            for(int n = 0; n < levels[level].Count;n++)
+            {
+                MapNode node = levels[level][n]; 
+                if(node != null)
+                {
+                    node.stageID = AppManager.Instance.GetRandomStageID();
+                }
+            }
         }
     }
 }

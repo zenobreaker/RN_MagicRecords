@@ -128,7 +128,5 @@ public class MapReplacer
             }
 
         }//for(level)
-
-       
     }
 }

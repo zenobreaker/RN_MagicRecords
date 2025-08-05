@@ -22,9 +22,6 @@ public class SpawnManager : MonoBehaviour
     public SO_PlayerObjects soPlayerObject;
     public SO_NPCObjects soNpcObject;
 
-    private MonsterDataBase monsterDataBase;
-    public MonsterDataBase MonsterDB { set => monsterDataBase = value; }
-
     private List<Player> spawnedPlayers = new();
     private List<Enemy> spawnedEnemies = new();
 
@@ -87,7 +84,7 @@ public class SpawnManager : MonoBehaviour
             return;
         }
 
-        MonsterGroupData data = GameManager.Instance.GetGroupData(groupID);
+        MonsterGroupData data = AppManager.Instance.GetGroupData(groupID);
         if (data == null) return;
 
         foreach (var id in data.monsterIDs)
@@ -102,7 +99,7 @@ public class SpawnManager : MonoBehaviour
 
             // Set Stat 
             {
-                var statData = monsterDataBase.GetMonsterStatData(id);
+                var statData = AppManager.Instance.GetMonsterStatData(id);
                 if (npc.TryGetComponent<Enemy>(out Enemy enemy))
                 {
                     spawnedEnemies.Add(enemy);

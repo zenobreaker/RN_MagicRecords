@@ -5,7 +5,6 @@ using UnityEngine;
 public class GameManager
     : Singleton<GameManager>
 {
-
     public enum GameState
     {
         None,
@@ -122,17 +121,6 @@ public class GameManager
 
     }
 
-    public int GetRandomStageID()
-    {
-        if (stageManager == null) return -1;
-        return stageManager.GetRandomStageID();
-    }
-
-    public StageInfo GetStageInfo(int stageID)
-    {
-        if (stageManager == null) return null;
-        return stageManager.GetStageInfo(stageID);
-    }
 
     public void EnterStage(StageInfo stageInfo)
     {
@@ -141,11 +129,5 @@ public class GameManager
         stageManager.SetEnteredStage(stageInfo);
 
         SetBeginStage();
-    }
-
-    public MonsterGroupData GetGroupData(int groupID)
-    {
-        if (stageManager == null) return null;
-        return stageManager.GetMonsterGroupData(groupID);
     }
 }

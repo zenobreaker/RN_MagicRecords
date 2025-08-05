@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,30 +7,22 @@ public class StageUIController : MonoBehaviour
     [SerializeField] private UIMapReplacer uiMapReplacer;
     [SerializeField] private UIStageInfo uiStageInfo;
 
-    private StageReplacer stageReplacer;
-
     private void Start()
     {
         InitUIMapeReplace();
     }
-
-
+ 
     private void InitUIMapeReplace()
     {
         if (uiMapReplacer == null) return;
 
-        List<UIMapNode> uiMapNodes = new List<UIMapNode>();
+        AppManager.Instance.InitLevel();
 
+        List<UIMapNode> uiMapNodes = new List<UIMapNode>();
         // Set Map Node 
         {
-            uiMapReplacer.ReplaceStage();
+            uiMapReplacer.ReplaceUINode(AppManager.Instance.MapReplacer);
             uiMapReplacer.GetUIMapNodes(ref uiMapNodes);
-        }
-
-        // Set Stage Data 
-        {
-            stageReplacer ??= new StageReplacer(); 
-            stageReplacer.AssignStages(uiMapNodes);
         }
 
         // Set Node Event

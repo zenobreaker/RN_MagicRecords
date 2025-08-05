@@ -18,20 +18,9 @@ public class UIMapReplacer : MonoBehaviour
     private List<MapNode> mapNodes = new List<MapNode>();
     private List<UIMapNode> uiMapNodes = new List<UIMapNode>();
 
-    private void Awake()
+    public void ReplaceUINode(MapReplacer mapReplacer)
     {
-        mapReplacer = new MapReplacer();
-    }
-
-    private void Start()
-    {
-        //ReplaceStage();
-    }
-
-    public void ReplaceStage()
-    {
-        mapReplacer.Replace();
-        mapReplacer.ConnectToNode();
+        this.mapReplacer = mapReplacer;
 
         ReplaceNodeObject();
 
@@ -46,6 +35,7 @@ public class UIMapReplacer : MonoBehaviour
         if (NodeContainer == null || NodeObject == null) return;
 
         List<List<MapNode>> levels = mapReplacer.GetLevels();
+
         mapNodes.Clear();
         uiMapNodes.Clear(); 
 

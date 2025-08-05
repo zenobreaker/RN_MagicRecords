@@ -17,18 +17,27 @@ public class UIMapNode
     public void Init(MapNode mapNode)
     {
         this.mapNode = mapNode;
+        SetStage(mapNode.stageID);
+
+        Refresh();
     }
 
     public void SetStage(int id)
     {
-        this.mapNode.stageID = id;
-
-        stageInfo = GameManager.Instance.GetStageInfo(id);
+        stageInfo = AppManager.Instance.GetStageInfo(id);
     }
 
     public void OnClick()
     {
         if(mapNode != null)
             OnClicked?.Invoke(stageInfo); 
+    }
+
+    public void Refresh()
+    {
+        if(stageInfo.bIsCleared == true)
+        {
+            //TODO : 클리어시 잠금처리
+        }
     }
 }

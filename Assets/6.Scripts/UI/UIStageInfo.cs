@@ -33,7 +33,7 @@ public class UIStageInfo
         //TODO : 스테이지 아이디를 이용해서 데이터베이스에서 데이터 참조 후 UI 세팅
         this.stageInfo = stageInfo;
 
-        this.stageInfo.isOpened = true; 
+        this.stageInfo.bIsOpened = true; 
 
         if (titleText != null)
         {
@@ -43,7 +43,7 @@ public class UIStageInfo
 
     public void EnterStage()
     {
-        if (stageInfo == null || stageInfo.isCleared || stageInfo.isOpened == false)
+        if (stageInfo == null || stageInfo.bIsCleared || stageInfo.bIsOpened == false)
             return;
 
         GameManager.Instance.EnterStage(stageInfo);
