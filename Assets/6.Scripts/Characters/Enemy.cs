@@ -47,9 +47,6 @@ public class Enemy
         currentAction = GetComponent<ActionComponent>();
         damageHandle = GetComponent<DamageHandleComponent>();
         launch = GetComponent<LaunchComponent>();
-
-        if (state != null)
-            state.OnStateTypeChanged += ChangeType;
     }
 
     protected override void Start()
@@ -60,11 +57,17 @@ public class Enemy
 
     protected void OnEnable()
     {
+        if (state != null)
+            state.OnStateTypeChanged += ChangeType;
+
         BattleManager.Instance.ResistEnemy(this);
     }
 
     protected virtual void OnDisable()
     {
+        if (state != null)
+            state.OnStateTypeChanged -= ChangeType; 
+
         BattleManager.Instance?.UnreistEnemy(this);
         ObjectPooler.ReturnToPool(gameObject);
     }

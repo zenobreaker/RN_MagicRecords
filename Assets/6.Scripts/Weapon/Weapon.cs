@@ -220,11 +220,6 @@ public class Weapon : MonoBehaviour
         animator = rootObject.GetComponent<Animator>();
         moving = rootObject.GetComponent<PlayerMovingComponent>();
         dash = rootObject.GetComponent<DashComponent>();
-        Debug.Assert(dash != null);
-
-
-        //TODO : 아직은 시기 상조 공격 후, 대쉬로 후딜 캔슬
-        //dash.OnBeginDash += End_DoAction;
 
         if (so_Action != null)
             actionDatas = so_Action.actionDatas;

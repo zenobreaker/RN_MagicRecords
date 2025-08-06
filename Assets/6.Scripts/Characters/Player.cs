@@ -27,12 +27,15 @@ public class Player
 
     public event Action<Player> OnDead;
 
+    private Action<InputAction.CallbackContext> onAction;
+    private Action<InputAction.CallbackContext> onDash;
+    private Action<InputAction.CallbackContext>[] onSkillActions;
+
     protected override void Awake()
     {
         base.Awake();
 
         weaponController = GetComponentInChildren<WeaponController>();
-
         comboComponent = GetComponent<ComboComponent>();
         weapon = GetComponent<WeaponComponent>();
         Debug.Assert(weapon != null);
@@ -57,20 +60,24 @@ public class Player
         InputActionMap actionMap = input.actions.FindActionMap("Player");
         Debug.Assert(actionMap != null);
 
-        actionMap.FindAction("Action").started += (context) =>
+        onAction = (context) =>
         {
             if (bIsUsedSkill) return;
-                
+
             currentAction = weapon;
             comboComponent?.InputQueue(InputCommandType.Action);
         };
 
-        Awake_SkillAcitonInput(actionMap);
-
-        actionMap.FindAction("Dash").started += (context) =>
+        onDash = (context) =>
         {
             comboComponent?.InputQueue(InputCommandType.Dash);
         };
+
+
+        Awake_SkillAcitonInput(actionMap);
+
+        actionMap.FindAction("Action").started += onAction;
+        actionMap.FindAction("Dash").started += onDash;
     }
 
     private void Awake_SkillEventHandle(SkillComponent skill, WeaponComponent weapon)
@@ -85,26 +92,19 @@ public class Player
     {
         if (actionMap == null || skill == null)
             return;
+        onSkillActions = new Action<InputAction.CallbackContext>[4];
 
-        actionMap.FindAction("SkillAction1").started += (context) =>
+        for (int i = 0; i < 4; i++)
         {
-            comboComponent.InputQueue(InputCommandType.Skill, (int)SkillSlot.Slot1);
-        };
+            int slot = i;
+            onSkillActions[i] = (context) =>
+            {
+                comboComponent.InputQueue(InputCommandType.Skill, slot);
+            };
 
-        actionMap.FindAction("SkillAction2").started += (context) =>
-        {
-            comboComponent.InputQueue(InputCommandType.Skill, (int)SkillSlot.Slot2);
-        };
-
-        actionMap.FindAction("SkillAction3").started += (context) =>
-        {
-            comboComponent.InputQueue(InputCommandType.Skill, (int)SkillSlot.Slot3);
-        };
-
-        actionMap.FindAction("SkillAction4").started += (context) =>
-        {
-            comboComponent.InputQueue(InputCommandType.Skill, (int)SkillSlot.Slot4);
-        };
+            string actionName = $"SkillAction{slot + 1}";
+            actionMap.FindAction(actionName).started += onSkillActions[i];
+        }
     }
 
     protected override void Start()
@@ -115,11 +115,40 @@ public class Player
     }
     protected void OnEnable()
     {
-        BattleManager.Instance.ResistPlayer(this);
+        BattleManager.Instance?.ResistPlayer(this);
     }
 
     protected void OnDisable()
     {
+        if(weapon != null)
+        weapon.OnDoAction -= OnDoAction;
+
+        if (skill != null)
+        {
+            skill.OnDoAction -= OnDoAction;
+            skill.OnSkillUse -= OnSkillUse;
+            skill.skillEventHandler.OnBeginUseSkill -= weapon.OnBeginSkillAction;
+            skill.skillEventHandler.OnEndUseSkill -= weapon.OnEndSkillAction;
+        }
+
+        if (state != null)
+            state.OnStateTypeChanged -= ChangeType;
+
+        var input = GetComponent<PlayerInput>();
+        if(input != null)
+        {
+            var actionMap = input.actions.FindActionMap("Player");
+
+            actionMap.FindAction("Action").started -= onAction;
+            actionMap.FindAction("Dash").started -= onDash;
+
+            for (int i = 0; i < 4; i++)
+            {
+                string actionName = $"SkillAction{i + 1}";
+                actionMap.FindAction(actionName).started -= onSkillActions[i];
+            }
+        }
+
         BattleManager.Instance?.UnreistPlayer(this);
     }
 
