@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,7 +29,7 @@ public class StageUIController : MonoBehaviour
         {
             node.OnClicked += (stageInfo) =>
             {
-                uiStageInfo.SetStageData(stageInfo);
+                uiStageInfo.SetStageData(node.Node, stageInfo);
                 UIManager.Instance.OpenUI(uiStageInfo);
             };
         }

@@ -1,6 +1,6 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager
     : Singleton<GameManager>
@@ -106,7 +106,15 @@ public class GameManager
             case GameState.Begin_Boss: OnBeginBoss?.Invoke(); break;
             case GameState.In_Boss: OnInBoss?.Invoke(); break;
             case GameState.End_Boss: OnEndBoss?.Invoke(); break;
-            case GameState.End_Stage:OnEndStage?.Invoke();break;
+            case GameState.End_Stage:
+                {
+                    OnEndStage?.Invoke();
+#if UNITY_EDITOR
+                    Debug.Log("End Stage");
+#endif
+                    SceneManager.LoadScene(1);
+                }
+                break;
         }
     }
 
@@ -122,6 +130,8 @@ public class GameManager
     }
 
 
+    public void EndStage() => SetEndStage();
+
     public void EnterStage(StageInfo stageInfo)
     {
         if (stageInfo == null) return;
@@ -129,5 +139,7 @@ public class GameManager
         stageManager.SetEnteredStage(stageInfo);
 
         SetBeginStage();
+
+        SceneManager.LoadScene(2);
     }
 }

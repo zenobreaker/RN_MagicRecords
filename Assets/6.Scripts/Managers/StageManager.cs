@@ -28,7 +28,7 @@ public class StageManager : MonoBehaviour
 
     public event Action OnBeginSpawn;
     public event Action OnFinishedBeginStage;
-    //public event Action OnFinishedEndSpawn;
+    public event Action OnStageCleared;
 
     private Action OnBeginState;
     private Action OnWaitState;
@@ -51,6 +51,8 @@ public class StageManager : MonoBehaviour
         OnBeginState += OnBeginStage_Begin;
         OnWaitState += OnBeginStage_Wait;
         OnFinishState += OnBeginStage_Finish;
+
+        OnStageCleared += GameManager.Instance.EndStage;
     }
 
     private void OnEnable()
@@ -160,16 +162,16 @@ public class StageManager : MonoBehaviour
     }
     #endregion
 
+    //TODO: 여기서 바로 끝내버리는데 Wave가 있다면 검사도 해야한다. 
     private void OnStageClear()
     {
         Debug.Log("Stage Clear!");
 
         currentStage.bIsCleared = true;
-
-
-        // 다시 맵 선택 UI로 
-
+        
         currentStage = null;
+
+        OnStageCleared?.Invoke();
     }
 
     private void OnStageFailure()

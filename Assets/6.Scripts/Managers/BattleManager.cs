@@ -21,7 +21,7 @@ public class BattleManager
         Instance = this;
 
         OnFinishBeginBattle += GameManager.Instance.OnFinishedBeginBattle;
-        OnFinishInBattle += GameManager.Instance.OnFinishedInBattle;
+        
         OnFinishEndBattle += GameManager.Instance.OnFinishedEndBattle;
     }
 
@@ -120,6 +120,10 @@ public class BattleManager
 
     public void OnEndBattle()
     {
+#if UNITY_EDITOR
+        Debug.Log("Battle : OnFinishEndBattle");
+#endif
+
         OnFinishEndBattle?.Invoke();
     }
 

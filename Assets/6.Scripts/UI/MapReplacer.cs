@@ -129,4 +129,17 @@ public class MapReplacer
 
         }//for(level)
     }
+
+    public List<int> GetCanEnableNodeIds(int currentID)
+    {
+        for (int level = 0; level < maxLevel; level++)
+        {
+            for (int node = 0; node < levels[level].Count ; node++)
+            {
+                if (levels[level][node].id == currentID)
+                    return levels[level][node].nextNodeIds;
+            }
+        }
+        return null;
+    }
 }

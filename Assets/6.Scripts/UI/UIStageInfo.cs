@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 using DG.Tweening;
 using TMPro;
 
 public class UIStageInfo 
     : UiBase
 {
+    private MapNode node; 
     private StageInfo stageInfo; 
     private RectTransform rect;
 
@@ -26,9 +26,11 @@ public class UIStageInfo
         rect.DOAnchorPosX(0, 0.25f);
     }
 
-    public void SetStageData(StageInfo stageInfo)
+    public void SetStageData(MapNode node, StageInfo stageInfo)
     {
-        if (stageInfo == null) return; 
+        if (stageInfo == null) return;
+
+        this.node = node; 
 
         //TODO : 스테이지 아이디를 이용해서 데이터베이스에서 데이터 참조 후 UI 세팅
         this.stageInfo = stageInfo;
@@ -46,8 +48,6 @@ public class UIStageInfo
         if (stageInfo == null || stageInfo.bIsCleared || stageInfo.bIsOpened == false)
             return;
 
-        GameManager.Instance.EnterStage(stageInfo);
-
-        SceneManager.LoadScene(2); 
+        AppManager.Instance.EnterStageByNode(node, stageInfo);
     }
 }

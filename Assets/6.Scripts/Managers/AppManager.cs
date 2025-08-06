@@ -1,16 +1,19 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class AppManager 
+public class AppManager
     : Singleton<AppManager>
 {
-    DataBaseManager databaseManager; 
+    DataBaseManager databaseManager;
 
     // 생성한 맵 정보를 가지고 있는 배치자 
     private MapReplacer mapReplacer;
     public MapReplacer MapReplacer { get { return mapReplacer; } }
     private StageReplacer stageReplacer;
-    private bool bCreate = false; 
+    private bool bCreate = false;
+
+    private int mapNodeID = 0;  // 현재 고른 mapNode 
+    private List<int> enableIds; // 갈 수 있는 레벨 
 
     protected override void Awake()
     {
@@ -23,16 +26,28 @@ public class AppManager
 
     public void InitLevel()
     {
-        if(bCreate  == false)
+        if (bCreate == false)
         {
             bCreate = true;
             ReplaceLevel();
+        }
+
+        // 자신이 갈 수 있는 노드 출력하기 
+        enableIds = mapReplacer.GetCanEnableNodeIds(mapNodeID); 
+        foreach (int id in enableIds)
+        {
+            Debug.Log($"Can going id : {id}");
         }
     }
 
     public List<List<MapNode>> GetLevels()
     {
         return mapReplacer.GetLevels();
+    }
+
+    public bool EnableNode(int id)
+    {
+        return enableIds.Contains(id);
     }
 
     // 맵들 배치 
@@ -52,7 +67,7 @@ public class AppManager
     public int GetRandomStageID()
     {
         if (databaseManager == null) return -1;
-        return databaseManager.GetRandomStageID(0); 
+        return databaseManager.GetRandomStageID(0);
     }
 
     public MonsterGroupData GetGroupData(int groupID)
@@ -67,4 +82,14 @@ public class AppManager
         return databaseManager.GetMonsterStatData(monsterID);
     }
 
+    public void EnterStageByNode(MapNode node, StageInfo stageInfo)
+    {
+        if(node != null)
+        {
+            Debug.Log($"Current Select Node ID : {node.id}");
+            mapNodeID = node.id;
+        }
+
+        GameManager.Instance.EnterStage(stageInfo);
+    }
 }
