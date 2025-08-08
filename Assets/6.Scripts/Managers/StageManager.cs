@@ -5,14 +5,15 @@ using UnityEngine;
 
 public class StageManager : MonoBehaviour
 {
-    //TODO: 스테이지 정보를 받아와서 처리해야함 
-    //TODO: 지금은 일단 임시로 생성만 
-
     public enum StageStage
     {
-        Begin,
-        Wait,
-        Finish,
+        Begin_Stage,
+        Create_Map,
+        Spawn_Player,
+        Spawn_Enemy,
+        Process_Battle,
+        Process_Wave,
+        Finish_Stage,
     };
     public StageStage stageState;
 
@@ -25,49 +26,62 @@ public class StageManager : MonoBehaviour
     private RoomManager roomManager;
 
     private int currentWave = 1;
+    private List<Transform> mainSpawnPoints;
+    private List<Transform> spawnPoints;
 
-    public event Action OnBeginSpawn;
-    public event Action OnFinishedBeginStage;
-    public event Action OnStageCleared;
+    private bool bEnableSpawn = false;
 
-    private Action OnBeginState;
-    private Action OnWaitState;
-    private Action OnFinishState;
+    private bool bStageClearSuccess = false;
+
+    public event Action OnProcessBattle;
+    
+    
+    public event Action OnFinishStage;
+    public event Action OnClearedStage;
+    public event Action OnFailedStage;
 
     private void Awake()
     {
         if (TryGetComponent<SpawnManager>(out var spawnManager))
         {
             this.spawnManager = spawnManager;
-            spawnManager.OnCompleteSpawn += OnCompleteSpawn;
-            spawnManager.OnAllPlayersDead += OnStageFailure;
-            spawnManager.OnAllEnemiesDead += OnStageClear;
+            spawnManager.OnCompleteSpawnedPlayer += OnCompleteSpawnedPlayer;
+            spawnManager.OnCompleteSpawnedEnemy += OnCompleteSpawnedEnemy;
+            spawnManager.OnAllPlayersDead += OnAllPlayersDead;
+            spawnManager.OnAllEnemiesDead += OnAllEnemiesDead;
         }
 
         roomManager = GetComponent<RoomManager>();
-
-        OnFinishedBeginStage += GameManager.Instance.OnFinishedBeginStage;
-
-        OnBeginState += OnBeginStage_Begin;
-        OnWaitState += OnBeginStage_Wait;
-        OnFinishState += OnBeginStage_Finish;
-
-        OnStageCleared += GameManager.Instance.EndStage;
+        
     }
 
     private void OnEnable()
     {
-        ObjectPooler.OnPoolInitialized += StartStage;
+        GameManager.Instance.OnBeginStage += Instance_OnBattleStage;
+        ObjectPooler.OnPoolInitialized += OnStartStage;
+    }
+
+    private void Instance_OnBattleStage()
+    {
+        SetBeginStage();
     }
 
     private void OnDisable()
     {
-        ObjectPooler.OnPoolInitialized -= StartStage;
+        if(GameManager.Instance)
+            GameManager.Instance.OnBeginStage -= Instance_OnBattleStage;
+
+        ObjectPooler.OnPoolInitialized -= OnStartStage;
     }
 
-    public void SetBeginState() => ChangedState(StageStage.Begin);
-    public void SetWaitState() => ChangedState(StageStage.Wait);
-    public void SetFinishState() => ChangedState(StageStage.Finish);
+    public void SetBeginStage() => ChangedState(StageStage.Begin_Stage);
+    public void SetCreateMap() => ChangedState(StageStage.Create_Map);
+    public void SetSpawnPlayer() => ChangedState(StageStage.Spawn_Player);
+    public void SetSpwawnEnemy() => ChangedState(StageStage.Spawn_Enemy);
+    public void SetProcessBattle() => ChangedState(StageStage.Process_Battle);
+    public void SetProcessWave() => ChangedState(StageStage.Process_Wave);
+    public void SetFinishStage() => ChangedState(StageStage.Finish_Stage);
+
 
     private void ChangedState(StageStage state)
     {
@@ -79,9 +93,14 @@ public class StageManager : MonoBehaviour
     {
         switch (stageState)
         {
-            case StageStage.Begin: OnBeginState?.Invoke(); break;
-            case StageStage.Wait: OnWaitState?.Invoke(); break;
-            case StageStage.Finish: OnFinishState?.Invoke(); break;
+            case StageStage.Begin_Stage: BeginStage(); break;
+            case StageStage.Create_Map: CreateMap(); break;
+            case StageStage.Spawn_Player: SpawnPlayer(); break;
+            case StageStage.Spawn_Enemy: SpawnEnemy(); break;
+            case StageStage.Process_Battle: ProcessBattle(); break;
+            case StageStage.Process_Wave: ProcessWave(); break;
+            case StageStage.Finish_Stage: FinishStage(); break;
+                
         }
     }
 
@@ -90,93 +109,142 @@ public class StageManager : MonoBehaviour
         currentStage = stageInfo;
     }
 
-    private void StartStage()
+    private void OnStartStage()
     {
-        SetBeginState();
+        bEnableSpawn = true;
     }
 
 
     #region Stage Flow 
-    public void OnBeginStage()
+    public void BeginStage()
     {
 #if UNITY_EDITOR
         Debug.Log("Stage Manager Begin Stage");
 #endif
+        // 사전 데이터 준비 State
+        mainSpawnPoints = new();
+        spawnPoints = new();
 
+        StopAllCoroutines();
+        StartCoroutine(AwaitStage());
     }
 
-    // 스폰 피니쉬 콜백 
-    public void OnCompleteSpawn()
+    private IEnumerator AwaitStage()
     {
-        SetFinishState();
-    }
-
-    private void OnBeginStage_Begin()
-    {
-#if UNITY_EDITOR
-        Debug.Log("BeginStage - Begin");
-#endif
-        SetWaitState();
-    }
-
-    private void OnBeginStage_Wait()
-    {
-#if UNITY_EDITOR
-        Debug.Log("BeginStage - Wait");
-#endif
-        int groupID = 0;
-        int mapID = 0;
-
-        // Set Stage Info 
-        if (currentStage != null)
+        while(true)
         {
-            groupID = currentStage.groupIds[currentWave - 1];
-            mapID = currentStage.mapID;
-        }
+            if(bEnableSpawn)
+            {
+                SetCreateMap();
+                yield break; 
+            }
 
-        List<Transform> mainSpawnPoints = new();
-        List<Transform> spawnPoints = new();
+            yield return null;
+        }
+    }
+
+    private void CreateMap()
+    {
+        if (currentStage == null) return;
+
         // Load Map 
-        roomManager?.LoadRoom(mapID, ref mainSpawnPoints, ref spawnPoints);
+        roomManager?.LoadRoom(currentStage.mapID, ref mainSpawnPoints, ref spawnPoints);
+
+        SetSpawnPlayer();
+    }
+
+    private void SpawnPlayer()
+    {
+        if (currentStage == null || mainSpawnPoints  == null || mainSpawnPoints.Count <= 0 ) return;
 
         // Spawn Character
         spawnManager?.SpawnCharacter(1, mainSpawnPoints);
+    }
+
+    private void OnCompleteSpawnedPlayer()
+    {
+        SetSpwawnEnemy();
+    }
+
+    private void SpawnEnemy()
+    {
+        if (currentStage == null || spawnPoints == null || spawnPoints.Count <= 0) return;
 
         // Spawn Enemy
-        spawnManager?.SpawnNPC(groupID, spawnPoints);
-
-        OnBeginSpawn?.Invoke();
+        spawnManager?.SpawnNPC(currentStage.groupIds[currentWave-1], spawnPoints);
     }
 
-    private void OnBeginStage_Finish()
+
+    // 스폰 피니쉬 콜백 
+    public void OnCompleteSpawnedEnemy()
     {
+        SetProcessBattle();
+    }
+
+    private void ProcessBattle()
+    {
+        // 게임 매니저에게 게임할 준비가 되었다고 전달
+        OnProcessBattle?.Invoke(); 
+    }
+
+    private void ProcessWave()
+    {
+        // 웨이브가 최대 웨이브라면 게임 종료 
+        if (currentWave < currentStage.wave)
+        {
 #if UNITY_EDITOR
-        Debug.Log("BeginStage - Finish");
+            Debug.Log("Stage : Next Wave");
 #endif
-        OnFinishedBeginStage?.Invoke();
+            currentWave++;
+            // 웨이브 수 증가 후 다시 로직 에너미 생성부터 
+            SetSpwawnEnemy();
+            return; 
+        }
+
+#if UNITY_EDITOR
+        Debug.Log("Stage : Finish Wave");
+#endif
+
+        SetFinishStage();
     }
 
-    public void OnEndStage()
+    private void FinishStage()
     {
-        Debug.Log("Stage Manager End Stage");
-    }
-    #endregion
+        // Reset Data 
 
-    //TODO: 여기서 바로 끝내버리는데 Wave가 있다면 검사도 해야한다. 
-    private void OnStageClear()
-    {
-        Debug.Log("Stage Clear!");
-
-        currentStage.bIsCleared = true;
-        
+        StopAllCoroutines();
+        bEnableSpawn = false;
+        mainSpawnPoints = null;
+        spawnPoints = null;
+        currentWave = 1;
         currentStage = null;
 
-        OnStageCleared?.Invoke();
+        // 성공 처리 
+        if (bStageClearSuccess)
+        {
+            currentStage.bIsCleared = true;
+            OnClearedStage?.Invoke();
+        }
+        // 실패 
+        else
+        {
+            OnFailedStage?.Invoke();
+        }
+
+        // 구독자에게 스테이지 클리어 했다는 정보 전달
+        OnFinishStage?.Invoke();
     }
 
-    private void OnStageFailure()
+    private void OnAllEnemiesDead()
     {
-        Debug.Log("Stage Fail!");
+        SetProcessWave();
     }
+
+    private void OnAllPlayersDead()
+    {
+
+    }
+
+#endregion
 
 }

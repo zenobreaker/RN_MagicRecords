@@ -18,6 +18,7 @@ public class AppManager
     protected override void Awake()
     {
         base.Awake();
+
         databaseManager = GetComponent<DataBaseManager>();
 
         mapReplacer = new MapReplacer();

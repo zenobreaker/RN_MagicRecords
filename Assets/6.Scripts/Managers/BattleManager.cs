@@ -1,28 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class BattleManager
     : Singleton<BattleManager>
 {
-    private Action OnFinishBeginBattle;
-    private Action OnFinishInBattle;
-    private Action OnFinishEndBattle;
+    private event Action OnFinishBeginBattle;
 
     private List<Character> players = new List<Character>();
     private List<Character> enemies = new List<Character>();
     private Dictionary<Character, List<Character>> battleTable;
 
+    private bool bInBattle = false;
+
     protected override void Awake()
     {
         base.Awake();
         Instance = this;
-
-        OnFinishBeginBattle += GameManager.Instance.OnFinishedBeginBattle;
-        
-        OnFinishEndBattle += GameManager.Instance.OnFinishedEndBattle;
     }
 
     private void Start()
@@ -30,7 +25,29 @@ public class BattleManager
         battleTable = new Dictionary<Character, List<Character>>();
     }
 
-    public void ResistEnemy(Character character) => enemies.Unique(character);
+    private void OnEnable()
+    {
+        GameManager.Instance.OnBattleStage += OnBattle;
+        GameManager.Instance.OnFinishStage += OutBattle;
+    }
+
+    private void OnDisable()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnBattleStage -= OnBattle;
+            GameManager.Instance.OnFinishStage -= OutBattle;
+        }
+    }
+
+    public void ResistEnemy(Character character)
+    {
+        enemies.Unique(character);
+
+        // 이미 전투 중인 상태라면 등록하자마자 공격할 타겟을 지정한다. 
+        if (bInBattle)
+            TryAiToJoinBattle(character);
+    }
 
     public void UnreistEnemy(Character character) => enemies.Remove(character);
 
@@ -38,62 +55,54 @@ public class BattleManager
 
     public void UnreistPlayer(Character character) => players.Remove(character);
 
-    public void JoinBattle(Character player, Character enemy)
+    public bool JoinBattle(Character player, Character enemy)
     {
         if (player == null || enemy == null)
         {
             Debug.LogError("JoinBattle 실패: player나 enemy가 null임");
-            return;
+            return false;
         }
 
-        if (battleTable.TryGetValue(player, out List<Character> list))
-        {
-            list.Unique(enemy);
-            return;
-        }
-
+        // 플레이어가 등록이 되지 않았다면 플레이어 등록
         if (battleTable.ContainsKey(player) == false)
         {
             battleTable.Add(player, new List<Character>());
-            return;
         }
 
-        battleTable[player].Add(enemy);
-    }
-
-    public void OutBattle(Character player, Character enemy)
-    {
+        // 등록된 플레이어에 적들 리스트에서 추가
         if (battleTable.TryGetValue(player, out List<Character> list))
         {
-            list.Remove(enemy);
+            list.Unique(enemy);
+            return true;
         }
+
+        return false;
+    }
+
+    public void OutBattle()
+    {
+        battleTable.Clear();
     }
 
 
     private Character GetPrioritizedPlayer()
     {
         //TODO: 최적의 플레이어를 계산해서 던져주기 
-        foreach(var player in players)
+        foreach (var player in players)
         {
-            return player; 
+            return player;
         }
 
         return null;
     }
 
 
-    public void OnBeginBattle()
+    public void OnBattle()
     {
-        foreach(var enemy in enemies)
-        {
-            if(enemy.TryGetComponent<AIBehaviourComponent>(out var ai))
-            {
-                ai.SetCanMove(false);
-                Character player = GetPrioritizedPlayer();
-                ai.SetTarget(player.GameObject());
-                JoinBattle(player, enemy);
-            }
-        }
+        bInBattle = true;
+
+        foreach (var enemy in enemies)
+            TryAiToJoinBattle(enemy);
 
 #if UNITY_EDITOR
         Debug.Log("Battle : OnBeginBattle");
@@ -102,41 +111,23 @@ public class BattleManager
         OnFinishBeginBattle?.Invoke();
     }
 
-    public void OnInBattle()
+
+    private void TryAiToJoinBattle(Character target)
     {
-        foreach (var enemy in enemies)
+        if (target.TryGetComponent<AIBehaviourComponent>(out var ai))
         {
-            if (enemy.TryGetComponent<AIBehaviourComponent>(out var ai))
-            {
+            ai.SetCanMove(false);
+
+            Character player = GetPrioritizedPlayer();
+            if (player == null)
+                return;
+
+            ai.SetTarget(player.gameObject);
+            // 성공적으로 등록했으면 처리
+            bool bResult = JoinBattle(player, target);
+            if (bResult)
                 ai.SetCanMove(true);
-            }
+
         }
-
-#if UNITY_EDITOR
-        Debug.Log("Battle : OnInBattle");
-#endif
-        OnFinishInBattle?.Invoke(); 
-    }
-
-    public void OnEndBattle()
-    {
-#if UNITY_EDITOR
-        Debug.Log("Battle : OnFinishEndBattle");
-#endif
-
-        OnFinishEndBattle?.Invoke();
-    }
-
-    public void OnBeginBossBattle()
-    {
-
-    }
-
-    public void OnInBossBattle()
-    { }
-
-    public void OnEndBossBattle()
-    {
-
     }
 }

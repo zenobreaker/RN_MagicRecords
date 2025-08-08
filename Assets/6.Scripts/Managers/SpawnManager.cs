@@ -25,7 +25,8 @@ public class SpawnManager : MonoBehaviour
     private List<Player> spawnedPlayers = new();
     private List<Enemy> spawnedEnemies = new();
 
-    public event Action OnCompleteSpawn;
+    public event Action OnCompleteSpawnedPlayer;
+    public event Action OnCompleteSpawnedEnemy;
     public event Action OnAllPlayersDead;
     public event Action OnAllEnemiesDead;
 
@@ -72,6 +73,8 @@ public class SpawnManager : MonoBehaviour
                 player.OnDead += OnPlayerDead;
             }
         }
+
+        OnCompleteSpawnedPlayer?.Invoke();
     }
 
     public void SpawnNPC(int groupID, List<Transform> spawnPoints)
@@ -115,7 +118,7 @@ public class SpawnManager : MonoBehaviour
             }
         }//foreach(data)
 
-        OnCompleteSpawn?.Invoke();
+        OnCompleteSpawnedEnemy?.Invoke();
     }
 
 
