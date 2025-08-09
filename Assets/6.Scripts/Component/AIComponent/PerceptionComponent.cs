@@ -77,6 +77,7 @@ public class PerceptionComponent
         OnPerceptionUpdated?.Invoke(percievedTable.Keys.ToList());
         foreach (var item in percievedTable)
         {
+            if (item.Key == null) continue;
             if (item.Key.CompareTag("Player"))
                 return item.Key;
         }
