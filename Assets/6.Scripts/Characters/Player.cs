@@ -246,6 +246,7 @@ public class Player
         //MovableStopper.Instance.Delete(this);
         //MovableSlower.Instance.Delete(this);
         //Destroy(gameObject, 5);
+        StartCoroutine(HandleDeath());
     }
 
     private IEnumerator HandleDeath()
