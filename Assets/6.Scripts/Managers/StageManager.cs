@@ -34,10 +34,10 @@ public class StageManager : MonoBehaviour
     private bool bStageClearSuccess = false;
 
     public event Action OnProcessBattle;
-    
-    
+
+
     public event Action OnFinishStage;
-    public event Action OnClearedStage;
+    public event Action OnSucccedStage;
     public event Action OnFailedStage;
 
     private void Awake()
@@ -52,7 +52,7 @@ public class StageManager : MonoBehaviour
         }
 
         roomManager = GetComponent<RoomManager>();
-        
+
     }
 
     private void OnEnable()
@@ -68,7 +68,7 @@ public class StageManager : MonoBehaviour
 
     private void OnDisable()
     {
-        if(GameManager.Instance)
+        if (GameManager.Instance)
             GameManager.Instance.OnBeginStage -= Instance_OnBattleStage;
 
         ObjectPooler.OnPoolInitialized -= OnStartStage;
@@ -100,7 +100,7 @@ public class StageManager : MonoBehaviour
             case StageStage.Process_Battle: ProcessBattle(); break;
             case StageStage.Process_Wave: ProcessWave(); break;
             case StageStage.Finish_Stage: FinishStage(); break;
-                
+
         }
     }
 
@@ -131,12 +131,12 @@ public class StageManager : MonoBehaviour
 
     private IEnumerator AwaitStage()
     {
-        while(true)
+        while (true)
         {
-            if(bEnableSpawn)
+            if (bEnableSpawn)
             {
                 SetCreateMap();
-                yield break; 
+                yield break;
             }
 
             yield return null;
@@ -155,7 +155,7 @@ public class StageManager : MonoBehaviour
 
     private void SpawnPlayer()
     {
-        if (currentStage == null || mainSpawnPoints  == null || mainSpawnPoints.Count <= 0 ) return;
+        if (currentStage == null || mainSpawnPoints == null || mainSpawnPoints.Count <= 0) return;
 
         // Spawn Character
         spawnManager?.SpawnCharacter(1, mainSpawnPoints);
@@ -171,7 +171,7 @@ public class StageManager : MonoBehaviour
         if (currentStage == null || spawnPoints == null || spawnPoints.Count <= 0) return;
 
         // Spawn Enemy
-        spawnManager?.SpawnNPC(currentStage.groupIds[currentWave-1], spawnPoints);
+        spawnManager?.SpawnNPC(currentStage.groupIds[currentWave - 1], spawnPoints);
     }
 
 
@@ -184,7 +184,7 @@ public class StageManager : MonoBehaviour
     private void ProcessBattle()
     {
         // 게임 매니저에게 게임할 준비가 되었다고 전달
-        OnProcessBattle?.Invoke(); 
+        OnProcessBattle?.Invoke();
     }
 
     private void ProcessWave()
@@ -198,38 +198,38 @@ public class StageManager : MonoBehaviour
             currentWave++;
             // 웨이브 수 증가 후 다시 로직 에너미 생성부터 
             SetSpwawnEnemy();
-            return; 
+            return;
         }
 
 #if UNITY_EDITOR
         Debug.Log("Stage : Finish Wave");
 #endif
-
+        bStageClearSuccess = true;
         SetFinishStage();
     }
 
     private void FinishStage()
     {
-        // Reset Data 
-
-        StopAllCoroutines();
-        bEnableSpawn = false;
-        mainSpawnPoints = null;
-        spawnPoints = null;
-        currentWave = 1;
-        currentStage = null;
-
         // 성공 처리 
         if (bStageClearSuccess)
         {
             currentStage.bIsCleared = true;
-            OnClearedStage?.Invoke();
+            OnSucccedStage?.Invoke();
         }
         // 실패 
         else
         {
             OnFailedStage?.Invoke();
         }
+
+        // Reset Data 
+        bStageClearSuccess = false;
+        StopAllCoroutines();
+        bEnableSpawn = false;
+        mainSpawnPoints = null;
+        spawnPoints = null;
+        currentWave = 1;
+        currentStage = null;
 
         // 구독자에게 스테이지 클리어 했다는 정보 전달
         OnFinishStage?.Invoke();
@@ -242,9 +242,9 @@ public class StageManager : MonoBehaviour
 
     private void OnAllPlayersDead()
     {
-
+        SetFinishStage();
     }
 
-#endregion
+    #endregion
 
 }

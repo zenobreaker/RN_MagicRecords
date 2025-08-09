@@ -19,6 +19,9 @@ public class GameManager
     public event Action OnBeginStage;
     public event Action OnBattleStage;
     public event Action OnFinishStage;
+    public event Action OnSuccedStage;
+    public event Action OnFailedStage; 
+    
 
     private StageManager stageManager;
 
@@ -37,6 +40,8 @@ public class GameManager
         if (stageManager == null) return;
         stageManager.OnProcessBattle += ProcessBattle;
         stageManager.OnFinishStage += FinishStage;
+        stageManager.OnSucccedStage += SuccedStage;
+        stageManager.OnFailedStage += FailedStage;
     }
 
 
@@ -91,7 +96,9 @@ public class GameManager
                     OnFinishStage?.Invoke();
 #if UNITY_EDITOR
                     Debug.Log("Finish Stage");
-#endif
+#endif              
+                    //TODO : 여기에서 챕터가 더 이상 없으면 처리해야할까
+                    // 앱매니저에게 처리해달라고 해볼까
                     SceneManager.LoadScene(1);
                 }
                 break;
@@ -100,6 +107,16 @@ public class GameManager
 
     private void ProcessBattle() => SetProcessBattle();
     public void FinishStage() => SetFinishStage();
+
+    public void SuccedStage()
+    {
+        OnSuccedStage?.Invoke();
+    }
+
+    public void FailedStage()
+    {
+        OnFailedStage?.Invoke(); 
+    }
 
     public void EnterStage(StageInfo stageInfo)
     {

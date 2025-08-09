@@ -1937,6 +1937,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4345023308211783602, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: bCheat
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6372159647807091890, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: m_Name
       value: AppManager_Instance

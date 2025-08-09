@@ -25,11 +25,18 @@ public class MapReplacer
     private int nodeIdCounter = 0;
     private int maxLevel = 5;
     private int maxNodesPreLevel = 3;
+    private int finalNodeId = -1;
 
     private float horizontalSpacing = 200f;
     private float verticalSpacing = 150f;
 
     private float widthMargin = 100;
+
+
+    public bool IsFinalNode(int nodeId)
+    {
+        return nodeId == finalNodeId;
+    }
 
     public float GetTotalHorizontalSpacing() => horizontalSpacing * maxLevel;
 
@@ -37,6 +44,8 @@ public class MapReplacer
 
     public void Replace(float width = 0.0f, float height = 0.0f)
     {
+        levels.Clear();
+
         // 배치
         for (int level = 0; level < maxLevel; level++)
         {
@@ -54,6 +63,10 @@ public class MapReplacer
                 MapNode node = new MapNode();
                 node.id = nodeIdCounter++;
                 node.level = level;
+
+                // 마지막 노드 캐싱
+                if (level == maxLevel - 1)
+                    finalNodeId = node.id; 
 
                 // 왼쪽에서 오른쪽으로 배치되는 기준
                 // 가운데 정렬되도록 y축 계산 
@@ -132,14 +145,16 @@ public class MapReplacer
 
     public List<int> GetCanEnableNodeIds(int currentID)
     {
+        List<int> results = new(); 
         for (int level = 0; level < maxLevel; level++)
         {
             for (int node = 0; node < levels[level].Count ; node++)
             {
                 if (levels[level][node].id == currentID)
-                    return levels[level][node].nextNodeIds;
+                    results  = levels[level][node].nextNodeIds;
             }
         }
-        return null;
+
+        return results;
     }
 }

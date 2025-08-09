@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AppManager
     : Singleton<AppManager>
@@ -12,8 +13,14 @@ public class AppManager
     private StageReplacer stageReplacer;
     private bool bCreate = false;
 
+    [SerializeField] private bool bCheat;
+
+    private int chapter = 1;
+    private int maxChapter = 1; 
     private int mapNodeID = 0;  // 현재 고른 mapNode 
+    private int prevNodeId = -1; // 이전에 고른 id 
     private List<int> enableIds; // 갈 수 있는 레벨 
+    private bool bAllCleared = false; 
 
     protected override void Awake()
     {
@@ -25,8 +32,30 @@ public class AppManager
         stageReplacer = new StageReplacer();
     }
 
+    private void Start()
+    {
+        GameManager.Instance.OnSuccedStage += SuccessStageProcess;
+        GameManager.Instance.OnFailedStage += FailedStageProcess;
+    }
+
+    private void OnDisable()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnSuccedStage -= SuccessStageProcess;
+            GameManager.Instance.OnFailedStage -= FailedStageProcess;
+        }
+    }
+
     public void InitLevel()
     {
+        if(bAllCleared)
+        {
+            SceneManager.LoadScene(0);
+            bAllCleared = false;
+            return;
+        }
+
         if (bCreate == false)
         {
             bCreate = true;
@@ -34,7 +63,7 @@ public class AppManager
         }
 
         // 자신이 갈 수 있는 노드 출력하기 
-        enableIds = mapReplacer.GetCanEnableNodeIds(mapNodeID); 
+        enableIds = mapReplacer.GetCanEnableNodeIds(mapNodeID);
         foreach (int id in enableIds)
         {
             Debug.Log($"Can going id : {id}");
@@ -48,7 +77,18 @@ public class AppManager
 
     public bool EnableNode(int id)
     {
-        return enableIds.Contains(id);
+        // 이전에 고른 노드 (실패하거나 선택 후 클리어하지 못한 경우 
+        // 가 있다면 그 노드만 골라지게 해야함 
+        bool bEnable = false;
+        if (prevNodeId != mapNodeID)
+            bEnable = enableIds.Contains(id);
+        else
+            bEnable = prevNodeId == id;
+        //Cheat 
+        if (bCheat)
+            bEnable = true;
+
+        return bEnable;
     }
 
     // 맵들 배치 
@@ -85,12 +125,42 @@ public class AppManager
 
     public void EnterStageByNode(MapNode node, StageInfo stageInfo)
     {
-        if(node != null)
+        if (node != null)
         {
             Debug.Log($"Current Select Node ID : {node.id}");
             mapNodeID = node.id;
+            prevNodeId = mapNodeID;
         }
 
         GameManager.Instance.EnterStage(stageInfo);
+    }
+
+    public void SuccessStageProcess()
+    {
+        // 스테이지 클리어 했다면 해당 노드가 끝인지 확인
+        bool bIsFinal = mapReplacer.IsFinalNode(mapNodeID);
+
+        // 마지막이라면 챕터를 올린다. 
+        if(bIsFinal)
+        {
+            if (++chapter < maxChapter)
+                bCreate = false; 
+            else
+            {
+                // 마지막 챕터까지 클리어 했다면 탐사 진입 전 로비로 이동시킨다. 
+                enableIds.Clear();
+                chapter = 0;
+                bCreate = false;
+                mapNodeID = 0;
+                prevNodeId = -1;
+                bAllCleared = true;
+            }
+        }
+    }
+
+    public void FailedStageProcess()
+    {
+        Debug.Log($"Stage Challege Filed!..");
+        mapNodeID = prevNodeId;
     }
 }

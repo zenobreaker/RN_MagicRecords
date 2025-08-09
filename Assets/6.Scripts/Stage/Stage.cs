@@ -78,7 +78,15 @@ public class StageReplacer
             if (level == 0)
                 continue;
             else if (level == levels.Count - 1)
-                continue;
+            {
+                MapNode node = levels[level][0];
+                if(node != null)
+                {
+                    //TODO : 임시 배치
+                    node.stageID = AppManager.Instance.GetRandomStageID();
+                    continue;;
+                }
+            }
 
             for(int n = 0; n < levels[level].Count;n++)
             {
