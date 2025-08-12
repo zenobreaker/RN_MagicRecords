@@ -96,10 +96,7 @@ public class GameManager
                     OnFinishStage?.Invoke();
 #if UNITY_EDITOR
                     Debug.Log("Finish Stage");
-#endif              
-                    //TODO : 여기에서 챕터가 더 이상 없으면 처리해야할까
-                    // 앱매니저에게 처리해달라고 해볼까
-                    SceneManager.LoadScene(1);
+#endif           
                 }
                 break;
         }

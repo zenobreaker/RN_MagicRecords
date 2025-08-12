@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,11 +17,11 @@ public class AppManager
     [SerializeField] private bool bCheat;
 
     private int chapter = 1;
-    private int maxChapter = 1; 
+    private int maxChapter = 1;
     private int mapNodeID = 0;  // 현재 고른 mapNode 
     private int prevNodeId = -1; // 이전에 고른 id 
     private List<int> enableIds; // 갈 수 있는 레벨 
-    private bool bAllCleared = false; 
+    private bool bAllCleared = false;
 
     protected override void Awake()
     {
@@ -34,28 +35,35 @@ public class AppManager
 
     private void Start()
     {
+        if (GameManager.Instance == null) return;
+
+        GameManager.Instance.OnFinishStage += FinishStageProcess;
         GameManager.Instance.OnSuccedStage += SuccessStageProcess;
         GameManager.Instance.OnFailedStage += FailedStageProcess;
     }
 
+
+
     private void OnDisable()
     {
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.OnSuccedStage -= SuccessStageProcess;
-            GameManager.Instance.OnFailedStage -= FailedStageProcess;
-        }
+        if (GameManager.Instance == null) return;
+
+        GameManager.Instance.OnFinishStage -= FinishStageProcess;
+        GameManager.Instance.OnSuccedStage -= SuccessStageProcess;
+        GameManager.Instance.OnFailedStage -= FailedStageProcess;
+    }
+
+    private void ResetData()
+    {
+        enableIds?.Clear();
+        chapter = 1;
+        bCreate = false;
+        mapNodeID = 0;
+        prevNodeId = -1;
     }
 
     public void InitLevel()
     {
-        if(bAllCleared)
-        {
-            SceneManager.LoadScene(0);
-            bAllCleared = false;
-            return;
-        }
-
         if (bCreate == false)
         {
             bCreate = true;
@@ -135,26 +143,33 @@ public class AppManager
         GameManager.Instance.EnterStage(stageInfo);
     }
 
+    private void FinishStageProcess()
+    {
+        if (bAllCleared)
+        {
+            SceneManager.LoadScene(0);
+            bAllCleared = false;
+            return;
+        }
+
+        // 마지막 챕터까지 클리어 했다면 탐사 진입 전 로비로 이동시킨다. 
+        ResetData();
+
+        SceneManager.LoadScene(1);
+    }
+
     public void SuccessStageProcess()
     {
         // 스테이지 클리어 했다면 해당 노드가 끝인지 확인
         bool bIsFinal = mapReplacer.IsFinalNode(mapNodeID);
 
         // 마지막이라면 챕터를 올린다. 
-        if(bIsFinal)
+        if (bIsFinal)
         {
             if (++chapter < maxChapter)
-                bCreate = false; 
-            else
-            {
-                // 마지막 챕터까지 클리어 했다면 탐사 진입 전 로비로 이동시킨다. 
-                enableIds.Clear();
-                chapter = 0;
                 bCreate = false;
-                mapNodeID = 0;
-                prevNodeId = -1;
+            else
                 bAllCleared = true;
-            }
         }
     }
 
@@ -162,5 +177,12 @@ public class AppManager
     {
         Debug.Log($"Stage Challege Filed!..");
         mapNodeID = prevNodeId;
+    }
+
+    public void EnterTheExplorationProcess()
+    {
+        ResetData();
+
+        SceneManager.LoadScene(1);
     }
 }
