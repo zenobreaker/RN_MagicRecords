@@ -1,9 +1,9 @@
-using System;
+ο»Ώusing System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// SkillTree : ½ΊΕ³ Ό³Έν ΉΧ °­Θ­ µξ UI 
+// SkillTree : μ¤ν‚¬ μ„¤λª… λ° κ°•ν™” λ“± UI 
 public class UISkillDetail : UiBase
 {
     [SerializeField] private TextMeshProUGUI skillNameText;

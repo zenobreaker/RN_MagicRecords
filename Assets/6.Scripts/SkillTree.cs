@@ -1,8 +1,8 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-// ½ºÅ³ Æ®¸® Á¤º¸¸¦ ´ã´Â Å¬·¡½º 
+// ìŠ¤í‚¬ íŠ¸ë¦¬ ì •ë³´ë¥¼ ë‹´ëŠ” í´ë˜ìŠ¤ 
 [System.Serializable]
 public class SkillTree 
 {
@@ -10,7 +10,7 @@ public class SkillTree
 
     public List<SO_SkillData> allSkills;
 
-    // ½ºÅ³ Æ®¸®´Â ·¹º§ º°·Î ¹è¿ì´Â ½ºÅ³µé·Î ÁöÁ¤ÇÑ´Ù. 
+    // ìŠ¤í‚¬ íŠ¸ë¦¬ëŠ” ë ˆë²¨ ë³„ë¡œ ë°°ìš°ëŠ” ìŠ¤í‚¬ë“¤ë¡œ ì§€ì •í•œë‹¤. 
     private Dictionary<int, List<SO_SkillData>> skillByLevelTable; 
 
     public void Initialize()

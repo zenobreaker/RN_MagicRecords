@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -20,7 +20,7 @@ public class UISkillTree : UiBase
 
     public void DrawSkillTree(SkillTree skillTree)
     {
-        // ½ºÅ³Æ®¸®¸¦ º¸°í ¶óÀÎÀ» ±×¸°´Ù. 
+        // ìŠ¤í‚¬íŠ¸ë¦¬ë¥¼ ë³´ê³  ë¼ì¸ì„ ê·¸ë¦°ë‹¤. 
         if (skillTree == null) return;
 
         List<List<SkillRuntimeData>> skillLines = new();
@@ -43,10 +43,10 @@ public class UISkillTree : UiBase
             }
         }
 
-        // ¶óÀÎ ¿ÀºêÁ§Æ® ¹èÄ¡ 
+        // ë¼ì¸ ì˜¤ë¸Œì íŠ¸ ë°°ì¹˜ 
         InitReplaceContentObject(lineCount);
 
-        // »ı¼ºµÈ ¶óÀÎ ¼øÈ¸ÇÏ¸é¼­ DrawLine
+        // ìƒì„±ëœ ë¼ì¸ ìˆœíšŒí•˜ë©´ì„œ DrawLine
         int index = 0;
         SetContentChildObjectsCallback<UISkillTreeLine>(line =>
         {
