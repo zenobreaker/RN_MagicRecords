@@ -247,7 +247,6 @@ namespace UserEditor
                     soSkill.id = data.id;
                     soSkill.skillDescription = GetSkillDecKeycode(data.skillKeycode);
                     soSkill.skillName = GetSkillNameKeycode(data.skillKeycode);
-                    soSkill.skillLevel = 1;
                     soSkill.maxLevel = data.maxLevel;
                     soSkill.cooldown = data.cooldown;
                     soSkill.limitCooldown = data.limitCooldown;

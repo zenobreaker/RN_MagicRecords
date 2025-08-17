@@ -8,7 +8,7 @@ public class SO_SkillData : ScriptableObject
     public int id;
     public string skillName;
     public string skillDescription;
-    public int skillLevel;
+    public int learnableLevel; 
     public int maxLevel;
     public int[] skillUpgradeCost;
     public Sprite skillImage;

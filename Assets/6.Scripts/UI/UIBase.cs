@@ -7,8 +7,8 @@ using System;
 // UI 기초 클래스
 public abstract class UiBase : MonoBehaviour
 {
-    private GameObject content;
-    private GameObject childObject;
+    [SerializeField] protected GameObject content;
+    [SerializeField] protected GameObject childObject;
 
     public event Action UIOpend;
     public event Action UIClosed;
@@ -31,8 +31,8 @@ public abstract class UiBase : MonoBehaviour
     // 갱신 시 아래 함수가 호출되어 진다.
     public virtual void RefreshUI() { }
 
-    // 스크롤 오브젝트 배치
-    public void InitScrollviewObject(int count = 0)
+    // 부모 오브젝트에 자식 오브젝트 배치
+    public void InitReplaceContentObject(int count = 0)
     {
         if (content == null || childObject == null) return;
 
@@ -61,8 +61,8 @@ public abstract class UiBase : MonoBehaviour
         }
     }
 
-    // 스크롤뷰 오브젝트에 자식 추가하기 
-    public void AddScrollviewObject(int count = 0)
+    // 부모 오브젝트에 자식 추가하기 
+    public void AddContentObject(int count = 0)
     {
         if (content == null || childObject == null) return;
 
@@ -76,7 +76,7 @@ public abstract class UiBase : MonoBehaviour
 
 
     // 자식 오브젝트들을 설정하고 콜백 기능을 할당한다.
-    public virtual void SetScrollviewChildObjectCallback(Action callback)
+    public virtual void SetContentChildObjectCallback(Action callback)
     {
         if (content == null || childObject == null) return;
 
@@ -87,7 +87,7 @@ public abstract class UiBase : MonoBehaviour
         }
     }
 
-    public virtual void SetScrollviewChildObjectsCallback<T>(Action<T> callback)
+    public virtual void SetContentChildObjectsCallback<T>(Action<T> callback)
     {
         if (content == null || childObject == null) return;
 
