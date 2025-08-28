@@ -60,7 +60,7 @@ public class Enemy
         if (state != null)
             state.OnStateTypeChanged += ChangeType;
 
-        BattleManager.Instance.ResistEnemy(this);
+        BattleManager.Instance?.ResistEnemy(this);
     }
 
     protected virtual void OnDisable()

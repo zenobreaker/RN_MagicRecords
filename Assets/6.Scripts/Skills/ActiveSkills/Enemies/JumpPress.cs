@@ -24,12 +24,20 @@ public class JumpPress
 
     private GameObject targetObject; 
 
-    public JumpPress(string path) : base(path)
+    public JumpPress() : base()
     {
         groundMask = 1 << LayerMask.NameToLayer("Default");
     }
 
-    public JumpPress(SO_ActiveSkillData skillData) : base(skillData)
+
+    public JumpPress(SO_ActiveSkillData skillData)
+        :base(skillData) 
+    {
+        groundMask = 1 << LayerMask.NameToLayer("Default");
+    }
+
+    public JumpPress(float limitCooldown, float maxCooldown, float castingTime)
+        : base(limitCooldown, maxCooldown, castingTime)
     {
         groundMask = 1 << LayerMask.NameToLayer("Default");
     }

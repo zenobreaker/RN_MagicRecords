@@ -6,7 +6,7 @@ public class SpikeShot
 {
     private WarningSign_Rect rectSign; 
 
-    public SpikeShot(string path) : base(path)
+    public SpikeShot() : base()
     {
     }
 

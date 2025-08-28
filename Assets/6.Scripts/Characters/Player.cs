@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static StateComponent;
 
 public class Player
     : Character
@@ -281,5 +279,10 @@ public class Player
     public void ApplyLaunch(GameObject attacker, Weapon causer, HitData hitData)
     {
         launch?.ApplyLaunch(attacker, causer, hitData);
+    }
+
+    public void SetActiveSkills()
+    {
+        AppManager.Instance.SetActiveSkills(1, skill);
     }
 }

@@ -15,7 +15,7 @@ MonoBehaviour:
   id: 1
   skillName: name_reinforecedmaigcbullet
   skillDescription: desc_reinforecedmaigcbullet
-  skillLevel: 1
+  learnableLevel: 0
   maxLevel: 10
   skillUpgradeCost: 
   skillImage: {fileID: -139681537, guid: 92630e0ad58296f4e98ed1a421251573, type: 3}
@@ -50,12 +50,12 @@ MonoBehaviour:
     bonusOptionList: 
     skillObject: {fileID: 0}
     objectName: ReinForcedMagicBullet
-    skillActionLayer: 
     actionData:
       subStateName: Attack_Final
       stateName: Skill
+      layerName: 
       actionSpeed: 1.5
-      weaponActionName: Attack_Final
+      weaponActionName: Action
       SoundName: Gun_Normal2
       impulseDirection: {x: 0, y: 0, z: 0}
       settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}

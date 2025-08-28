@@ -66,6 +66,9 @@ public class SpawnManager : MonoBehaviour
 
             if(playerGO.TryGetComponent<Player>(out var player))
             {
+                //Setting Skills
+                player.SetActiveSkills();
+
                 // Add to List
                 spawnedPlayers.Add(player);
 

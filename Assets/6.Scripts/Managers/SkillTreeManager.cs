@@ -41,8 +41,14 @@ public class SkillTreeManager : MonoBehaviour
 {
     [SerializeField] private List<SkillTree> classSkillTreeList;
     [SerializeField] private List<SkillTree> onwerSkillTreeList;
+
     private int selectedCharacterId = -1;  // 스킬트리를 결정한 캐릭터 ID 
     private int selectedClassId = 1;          // 스킬트리를 결정한 직업 ID 
+
+    // 선택한 스킬 정보 
+    private SkillRuntimeData selectedSkillData; 
+    public SkillRuntimeData SelectedSkillData { get {  return selectedSkillData; }  set { selectedSkillData = value; } }
+
     public enum SkillTreeCategory
     {
         Theme,      // 직업군 전용 
@@ -52,37 +58,21 @@ public class SkillTreeManager : MonoBehaviour
     Dictionary<int, SkillTree> skillByClassIdTable = new();
     Dictionary<SkillTreeCategory, SkillTree> skillTreeByCategoryTable = new();
 
-    private UISkillTree uiSkillTree;
-    private UISkillDetail uiSkillDetail;
-
     private void Awake()
     {
-
-        uiSkillTree = FindAnyObjectByType<UISkillTree>();
-        uiSkillDetail = FindAnyObjectByType<UISkillDetail>(); 
         InitializeClassSkillTable();
-
-        if (uiSkillDetail != null)
-            uiSkillDetail.HideDetail();
-
-        if (uiSkillTree != null)
-        {
-            if(uiSkillDetail != null)
-                uiSkillTree.OnDrawedDetail += uiSkillDetail.OnDrawSkillDetail;
-            
-            uiSkillTree.DrawSkillTree(skillByClassIdTable[1]);
-        }
-
-        //runtimeSkills = skillTemplates.Select(t => new SkillRuntimeData
-        //    {
-        //        template = t,
-        //        currentLevel = 0,
-        //        isUnlocked = false
-        //    })
-        //    .OrderBy(s => s.template.learnableLevel)
-        //    .ThenBy(s => s.template.id)
-        //    .ToList();
     }
+
+    private void Start()
+    {
+        selectedSkillData = null;
+    }
+
+    public SkillTree GetSkillTableByClassId(int classId)
+    {
+        return skillByClassIdTable[classId];
+    }
+
 
     public void SkillUnlock(SkillRuntimeData data)
     {
@@ -108,3 +98,4 @@ public class SkillTreeManager : MonoBehaviour
         }
     }
 }
+

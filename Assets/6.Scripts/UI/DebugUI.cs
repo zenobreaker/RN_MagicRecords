@@ -25,6 +25,9 @@ public class DebugUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI inputBufferedText;
     [SerializeField] private Image bufferTimeGauge;
 
+    [Header("Skill")]
+    [SerializeField] private SO_ActiveSkillData skillData;
+
     Color inputEnabledOriginColor;
     Color inputBufferdOriginColor;
 
@@ -120,9 +123,9 @@ public class DebugUI : MonoBehaviour
     private void Test_SetSkill()
     {
         SkillComponent skill = debug_Character.GetComponent<SkillComponent>();
-        if (skill != null)
+        if (skill != null || skillData != null)
         {
-            ActiveSkill activeSkill = new ReinforcedMagicBullet("Skills/Shooter/reinforecedmaigcbullet");
+            ActiveSkill activeSkill = skillData.CreateActiveSkill();
 
             if (activeSkill != null)
             {

@@ -1,4 +1,4 @@
-using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -16,21 +16,37 @@ public abstract class ActiveSkill
     : ICooldownable
 {
 
-    public ActiveSkill(string path)
+    public ActiveSkill()
     {
-        SO_SkillData  = Resources.Load<SO_ActiveSkillData>(path).Clone();
+       
     }
 
-    public ActiveSkill(SO_ActiveSkillData  skillData)
+    public ActiveSkill(SO_ActiveSkillData skillData)
     {
-        SO_SkillData = skillData.Clone();
+        skillId = skillData.id;
+        skillSprite = skillData.skillImage;
+        phaseList = skillData.phaseList;
+        this.limitCooldown = skillData.limitCooldown;
+        this.maxCooldown = skillData.cooldown;
+        this.castingTime = skillData.castingTime;
     }
 
-    protected SO_ActiveSkillData skillData;
-    public SO_ActiveSkillData SO_SkillData { get => skillData; set => skillData = value; }
+    public ActiveSkill(float limitCooldown, float maxCooldown, float castingTime)
+    {
+        this.limitCooldown = limitCooldown;
+        this.maxCooldown = maxCooldown;
+        this.castingTime = castingTime;
+    }
 
-    protected SkillPhase skillPhase;
-    protected int phaseIndex; 
+    protected int skillId; 
+    public int SkillId { get { return skillId; } }
+    public Sprite skillSprite; 
+    //protected SO_ActiveSkillData skillData;
+    //public SO_ActiveSkillData SO_SkillData { get => skillData; set => skillData = value; }
+
+   // protected SkillPhase skillPhase;
+    protected int phaseIndex;
+    protected List<PhaseSkill> phaseList;
     protected PhaseSkill phaseSkill;
     protected float currentCooldown;
 
@@ -59,7 +75,7 @@ public abstract class ActiveSkill
             weaponController = user.GetWeaponController();
         }
 
-        foreach (var phase in skillData.phaseList)
+        foreach (var phase in phaseList)
         {
             phase.actionData?.Initialize();
         }
@@ -67,17 +83,17 @@ public abstract class ActiveSkill
 
     protected void SetCurrentPhaseSkill(int phaseIndex)
     {
-        if (skillData == null || phaseIndex < 0 || phaseIndex >= skillData.phaseList.Count)
+        if (phaseIndex < 0 || phaseIndex >= phaseList.Count)
             return;
 
         this.phaseIndex = phaseIndex;
-        phaseSkill = skillData.phaseList[phaseIndex];
+        phaseSkill = phaseList[phaseIndex];
     }
+
     public void InitializedData()
     {
-        limitCooldown = skillData.limitCooldown;
-        maxCooldown = initCooldown = skillData.cooldown;
-        castingTime = currentCastingTime = skillData.castingTime;
+        maxCooldown = initCooldown = limitCooldown;
+        currentCastingTime = castingTime;
     }
 
     public void SetCooldown(float cooldown)

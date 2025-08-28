@@ -16,6 +16,8 @@ public class UISkillDetail : UiBase
 
     private SkillRuntimeData selectedSkillData;
 
+    public event Action<SkillRuntimeData> OnSelectedSkillRunTimeData;
+    public event Action OnDrawEquipUI;
     public void HideDetail()
     {
         gameObject.SetActive(false);
@@ -25,6 +27,8 @@ public class UISkillDetail : UiBase
     {
         if (data == null) return;
         selectedSkillData = data;
+        OnSelectedSkillRunTimeData?.Invoke(data);
+        
         gameObject.SetActive(true);
 
         DrawSkillLevel(data);
@@ -88,5 +92,12 @@ public class UISkillDetail : UiBase
         selectedSkillData.currentLevel = Mathf.Clamp(
             selectedSkillData.currentLevel + 1, 0, selectedSkillData.GetMaxSkillLevel());
         DrawSkillLevel(selectedSkillData);
+    }
+
+    public void OnEquipSkill()
+    {
+        if (selectedSkillData == null) return;
+
+        OnDrawEquipUI?.Invoke();
     }
 }

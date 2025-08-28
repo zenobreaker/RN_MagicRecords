@@ -7,7 +7,7 @@ using UnityEngine;
 public class ReinforcedMagicBullet 
     : ActiveSkill
 {
-    public ReinforcedMagicBullet(string path) : base(path)
+    public ReinforcedMagicBullet() : base()
     {
     }
 
