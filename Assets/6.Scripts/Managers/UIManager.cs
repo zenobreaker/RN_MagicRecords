@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public enum UIType
@@ -8,29 +10,42 @@ public enum UIType
 }
 
 
-public class UIManager : MonoBehaviour
+public class UIManager : Singleton<UIManager>
 {
-    public static UIManager Instance;
 
     private Dictionary<UIType, UiBase> uiTable = new Dictionary<UIType, UiBase>();
     private Stack<UiBase> openedUIs = new Stack<UiBase>();
 
+    [SerializeField] private GameObject mobileUIGroup;
+    [SerializeField] private GameObject pcUIGroup;
+
     public UiBase soundUI; 
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);  // GameManager를 씬 전환 간 유지
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        base.Awake();
 
+        SceneManager.sceneLoaded += HandeSceneLoaded;
     }
 
+    protected override void SyncDataFromSingleton()
+    {
+        base.SyncDataFromSingleton();
+        SceneManager.sceneLoaded -= HandeSceneLoaded;
+
+        mobileUIGroup = Instance.mobileUIGroup;
+        pcUIGroup = Instance.pcUIGroup;
+
+        soundUI = Instance.soundUI; 
+    }
+
+    private void HandeSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if(scene.name == "Stage")
+        {
+            SetStageUserInterface();
+        }
+    }
 
     public void TogglePauseMenu()
     {
@@ -60,6 +75,20 @@ public class UIManager : MonoBehaviour
             var top = openedUIs.Pop();
             top.CloseUI();
         }
+    }
+
+    private void SetStageUserInterface()
+    {
+        GameObject currentObject = null;
+        if (Application.isMobilePlatform == false)
+            currentObject = pcUIGroup;
+        else 
+            currentObject = mobileUIGroup;
+        
+        if (currentObject == null) return; 
+
+        var go = Instantiate<GameObject>(currentObject);
+        go?.SetActive(true); 
     }
 
 

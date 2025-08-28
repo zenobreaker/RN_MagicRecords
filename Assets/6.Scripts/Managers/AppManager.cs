@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class AppManager
     : Singleton<AppManager>
 {
-    DataBaseManager databaseManager;
+    private DataBaseManager databaseManager;
+    private SkillManager skillManager; 
 
     // 생성한 맵 정보를 가지고 있는 배치자 
     private MapReplacer mapReplacer;
@@ -28,9 +28,36 @@ public class AppManager
         base.Awake();
 
         databaseManager = GetComponent<DataBaseManager>();
+        skillManager = GetComponent<SkillManager>();
 
         mapReplacer = new MapReplacer();
         stageReplacer = new StageReplacer();
+    }
+
+    protected override void SyncDataFromSingleton()
+    {
+        // 기존 싱글톤 인스턴스가 자기 자신이 아니면
+        if (Instance != this)
+        {
+            skillManager = Instance.skillManager;
+            databaseManager = Instance.databaseManager;
+
+            bCheat = Instance.bCheat;
+
+            mapReplacer = Instance.mapReplacer;
+            stageReplacer = Instance.stageReplacer;
+
+            // 전역 상태 가져오기
+            bCreate = Instance.bCreate;
+            
+            chapter = Instance.chapter;
+            maxChapter = Instance.maxChapter;
+            prevNodeId = Instance.prevNodeId;
+            mapNodeID = Instance.mapNodeID;
+
+            enableIds = new List<int>(Instance.enableIds ?? new List<int>());
+            bAllCleared = Instance.bAllCleared;
+        }
     }
 
     private void Start()
@@ -53,6 +80,7 @@ public class AppManager
         GameManager.Instance.OnFailedStage -= FailedStageProcess;
     }
 
+    #region Explore 
     private void ResetData()
     {
         enableIds?.Clear();
@@ -85,13 +113,15 @@ public class AppManager
 
     public bool EnableNode(int id)
     {
-        // 이전에 고른 노드 (실패하거나 선택 후 클리어하지 못한 경우 
-        // 가 있다면 그 노드만 골라지게 해야함 
         bool bEnable = false;
-        if (prevNodeId != mapNodeID)
-            bEnable = enableIds.Contains(id);
-        else
-            bEnable = prevNodeId == id;
+
+        // 이전에 실패하ㄴ 노드가 있으면 그 노드만 강제 선택
+        if (prevNodeId == mapNodeID)
+            bEnable = (id == prevNodeId);
+        // 정상적인 흐름 목록에 있는지 판별 
+        else 
+            bEnable = enableIds != null && enableIds.Contains(id);
+
         //Cheat 
         if (bCheat)
             bEnable = true;
@@ -136,8 +166,8 @@ public class AppManager
         if (node != null)
         {
             Debug.Log($"Current Select Node ID : {node.id}");
-            mapNodeID = node.id;
             prevNodeId = mapNodeID;
+            mapNodeID = node.id;
         }
 
         GameManager.Instance.EnterStage(stageInfo);
@@ -145,16 +175,16 @@ public class AppManager
 
     private void FinishStageProcess()
     {
+        // 마지막 챕터까지 클리어 했다면 탐사 진입 전 로비로 이동시킨다. 
         if (bAllCleared)
         {
             SceneManager.LoadScene(0);
             bAllCleared = false;
+            ResetData();
+            
             return;
         }
-
-        // 마지막 챕터까지 클리어 했다면 탐사 진입 전 로비로 이동시킨다. 
-        ResetData();
-
+        
         SceneManager.LoadScene(1);
     }
 
@@ -185,4 +215,36 @@ public class AppManager
 
         SceneManager.LoadScene(1);
     }
+    #endregion
+
+    #region Skill 
+    public void EquipActiveSkill(int charId, int slot, SkillRuntimeData skill)
+    {
+        if (skillManager == null) return;
+
+        skillManager.EquipActiveSkill(charId, slot, skill); 
+    }
+
+    public void UnequipActiveSkill(int charId, int slot)
+    {
+        if (skillManager == null) return;
+
+        skillManager.EquipActiveSkill(charId, slot, null);
+    }
+
+    public List<SkillRuntimeData> GetEquippedActiveSkillListByCharID(int charId)
+    {
+        if (skillManager == null) return null;
+
+        return skillManager.GetActiveSkillList(charId);
+    }
+
+    public void SetActiveSkills(int charId, SkillComponent skillComp)
+    {
+        if(skillManager == null  || skillComp == null) return;
+        skillManager.SetActiveSkills(charId, skillComp);
+    }
+
+    #endregion
+
 }

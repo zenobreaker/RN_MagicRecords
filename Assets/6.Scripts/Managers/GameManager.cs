@@ -57,15 +57,7 @@ public class GameManager
     {
         // SetBeginStage(); 
     }
-    private void Update()
-    {
-        switch (state)
-        {
-            case GameState.Begin_Stage:
-                break;
 
-        }
-    }
 
     #region SET_STATE
     public void SetBeginStage() => SetGameState(GameState.Begin_Stage);
