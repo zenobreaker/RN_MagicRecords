@@ -1,23 +1,17 @@
-using System;
+ï»¿using System;
 using UnityEngine;
 
 
 /// <summary>
-/// ¿ÉÀú¹ö ÆĞÅÏÃ³·³ »ç¿ëÇÏ±â À§ÇÑ Â¡°Ë´Ù¸® Å¬·¡½º
+/// ì˜µì €ë²„ íŒ¨í„´ì²˜ëŸ¼ ì‚¬ìš©í•˜ê¸° ìœ„í•œ ì§•ê²€ë‹¤ë¦¬ í´ë˜ìŠ¤
 /// </summary>
 [CreateAssetMenu(fileName = "SO_SkillEventHandler", menuName = "Scriptable Objects/SO_SkillEventHandler")]
 public class SO_SkillEventHandler : ScriptableObject
 {
-    public event Action<ActiveSkill> OnSetActiveSkill;
+    public event Action<SkillSlot, ActiveSkill> OnSetActiveSkill;
 
-    public event Action<bool> OnInSkillCooldown;
-    public event Action<float> OnSkillCooldown;
-    public event Action<float, float> OnSkillCooldown_TwoParam;
-
-    public event Action<ActiveSkill> OnSkillData_Slot1;
-    public event Action<ActiveSkill> OnSkillData_Slot2;
-    public event Action<ActiveSkill> OnSkillData_Slot3;
-    public event Action<ActiveSkill> OnSkillData_Slot4;
+    public event Action<SkillSlot, bool> OnInSkillCooldown;
+    public event Action<SkillSlot, float, float> OnSkillCooldown;
 
     public event Action OnBeginUseSkill;
     public event Action OnEndUseSkill;
@@ -25,24 +19,14 @@ public class SO_SkillEventHandler : ScriptableObject
     public event Action OnDisableSkill;
 
 #region EQUIP SKILL
-    public void OnSetting_ActiveSkill(ActiveSkill skill) => OnSetActiveSkill?.Invoke(skill);  
+    public void OnSetting_ActiveSkill(SkillSlot slot, ActiveSkill skill) => OnSetActiveSkill?.Invoke(slot, skill);  
 
-    // ½½·Ô 1¿¡ ÀåÂø
-    public void OnEquipSkill_Slot1(ActiveSkill activeSkill) => OnSkillData_Slot1?.Invoke(activeSkill);
-
-    public void OnEquipSkill_Slot2(ActiveSkill activeSkill) => OnSkillData_Slot2?.Invoke(activeSkill);
-
-    public void OnEquipSkill_Slot3(ActiveSkill activeSkill) => OnSkillData_Slot3?.Invoke(activeSkill);
-
-    public void OnEquipSkill_Slot4(ActiveSkill activeSkill) => OnSkillData_Slot4?.Invoke(activeSkill);
-
-    #endregion
+#endregion
 
 #region COOLDOWN
-    // ÄğÅ¸ÀÓ 
-    public void OnInCoolDown(bool inCooldown) => OnInSkillCooldown?.Invoke(inCooldown);
-    public void OnCooldown(float InCooldown) => OnSkillCooldown?.Invoke(InCooldown);
-    public void OnCooldown(float cooldown, float maxCooldown) => OnSkillCooldown_TwoParam?.Invoke(cooldown, maxCooldown);
+    // ì¿¨íƒ€ì„ 
+    public void OnInCoolDown(SkillSlot slot, bool inCooldown) => OnInSkillCooldown?.Invoke(slot, inCooldown);
+    public void OnCooldown(SkillSlot slot, float cooldown, float maxCooldown) => OnSkillCooldown?.Invoke(slot, cooldown, maxCooldown);
     #endregion
 
 #region USE SKILL
@@ -51,6 +35,6 @@ public class SO_SkillEventHandler : ScriptableObject
     public void OnEnd_UseSkill() => OnEndUseSkill?.Invoke();
 #endregion
 
-    // ÀåÂø ÇØÁ¦ 
+    // ì¥ì°© í•´ì œ 
     public void OnUnequipment() => OnDisableSkill?.Invoke();
 }

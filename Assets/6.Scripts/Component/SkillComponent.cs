@@ -66,17 +66,19 @@ public class SkillComponent
             return;
 
         // 쿨다운 업데이트 
+        int slot = 0; 
         foreach (KeyValuePair<string, ActiveSkill> pair in skillSlotTable)
         {
             if (pair.Value == null) continue;
 
             pair.Value.Update(Time.deltaTime);
 
-            skillEventHandler?.OnInCoolDown(pair.Value.IsOnCooldown);
+            skillEventHandler?.OnInCoolDown((SkillSlot)slot, pair.Value.IsOnCooldown);
             if (pair.Value.IsOnCooldown == false) continue;
 
             pair.Value.Update_Cooldown(Time.deltaTime);
-            skillEventHandler?.OnCooldown(pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
+            skillEventHandler?.OnCooldown((SkillSlot)slot, pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
+            slot = slot + 1 % 4;
         }
     }
 
@@ -93,23 +95,22 @@ public class SkillComponent
     public void SetActiveSkill(SkillSlot slot , ActiveSkill skill)
     {
         if(skill == null) return;
-
         SetActiveSkill(slot.ToString(), skill);
+        skillEventHandler?.OnSetting_ActiveSkill(slot, skill);
     }
 
-    public void SetActiveSkill(string skillName, ActiveSkill skill)
+    // AI에서 접근할 때는 첫 번째 인자는 스킬 이름으로 오므로 주의해야 함 
+    public void SetActiveSkill(string slotName, ActiveSkill skill)
     {
         if (skill == null) return;
 
-        if(skillSlotTable.ContainsKey(skillName))
-            skillSlotTable[skillName] = skill;
+        if(skillSlotTable.ContainsKey(slotName))
+            skillSlotTable[slotName] = skill;
         else 
-            skillSlotTable.Add(skillName, skill);
+            skillSlotTable.Add(slotName, skill);
         
-        skillSlotTable[skillName].SetOwner(rootObject);
-        skillSlotTable[skillName].InitializedData();
-
-        skillEventHandler?.OnSetting_ActiveSkill(skill);
+        skillSlotTable[slotName].SetOwner(rootObject);
+        skillSlotTable[slotName].InitializedData();
     }
 
     // 슬롯의 있는 스킬 사용 
