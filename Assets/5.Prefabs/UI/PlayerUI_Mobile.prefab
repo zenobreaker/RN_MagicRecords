@@ -880,6 +880,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 204fc45a71c1dbb46ab64467d8b781b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  content: {fileID: 0}
+  childObject: {fileID: 0}
   audioMixer: {fileID: 24100000, guid: abf4aac28bd7b5e42b06c0bff1367cc4, type: 2}
   slider_Master: {fileID: 4039408397628720062}
   slider_BGM: {fileID: 453055201606776107}
@@ -1174,7 +1176,7 @@ GameObject:
   - component: {fileID: 8536512556311622727}
   - component: {fileID: 7949097184531910102}
   m_Layer: 5
-  m_Name: PlayerUI
+  m_Name: PlayerUI_Mobile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1448,7 +1450,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3964308928345058004
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4033,7 +4035,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: -100, y: 100}
-  m_SizeDelta: {x: 300, y: 300}
+  m_SizeDelta: {x: 250.6, y: 247.4}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &3535602923714225484
 CanvasRenderer:
@@ -5636,7 +5638,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 363469535005740382, guid: 6ff5a33bd1a463a4fa575fc8faac4ad5, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3264474861388175452, guid: 6ff5a33bd1a463a4fa575fc8faac4ad5, type: 3}
       propertyPath: m_Pivot.x
@@ -5802,7 +5804,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3264474861388175452, guid: 6ff5a33bd1a463a4fa575fc8faac4ad5, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 172
+      value: 212
       objectReference: {fileID: 0}
     - target: {fileID: 3264474861388175452, guid: 6ff5a33bd1a463a4fa575fc8faac4ad5, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -5859,7 +5861,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 363469535005740382, guid: 6ff5a33bd1a463a4fa575fc8faac4ad5, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3264474861388175452, guid: 6ff5a33bd1a463a4fa575fc8faac4ad5, type: 3}
       propertyPath: m_Pivot.x
@@ -5965,7 +5967,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 363469535005740382, guid: 6ff5a33bd1a463a4fa575fc8faac4ad5, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3264474861388175452, guid: 6ff5a33bd1a463a4fa575fc8faac4ad5, type: 3}
       propertyPath: m_Pivot.x
