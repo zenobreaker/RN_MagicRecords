@@ -100,7 +100,7 @@ public partial class StrafeAction : Action
     private void SetClosestPoint(List<Vector3> points)
     {
 #if UNITY_EDITOR
-        Cheater.Instance.DrawSphereWithPoints(points);
+        Cheater.Instance?.DrawSphereWithPoints(points);
 #endif
         // Self로부터 가장 가까운 point 검색 
         int nextIndex;
