@@ -46,6 +46,7 @@ public class UIMapNode
         if(stageInfo?.bIsCleared == true)
         {
             //TODO : 클리어시 잠금처리
+            button.enabled = false;
         }
     }
 }
