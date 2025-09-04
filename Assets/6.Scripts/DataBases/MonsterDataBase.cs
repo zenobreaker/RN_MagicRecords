@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -207,16 +206,14 @@ public class MonsterDataBase : MonoBehaviour
 
     public MonsterGroupData GetMonsterGroupData(int groupID)
     {
-        if(monsterGroupDatas.TryGetValue(groupID, out var monsterGroupData))
-            return monsterGroupData;
-        return null;
+        return (monsterGroupDatas.TryGetValue(groupID, out var monsterGroupData)) 
+            ? monsterGroupData : null;
     }
 
     public MonsterStatData GetMonsterStatData(int monsterID)
     {
-        if (monsterStatDatas.TryGetValue(monsterID, out var monsterStatData))
-            return monsterStatData;
-        return null;
+        return (monsterStatDatas.TryGetValue(monsterID, out var monsterStatData))
+            ? monsterStatData : null;
     }
 
 }

@@ -4,6 +4,7 @@ public class DataBaseManager : MonoBehaviour
 {
     private StageDataBase stageDataBase;
     private MonsterDataBase monsterDataBase;
+    private ItemDataBase itemDataBase; 
 
     private void Awake()
     {
@@ -12,6 +13,9 @@ public class DataBaseManager : MonoBehaviour
 
         if (TryGetComponent<MonsterDataBase>(out monsterDataBase))
             monsterDataBase.InitializeData();
+
+        if (TryGetComponent<ItemDataBase>(out itemDataBase))
+            itemDataBase.InitialzeEquipmentItemData();
     }
 
     public int GetRandomStageID(int chapter)
@@ -39,5 +43,10 @@ public class DataBaseManager : MonoBehaviour
     {
         if(monsterDataBase == null) return null;
         return monsterDataBase.GetMonsterStatData(monsterID);
+    }
+
+    public EquipmentItem GetEquipmentItem(int itemId)
+    {
+        return itemDataBase?.GetEquipmentItemData(itemId);
     }
 }

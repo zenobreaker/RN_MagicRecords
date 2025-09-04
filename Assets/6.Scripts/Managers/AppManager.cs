@@ -247,4 +247,10 @@ public class AppManager
 
     #endregion
 
+    #region Database
+    public EquipmentItem GetEquipmentItem(int itemid)
+    {
+        return databaseManager?.GetEquipmentItem(itemid);
+    }
+    #endregion
 }
