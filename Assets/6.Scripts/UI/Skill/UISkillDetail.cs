@@ -18,6 +18,7 @@ public class UISkillDetail : UiBase
 
     public event Action<SkillRuntimeData> OnSelectedSkillRunTimeData;
     public event Action OnDrawEquipUI;
+
     public void HideDetail()
     {
         gameObject.SetActive(false);
@@ -97,6 +98,9 @@ public class UISkillDetail : UiBase
     public void OnEquipSkill()
     {
         if (selectedSkillData == null) return;
+
+        if (selectedSkillData.currentLevel == 0 && selectedSkillData.isUnlocked == false)
+            return; 
 
         OnDrawEquipUI?.Invoke();
     }
