@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum DamageType
-{
-    Normal = 0, Strong, Knockback, Down, Airborne, Max
-}
-
 [System.Serializable]
 public class DamageMotionData
 {

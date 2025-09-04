@@ -2,18 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-public enum BuffStackPolicy
-{
-    RefreshOnly = 0,
-    Stackable,
-    IgnoreIfExsist,
-}
 
-public enum BuffValueType
-{
-    Percent = 0,
-    Fixed,
-}
 
 public struct BuffUI
 {

@@ -3,17 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum InputCommandType
-{
-    None = 0,   
-    Action = 1,
-    Skill,
-    Move,
-    Dash,
-    Max,
-}
-
-
 public partial class ComboComponent : MonoBehaviour
 {
     class InputCommand

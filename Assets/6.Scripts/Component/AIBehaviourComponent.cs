@@ -2,11 +2,7 @@ using System;
 using Unity.Behavior;
 using UnityEngine;
 
-[BlackboardEnum]
-public enum AIState
-{
-    Wait = 0, Patrol, Approach, Action, Damaged, Dead, Max,
-}
+
 
 public class AIBehaviourComponent : MonoBehaviour
 {
