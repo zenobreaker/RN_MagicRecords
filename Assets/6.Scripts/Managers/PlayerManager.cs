@@ -1,0 +1,41 @@
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerManager : 
+    Singleton<PlayerManager>
+{
+    private List<int> characterIds = new List<int>();
+    private List<CharStatusData> charStatusDatas = new List<CharStatusData>();
+    private List<CharEquipmentData> charEquipments = new List<CharEquipmentData>();
+
+    protected override void Awake()
+    {
+        base.Awake();
+    
+        // 임시적으로 리스트에 추가
+        characterIds.Clear();
+        characterIds.Add(1);
+
+        charStatusDatas.Clear();
+        charStatusDatas.Add(new TurtleInfoData(1, 1));
+
+        charEquipments.Clear();
+        charEquipments.Add(new CharEquipmentData { characterId = 1, });
+        foreach (var ce in charEquipments)
+        {
+            ce.Init();
+            ce.TestItem();
+        }
+    }
+
+    public CharEquipmentData GetCharEquipmentData(int charId)
+    {
+        return (charEquipments.Find(x => x.characterId == charId));
+    }
+
+    public CharStatusData GetCharacterStatus(int charId)
+    {
+        return (charStatusDatas.Find(x => x.id == charId));
+    }
+}

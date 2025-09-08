@@ -83,19 +83,21 @@ public abstract class BaseBuff : IBuff
 
 public class StatBuff : BaseBuff
 {
-    protected StatusType type;
-    protected float amount;
-    protected BuffValueType valueType; 
+    protected StatModifier modifier;
 
     protected StatusComponent status;
 
-    public StatBuff(string buffID, float duration, StatusType type, float amount,
-        BuffValueType valueType = BuffValueType.Percent)
+    public StatBuff(string buffID, float duration, StatusType type, float amount, 
+        ModifierValueType valueType = ModifierValueType.Percent)
         : base(buffID, 0f, duration)
     {
-        this.type = type;
-        this.amount = amount;
-        this.valueType = valueType;
+        modifier = new StatModifier(type, amount, valueType);
+    }
+
+    public StatBuff(string buffID, float duration, StatModifier modifier = null)
+        : base(buffID, 0f, duration)
+    {
+        this.modifier = modifier;
     }
 
     public override void OnApply(Character target)
@@ -106,23 +108,13 @@ public class StatBuff : BaseBuff
         if (target.TryGetComponent<StatusComponent>(out StatusComponent status))
         {
             this.status = status;
-            float finalValue = amount; 
-
-            if(valueType == BuffValueType.Percent)
-            {
-                finalValue = status.GetStatusValue(type) * amount; 
-            }
-
-            finalValue *= StackCount;
-            this.amount = finalValue;
-            this.status.ApplyBuff(type, finalValue);
+            this.status.ApplyBuff(modifier);
         }
     }
 
     public override void OnRemove()
     {
-        if (status == null) return;
-        status.ApplyBuff(type, amount * -1.0f);
+        status?.RemoveBuff(modifier);
 #if UNITY_EDITOR
         Debug.Log("Buff Off");
 #endif

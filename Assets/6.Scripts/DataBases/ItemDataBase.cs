@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.AppUI.UI;
 using UnityEngine;
 
 
@@ -47,16 +48,16 @@ public class ItemDataBase : MonoBehaviour
 
                 json =>
                 {
-                    var equipmentData = new EquipmentItem
-                    {
-                        id = (int)json.id,
-                        name = (string)json.name,
-                        description = (string)json.description,
-                        parts = (EquipParts)json.equipParts,
-                        mainStatus = (StatusType)json.statusType,
-                        mainValue = (float)json.statusValue,
-                        
-                    };
+                    var equipmentData = new EquipmentItem(
+                        (int)json.id
+                        , GetSprite(json.imagePath)
+                        , (string)json.name
+                        , (string)json.description
+                        , (EquipParts)json.equipParts
+                        , (StatusType)json.statusType
+                        , (float)json.statusValue
+                        , json.isPercent);
+                    
                     return equipmentData;
                 },
 
@@ -75,5 +76,12 @@ public class ItemDataBase : MonoBehaviour
     public EquipmentItem GetEquipmentItemData(int itemId)
     { 
         return equipmentItems.TryGetValue(itemId, out var equipmentItem) ? equipmentItem : null;
+    }
+
+    private Sprite GetSprite(string path)
+    {
+        //Assets/7.Sprites/Resources/Equipments/Weapons/img_equipment_weapon_gun_0.png
+        var sprite = Resources.Load<Sprite>(path);
+        return sprite; 
     }
 }

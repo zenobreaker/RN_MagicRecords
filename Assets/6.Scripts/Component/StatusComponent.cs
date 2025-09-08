@@ -1,24 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-
-public enum StatusType
-{
-    Attack = 0, AttackSpeed, Defense, Crit_Ratio, Crit_Dmg, Speed, MAX,
-}
 
 [System.Serializable]
 public class StatusValue
 {
     public float baseValue;
-    public float buffedValue; 
-    public float FinalValue => baseValue + buffedValue;
+    private readonly List<StatModifier> modifiers = new();
+    private float finalValue; 
+    private bool isDirty = true; 
+
+    public float FinalValue
+    {
+        get
+        {
+            if (isDirty)
+                Recalculate();
+            
+            return finalValue; 
+        }
+    }
 
     public StatusValue(float baseVal = 0.0f)
     {
         baseValue = baseVal;
-        buffedValue = 0.0f;
+        isDirty = true; 
+    }
+
+    public void AddModifier(StatModifier modifier)
+    {
+        modifiers.Add(modifier);
+        isDirty = true; 
+    }
+
+    public void RemoveModifier(StatModifier modifier)
+    {
+        modifiers.Remove(modifier);
+        isDirty = true; 
+    }
+
+    private void Recalculate()
+    {
+        float result = baseValue; 
+
+        foreach (var mod in modifiers)
+        {
+            if (mod.valueType == ModifierValueType.Fixed)
+                result += mod.value;
+        }
+
+        foreach (var mod in modifiers)
+        {
+            if (mod.valueType == ModifierValueType.Percent)
+                result *= (1 + mod.value);
+        }
+
+        finalValue = result;
+        isDirty = false; 
     }
 }
 
@@ -57,12 +95,19 @@ public class Status
         statusValueTable[type].baseValue = value; 
     }
 
-    public void ApplyBuff(StatusType type, float value)
+    public void ApplyBuff(StatModifier modifier)
     {
-        if (Get(type) != null)
-            Get(type).buffedValue += value;
-        else
+        if (modifier == null)
+        {
             Debug.LogWarning("Target Type Is Null");
+            return;
+        }
+
+        Get(modifier.type)?.AddModifier(modifier);
+    }
+    public void RemoveBuff(StatModifier modifier)
+    {
+        Get(modifier.type)?.RemoveModifier(modifier); 
     }
 }
 
@@ -79,12 +124,17 @@ public class StatusComponent : MonoBehaviour
         status.Init();
     }
 
-    public void ApplyBuff(StatusType type, float value)
+    public void ApplyBuff(StatModifier modifier)
     {
-        if (status == null)
-            return; 
+        if (modifier == null)
+            return;
+        
+        status?.ApplyBuff(modifier);
+    }
 
-        status.ApplyBuff(type, value);
+    public void RemoveBuff(StatModifier modifier)
+    {
+        status?.RemoveBuff(modifier);
     }
 
     public void SetStatusValue(StatusType type, float value)
