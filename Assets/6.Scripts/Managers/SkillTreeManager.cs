@@ -30,6 +30,11 @@ public class SkillRuntimeData
 
         return template.maxLevel;
     }
+
+    public override string ToString()
+    {
+        return GetSkillName();
+    }
 }
 
 
