@@ -194,7 +194,7 @@ public class Enemy
 
         status.SetStatusValue(StatusType.Attack, statData.attack);
         status.SetStatusValue(StatusType.Defense, statData.defense);
-        status.SetStatusValue(StatusType.Speed, statData.speed);
+        status.SetStatusValue(StatusType.MoveSpeed, statData.speed);
 
         if(healthPoint != null)
             healthPoint.SetMaxHP = statData.hp;

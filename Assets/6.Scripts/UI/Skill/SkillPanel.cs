@@ -28,6 +28,4 @@ public class SkillPanel : MonoBehaviour
             slot.SetSkillHandler(handler);
         }
     }
-
-
 }

@@ -18,12 +18,12 @@ public class SkillTree
         skillByLevelTable = allSkills.GroupBy(skill => skill.learnableLevel)
             .ToDictionary(g => g.Key, g => g.OrderBy(s => s.id).ToList());
 
-        foreach(var skillpair in  skillByLevelTable)
-        {
-            Debug.Log($"skill level : {skillpair.Key}");
-            foreach(var skill in skillpair.Value)
-                Debug.Log($"skill id : {skill.id}");
-        }
+        //foreach(var skillpair in  skillByLevelTable)
+        //{
+        //    Debug.Log($"skill level : {skillpair.Key}");
+        //    foreach(var skill in skillpair.Value)
+        //        Debug.Log($"skill id : {skill.id}");
+        //}
     }
 
     public List<SO_SkillData> GetSkillForLevel(int level)

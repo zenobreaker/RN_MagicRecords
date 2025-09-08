@@ -1,6 +1,24 @@
 using Unity.Behavior;
 
 ///////////////////////////////////////////////////////////////////////////////
+//  Status
+public enum StatusType
+{
+    None = 0, 
+    Attack = 1, 
+    Defense = 2, 
+    AttackSpeed = 3, 
+    MoveSpeed = 4,
+    Crit_Ratio = 5,  
+    Crit_Dmg = 6, 
+    
+    Health,
+    Health_Regen,
+
+    MAX,
+}
+
+///////////////////////////////////////////////////////////////////////////////
 //  Damage 
 public enum DamageType
 {
@@ -10,7 +28,6 @@ public enum DamageType
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Input 
-
 public enum InputCommandType
 {
     None = 0,
@@ -20,7 +37,6 @@ public enum InputCommandType
     Dash,
     Max,
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //  AI State
@@ -39,10 +55,10 @@ public enum BuffStackPolicy
     IgnoreIfExsist,
 }
 
-public enum BuffValueType
+public enum ModifierValueType
 {
-    Percent = 0,
     Fixed,
+    Percent,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
