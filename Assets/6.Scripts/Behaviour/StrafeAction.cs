@@ -59,7 +59,7 @@ public partial class StrafeAction : Action
             return Status.Success;
 
         // 목표에 도달하면 다음 목표로 
-        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+        if (agent.isActiveAndEnabled && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
             return SetNextStep();
         }

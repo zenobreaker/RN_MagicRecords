@@ -25,7 +25,8 @@ public class UIManager : Singleton<UIManager>
     {
         base.Awake();
 
-        SceneManager.sceneLoaded += HandeSceneLoaded;
+        if(Instance == this)
+            SceneManager.sceneLoaded += HandeSceneLoaded;
     }
 
     protected override void SyncDataFromSingleton()
