@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -99,6 +100,11 @@ public class HealthPointComponent : MonoBehaviour
             handler?.OnInitValue_HP(currentHealthPoint);
     }
 
+    public void SetHealthPoint(float value)
+    {
+        maxHealthPoint = value; 
+        InitCurrentHealth();
+    }
 
     public void Damage(float amount)
     {

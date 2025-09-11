@@ -69,6 +69,12 @@ public class SpawnManager : MonoBehaviour
                 //Setting Skills
                 player.SetActiveSkills();
 
+                // Setting Status
+                player.SetStatus();
+
+                // Setting Equipment 
+                player.SetEquipments();
+
                 // Add to List
                 spawnedPlayers.Add(player);
 

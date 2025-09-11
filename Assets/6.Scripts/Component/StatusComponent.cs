@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -21,7 +22,7 @@ public class StatusValue
         }
     }
 
-    public StatusValue(float baseVal = 0.0f)
+    public void Set(float baseVal = 0.0f)
     {
         baseValue = baseVal;
         isDirty = true; 
@@ -92,7 +93,7 @@ public class Status
     public void Set(StatusType type, float value)
     {
         if (statusValueTable == null) Init();
-        statusValueTable[type].baseValue = value; 
+        statusValueTable[type].Set(value); 
     }
 
     public void ApplyBuff(StatModifier modifier)
@@ -115,6 +116,8 @@ public class StatusComponent : MonoBehaviour
 {
     [SerializeField]
     private Status status;
+
+    public Action<float> OnSetHealth;
 
     private void Start()
     {
@@ -150,4 +153,17 @@ public class StatusComponent : MonoBehaviour
         return status.Get(type).FinalValue;
     }
 
+    public void SetStatusData(CharStatusData data)
+    {
+        if (data == null) return; 
+
+        SetStatusValue(StatusType.Attack, data.GetStatusValue(StatusType.Attack));
+        SetStatusValue(StatusType.AttackSpeed, data.GetStatusValue(StatusType.AttackSpeed));
+        SetStatusValue(StatusType.Defense, data.GetStatusValue(StatusType.Defense));
+        SetStatusValue(StatusType.MoveSpeed, data.GetStatusValue(StatusType.MoveSpeed));
+        SetStatusValue(StatusType.Crit_Ratio, data.GetStatusValue(StatusType.Crit_Ratio));
+        SetStatusValue(StatusType.Crit_Dmg, data.GetStatusValue(StatusType.Crit_Dmg));
+        SetStatusValue(StatusType.Health, data.GetStatusValue(StatusType.Health));
+        OnSetHealth?.Invoke(data.GetStatusValue(StatusType.Health));
+    }
 }

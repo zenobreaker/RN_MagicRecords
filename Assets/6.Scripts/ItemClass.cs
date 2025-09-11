@@ -31,14 +31,13 @@ public class EquipmentItem : ItemData
         
     }
 
-    //TODO : StatusComponent가 아닌 CharEquipment 클래스에 전달해야 한다.
     public void EquipItem(StatusComponent status)
     {
-     //   status?.SetStatusValue(mainStatus, mainValue);
+        status?.ApplyBuff(modifier);
     }
 
     public void UnequipItem(StatusComponent status)
     {
-       // status?.SetStatusValue(mainStatus, mainValue * -1.0f);
+        status?.RemoveBuff(modifier);
     }
 }

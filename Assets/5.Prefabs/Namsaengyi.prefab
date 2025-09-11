@@ -618,6 +618,7 @@ GameObject:
   - component: {fileID: 4893751878293026052}
   - component: {fileID: 8195389810293122041}
   - component: {fileID: 4347954965331480737}
+  - component: {fileID: 4016163101208496260}
   m_Layer: 3
   m_Name: Namsaengyi
   m_TagString: Player
@@ -865,30 +866,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   status:
     statusEntries:
-    - type: 0
-      value:
-        baseValue: 30
-        buffedValue: 0
     - type: 1
       value:
         baseValue: 1
-        buffedValue: 0
     - type: 2
       value:
         baseValue: 0
-        buffedValue: 0
     - type: 3
       value:
         baseValue: 0.2
-        buffedValue: 0
     - type: 4
       value:
         baseValue: 1.5
-        buffedValue: 0
     - type: 5
       value:
         baseValue: 1
-        buffedValue: 0
 --- !u!114 &7950985210200753739
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -949,6 +941,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tickInterval: 0.1
+--- !u!114 &4016163101208496260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2169032415967224289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 634943e25f5680f429266b0384ca741a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2324507759493812046
 GameObject:
   m_ObjectHideFlags: 0

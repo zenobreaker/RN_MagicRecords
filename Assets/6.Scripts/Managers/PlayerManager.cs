@@ -6,8 +6,8 @@ public class PlayerManager :
     Singleton<PlayerManager>
 {
     private List<int> characterIds = new List<int>();
-    private List<CharStatusData> charStatusDatas = new List<CharStatusData>();
-    private List<CharEquipmentData> charEquipments = new List<CharEquipmentData>();
+    private Dictionary<int, CharStatusData> charStatusDatas = new();
+    private Dictionary<int, CharEquipmentData> charEquipments = new(); 
 
     protected override void Awake()
     {
@@ -18,24 +18,26 @@ public class PlayerManager :
         characterIds.Add(1);
 
         charStatusDatas.Clear();
-        charStatusDatas.Add(new TurtleInfoData(1, 1));
+        charStatusDatas.Add(1, new TurtleInfoData(1, 1));
 
         charEquipments.Clear();
-        charEquipments.Add(new CharEquipmentData { characterId = 1, });
+        charEquipments.Add(1, new CharEquipmentData { characterId = 1, });
         foreach (var ce in charEquipments)
         {
-            ce.Init();
-            ce.TestItem();
+            ce.Value.Init();
+            ce.Value.TestItem();
         }
     }
 
     public CharEquipmentData GetCharEquipmentData(int charId)
     {
-        return (charEquipments.Find(x => x.characterId == charId));
+        charEquipments.TryGetValue(charId, out CharEquipmentData ce);
+        return ce; 
     }
 
     public CharStatusData GetCharacterStatus(int charId)
     {
-        return (charStatusDatas.Find(x => x.id == charId));
+        charStatusDatas.TryGetValue(charId, out CharStatusData ce);
+        return ce;
     }
 }

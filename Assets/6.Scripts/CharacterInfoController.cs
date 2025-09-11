@@ -39,4 +39,9 @@ public class CharacterInfoController : MonoBehaviour
         selectedCharStatus = PlayerManager.Instance.GetCharacterStatus(1);
         selectedCharEquipment = PlayerManager.Instance.GetCharEquipmentData(1);
     }
+
+    public void HideUI()
+    {
+        gameObject.SetActive(false);
+    }
 }

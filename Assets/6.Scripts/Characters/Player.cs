@@ -16,6 +16,7 @@ public class Player
     private SkillComponent skill;
     private DamageHandleComponent damageHandle;
     private LaunchComponent launch;
+    private EquipmentComponent equipment;
 
     private WeaponController weaponController;
     private ActionComponent currentAction;
@@ -51,6 +52,8 @@ public class Player
 
         if (state != null)
             state.OnStateTypeChanged += ChangeType;
+
+        equipment = GetComponent<EquipmentComponent>();
 
         PlayerInput input = GetComponent<PlayerInput>();
         Debug.Assert(input != null);
@@ -284,5 +287,23 @@ public class Player
     public void SetActiveSkills()
     {
         AppManager.Instance.SetActiveSkills(1, skill);
+    }
+
+    public void SetStatus()
+    {
+        if (PlayerManager.Instance != null)
+        {
+            CharStatusData data = PlayerManager.Instance.GetCharacterStatus(1);
+            status?.SetStatusData(data);
+        }
+    }
+
+    public void SetEquipments()
+    {
+        if(PlayerManager.Instance != null)
+        {
+            CharEquipmentData data = PlayerManager.Instance.GetCharEquipmentData(1);
+            equipment?.SertEquipmentData(data);
+        }
     }
 }

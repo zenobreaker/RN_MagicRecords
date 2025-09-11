@@ -42,6 +42,8 @@ public class Character
         state = GetComponent<StateComponent>();
         healthPoint = GetComponent<HealthPointComponent>();
         status = GetComponent<StatusComponent>();
+        if (status != null && healthPoint != null)
+            status.OnSetHealth += healthPoint.SetHealthPoint;
 
         visual = GetComponentInChildren<CharacterVisual>();
     }
