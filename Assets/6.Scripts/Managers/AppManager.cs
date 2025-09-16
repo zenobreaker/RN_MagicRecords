@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,7 +7,9 @@ public class AppManager
     : Singleton<AppManager>
 {
     private DataBaseManager databaseManager;
-    private SkillManager skillManager; 
+    private SkillManager skillManager;
+
+    public Action OnAwaked;
 
     // 생성한 맵 정보를 가지고 있는 배치자 
     private MapReplacer mapReplacer;
@@ -32,6 +35,8 @@ public class AppManager
 
         mapReplacer = new MapReplacer();
         stageReplacer = new StageReplacer();
+
+        OnAwaked?.Invoke();
     }
 
     protected override void SyncDataFromSingleton()
@@ -57,6 +62,8 @@ public class AppManager
 
             enableIds = new List<int>(Instance.enableIds ?? new List<int>());
             bAllCleared = Instance.bAllCleared;
+
+            OnAwaked = Instance.OnAwaked;
         }
     }
 

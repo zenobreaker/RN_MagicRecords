@@ -48,17 +48,13 @@ public abstract class UiBase : MonoBehaviour
             }
         }
 
-
         // 이미 원하는 자식들이 있다면 가지고 있는 자식을 쓰도록
         if (content.transform.childCount >= count)
         {
             return;
         }
 
-        for (int i = 0; i < count; i++)
-        {
-            Instantiate(childObject, content.transform);
-        }
+        AddContentObject(count); 
     }
 
     // 부모 오브젝트에 자식 추가하기 
@@ -71,9 +67,6 @@ public abstract class UiBase : MonoBehaviour
             Instantiate(childObject, content.transform);
         }
     }
-
-
-
 
     // 자식 오브젝트들을 설정하고 콜백 기능을 할당한다.
     public virtual void SetContentChildObjectCallback(Action callback)
