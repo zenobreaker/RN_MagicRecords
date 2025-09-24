@@ -2,14 +2,11 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIInvenSlot : MonoBehaviour
+public class UIInvenSlot : UIItemSlot
 {
     [SerializeField] private Sprite noDataIcon;
 
     private Image itemImage;
-    private ItemData itemData;
-
-    public event Action<ItemData> OnClickedSlot; 
 
     private void Awake()
     {
@@ -36,8 +33,4 @@ public class UIInvenSlot : MonoBehaviour
         itemImage.sprite = itemData.icon; 
     }
 
-    public void OnClick()
-    {
-        OnClickedSlot?.Invoke(itemData);
-    }
 }

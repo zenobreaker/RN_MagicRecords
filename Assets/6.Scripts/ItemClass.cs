@@ -4,7 +4,11 @@ public abstract class ItemData
 {
     public int id;
     public Sprite icon;
-    public ItemCategory category; 
+    public ItemCategory category;
+
+    public string name;
+    public string description;
+
     public ItemData(int id, Sprite icon)
     {
         this.id = id;
@@ -14,10 +18,11 @@ public abstract class ItemData
 
 public class EquipmentItem : ItemData
 {
-    public string name;
-    public string description;
     public EquipParts parts;
-    public StatModifier modifier; 
+    public StatModifier modifier;
+    
+    public int owner = 0; 
+    public bool Eqeuipped = false; 
 
     public EquipmentItem(int id, Sprite icon, string name, string description, EquipParts parts,
         StatusType mainStatus, float mainValue, bool isPercent)

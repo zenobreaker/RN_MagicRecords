@@ -60,6 +60,7 @@ public class InventoryUI : UiBase
         if(item is EquipmentItem)
         {
             // 장비 처리 
+            UIManager.Instance.OpenPopUp(item);
         }
     }
 }

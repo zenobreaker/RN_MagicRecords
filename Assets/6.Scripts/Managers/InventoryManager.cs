@@ -55,4 +55,31 @@ public class InventoryManager : Singleton<InventoryManager>
             return value;
         return null;
     }
+
+    public void EquipItem(int charid, EquipmentItem equipment)
+    {
+        if (PlayerManager.Instance == null || equipment == null) return;
+
+        var charEquipment = PlayerManager.Instance.GetCharEquipmentData(charid);
+        if (charEquipment == null) return;
+        if (equipment.Eqeuipped) return; 
+        
+        equipment.Eqeuipped = true;
+        equipment.owner = charid;
+
+        charEquipment.EquipItem(equipment); 
+    }
+
+    public void UnequipItem(int charid, EquipmentItem equipment)
+    {
+        if (PlayerManager.Instance == null || equipment == null) return;
+
+        var charEquipment = PlayerManager.Instance.GetCharEquipmentData(charid);
+        if (charEquipment == null) return;
+
+        equipment.Eqeuipped = false;
+        equipment.owner = 0; 
+
+        charEquipment.UnequipItem(equipment);
+    }
 }

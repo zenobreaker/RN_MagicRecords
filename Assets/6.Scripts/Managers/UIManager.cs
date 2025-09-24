@@ -19,6 +19,10 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject mobileUIGroup;
     [SerializeField] private GameObject pcUIGroup;
 
+    [SerializeField] private GameObject popupUI;
+
+
+    private Stack<UiBase> openPopUps = new();
     public UiBase soundUI; 
 
     protected override void Awake()
@@ -135,4 +139,29 @@ public class UIManager : Singleton<UIManager>
 
     #endregion
 
+
+    public void OpenPopUp(ItemData data)
+    {
+        if (popupUI == null) return;
+        UIController uc = FindAnyObjectByType<UIController>(); 
+        var ui = Instantiate(popupUI, uc.transform);
+        if(ui != null && ui.TryGetComponent<UIPopUpItem>(out var popUp) && uc != null)
+        {
+            popUp.SetData(data);
+            if (ui.TryGetComponent<UIPopUp>(out var target))
+                openPopUps.Push(target);
+        }
+    }
+
+    public void ClosePopup()
+    {
+        if (openPopUps.Count > 0)
+        {
+            var top = openPopUps.Pop();
+            if (top != null)
+            {
+                Destroy(top.gameObject);
+            }
+        }
+    }
 }

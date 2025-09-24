@@ -25,7 +25,6 @@ public class PlayerManager :
         foreach (var ce in charEquipments)
         {
             ce.Value.Init();
-            ce.Value.TestItem();
         }
     }
 
@@ -40,4 +39,5 @@ public class PlayerManager :
         charStatusDatas.TryGetValue(charId, out CharStatusData ce);
         return ce;
     }
+
 }
