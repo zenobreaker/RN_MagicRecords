@@ -80,7 +80,7 @@ public class Cheater : MonoBehaviour
 
         Debug.Log("Buff On");
 
-        StatBuff attackbuff = new StatBuff("AttackBuff", 10.0f, StatusType.Attack, 0.2f);
+        StatBuff attackbuff = new StatBuff("AttackBuff", 10.0f, StatusType.ATTACK, 0.2f);
         buff.ApplyBuff(attackbuff); 
     }
 

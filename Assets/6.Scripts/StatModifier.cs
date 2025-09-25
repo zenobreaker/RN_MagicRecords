@@ -28,7 +28,7 @@ public class StatModifier
     /// <returns></returns>
     public string GetValueAndValueType()
     {
-        return GetOnlyValue() + (valueType == ModifierValueType.Percent ? "%" : "");
+        return GetOnlyValue() + (valueType == ModifierValueType.PERCENT ? "%" : "");
     }
 
     public string GetFullValue()

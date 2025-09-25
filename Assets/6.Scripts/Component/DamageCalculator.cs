@@ -6,9 +6,9 @@ public static class DamageCalculator
     {
         if (status == null) return null;
         
-        float attack = status.GetStatusValue(StatusType.Attack);
-        float critRatio = status.GetStatusValue(StatusType.Crit_Ratio);
-        float critDmg = status.GetStatusValue(StatusType.Crit_Dmg);
+        float attack = status.GetStatusValue(StatusType.ATTACK);
+        float critRatio = status.GetStatusValue(StatusType.CRIT_RATIO);
+        float critDmg = status.GetStatusValue(StatusType.CRIT_DMG);
         bool crit = false;
 
         float result = attack * data.Power;

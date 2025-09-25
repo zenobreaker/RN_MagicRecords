@@ -1,19 +1,38 @@
 using Unity.Behavior;
 
+
+///////////////////////////////////////////////////////////////////////////////
+//  Currency
+public enum CurrencyType
+{
+    GOLD, 
+    DIAMOND, 
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//  Reward
+public enum RewardType
+{
+    CURRENCY, 
+    EXP, 
+    MATERIAL,
+
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //  Status
 public enum StatusType
 {
-    None = 0, 
-    Attack = 1, 
-    Defense = 2, 
-    AttackSpeed = 3, 
-    MoveSpeed = 4,
-    Crit_Ratio = 5,  
-    Crit_Dmg = 6, 
+    NONE = 0, 
+    ATTACK = 1, 
+    DEFENSE = 2, 
+    ATTACKSPEED = 3, 
+    MOVESPEED = 4,
+    CRIT_RATIO = 5,  
+    CRIT_DMG = 6, 
     
-    Health,
-    Health_Regen,
+    HEALTH,
+    HEALTH_REGEN,
 
     MAX,
 }
@@ -22,7 +41,7 @@ public enum StatusType
 //  Damage 
 public enum DamageType
 {
-    Normal = 0, Strong, Knockback, Down, Airborne, Max
+    NORMAL = 0, STRONG, KNOCKBACK, DOWN, AIRBORNE, MAX
 }
 
 
@@ -30,12 +49,12 @@ public enum DamageType
 //  Input 
 public enum InputCommandType
 {
-    None = 0,
-    Action = 1,
-    Skill,
-    Move,
-    Dash,
-    Max,
+    NONE = 0,
+    ACTION = 1,
+    SKILL,
+    MOVE,
+    DASH,
+    MAX,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,34 +62,34 @@ public enum InputCommandType
 [BlackboardEnum]
 public enum AIState
 {
-    Wait = 0, Patrol, Approach, Action, Damaged, Dead, Max,
+    WAIT = 0, PATROL, APPROACH, ACTION, DAMAGED, DEAD, MAX,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Buff
 public enum BuffStackPolicy
 {
-    RefreshOnly = 0,
-    Stackable,
-    IgnoreIfExsist,
+    REFRESH_ONLY = 0,
+    STACKABLE,
+    IGNOREIFEXSIST,
 }
 
 public enum ModifierValueType
 {
-    Fixed,
-    Percent,
+    FIXED,
+    PERCENT,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Equipment
 public enum EquipParts
 {
-    None = -1,
-    Weapon = 0,
-    CarFrame = 1,
-    Core,
-    Engine,
-    Sensor,
-    Wheel,
-    Max = 6,
+    NONE = -1,
+    WEAPON = 0,
+    CARFRAME = 1,
+    CORE,
+    ENGINE,
+    SENSOR,
+    WHEEL,
+    MAX = 6,
 }

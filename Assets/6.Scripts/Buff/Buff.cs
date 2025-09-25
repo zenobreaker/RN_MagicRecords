@@ -29,7 +29,7 @@ public abstract class BaseBuff : IBuff
     protected float duration;
     public float Duration => duration;
 
-    public virtual BuffStackPolicy StackPolicy => BuffStackPolicy.RefreshOnly;
+    public virtual BuffStackPolicy StackPolicy => BuffStackPolicy.REFRESH_ONLY;
 
 
     public BaseBuff(string buffID, float elapsed, float duration)
@@ -88,7 +88,7 @@ public class StatBuff : BaseBuff
     protected StatusComponent status;
 
     public StatBuff(string buffID, float duration, StatusType type, float amount, 
-        ModifierValueType valueType = ModifierValueType.Percent)
+        ModifierValueType valueType = ModifierValueType.PERCENT)
         : base(buffID, 0f, duration)
     {
         modifier = new StatModifier(type, amount, valueType);

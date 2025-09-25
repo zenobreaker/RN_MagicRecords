@@ -48,7 +48,7 @@ public class DamageHandleComponent : MonoBehaviour
     {
         damageMotionTable = new Dictionary<DamageType, List<DamageMotionData>>();
 
-        for (int i = 0; i < (int)DamageType.Max; i++)
+        for (int i = 0; i < (int)DamageType.MAX; i++)
         {
             damageMotionTable.Add((DamageType)i, new List<DamageMotionData>());
         }
@@ -65,7 +65,7 @@ public class DamageHandleComponent : MonoBehaviour
 
         if(status != null)
         {
-            float defense = status.GetStatusValue(StatusType.Defense);
+            float defense = status.GetStatusValue(StatusType.DEFENSE);
             result = Mathf.Max(result - defense, 0.0f);
         }
 

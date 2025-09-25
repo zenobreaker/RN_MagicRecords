@@ -77,10 +77,10 @@ public partial class ComboComponent : MonoBehaviour
 
         switch(newInput.InputType)
         {
-            case InputCommandType.Action:   TryProcess_Action(newInput); break;
-            case InputCommandType.Skill:    TryProcess_Skill(newInput);  break;
-            case InputCommandType.Move:     TryProcess_Move(newInput);   break; 
-            case InputCommandType.Dash:     TryProcess_Dash(newInput);   break;
+            case InputCommandType.ACTION:   TryProcess_Action(newInput); break;
+            case InputCommandType.SKILL:    TryProcess_Skill(newInput);  break;
+            case InputCommandType.MOVE:     TryProcess_Move(newInput);   break; 
+            case InputCommandType.DASH:     TryProcess_Dash(newInput);   break;
         }
     }
 

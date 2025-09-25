@@ -40,7 +40,7 @@ public class EquipmentComponent : MonoBehaviour
         else
         {
             Debug.Log("Set Equipments!! ");
-            for(var e = EquipParts.Weapon;  e < EquipParts.Max; e++)
+            for(var e = EquipParts.WEAPON;  e < EquipParts.MAX; e++)
             {
                 var equipment = data.equipments[(int)e]?.itemId is int id && id != -1 ?
                     AppManager.Instance?.GetEquipmentItem(id) : null;

@@ -32,7 +32,7 @@ public class EquipmentItem : ItemData
         this.description = description;
         this.parts = parts;
         modifier = new StatModifier(mainStatus, mainValue
-            , isPercent == true ? ModifierValueType.Percent : ModifierValueType.Fixed);
+            , isPercent == true ? ModifierValueType.PERCENT : ModifierValueType.FIXED);
 
         category = ItemCategory.Equipment;
     }

@@ -63,13 +63,13 @@ public class TurtleInfoData
         float value = 0.0f;
         return type switch
         {
-            StatusType.Attack => attack.GetValue(level),
-            StatusType.Defense => defense.GetValue(level),
-            StatusType.AttackSpeed => attackSpeed.GetValue(level),
-            StatusType.MoveSpeed => moveSpeed.GetValue(level),
-            StatusType.Crit_Ratio => critical.GetValue(level),
-            StatusType.Crit_Dmg => critDamage.GetValue(level),
-            StatusType.Health => hp.GetValue(level),
+            StatusType.ATTACK => attack.GetValue(level),
+            StatusType.DEFENSE => defense.GetValue(level),
+            StatusType.ATTACKSPEED => attackSpeed.GetValue(level),
+            StatusType.MOVESPEED => moveSpeed.GetValue(level),
+            StatusType.CRIT_RATIO => critical.GetValue(level),
+            StatusType.CRIT_DMG => critDamage.GetValue(level),
+            StatusType.HEALTH => hp.GetValue(level),
             _ => value,
         };
     }

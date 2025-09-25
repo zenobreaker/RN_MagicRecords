@@ -7,11 +7,11 @@ public class GameManager
 {
     public enum GameState
     {
-        None,
-        Begin_Stage,
-        Process_Battle,
+        NONE,
+        BEGIN_STAGE,
+        PROCESS_BATTLE,
 
-        Finish_Stage,
+        FINISH_STAGE,
     };
 
     private GameState state;
@@ -60,10 +60,10 @@ public class GameManager
 
 
     #region SET_STATE
-    public void SetBeginStage() => SetGameState(GameState.Begin_Stage);
+    public void SetBeginStage() => SetGameState(GameState.BEGIN_STAGE);
 
-    public void SetProcessBattle() => SetGameState(GameState.Process_Battle);
-    public void SetFinishStage() => SetGameState(GameState.Finish_Stage);
+    public void SetProcessBattle() => SetGameState(GameState.PROCESS_BATTLE);
+    public void SetFinishStage() => SetGameState(GameState.FINISH_STAGE);
 
     private void SetGameState(GameState newState)
     {
@@ -76,14 +76,14 @@ public class GameManager
     {
         switch (state)
         {
-            case GameState.Begin_Stage: OnBeginStage?.Invoke(); break;
-            case GameState.Process_Battle:
+            case GameState.BEGIN_STAGE: OnBeginStage?.Invoke(); break;
+            case GameState.PROCESS_BATTLE:
                 {
                     OnBattleStage?.Invoke();
                 }
                 break;
 
-            case GameState.Finish_Stage:
+            case GameState.FINISH_STAGE:
                 {
                     OnFinishStage?.Invoke();
 #if UNITY_EDITOR

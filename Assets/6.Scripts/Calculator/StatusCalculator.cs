@@ -20,9 +20,9 @@ public static class StatusCalculator
 
                 if (item.modifier.type != type) continue;
 
-                if (item.modifier.valueType == ModifierValueType.Fixed)
+                if (item.modifier.valueType == ModifierValueType.FIXED)
                     flatTotal += item.modifier.value;
-                else if (item.modifier.valueType == ModifierValueType.Percent)
+                else if (item.modifier.valueType == ModifierValueType.PERCENT)
                     percentTotal *= (1f + item.modifier.value);
             }
         }

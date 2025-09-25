@@ -15,7 +15,7 @@ public class UICharEquipment : UiBase
         }
         if (charEquipmentsSlots.Length != ce.equipments.Count) return;
 
-        for (var e = EquipParts.Weapon; e < EquipParts.Max; e++)
+        for (var e = EquipParts.WEAPON; e < EquipParts.MAX; e++)
         {
             var equipment = ce.equipments[(int)e]?.itemId is int id && id != -1
             ? AppManager.Instance?.GetEquipmentItem(id)

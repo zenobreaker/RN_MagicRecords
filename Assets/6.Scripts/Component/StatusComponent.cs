@@ -46,13 +46,13 @@ public class StatusValue
 
         foreach (var mod in modifiers)
         {
-            if (mod.valueType == ModifierValueType.Fixed)
+            if (mod.valueType == ModifierValueType.FIXED)
                 result += mod.value;
         }
 
         foreach (var mod in modifiers)
         {
-            if (mod.valueType == ModifierValueType.Percent)
+            if (mod.valueType == ModifierValueType.PERCENT)
                 result *= (1 + mod.value);
         }
 
@@ -157,13 +157,13 @@ public class StatusComponent : MonoBehaviour
     {
         if (data == null) return; 
 
-        SetStatusValue(StatusType.Attack, data.GetStatusValue(StatusType.Attack));
-        SetStatusValue(StatusType.AttackSpeed, data.GetStatusValue(StatusType.AttackSpeed));
-        SetStatusValue(StatusType.Defense, data.GetStatusValue(StatusType.Defense));
-        SetStatusValue(StatusType.MoveSpeed, data.GetStatusValue(StatusType.MoveSpeed));
-        SetStatusValue(StatusType.Crit_Ratio, data.GetStatusValue(StatusType.Crit_Ratio));
-        SetStatusValue(StatusType.Crit_Dmg, data.GetStatusValue(StatusType.Crit_Dmg));
-        SetStatusValue(StatusType.Health, data.GetStatusValue(StatusType.Health));
-        OnSetHealth?.Invoke(data.GetStatusValue(StatusType.Health));
+        SetStatusValue(StatusType.ATTACK, data.GetStatusValue(StatusType.ATTACK));
+        SetStatusValue(StatusType.ATTACKSPEED, data.GetStatusValue(StatusType.ATTACKSPEED));
+        SetStatusValue(StatusType.DEFENSE, data.GetStatusValue(StatusType.DEFENSE));
+        SetStatusValue(StatusType.MOVESPEED, data.GetStatusValue(StatusType.MOVESPEED));
+        SetStatusValue(StatusType.CRIT_RATIO, data.GetStatusValue(StatusType.CRIT_RATIO));
+        SetStatusValue(StatusType.CRIT_DMG, data.GetStatusValue(StatusType.CRIT_DMG));
+        SetStatusValue(StatusType.HEALTH, data.GetStatusValue(StatusType.HEALTH));
+        OnSetHealth?.Invoke(data.GetStatusValue(StatusType.HEALTH));
     }
 }

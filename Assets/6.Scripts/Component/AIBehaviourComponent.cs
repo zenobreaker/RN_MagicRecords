@@ -38,19 +38,19 @@ public class AIBehaviourComponent : MonoBehaviour
             state.OnStateTypeChanged -= OnStateTypeChanged;
     }
 
-    public bool WaitMode { get => aiState == AIState.Wait; }
-    public bool PatrolMode { get => aiState == AIState.Patrol; }
-    public bool ApproachMode { get => aiState == AIState.Approach; }
-    public bool ActionMode { get => aiState == AIState.Action; }
-    public bool DamagedMode { get => aiState == AIState.Damaged; }
-    public bool DeadMode { get => aiState == AIState.Dead; }
+    public bool WaitMode { get => aiState == AIState.WAIT; }
+    public bool PatrolMode { get => aiState == AIState.PATROL; }
+    public bool ApproachMode { get => aiState == AIState.APPROACH; }
+    public bool ActionMode { get => aiState == AIState.ACTION; }
+    public bool DamagedMode { get => aiState == AIState.DAMAGED; }
+    public bool DeadMode { get => aiState == AIState.DEAD; }
 
-    public void SetWaitMode() => ChangedState(AIState.Wait);
-    public void SetPatrolMode() => ChangedState(AIState.Patrol);
-    public void SetApproachMode() => ChangedState(AIState.Approach);
-    public void SetActionMode() => ChangedState(AIState.Action);
-    public void SetDamagedMode() => ChangedState(AIState.Damaged);
-    public void SetDeadMode() => ChangedState(AIState.Dead);
+    public void SetWaitMode() => ChangedState(AIState.WAIT);
+    public void SetPatrolMode() => ChangedState(AIState.PATROL);
+    public void SetApproachMode() => ChangedState(AIState.APPROACH);
+    public void SetActionMode() => ChangedState(AIState.ACTION);
+    public void SetDamagedMode() => ChangedState(AIState.DAMAGED);
+    public void SetDeadMode() => ChangedState(AIState.DEAD);
 
 
     public bool GetCanMove()

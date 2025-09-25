@@ -45,13 +45,13 @@ public class BuffComponent : MonoBehaviour
         {
             switch (newBuff.StackPolicy)
             {
-                case BuffStackPolicy.RefreshOnly:
+                case BuffStackPolicy.REFRESH_ONLY:
                     existingBuff.ResetDuration();
                     break;
-                case BuffStackPolicy.Stackable:
+                case BuffStackPolicy.STACKABLE:
                     existingBuff.AddStack();
                     break;
-                case BuffStackPolicy.IgnoreIfExsist:
+                case BuffStackPolicy.IGNOREIFEXSIST:
                     return;
             }
         }

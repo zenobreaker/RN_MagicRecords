@@ -76,8 +76,6 @@ public class AppManager
         GameManager.Instance.OnFailedStage += FailedStageProcess;
     }
 
-
-
     private void OnDisable()
     {
         if (GameManager.Instance == null) return;
@@ -122,7 +120,7 @@ public class AppManager
     {
         bool bEnable = false;
 
-        // 이전에 실패하ㄴ 노드가 있으면 그 노드만 강제 선택
+        // 이전에 실패한 노드가 있으면 그 노드만 강제 선택
         if (prevNodeId == mapNodeID)
             bEnable = (id == prevNodeId);
         // 정상적인 흐름 목록에 있는지 판별 

@@ -66,12 +66,12 @@ public class Player
             if (bIsUsedSkill) return;
 
             currentAction = weapon;
-            comboComponent?.InputQueue(InputCommandType.Action);
+            comboComponent?.InputQueue(InputCommandType.ACTION);
         };
 
         onDash = (context) =>
         {
-            comboComponent?.InputQueue(InputCommandType.Dash);
+            comboComponent?.InputQueue(InputCommandType.DASH);
         };
 
 
@@ -100,7 +100,7 @@ public class Player
             int slot = i;
             onSkillActions[i] = (context) =>
             {
-                comboComponent.InputQueue(InputCommandType.Skill, slot);
+                comboComponent.InputQueue(InputCommandType.SKILL, slot);
             };
 
             string actionName = $"SkillAction{slot + 1}";

@@ -8,25 +8,25 @@ public class UICharStatus : UiBase
     {
         if (status == null) return;
 
-        float finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.Health);
-        statusRows[0].SetStat(StatusType.Health.ToString(), finalValue.ToString("F0"));
+        float finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.HEALTH);
+        statusRows[0].SetStat(StatusType.HEALTH.ToString(), finalValue.ToString("F0"));
 
-        finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.Attack);
-        statusRows[1].SetStat(StatusType.Attack.ToString(), finalValue.ToString("F0"));
+        finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.ATTACK);
+        statusRows[1].SetStat(StatusType.ATTACK.ToString(), finalValue.ToString("F0"));
 
-        finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.Defense);
-        statusRows[2].SetStat(StatusType.Defense.ToString(), finalValue.ToString("F0"));
+        finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.DEFENSE);
+        statusRows[2].SetStat(StatusType.DEFENSE.ToString(), finalValue.ToString("F0"));
 
-        finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.AttackSpeed);
-        statusRows[3].SetStat(StatusType.AttackSpeed.ToString(), finalValue.ToString("F0"));
+        finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.ATTACKSPEED);
+        statusRows[3].SetStat(StatusType.ATTACKSPEED.ToString(), finalValue.ToString("F0"));
 
-        finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.MoveSpeed);
-        statusRows[4].SetStat(StatusType.MoveSpeed.ToString(), finalValue.ToString("F0"));
+        finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.MOVESPEED);
+        statusRows[4].SetStat(StatusType.MOVESPEED.ToString(), finalValue.ToString("F0"));
 
-        finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.Crit_Ratio);
-        statusRows[5].SetStat(StatusType.Crit_Ratio.ToString(), finalValue.ToString("F0"));
+        finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.CRIT_RATIO);
+        statusRows[5].SetStat(StatusType.CRIT_RATIO.ToString(), finalValue.ToString("F0"));
 
-        finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.Crit_Dmg);
-        statusRows[6].SetStat(StatusType.Crit_Dmg.ToString(), finalValue.ToString("F0"));
+        finalValue = StatusCalculator.GetFinalStatus(status, equipment, StatusType.CRIT_DMG);
+        statusRows[6].SetStat(StatusType.CRIT_DMG.ToString(), finalValue.ToString("F0"));
     }
 }

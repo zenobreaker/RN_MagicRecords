@@ -35,7 +35,7 @@ public partial class ComboComponent: MonoBehaviour
         {
             inputQueue.Enqueue(newInput);
 
-            if (newInput.InputType == InputCommandType.Action && CanExecuteNextAction())
+            if (newInput.InputType == InputCommandType.ACTION && CanExecuteNextAction())
             {
                 ExecuteAttack(comboIndex);
                 comboIndex++;
