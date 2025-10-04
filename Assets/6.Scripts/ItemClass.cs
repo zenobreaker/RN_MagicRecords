@@ -8,7 +8,7 @@ public abstract class ItemData
 
     public string name;
     public string description;
-
+    public int itemCount = 0;
     public ItemData(int id, Sprite icon)
     {
         this.id = id;
@@ -34,7 +34,8 @@ public class EquipmentItem : ItemData
         modifier = new StatModifier(mainStatus, mainValue
             , isPercent == true ? ModifierValueType.PERCENT : ModifierValueType.FIXED);
 
-        category = ItemCategory.Equipment;
+        category = ItemCategory.EQUIPMENT;
+        itemCount = 1;
     }
 
     public void EquipItem(StatusComponent status)

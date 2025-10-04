@@ -4,18 +4,22 @@ public class DataBaseManager : MonoBehaviour
 {
     private StageDataBase stageDataBase;
     private MonsterDataBase monsterDataBase;
-    private ItemDataBase itemDataBase; 
+    private ItemDataBase itemDataBase;
+    private RewardDataBase rewardDataBase;
 
     private void Awake()
     {
-        if (TryGetComponent<StageDataBase>(out stageDataBase))
+        if (gameObject.TryComponentInChildren<StageDataBase>(out stageDataBase))
             stageDataBase.InitializeStageData();
 
-        if (TryGetComponent<MonsterDataBase>(out monsterDataBase))
+        if (gameObject.TryComponentInChildren<MonsterDataBase>(out monsterDataBase))
             monsterDataBase.InitializeData();
 
-        if (TryGetComponent<ItemDataBase>(out itemDataBase))
+        if (gameObject.TryComponentInChildren<ItemDataBase>(out itemDataBase))
             itemDataBase.InitialzeEquipmentItemData();
+
+        if (gameObject.TryComponentInChildren<RewardDataBase>(out rewardDataBase))
+            rewardDataBase.Initialize();
     }
 
     public int GetRandomStageID(int chapter)
@@ -48,5 +52,35 @@ public class DataBaseManager : MonoBehaviour
     public EquipmentItem GetEquipmentItem(int itemId)
     {
         return itemDataBase?.GetEquipmentItemData(itemId);
+    }
+
+    public RewardData GetRewardData(int rewardId)
+    {
+        return rewardDataBase?.GetReward(rewardId);
+    }
+
+    public ClearRewardData GetChapterClearReward(int clearedChapter)
+    {
+        // 해당 값으로 하드 코딩하여 처리한다.
+        int clearId = 0;
+        if (clearedChapter == 1)
+        {
+            clearId = 1000;
+        }
+        else if (clearedChapter == 2)
+        {
+            clearId = 2000;
+        }
+        else if (clearedChapter == 3)
+        {
+            clearId = 3000;
+        }
+
+        return GetClearRewardData(clearId);
+    }
+
+    public ClearRewardData GetClearRewardData(int clearRewardId)
+    {
+        return rewardDataBase?.GetClearReward(clearRewardId);
     }
 }

@@ -1,13 +1,5 @@
 using System.Collections.Generic;
 
-[System.Serializable]
-public enum ItemCategory
-{
-    None, 
-    Equipment,
-    Ingrediant,
-    Max, 
-}
 
 public class InventoryManager : Singleton<InventoryManager>
 {
@@ -17,8 +9,8 @@ public class InventoryManager : Singleton<InventoryManager>
     protected override void Awake()
     {
         categoriesItems.Clear();
-        categoriesItems.Add(ItemCategory.Equipment, new List<ItemData>());
-        categoriesItems.Add(ItemCategory.Ingrediant, new List<ItemData>());
+        categoriesItems.Add(ItemCategory.EQUIPMENT, new List<ItemData>());
+        categoriesItems.Add(ItemCategory.INGREDIANT, new List<ItemData>());
 
         AppManager.Instance.OnAwaked += () =>
         {
@@ -30,6 +22,13 @@ public class InventoryManager : Singleton<InventoryManager>
             item = AppManager.Instance.GetEquipmentItem(3000);
             AddItem(item);
         };
+    }
+
+
+    protected override void SyncDataFromSingleton()
+    {
+        this.items = Instance.items;
+        categoriesItems = Instance.categoriesItems;
     }
 
     public void AddItem(ItemData item)
