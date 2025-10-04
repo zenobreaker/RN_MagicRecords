@@ -1,10 +1,22 @@
 using Unity.Behavior;
 
+///////////////////////////////////////////////////////////////////////////////
+//  Currency
+[System.Serializable]
+public enum ItemCategory
+{
+    NONE,
+    CURRENCY = 1,
+    EQUIPMENT = 2,
+    INGREDIANT,
+    MAX,
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Currency
 public enum CurrencyType
 {
+    NONE,
     GOLD, 
     DIAMOND, 
 }
@@ -13,10 +25,13 @@ public enum CurrencyType
 //  Reward
 public enum RewardType
 {
-    CURRENCY, 
+    NONE,
+    CURRENCY = 1, 
     EXP, 
     MATERIAL,
+    EQUIPMENT,
 
+    CREDIT = 99,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
