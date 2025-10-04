@@ -8,6 +8,8 @@ public class AppManager
 {
     private DataBaseManager databaseManager;
     private SkillManager skillManager;
+    private RewardManager rewardManager;
+    private UIManager uiManager; 
 
     public Action OnAwaked;
 
@@ -32,9 +34,16 @@ public class AppManager
 
         databaseManager = GetComponent<DataBaseManager>();
         skillManager = GetComponent<SkillManager>();
+        rewardManager = GetComponent<RewardManager>();
+        uiManager = GetComponent<UIManager>();  
 
         mapReplacer = new MapReplacer();
         stageReplacer = new StageReplacer();
+
+        if(uiManager != null && rewardManager != null)
+        {
+            uiManager.OnJoinedLobby += rewardManager.OnJoinedLobby;
+        }
 
         OnAwaked?.Invoke();
     }
@@ -93,6 +102,17 @@ public class AppManager
         bCreate = false;
         mapNodeID = 0;
         prevNodeId = -1;
+    }
+
+    private void AcceptReward()
+    {
+        // 전부 클리어 했다면 최종 보상을 지급한다. 
+        if(bAllCleared)
+        {
+            SetChapterClearReward(chapter);
+
+            return; 
+        }
     }
 
     public void InitLevel()
@@ -180,6 +200,10 @@ public class AppManager
 
     private void FinishStageProcess()
     {
+
+        // 보상 지급
+        AcceptReward();
+        
         // 마지막 챕터까지 클리어 했다면 탐사 진입 전 로비로 이동시킨다. 
         if (bAllCleared)
         {
@@ -258,4 +282,26 @@ public class AppManager
         return databaseManager?.GetEquipmentItem(itemid);
     }
     #endregion
+
+    public RewardData GetRewardData(int rewardId)
+    {
+        return databaseManager?.GetRewardData(rewardId);
+    }
+
+    public ClearRewardData GetStageClearRewardData(int stageid)
+    {
+        return null; 
+    }
+
+    public ClearRewardData GetChapterClearRewardData(int clearedChapter)
+    {
+        // 챕터가 클리어 되면 해당 챕터에 맞는 id로 변환되어 반환함 
+        return databaseManager?.GetChapterClearReward(clearedChapter);
+    }
+
+    public void SetChapterClearReward(int clearedChapter)
+    {
+        rewardManager?.GiveChapterReward(clearedChapter);
+    }
+
 }
