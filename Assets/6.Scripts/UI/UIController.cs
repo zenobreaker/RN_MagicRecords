@@ -13,4 +13,9 @@ public class UIController : MonoBehaviour
         target.SetActive(!target.activeInHierarchy);
     }
 
+
+    public GameObject CreatePopUpUI(GameObject target)
+    {
+        return Instantiate(target, this.gameObject.transform); 
+    }
 }
