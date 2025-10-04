@@ -59,8 +59,25 @@ public static class Extend_TransformHelpers
 
         return result;
     }
+}
 
+public static class Extend_Component
+{
+    public static bool TryComponentInChildren<T>(this GameObject go, out T component, bool includeInactive = false)
+        where T : Component
+    {
+        if (go.TryGetComponent<T>(out component))
+            return true;
 
+        component = go.GetComponentInChildren<T>(includeInactive);
+        return component != null;
+    }
+
+    public static bool TryComponentInChildren<T>(this Component c, out T component, bool includeInactive = false)
+        where T : Component
+    {
+        return c.gameObject.TryComponentInChildren<T>(out component, includeInactive);
+    }
 }
 
 public static class Extend_List
