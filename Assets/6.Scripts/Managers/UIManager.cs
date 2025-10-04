@@ -9,6 +9,12 @@ public enum UIType
     StageInfo,
 }
 
+public enum GameLocate
+{
+    TITLE,
+    LOBBY,
+    IN_GAME,
+}
 
 public class UIManager : Singleton<UIManager>
 {
@@ -18,18 +24,24 @@ public class UIManager : Singleton<UIManager>
 
     [SerializeField] private GameObject mobileUIGroup;
     [SerializeField] private GameObject pcUIGroup;
-
     [SerializeField] private GameObject popupUI;
+    [SerializeField] private GameObject popupUIReward;
+    public UiBase soundUI;
 
+    public event Action OnJoinedLobby;
 
     private Stack<UiBase> openPopUps = new();
-    public UiBase soundUI; 
+    private GameLocate currLocate; 
+
+    public bool IsLTitle() => currLocate == GameLocate.TITLE;
+    public bool IsLobby() => currLocate == GameLocate.LOBBY;
+    public bool IsInGame() => currLocate == GameLocate.IN_GAME;
 
     protected override void Awake()
     {
         base.Awake();
 
-        if(Instance == this)
+        if (Instance == this)
             SceneManager.sceneLoaded += HandeSceneLoaded;
     }
 
@@ -41,32 +53,38 @@ public class UIManager : Singleton<UIManager>
         mobileUIGroup = Instance.mobileUIGroup;
         pcUIGroup = Instance.pcUIGroup;
 
-        soundUI = Instance.soundUI; 
+        soundUI = Instance.soundUI;
     }
 
     private void HandeSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if(scene.name == "Stage")
+        if (scene.name == "Stage")
         {
+            currLocate = GameLocate.IN_GAME;
             SetStageUserInterface();
+        }
+        else if (scene.name == "Lobby")
+        {
+            currLocate =  GameLocate.LOBBY;
+            SetLobbyProgress();
         }
     }
 
     public void TogglePauseMenu()
     {
-        
+
     }
 
-    public void OpenUI (UiBase ui)
+    public void OpenUI(UiBase ui)
     {
-        if (ui == null) return; 
+        if (ui == null) return;
         ui.gameObject.SetActive(true);
-        openedUIs.Push(ui); 
+        openedUIs.Push(ui);
     }
 
     public void CloseTopUI()
     {
-        if(openedUIs.Count > 0)
+        if (openedUIs.Count > 0)
         {
             var top = openedUIs.Pop();
             top.CloseUI();
@@ -75,7 +93,7 @@ public class UIManager : Singleton<UIManager>
 
     public void CloseAllOpenedUI()
     {
-        while(openedUIs.Count > 0)
+        while (openedUIs.Count > 0)
         {
             var top = openedUIs.Pop();
             top.CloseUI();
@@ -87,15 +105,20 @@ public class UIManager : Singleton<UIManager>
         GameObject currentObject = null;
         if (Application.isMobilePlatform == false)
             currentObject = pcUIGroup;
-        else 
+        else
             currentObject = mobileUIGroup;
-        
-        if (currentObject == null) return; 
+
+        if (currentObject == null) return;
 
         var go = Instantiate<GameObject>(currentObject);
-        go?.SetActive(true); 
+        go?.SetActive(true);
     }
 
+
+    private void SetLobbyProgress()
+    {
+        OnJoinedLobby?.Invoke();
+    }
 
     #region GameOver
     //-------------------------------------------------------------------------
@@ -104,12 +127,12 @@ public class UIManager : Singleton<UIManager>
 
     public void ShowGameOverUI()
     {
-        
+
     }
 
     public void HideGameOverUI()
     {
-        
+
     }
     #endregion
 
@@ -138,19 +161,39 @@ public class UIManager : Singleton<UIManager>
 
 
     #endregion
-
-
-    public void OpenPopUp(ItemData data)
+    public void OpenRewardPopUp(ItemData[] itemDatas)
     {
-        if (popupUI == null) return;
-        UIController uc = FindAnyObjectByType<UIController>(); 
-        var ui = Instantiate(popupUI, uc.transform);
-        if(ui != null && ui.TryGetComponent<UIPopUpItem>(out var popUp) && uc != null)
+        var ui = OpenPopUp(popupUIReward);
+        if (ui != null && ui.TryGetComponent<UIPopUpRewards>(out var target))
+            target.SetData(itemDatas);
+    }
+
+    public void OpenRewardPopUp(List<ItemData> itemDatas)
+    {
+        OpenRewardPopUp(itemDatas.ToArray());
+    }
+
+
+    public void OpenItemPopUp(ItemData itemData)
+    {
+        var ui = OpenPopUp(popupUI);
+        if (ui != null && ui.TryGetComponent<UIPopUpItem>(out var target))
+            target.SetData(itemData);
+    }
+
+    private GameObject OpenPopUp(GameObject popUpObj)
+    {
+        if (popUpObj == null) return null;
+        UIController uc = FindAnyObjectByType<UIController>();
+        if (uc == null) return null;
+
+        GameObject ui = uc.CreatePopUpUI(popUpObj);
+        if (ui != null && ui.TryGetComponent<UIPopUp>(out var target))
         {
-            popUp.SetData(data);
-            if (ui.TryGetComponent<UIPopUp>(out var target))
-                openPopUps.Push(target);
+            openPopUps.Push(target);
+            return ui;
         }
+        return null;
     }
 
     public void ClosePopup()
