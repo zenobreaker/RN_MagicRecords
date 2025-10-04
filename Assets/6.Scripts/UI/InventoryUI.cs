@@ -11,7 +11,7 @@ public class InventoryUI : UiBase
     {
         base.OnEnable();
 
-        category = ItemCategory.Equipment;
+        category = ItemCategory.EQUIPMENT;
         StopAllCoroutines();
         StartCoroutine(WaitForManager()); 
     }
@@ -27,7 +27,11 @@ public class InventoryUI : UiBase
         if (InventoryManager.Instance == null) return;
 
         items = InventoryManager.Instance.GetItems(category);
-        if (items == null) return;
+        if (items == null)
+        {
+
+            return;
+        }
 
         InitReplaceContentObject(items.Count);
 
@@ -60,7 +64,7 @@ public class InventoryUI : UiBase
         if(item is EquipmentItem)
         {
             // 장비 처리 
-            UIManager.Instance.OpenPopUp(item);
+            UIManager.Instance.OpenItemPopUp(item);
         }
     }
 }
