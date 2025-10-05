@@ -42,7 +42,11 @@ public class RewardManager
 
             var target = rewards.Find(x => x.id == reward.itemId);
             if (target == null)
-                rewards.Add(target);
+            {
+                ItemCategory category = reward.type == RewardType.EQUIPMENT ? ItemCategory.EQUIPMENT : ItemCategory.INGREDIANT;
+                ItemData item = AppManager.Instance.GetItemData(reward.itemId, category);
+                rewards.Add(item);
+            }
             else
             {
                 if (target.category == ItemCategory.EQUIPMENT)

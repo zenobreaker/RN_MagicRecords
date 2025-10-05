@@ -5,27 +5,23 @@ using UnityEditor;
 using UnityEngine;
 
 #if UNITY_EDITOR
-public class Cheater : MonoBehaviour
+public class Cheater 
+    : Singleton<Cheater>
 {
-    private static Cheater instance;
-    public static Cheater Instance { get 
-        { 
-            return instance; 
-        } }
 
     Player player;
 
     bool bStunToggle = false;
 
-    private void Awake()
-    {
-        if(instance == null)
-            instance = this;
-    }
-
     private void Start()
     {
         player = FindAnyObjectByType<Player>();
+    }
+
+    protected override void SyncDataFromSingleton()
+    {
+        player = Instance.player;
+        bStunToggle = Instance.bStunToggle;
     }
 
     private void Update()
@@ -58,6 +54,9 @@ public class Cheater : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Keypad5))
             Test_PlayerRemoveBuff();
+
+        if (Input.GetKeyDown(KeyCode.Keypad1))
+            Test_RewardPopUp();
     }
 
     private void Test_PlayerRemoveBuff()
@@ -120,6 +119,23 @@ public class Cheater : MonoBehaviour
                 sfc.RemoveStunEffect();
         }
     }
+
+
+    private void Test_RewardPopUp()
+    {
+        if (AppManager.Instance == null) return;
+
+       var  rewardData = AppManager.Instance.GetRewardData(1);
+        if (rewardData == null) return;
+
+        Debug.Log("Data 정상 생성");
+
+        RewardManager rm = FindAnyObjectByType<RewardManager>();
+        if (rm == null) return;
+
+        rm.AddReward(rewardData);
+    }
+
 
     List<Vector3> gizmoPoints = new List<Vector3>();
     public void DrawSphereWithPoints(List<Vector3> points)

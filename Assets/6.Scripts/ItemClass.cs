@@ -48,3 +48,20 @@ public class EquipmentItem : ItemData
         status?.RemoveBuff(modifier);
     }
 }
+
+public class IngredientItem
+    : ItemData
+{
+    public IngredientItem(int id, Sprite icon, int itemCategory) 
+        : base(id, icon)
+    {
+        category = (ItemCategory)itemCategory;
+    }
+
+    public IngredientItem(int id, Sprite icon, ItemCategory category = ItemCategory.INGREDIANT) 
+        : base(id, icon)
+    {
+        this.category = category;
+    }
+}
+

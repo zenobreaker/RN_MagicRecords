@@ -23,18 +23,42 @@ public class EquipmentItemDataJson : ItemDataJson
     public float itemValue;
 }
 
+[System.Serializable]
+public class IngredientItemDataJson : ItemDataJson
+{
+    public int ItemCategory;
+}
+
+
 public class EquipmentItemDataJsonAllData
 {
     public List<EquipmentItemDataJson> equipmentDataJson;
 }
 
-public class ItemDataBase : MonoBehaviour
+public class IngredientItemDataJsonAllData
+{
+    public List<IngredientItemDataJson> ingredientDataJson;
+}
+
+public class ItemDataBase : DataBase
 {
     [Header("장비 아이템")]
     [SerializeField] private TextAsset equipmentItemJson;
-    [SerializeField] private Dictionary<int, EquipmentItem> equipmentItems = new();
 
-    public void InitialzeEquipmentItemData()
+    [Header("재료 아이템")]
+    [SerializeField] private TextAsset ingredientItemJson;
+
+    private Dictionary<int, EquipmentItem> equipmentItems = new();
+    private Dictionary<int, IngredientItem> ingredientItems = new();
+
+
+    public override void Initialize()
+    {
+        InitializeEquipmentItemData();
+        InitializeIngredientItemData();
+    }
+
+    public void InitializeEquipmentItemData()
     {
         if (equipmentItemJson == null) return;
 
@@ -71,10 +95,45 @@ public class ItemDataBase : MonoBehaviour
         Debug.Log($"Complete Message => equipmentItems : {equipmentItems.Count}");
     }
 
+    public void InitializeIngredientItemData()
+    {
+        if (ingredientItemJson == null) return;
+
+
+        JsonLoader.LoadJsonList<IngredientItemDataJsonAllData, IngredientItemDataJson, IngredientItem>
+            (
+                ingredientItemJson,
+                root => root.ingredientDataJson,
+
+                json =>
+                {
+                    var data = new IngredientItem(
+                        (int)json.id
+                        , GetSprite(json.imagePath)
+                        ,json.ItemCategory
+                        );
+                    return data;
+                },
+
+                ingredient =>
+                {
+                    ingredientItems.TryAdd(ingredient.id, ingredient);
+                }
+            );
+
+        Debug.Log("===================================================");
+        Debug.Log($"Complete Message => ingredientItems : {ingredientItems.Count}");
+    }
+
         
     public EquipmentItem GetEquipmentItemData(int itemId)
     { 
         return equipmentItems.TryGetValue(itemId, out var equipmentItem) ? equipmentItem : null;
+    }
+
+    public IngredientItem GetIngredientItemData(int itemId)
+    {
+        return ingredientItems.TryGetValue(itemId, out var ingredientItem) ? ingredientItem : null;
     }
 
     private Sprite GetSprite(string path)
@@ -83,4 +142,5 @@ public class ItemDataBase : MonoBehaviour
         var sprite = Resources.Load<Sprite>(path);
         return sprite; 
     }
+
 }

@@ -277,9 +277,22 @@ public class AppManager
     #endregion
 
     #region Database
+    public ItemData GetItemData(int itemId, ItemCategory category )
+    {
+        if (category == ItemCategory.EQUIPMENT)
+            return GetEquipmentItem(itemId);
+        else 
+            return GetIngredientItem(itemId);
+    }
+
     public EquipmentItem GetEquipmentItem(int itemid)
     {
         return databaseManager?.GetEquipmentItem(itemid);
+    }
+
+    public IngredientItem GetIngredientItem(int itemId)
+    {
+        return databaseManager?.GetIngredientItem(itemId);
     }
     #endregion
 

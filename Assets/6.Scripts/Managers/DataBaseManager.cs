@@ -16,7 +16,7 @@ public class DataBaseManager : MonoBehaviour
             monsterDataBase.InitializeData();
 
         if (gameObject.TryComponentInChildren<ItemDataBase>(out itemDataBase))
-            itemDataBase.InitialzeEquipmentItemData();
+            itemDataBase.Initialize();
 
         if (gameObject.TryComponentInChildren<RewardDataBase>(out rewardDataBase))
             rewardDataBase.Initialize();
@@ -52,6 +52,11 @@ public class DataBaseManager : MonoBehaviour
     public EquipmentItem GetEquipmentItem(int itemId)
     {
         return itemDataBase?.GetEquipmentItemData(itemId);
+    }
+
+    public IngredientItem GetIngredientItem(int itemId)
+    {
+        return itemDataBase?.GetIngredientItemData(itemId);
     }
 
     public RewardData GetRewardData(int rewardId)
