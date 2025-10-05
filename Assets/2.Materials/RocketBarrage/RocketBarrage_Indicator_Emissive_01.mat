@@ -18,9 +18,10 @@ Material:
   - _DISSOLVETEXTUREFLIP_ON
   - _DISTORTIONRADIAL_ON
   - _DISTORTIONUVORSPHERICAL_ON
+  - _EMISSION
   - _EMISSIONVERTEXSTREAMENABLED_ON
   - _NOISE01RADIAL1_ON
-  m_LightmapFlags: 0
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -262,4 +263,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 9
+  version: 10
