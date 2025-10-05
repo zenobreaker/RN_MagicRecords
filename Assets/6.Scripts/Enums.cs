@@ -1,7 +1,7 @@
 using Unity.Behavior;
 
 ///////////////////////////////////////////////////////////////////////////////
-//  Currency
+//  ItemCategory
 [System.Serializable]
 public enum ItemCategory
 {
@@ -28,7 +28,7 @@ public enum RewardType
     NONE,
     CURRENCY = 1, 
     EXP, 
-    MATERIAL,
+    INGREDIENT,
     EQUIPMENT,
 
     CREDIT = 99,
