@@ -8,6 +8,18 @@ public static class ManagerWaiter
 
     public static void InitializeHost(MonoBehaviour host) => coroutineHost = host;
 
+    public static bool TryGetManager<T>(out T manager) where T : MonoBehaviour
+    {
+        if(Singleton<T>.Instance != null)
+        {
+            manager = Singleton<T>.Instance;
+            return true; 
+        }
+
+        manager = null;
+        return false; 
+    }
+
     public static void WaitForManager<T>(Action<T> onReady) where T : MonoBehaviour
     {
         if(coroutineHost == null)
