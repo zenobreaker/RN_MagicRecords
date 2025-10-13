@@ -6,12 +6,11 @@ using UnityEngine.SceneManagement;
 public class AppManager
     : Singleton<AppManager>
 {
+    public Action OnAwaked;
+
     private DataBaseManager databaseManager;
     private SkillManager skillManager;
     private RewardManager rewardManager;
-    private UIManager uiManager; 
-
-    public Action OnAwaked;
 
     // 생성한 맵 정보를 가지고 있는 배치자 
     private MapReplacer mapReplacer;
@@ -35,16 +34,11 @@ public class AppManager
         databaseManager = GetComponent<DataBaseManager>();
         skillManager = GetComponent<SkillManager>();
         rewardManager = GetComponent<RewardManager>();
-        uiManager = GetComponent<UIManager>();  
 
         mapReplacer = new MapReplacer();
         stageReplacer = new StageReplacer();
 
-        if(uiManager != null && rewardManager != null)
-        {
-            uiManager.OnJoinedLobby += rewardManager.OnJoinedLobby;
-        }
-
+        ManagerWaiter.InitializeHost(this);
         OnAwaked?.Invoke();
     }
 
@@ -73,6 +67,9 @@ public class AppManager
             bAllCleared = Instance.bAllCleared;
 
             OnAwaked = Instance.OnAwaked;
+            
+            // 호스트 재등록
+            ManagerWaiter.InitializeHost(Instance);
         }
     }
 
@@ -110,9 +107,17 @@ public class AppManager
         if(bAllCleared)
         {
             SetChapterClearReward(chapter);
-
             return; 
         }
+
+        // 특정 스테이지 클리어 보상
+        int stageId = stageReplacer.GetStageIdByNodeId(mapNodeID);
+        if(stageId < 0)
+        {
+            Debug.LogWarning($"보상을 받을 스테이지 ID를 찾을 수 없습니다.");
+            return;
+        }
+        SetSetStageClearReward(stageId);
     }
 
     public void InitLevel()
@@ -123,17 +128,14 @@ public class AppManager
             ReplaceLevel();
         }
 
+#if UNITY_EDITOR
         // 자신이 갈 수 있는 노드 출력하기 
         enableIds = mapReplacer.GetCanEnableNodeIds(mapNodeID);
         foreach (int id in enableIds)
         {
             Debug.Log($"Can going id : {id}");
         }
-    }
-
-    public List<List<MapNode>> GetLevels()
-    {
-        return mapReplacer.GetLevels();
+#endif
     }
 
     public bool EnableNode(int id)
@@ -200,7 +202,6 @@ public class AppManager
 
     private void FinishStageProcess()
     {
-
         // 보상 지급
         AcceptReward();
         
@@ -296,6 +297,7 @@ public class AppManager
     }
     #endregion
 
+    #region Reward
     public RewardData GetRewardData(int rewardId)
     {
         return databaseManager?.GetRewardData(rewardId);
@@ -303,7 +305,7 @@ public class AppManager
 
     public ClearRewardData GetStageClearRewardData(int stageid)
     {
-        return null; 
+        return databaseManager?.GetStageClearReward(stageid); 
     }
 
     public ClearRewardData GetChapterClearRewardData(int clearedChapter)
@@ -312,9 +314,16 @@ public class AppManager
         return databaseManager?.GetChapterClearReward(clearedChapter);
     }
 
+    public void SetSetStageClearReward(int stageId)
+    {
+        StageInfo stageInfo = GetStageInfo(stageId);
+        rewardManager?.GiveStageReward(stageInfo);
+    }
+
     public void SetChapterClearReward(int clearedChapter)
     {
         rewardManager?.GiveChapterReward(clearedChapter);
     }
+    #endregion
 
 }

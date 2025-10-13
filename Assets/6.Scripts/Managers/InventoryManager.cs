@@ -5,7 +5,7 @@ public class InventoryManager : Singleton<InventoryManager>
 {
     private List<ItemData> items = new();
     private Dictionary<ItemCategory, List<ItemData>> categoriesItems = new();
-
+    
     protected override void Awake()
     {
         categoriesItems.Clear();
@@ -31,8 +31,18 @@ public class InventoryManager : Singleton<InventoryManager>
         categoriesItems = Instance.categoriesItems;
     }
 
+    public void AddItems(List<ItemData> items)
+    {
+        foreach (ItemData item in items)
+        {
+            this.items.Add(item);
+        }
+    }
+
     public void AddItem(ItemData item)
     {
+        if (item == null) return;
+
         items.Add(item);
         categoriesItems[item.category].Add(item);
     }

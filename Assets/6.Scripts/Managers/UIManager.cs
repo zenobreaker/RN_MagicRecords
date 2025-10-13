@@ -13,15 +13,12 @@ public enum GameLocate
 {
     TITLE,
     LOBBY,
+    STAGE_SELCT,
     IN_GAME,
 }
 
 public class UIManager : Singleton<UIManager>
 {
-
-    private Dictionary<UIType, UiBase> uiTable = new Dictionary<UIType, UiBase>();
-    private Stack<UiBase> openedUIs = new Stack<UiBase>();
-
     [SerializeField] private GameObject mobileUIGroup;
     [SerializeField] private GameObject pcUIGroup;
     [SerializeField] private GameObject popupUI;
@@ -29,6 +26,10 @@ public class UIManager : Singleton<UIManager>
     public UiBase soundUI;
 
     public event Action OnJoinedLobby;
+    public event Action OnReturnedStageSelectStage; 
+
+    private Dictionary<UIType, UiBase> uiTable = new Dictionary<UIType, UiBase>();
+    private Stack<UiBase> openedUIs = new Stack<UiBase>();
 
     private Stack<UiBase> openPopUps = new();
     private GameLocate currLocate; 
@@ -58,6 +59,7 @@ public class UIManager : Singleton<UIManager>
 
     private void HandeSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        openedUIs.Clear();
         if (scene.name == "Stage")
         {
             currLocate = GameLocate.IN_GAME;
@@ -68,11 +70,11 @@ public class UIManager : Singleton<UIManager>
             currLocate =  GameLocate.LOBBY;
             SetLobbyProgress();
         }
-    }
-
-    public void TogglePauseMenu()
-    {
-
+        else if(scene.name == "StageSelectScene")
+        {
+            currLocate = GameLocate.STAGE_SELCT;
+            SetStageSelectScene();
+        }
     }
 
     public void OpenUI(UiBase ui)
@@ -114,6 +116,10 @@ public class UIManager : Singleton<UIManager>
         go?.SetActive(true);
     }
 
+    private void SetStageSelectScene()
+    {
+        OnReturnedStageSelectStage?.Invoke();
+    }
 
     private void SetLobbyProgress()
     {
@@ -184,10 +190,12 @@ public class UIManager : Singleton<UIManager>
     private GameObject OpenPopUp(GameObject popUpObj)
     {
         if (popUpObj == null) return null;
-        UIController uc = FindAnyObjectByType<UIController>();
-        if (uc == null) return null;
+        IUIContainer container = UIRegistry.Get<IUIContainer>();
+        Transform parent = container?.PopUpParent ?? null;
+        if (parent == null) 
+            return null;
 
-        GameObject ui = uc.CreatePopUpUI(popUpObj);
+        GameObject ui = Instantiate(popUpObj, parent);
         if (ui != null && ui.TryGetComponent<UIPopUp>(out var target))
         {
             openPopUps.Push(target);

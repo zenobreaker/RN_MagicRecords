@@ -6,59 +6,106 @@ using UnityEngine;
 public class RewardManager
     : Singleton<RewardManager>
 {
-    public event Action OnAcceptedRewards;
+    public event Action<List<ItemData>> OnAcceptedRewards;
 
     private List<ItemData> rewards = new();
     private int credit = 0;
-    private bool bIsRewardPending = false; 
+    private bool bIsRewardPending = false;
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        AppManager.Instance.OnAwaked += () =>
+        {
+            ManagerWaiter.WaitForManager<UIManager>((uiManager) =>
+            {
+                uiManager.OnJoinedLobby += OnJoinedLobby;
+                uiManager.OnReturnedStageSelectStage += OnReturnedStageSelectScene;
+            });
+        };
+    }
+
     protected override void SyncDataFromSingleton()
     {
         rewards = Instance.rewards;
         credit = Instance.credit; 
     }
 
-    public void GiveStageReward(StageInfo stage, bool success)
+    public void GiveStageReward(StageInfo stage)
     {
+        if (stage == null) return; 
+
+        bool success = stage.bIsCleared && stage.bIsOpened;
         if (success)
         {
-            foreach (var reward in stage.rewardIds)
+            foreach (var rewardId in stage.rewardIds)
             {
-
+                var reward = AppManager.Instance.GetRewardData(rewardId);
+                AddReward(reward); 
             }
         }
     }
 
     public void AddReward(RewardData reward)
     {
+        if (reward == null) return; 
+
         int chance = UnityEngine.Random.Range(0, 101);
 
         if (chance <= reward.weight)
         {
+            int rangeValue = reward.range == 0 ? 0 : UnityEngine.Random.Range(reward.amount, reward.range+1);
             if (reward.type == RewardType.CREDIT)
             {
                 credit += reward.amount;
+                credit += rangeValue;
                 return;
             }
 
             var target = rewards.Find(x => x.id == reward.itemId);
             if (target == null)
             {
-                ItemCategory category = reward.type == RewardType.EQUIPMENT ? ItemCategory.EQUIPMENT : ItemCategory.INGREDIANT;
+                ItemCategory category = ItemCategory.NONE; 
+                
+                switch(reward.type)
+                {
+                    case RewardType.CURRENCY:
+                    case RewardType.EXPLORE_POINT:
+                        category = ItemCategory.CURRENCY;
+                        break;
+                    case RewardType.EXP:
+                        break;
+                    case RewardType.CREDIT:
+                        break;
+                    case RewardType.INGREDIENT:
+                        category = ItemCategory.INGREDIANT;
+                        break;
+                    case RewardType.EQUIPMENT:
+                        category =  ItemCategory.EQUIPMENT;
+                        break;
+                }
+                
                 ItemData item = AppManager.Instance.GetItemData(reward.itemId, category);
-                rewards.Add(item);
+                if (item != null)
+                {
+                    item.itemCount = reward.amount;
+                    rewards.Add(item);
+                }
             }
             else
             {
                 if (target.category == ItemCategory.EQUIPMENT)
                     rewards.Add(target);
                 else
+                {
                     target.itemCount += reward.amount;
+                    target.itemCount += rangeValue;
+                }
             }
 
             // 보상을 처리하지 않은 상태에서 이 구분으로 온다면 보상 처리한다.
              bIsRewardPending = true;
-            if (bIsRewardPending)
-                OpenRewardPopUp();
         }
     }
 
@@ -78,7 +125,7 @@ public class RewardManager
     public void GiveChapterReward(int clearedChapter)
     {
         if (AppManager.Instance == null) return;
-        // 나는 재능이 없는 걸까나 
+       
         ClearRewardData clear = AppManager.Instance.GetChapterClearRewardData(clearedChapter);
         if (clear == null) return;
 
@@ -86,11 +133,20 @@ public class RewardManager
         AddReward(clear);
     }
 
-    private void ReceiveRewads() => rewards.Clear(); 
+    private void ReceiveRewads()
+    {
+        OnAcceptedRewards?.Invoke(rewards);
+        ManagerWaiter.WaitForManager<InventoryManager>(inventory =>
+        {
+            inventory.AddItems(rewards);
+        });
+        rewards.Clear();
+    }
 
+    // 팝업을 로비에만 띄우는게 맞나 탐사포인트 스테이지 선택창에서도 띄우게 해야할거같은데
     private void OpenRewardPopUp()
     {
-        if (UIManager.Instance == null || UIManager.Instance.IsLobby() == false) 
+        if (UIManager.Instance == null) 
             return;
         
         UIManager.Instance.OpenRewardPopUp(rewards);
@@ -103,7 +159,14 @@ public class RewardManager
     public void OnJoinedLobby()
     {
         if (bIsRewardPending == false) return;
-        if (UIManager.Instance == null) return;
+        if (UIManager.Instance == null || UIManager.Instance.IsLobby() == false) return;
+
+        OpenRewardPopUp();
+    }
+
+    public void OnReturnedStageSelectScene()
+    {
+        if (bIsRewardPending == false) return; 
 
         OpenRewardPopUp();
     }

@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class DataBaseManager : MonoBehaviour
 {
@@ -64,9 +64,19 @@ public class DataBaseManager : MonoBehaviour
         return rewardDataBase?.GetReward(rewardId);
     }
 
+    private ClearRewardData GetClearRewardData(int clearRewardId)
+    {
+        return rewardDataBase?.GetClearReward(clearRewardId);
+    }
+
+    public ClearRewardData GetStageClearReward(int clearedStageId)
+    {
+        return GetClearRewardData(clearedStageId);
+    }
+
     public ClearRewardData GetChapterClearReward(int clearedChapter)
     {
-        // ÇØ´ç °ªÀ¸·Î ÇÏµå ÄÚµùÇÏ¿© Ã³¸®ÇÑ´Ù.
+        // í•´ë‹¹ ê°’ìœ¼ë¡œ í•˜ë“œ ì½”ë”©í•˜ì—¬ ì²˜ë¦¬í•œë‹¤.
         int clearId = 0;
         if (clearedChapter == 1)
         {
@@ -82,10 +92,5 @@ public class DataBaseManager : MonoBehaviour
         }
 
         return GetClearRewardData(clearId);
-    }
-
-    public ClearRewardData GetClearRewardData(int clearRewardId)
-    {
-        return rewardDataBase?.GetClearReward(clearRewardId);
     }
 }
