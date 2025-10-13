@@ -54,6 +54,11 @@ public partial class ObjectPooler : MonoBehaviour
     // 오브젝트 생성 후 부모에 할당
     private GameObject CreateNewObjectSetParent(string tag, GameObject prefab, Transform parentTransform = null)
     {
+        if (prefab == null)
+        {
+            Debug.LogWarning($"prefab is not set.");
+            return null;
+        }
         GameObject newObj = Instantiate(prefab);
         newObj.name = tag;
 
