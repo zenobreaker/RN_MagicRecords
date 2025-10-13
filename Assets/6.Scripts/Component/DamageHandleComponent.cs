@@ -59,18 +59,18 @@ public class DamageHandleComponent : MonoBehaviour
         }
     }
 
-    public float CalcDamage(float value)
-    {
-        float result = value;
+    //public float CalcDamage(float value)
+    //{
+    //    float result = value;
 
-        if(status != null)
-        {
-            float defense = status.GetStatusValue(StatusType.DEFENSE);
-            result = Mathf.Max(result - defense, 0.0f);
-        }
+    //    if(status != null)
+    //    {
+    //        float defense = status.GetStatusValue(StatusType.DEFENSE);
+    //        result = Mathf.Max(result - defense, 0.0f);
+    //    }
 
-        return result;
-    }
+    //    return result;
+    //}
 
     public void OnDamage(DamageEvent damageEvent)
     {
@@ -78,7 +78,7 @@ public class DamageHandleComponent : MonoBehaviour
 
         OnDamaged?.Invoke();
 
-        float value = CalcDamage(damageEvent.value);
+        float value = DamageCalculator.CalcDamage(status, damageEvent);
 
         health?.Damage(value);
         
