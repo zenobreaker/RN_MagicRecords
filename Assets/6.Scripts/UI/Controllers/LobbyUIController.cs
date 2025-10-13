@@ -15,9 +15,8 @@ public class LobbyUIController
 
     protected void OnDisable()
     {
-        ManagerWaiter.WaitForManager<UIManager>(uiManager =>
-        {
-            uiManager.OnJoinedLobby -= UpdateCurrencies;
-        });
+        if(ManagerWaiter.TryGetManager<UIManager>(out UIManager ui))
+            ui.OnJoinedLobby -= UpdateCurrencies;
+        
     }
 }
