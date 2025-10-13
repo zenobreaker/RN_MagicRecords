@@ -1,5 +1,19 @@
 using Unity.Behavior;
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+//  StageType
+[System.Serializable]
+public enum StageType
+{
+    None = 0,
+    Combat,
+    Event,
+    Shop,
+    Boss_Combat,
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //  ItemCategory
 [System.Serializable]
@@ -19,6 +33,7 @@ public enum CurrencyType
     NONE,
     GOLD, 
     DIAMOND, 
+    EXPOLORE_POINT, 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,7 +46,8 @@ public enum RewardType
     INGREDIENT,
     EQUIPMENT,
 
-    CREDIT = 99,
+    EXPLORE_POINT = 98, // 탐사 재화
+    CREDIT = 99,        // 특수 재화
 }
 
 ///////////////////////////////////////////////////////////////////////////////
