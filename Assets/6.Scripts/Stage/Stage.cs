@@ -1,23 +1,13 @@
 ﻿using System.Collections.Generic;
 
 [System.Serializable]
-public enum NodeType
-{
-    None,
-    Combat,
-    Event,
-    Shop,
-    Boss_Combat,
-}
-
-[System.Serializable]
 public class StageInfo
 {
     public int id;
 
     public int chapter;
 
-    public NodeType type;
+    public StageType type;
 
     // 등장할 적 
     public List<int> groupIds = new List<int>();
@@ -41,38 +31,12 @@ public class StageInfo
 
 public class StageReplacer
 {
-    public StageInfo GetStage(int id)
-    {
-        StageInfo temp = new StageInfo();
-        temp.id = id;
-        //TODO : 스테이지 타입 정하는 로직이 필요함.
-
-        // 스테이지를 고르는 로직이 필요한데 
-        // 몬스터 같은 경우를 생각하면 어느 테이블에 몬스터가 배치된 테이블을 
-        // 미리 만들어놓고 그 테이블의 id값을 가져다가 붙여넣으면 될 듯 
-
-        CreateEnemyList(ref temp.groupIds);
-        CreateRewardList(ref temp.rewardIds);
-
-        return temp;
-    }
-
-
-    public void CreateEnemyList(ref List<int> groupIds)
-    {
-        //TODO : 스테이지 테마별 등장 몬스터 정보가 필요함
-        groupIds.Clear();
-        groupIds.Add(0);
-    }
-
-    public void CreateRewardList(ref List<int> rewardIds)
-    {
-        rewardIds.Clear();
-        rewardIds.Add(0);
-    }
+    private Dictionary<int, int> nodeToStage = new(); // key : node id value : stage id 
 
     public void AssignStages(List<List<MapNode>> levels)
     {
+        nodeToStage.Clear(); 
+
         for(int level = 0; level < levels.Count; level++)
         {
             if (level == 0)
@@ -82,20 +46,19 @@ public class StageReplacer
                 MapNode node = levels[level][0];
                 if(node != null)
                 {
-                    //TODO : 임시 배치
+                    //TODO : 임시 배치 - 보스스테이지를 배치해야함
                     node.stageID = AppManager.Instance.GetRandomStageID();
                     continue;;
                 }
             }
 
-            for(int n = 0; n < levels[level].Count;n++)
-            {
-                MapNode node = levels[level][n]; 
-                if(node != null)
-                {
-                    node.stageID = AppManager.Instance.GetRandomStageID();
-                }
+            foreach(var node in levels[level])
+            { 
+                node.stageID = AppManager.Instance.GetRandomStageID();
+                nodeToStage[node.id] = node.stageID;
             }
         }
     }
+
+    public int GetStageIdByNodeId(int nodeId) => nodeToStage.TryGetValue(nodeId, out int stageId) ? stageId : -1;
 }

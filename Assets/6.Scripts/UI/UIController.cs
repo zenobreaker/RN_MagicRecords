@@ -1,21 +1,30 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public class UIController : MonoBehaviour
+public class UIController : MonoBehaviour, IUIContainer
 {
-    private void Start()
-    {
-        
-    }
+    private Transform popUpParent;
+    public Transform PopUpParent => popUpParent;
 
+    [SerializeField] private List<UICurrency> currencies; 
+
+    protected virtual void OnEnable()
+    {
+        popUpParent = this.transform;
+        UIRegistry.Register<IUIContainer>(this);
+    }
 
     public void SetActiveTarget(GameObject target)
     {
         target.SetActive(!target.activeInHierarchy);
     }
 
-
-    public GameObject CreatePopUpUI(GameObject target)
+    public void UpdateCurrencies()
     {
-        return Instantiate(target, this.gameObject.transform); 
+        foreach(var currency in currencies)
+        {
+            int v = CurrencyManager.Instance.GetCurrency(currency.Type);
+            currency.SetValue(v); 
+        }
     }
 }

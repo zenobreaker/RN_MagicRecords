@@ -1,16 +1,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StageUIController : MonoBehaviour
+public class StageUIController 
+    : UIController
 {
     [SerializeField] private UIMapReplacer uiMapReplacer;
     [SerializeField] private UIStageInfo uiStageInfo;
 
-    private void Start()
+    protected override void OnEnable()
     {
+        base.OnEnable();
+
+        ManagerWaiter.WaitForManager<UIManager>(uiManager =>
+        {
+            uiManager.OnReturnedStageSelectStage += UpdateCurrencies;
+        });
+
         InitUIMapeReplace();
     }
- 
+
+    protected void OnDisable()
+    {
+        ManagerWaiter.WaitForManager<UIManager>(uiManager =>
+        {
+            uiManager.OnReturnedStageSelectStage -= UpdateCurrencies;
+        });
+    }
+
     private void InitUIMapeReplace()
     {
         if (uiMapReplacer == null) return;
