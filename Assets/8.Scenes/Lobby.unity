@@ -2295,8 +2295,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+      - m_Target: {fileID: 538813348}
+        m_TargetAssemblyTypeName: LobbyUIController, Assembly-CSharp
         m_MethodName: SetActiveTarget
         m_Mode: 2
         m_Arguments:
@@ -2670,8 +2670,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+      - m_Target: {fileID: 538813348}
+        m_TargetAssemblyTypeName: LobbyUIController, Assembly-CSharp
         m_MethodName: SetActiveTarget
         m_Mode: 2
         m_Arguments:
@@ -14451,8 +14451,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+      - m_Target: {fileID: 538813348}
+        m_TargetAssemblyTypeName: LobbyUIController, Assembly-CSharp
         m_MethodName: SetActiveTarget
         m_Mode: 2
         m_Arguments:
@@ -14953,6 +14953,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ba560fa86b4baf4a9d114484644c468, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiSkillTree: {fileID: 0}
+  uiSkillDetail: {fileID: 0}
+  uiSkillReplace: {fileID: 0}
+  skillTreeManager: {fileID: 0}
 --- !u!1 &1795797958
 GameObject:
   m_ObjectHideFlags: 0
@@ -15353,8 +15357,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+      - m_Target: {fileID: 538813348}
+        m_TargetAssemblyTypeName: LobbyUIController, Assembly-CSharp
         m_MethodName: SetActiveTarget
         m_Mode: 2
         m_Arguments:
