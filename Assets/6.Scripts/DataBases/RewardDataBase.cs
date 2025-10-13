@@ -9,6 +9,7 @@ public class RewardJsonData
     public int itemID;
     public int amount;
     public int weight;
+    public int range; 
 }
 
 [System.Serializable]
@@ -24,6 +25,7 @@ public class RewardData
     public int itemId;
     public int amount; 
     public int weight;
+    public int range;
 }
 
 [System.Serializable]

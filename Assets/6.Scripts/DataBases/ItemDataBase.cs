@@ -26,7 +26,7 @@ public class EquipmentItemDataJson : ItemDataJson
 [System.Serializable]
 public class IngredientItemDataJson : ItemDataJson
 {
-    public int ItemCategory;
+    public int itemCategory;
 }
 
 
@@ -110,7 +110,7 @@ public class ItemDataBase : DataBase
                     var data = new IngredientItem(
                         (int)json.id
                         , GetSprite(json.imagePath)
-                        ,json.ItemCategory
+                        ,json.itemCategory
                         );
                     return data;
                 },

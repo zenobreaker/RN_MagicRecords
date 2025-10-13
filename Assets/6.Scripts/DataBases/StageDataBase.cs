@@ -44,7 +44,7 @@ public class StageDataBase : MonoBehaviour
                   var stage = new StageInfo
                   {
                       id = json.id,
-                      type = (NodeType)json.stageType,
+                      type = (StageType)json.stageType,
                       groupIds = JsonLoader.ParseIntList(json.groupIds),
                       rewardIds =  JsonLoader.ParseIntList(json.rewardIDs),
                       wave = json.wave
