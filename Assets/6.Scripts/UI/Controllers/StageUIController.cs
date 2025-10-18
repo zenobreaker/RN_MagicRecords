@@ -13,9 +13,7 @@ public class StageUIController
 
         if (ManagerWaiter.TryGetManager(out UIManager ui))
         {
-
             ui.OnReturnedStageSelectStage += UpdateCurrencies;
-
         }
         else
         {
@@ -31,7 +29,7 @@ public class StageUIController
 
     protected void Start()
     {
-        InitUIMapeReplace();
+        InitUIMapReplace();
     }
 
     protected void OnDisable()
@@ -40,7 +38,7 @@ public class StageUIController
             ui.OnReturnedStageSelectStage -= UpdateCurrencies;
     }
 
-    private void InitUIMapeReplace()
+    private void InitUIMapReplace()
     {
         if (uiMapReplacer == null) return;
 
@@ -56,11 +54,15 @@ public class StageUIController
         // Set Node Event
         foreach (var node in uiMapNodes)
         {
-            node.OnClicked += (stageInfo) =>
+            if (node is UIStageMapNode sm)
             {
-                uiStageInfo.SetStageData(node.Node, stageInfo);
-                UIManager.Instance.OpenUI(uiStageInfo);
-            };
+                sm.OnClicked += (stageInfo) =>
+                {
+                    uiStageInfo.SetStageData(node.Node, stageInfo);
+                    if (stageInfo != null && AppManager.Instance.EnableNode(node.Node) && stageInfo.bIsCleared == false)
+                        UIManager.Instance.OpenUI(uiStageInfo);
+                };
+            }
         }
     }
 }
