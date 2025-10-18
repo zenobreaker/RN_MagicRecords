@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 
 public partial class ObjectPooler : MonoBehaviour
 {
@@ -61,6 +62,10 @@ public partial class ObjectPooler : MonoBehaviour
         }
         GameObject newObj = Instantiate(prefab);
         newObj.name = tag;
+        var agent = newObj.GetComponent<NavMeshAgent>();
+        if (agent != null)
+            agent.enabled = false;
+
 
         Transform parent = parentTransform != null ? parentTransform : GetOrCreateParent(tag);
         newObj.transform.SetParent(parent);
