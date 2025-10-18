@@ -32,8 +32,8 @@ public enum CurrencyType
 {
     NONE,
     GOLD, 
-    DIAMOND, 
-    EXPOLORE_POINT, 
+    DIAMOND,
+    EXPOLORE_CREDIT, 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
