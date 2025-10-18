@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class UISkillTree : UiBase
 {
-    private int maxLineCount = 5; // MaxLevel / 5 
+//    private int maxLineCount = 5; // MaxLevel / 5 
 
     private SkillTreeManager.SkillTreeCategory selectedCategory;
     private SkillTree selectedSkillTree;

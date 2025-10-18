@@ -16,6 +16,17 @@ public class UISkillReplaceDetail : UiBase
 
     private void Awake()
     {
+        SetSlots();
+    }
+
+    public void SetSkillTreeManager(SkillTreeManager manager)
+    {
+        this.manager = manager;
+        SetSlots();
+    }
+
+    private void SetSlots()
+    {
         GameObject currentObject = null;
         if (SystemInfo.deviceType == DeviceType.Desktop)
             currentObject = pcSkillReplaceGroup;
@@ -29,11 +40,6 @@ public class UISkillReplaceDetail : UiBase
             slots.SetSkillTreeManager(manager);
             slots.ClickedSlot += OnClickedSlot;
         }
-    }
-
-    public void SetSkillTreeManager(SkillTreeManager manager)
-    {
-        this.manager = manager;
     }
 
     public void HideUI()
