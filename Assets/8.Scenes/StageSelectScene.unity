@@ -2286,7 +2286,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e0fd28fd4a35194a8899ffa37014101, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currencies: []
+  currencies:
+  - {fileID: 2079482495}
   uiMapReplacer: {fileID: 1680935834}
   uiStageInfo: {fileID: 1865798674142688162}
 --- !u!1 &2013045785
@@ -2402,7 +2403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cff2df26012cf1e4c8e5dbf293846ac6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
+  type: 3
   currencyIcon: {fileID: 0}
   currencyText: {fileID: 0}
 --- !u!1 &2108161147
@@ -2474,9 +2475,9 @@ RectTransform:
   m_Children:
   - {fileID: 1861798712}
   - {fileID: 1680935831}
-  - {fileID: 1865798674142688157}
   - {fileID: 450135389}
   - {fileID: 2108161148}
+  - {fileID: 1865798674142688157}
   m_Father: {fileID: 2002363636}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2729,7 +2730,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4345023308211783602, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: bCheat
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6372159647807091890, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: m_Name

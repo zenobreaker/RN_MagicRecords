@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5961586407382583412}
   - component: {fileID: 2266294392211901203}
   - component: {fileID: -4227278091116973647}
-  - component: {fileID: 5976582360654577693}
+  - component: {fileID: -1795970773836184051}
   m_Layer: 5
   m_Name: MapNode
   m_TagString: Untagged
@@ -121,8 +121,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5976582360654577693}
-        m_TargetAssemblyTypeName: UIMapNode, Assembly-CSharp
+      - m_Target: {fileID: -1795970773836184051}
+        m_TargetAssemblyTypeName: UIStageMapNode, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
         m_Arguments:
@@ -133,7 +133,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &5976582360654577693
+--- !u!114 &-1795970773836184051
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -142,7 +142,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2169335075612225388}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1ca7a82026c4d845b1653263d1dbde2, type: 3}
+  m_Script: {fileID: 11500000, guid: 88800a1cab5e46243b0510dd9fb7f792, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   mapNode:
@@ -150,9 +150,13 @@ MonoBehaviour:
     level: 0
     position: {x: 0, y: 0}
     nextNodeIds: 
-    stageID: 0
-  stage:
+  stageInfo:
     id: 0
+    chapter: 0
     type: 0
-    enemyIds: 
-    rewardIds: 
+    groupIds: 
+    clearRewardId: 0
+    wave: 0
+    mapID: 0
+    bIsCleared: 0
+    bIsOpened: 0
