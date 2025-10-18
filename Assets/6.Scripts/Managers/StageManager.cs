@@ -20,7 +20,7 @@ public class StageManager : MonoBehaviour
     private int currentStageChapter;
     public int CurStageChapter { get => currentStageChapter; }
 
-    private StageInfo currentStage;
+    private StageInfo currentStage; 
 
     private SpawnManager spawnManager;
     private RoomManager roomManager;
@@ -30,12 +30,10 @@ public class StageManager : MonoBehaviour
     private List<Transform> spawnPoints;
 
     private bool bEnableSpawn = false;
-
     private bool bStageClearSuccess = false;
 
+
     public event Action OnProcessBattle;
-
-
     public event Action OnFinishStage;
     public event Action OnSucccedStage;
     public event Action OnFailedStage;
@@ -104,9 +102,11 @@ public class StageManager : MonoBehaviour
         }
     }
 
-    public void SetEnteredStage(StageInfo stageInfo)
+    public void SetEnteredStage(StageInfo stage)
     {
-        currentStage = stageInfo;
+        if (stage == null) return;
+
+        currentStage = stage;
     }
 
     private void OnStartStage()
@@ -170,8 +170,12 @@ public class StageManager : MonoBehaviour
     {
         if (currentStage == null || spawnPoints == null || spawnPoints.Count <= 0) return;
 
+        var groupIds = currentStage.groupIds;
+        if(groupIds.Count == 0) 
+            return;
+
         // Spawn Enemy
-        spawnManager?.SpawnNPC(currentStage.groupIds[currentWave - 1], spawnPoints);
+        spawnManager?.SpawnNPC(groupIds[currentWave - 1], spawnPoints);
     }
 
 

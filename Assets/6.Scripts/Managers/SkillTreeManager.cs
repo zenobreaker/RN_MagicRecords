@@ -47,8 +47,8 @@ public class SkillTreeManager : MonoBehaviour
     [SerializeField] private List<SkillTree> classSkillTreeList;
     [SerializeField] private List<SkillTree> onwerSkillTreeList;
 
-    private int selectedCharacterId = -1;  // 스킬트리를 결정한 캐릭터 ID 
-    private int selectedClassId = 1;          // 스킬트리를 결정한 직업 ID 
+    //private int selectedCharacterId = -1;  // 스킬트리를 결정한 캐릭터 ID 
+    //private int selectedClassId = 1;          // 스킬트리를 결정한 직업 ID 
 
     // 선택한 스킬 정보 
     private SkillRuntimeData selectedSkillData; 

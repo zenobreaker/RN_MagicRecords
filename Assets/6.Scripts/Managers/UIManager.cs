@@ -26,7 +26,7 @@ public class UIManager : Singleton<UIManager>
     public UiBase soundUI;
 
     public event Action OnJoinedLobby;
-    public event Action OnReturnedStageSelectStage; 
+    public event Action OnReturnedStageSelectStage;
 
     private Dictionary<UIType, UiBase> uiTable = new Dictionary<UIType, UiBase>();
     private Stack<UiBase> openedUIs = new Stack<UiBase>();

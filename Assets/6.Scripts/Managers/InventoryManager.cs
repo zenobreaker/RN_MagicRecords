@@ -8,6 +8,8 @@ public class InventoryManager : Singleton<InventoryManager>
     
     protected override void Awake()
     {
+        base.Awake();
+
         categoriesItems.Clear();
         categoriesItems.Add(ItemCategory.EQUIPMENT, new List<ItemData>());
         categoriesItems.Add(ItemCategory.INGREDIANT, new List<ItemData>());
@@ -34,14 +36,18 @@ public class InventoryManager : Singleton<InventoryManager>
     public void AddItems(List<ItemData> items)
     {
         foreach (ItemData item in items)
-        {
-            this.items.Add(item);
-        }
+            AddItem(item);
     }
 
     public void AddItem(ItemData item)
     {
         if (item == null) return;
+
+        if(item.category == ItemCategory.CURRENCY && CurrencyManager.Instance != null)
+        {
+            CurrencyManager.Instance.AddCurrency(item); 
+            return; 
+        }
 
         items.Add(item);
         categoriesItems[item.category].Add(item);

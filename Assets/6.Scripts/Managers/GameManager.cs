@@ -107,11 +107,11 @@ public class GameManager
         OnFailedStage?.Invoke(); 
     }
 
-    public void EnterStage(StageInfo stageInfo)
+    public void EnterStage(StageInfo info)
     {
-        if (stageInfo == null) return;
+        if (info == null) return;
 
-        stageManager.SetEnteredStage(stageInfo);
+        stageManager.SetEnteredStage(info);
 
         SetBeginStage();
 

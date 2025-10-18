@@ -9,7 +9,7 @@ public class RewardManager
     public event Action<List<ItemData>> OnAcceptedRewards;
 
     private List<ItemData> rewards = new();
-    private int credit = 0;
+    private List<ItemData> viewRewards = new();
     private bool bIsRewardPending = false;
 
     protected override void Awake()
@@ -23,26 +23,35 @@ public class RewardManager
                 uiManager.OnJoinedLobby += OnJoinedLobby;
                 uiManager.OnReturnedStageSelectStage += OnReturnedStageSelectScene;
             });
+
+            ManagerWaiter.WaitForManager<InventoryManager>((Inventory) =>
+            {
+                OnAcceptedRewards += Inventory.AddItems;
+            });
         };
     }
 
     protected override void SyncDataFromSingleton()
     {
         rewards = Instance.rewards;
-        credit = Instance.credit; 
     }
 
     public void GiveStageReward(StageInfo stage)
     {
-        if (stage == null) return; 
+        if (stage == null) return;
 
-        bool success = stage.bIsCleared && stage.bIsOpened;
+        bool success = stage.bIsCleared;
         if (success)
         {
-            foreach (var rewardId in stage.rewardIds)
+            var clearRewardId = stage.clearRewardId;
+            var clearRewardData = AppManager.Instance?.GetStageClearRewardData(clearRewardId);
+            if(clearRewardData != null)
             {
-                var reward = AppManager.Instance.GetRewardData(rewardId);
-                AddReward(reward); 
+                foreach (var rewardid in clearRewardData.rewardIds)
+                {
+                    var reward = AppManager.Instance.GetRewardData(rewardid);
+                    AddReward(reward);
+                }
             }
         }
     }
@@ -56,37 +65,11 @@ public class RewardManager
         if (chance <= reward.weight)
         {
             int rangeValue = reward.range == 0 ? 0 : UnityEngine.Random.Range(reward.amount, reward.range+1);
-            if (reward.type == RewardType.CREDIT)
-            {
-                credit += reward.amount;
-                credit += rangeValue;
-                return;
-            }
 
             var target = rewards.Find(x => x.id == reward.itemId);
             if (target == null)
             {
-                ItemCategory category = ItemCategory.NONE; 
-                
-                switch(reward.type)
-                {
-                    case RewardType.CURRENCY:
-                    case RewardType.EXPLORE_POINT:
-                        category = ItemCategory.CURRENCY;
-                        break;
-                    case RewardType.EXP:
-                        break;
-                    case RewardType.CREDIT:
-                        break;
-                    case RewardType.INGREDIENT:
-                        category = ItemCategory.INGREDIANT;
-                        break;
-                    case RewardType.EQUIPMENT:
-                        category =  ItemCategory.EQUIPMENT;
-                        break;
-                }
-                
-                ItemData item = AppManager.Instance.GetItemData(reward.itemId, category);
+                ItemData item = AppManager.Instance.GetItemData(reward.itemId, reward.type);
                 if (item != null)
                 {
                     item.itemCount = reward.amount;
@@ -133,13 +116,10 @@ public class RewardManager
         AddReward(clear);
     }
 
-    private void ReceiveRewads()
+    private void ReceiveRewards()
     {
+        viewRewards = rewards;
         OnAcceptedRewards?.Invoke(rewards);
-        ManagerWaiter.WaitForManager<InventoryManager>(inventory =>
-        {
-            inventory.AddItems(rewards);
-        });
         rewards.Clear();
     }
 
@@ -150,7 +130,7 @@ public class RewardManager
             return;
         
         UIManager.Instance.OpenRewardPopUp(rewards);
-        ReceiveRewads();
+        ReceiveRewards();
 
         bIsRewardPending = false;
     }

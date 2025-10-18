@@ -59,6 +59,11 @@ public class DataBaseManager : MonoBehaviour
         return itemDataBase?.GetIngredientItemData(itemId);
     }
 
+    public CurrencyItem GetCurrencyItem(int itemId)
+    {
+        return itemDataBase?.GetCurrencyItemData(itemId);
+    }
+
     public RewardData GetRewardData(int rewardId)
     {
         return rewardDataBase?.GetReward(rewardId);
