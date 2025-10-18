@@ -9,8 +9,58 @@ public class MapNode
     public int level;
     public Vector2 position;
     public List<int> nextNodeIds = new List<int>(); // 연결된 다음 노드들
+}
 
-    public int stageID;
+
+[System.Serializable]
+public class StageMapNode : MapNode
+{
+    public StageInfo stageInfo;
+
+    public bool bIsCleared = false;
+    public bool bIsOpened = false;
+
+    public StageMapNode(StageInfo info)
+    {
+        stageInfo = info;
+        bIsCleared = info.bIsCleared;
+        bIsOpened = info.bIsOpened;
+    }
+
+    public StageMapNode(StageMapNode other)
+    {
+        id = other.id;
+        stageInfo = other.stageInfo;
+        bIsCleared = other.bIsCleared;
+        bIsOpened = other.bIsOpened;
+    }
+
+    public StageMapNode() { }
+
+    public int GetMapID()
+    {
+        return stageInfo != null ? stageInfo.mapID : -1;
+    }
+
+    public int GetStageId()
+    {
+        return stageInfo != null ? stageInfo.id : -1;
+    }
+
+    public List<int> GetGroupIds()
+    {
+        return stageInfo != null ? stageInfo.groupIds : null;
+    }
+
+    public int GetWave()
+    {
+        return stageInfo != null ? stageInfo.wave : -1;
+    }
+
+    public override string ToString()
+    {
+        return stageInfo?.ToString();
+    }
 }
 
 public class MapReplacer
@@ -45,6 +95,7 @@ public class MapReplacer
     public void Replace(float width = 0.0f, float height = 0.0f)
     {
         levels.Clear();
+        nodeIdCounter = 0;
 
         // 배치
         for (int level = 0; level < maxLevel; level++)
@@ -66,14 +117,14 @@ public class MapReplacer
 
                 // 마지막 노드 캐싱
                 if (level == maxLevel - 1)
-                    finalNodeId = node.id; 
+                    finalNodeId = node.id;
 
                 // 왼쪽에서 오른쪽으로 배치되는 기준
                 // 가운데 정렬되도록 y축 계산 
                 float totalHeight = (nodeCount - 1) * verticalSpacing;
                 float y = -(i * verticalSpacing - totalHeight / 2);
 
-                float x = widthMargin  + level * horizontalSpacing;
+                float x = widthMargin + level * horizontalSpacing;
 
                 node.position = new Vector2(x, y);
                 currentLevel.Add(node);
@@ -136,7 +187,8 @@ public class MapReplacer
                 {
                     // 랜덤한 이전 레벨 노드를 골라서 연결
                     MapNode randomParent = currentLevel[UnityEngine.Random.Range(0, currentLevel.Count)];
-                    randomParent.nextNodeIds.Add(orphanNode.id);
+                    if (!randomParent.nextNodeIds.Contains(orphanNode.id))
+                        randomParent.nextNodeIds.Add(orphanNode.id);
                 }
             }
 
@@ -145,16 +197,22 @@ public class MapReplacer
 
     public List<int> GetCanEnableNodeIds(int currentID)
     {
-        List<int> results = new(); 
+        List<int> results = new();
         for (int level = 0; level < maxLevel; level++)
         {
-            for (int node = 0; node < levels[level].Count ; node++)
+            for (int node = 0; node < levels[level].Count; node++)
             {
                 if (levels[level][node].id == currentID)
-                    results  = levels[level][node].nextNodeIds;
+                    results.AddRange(levels[level][node].nextNodeIds);
             }
         }
 
         return results;
+    }
+
+    public bool CanEnableNode(int currentId, int targetId)
+    {
+        var list = GetCanEnableNodeIds(currentId);
+        return list.Contains(targetId);
     }
 }

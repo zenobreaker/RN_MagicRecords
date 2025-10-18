@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using DG.Tweening;
 using TMPro;
+using UnityEditor;
 
 public class UIStageInfo 
     : UiBase
 {
     private MapNode node; 
-    private StageInfo stageInfo; 
     private RectTransform rect;
+    private StageInfo stageInfo;
 
     [SerializeField] private TextMeshProUGUI titleText;
 
@@ -28,14 +29,10 @@ public class UIStageInfo
 
     public void SetStageData(MapNode node, StageInfo stageInfo)
     {
-        if (stageInfo == null) return;
+        if (node == null|| stageInfo == null) return;
 
-        this.node = node; 
-
-        //TODO : 스테이지 아이디를 이용해서 데이터베이스에서 데이터 참조 후 UI 세팅
+        this.node = node;
         this.stageInfo = stageInfo;
-
-        this.stageInfo.bIsOpened = true; 
 
         if (titleText != null)
         {
@@ -45,9 +42,10 @@ public class UIStageInfo
 
     public void EnterStage()
     {
-        if (stageInfo == null || stageInfo.bIsCleared || stageInfo.bIsOpened == false)
+        if (node == null || stageInfo.bIsCleared 
+            || AppManager.Instance.EnableNode(node) == false)
             return;
 
-        AppManager.Instance.EnterStageByNode(node, stageInfo);
+        AppManager.Instance.EnterStageByNode(node);
     }
 }
