@@ -124,7 +124,8 @@ public partial class StrafeAction : Action
         closestPoint = points[nextIndex];
         prevIndex = nextIndex;
 
-        agent.SetDestination(closestPoint);
+        if(agent != null && agent.isActiveAndEnabled)
+            agent.SetDestination(closestPoint);
     }
 }
 

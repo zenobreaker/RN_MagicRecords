@@ -22,7 +22,7 @@ public class LaunchComponent : MonoBehaviour
         Vector3 dir = attacker.transform.forward; 
         float lauch = rigid.mass * hitData.Distance;
 
-        if (agent != null)
+        if (agent != null && agent.isActiveAndEnabled)
         {
             agent.ResetPath();
             agent.enabled = false;
