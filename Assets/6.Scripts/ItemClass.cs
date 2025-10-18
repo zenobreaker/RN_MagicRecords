@@ -65,3 +65,15 @@ public class IngredientItem
     }
 }
 
+public class CurrencyItem
+    : ItemData
+{
+    private CurrencyType type;
+    public CurrencyType Type { get => type; }
+    public CurrencyItem(int id, Sprite icon, CurrencyType type)
+        : base(id, icon)
+    {
+        category = ItemCategory.CURRENCY;
+        this.type = type;
+    }
+}

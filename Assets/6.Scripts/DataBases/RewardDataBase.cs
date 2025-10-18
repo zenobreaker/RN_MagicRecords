@@ -21,7 +21,7 @@ public class RewardJsonAllData
 public class RewardData
 {
     public int id;
-    public RewardType type;
+    public ItemCategory type;
     public int itemId;
     public int amount; 
     public int weight;
@@ -32,7 +32,6 @@ public class RewardData
 public class ClearRewardJsonData
 {
     public int id;
-    public int stageID;
     public string rewardIDList;
     public string viewItemIDList; 
 }
@@ -40,15 +39,14 @@ public class ClearRewardJsonData
 [System.Serializable]
 public class ClearRewardAllData
 {
-    public List<ClearRewardJsonData> cleareRewardJsonData;
+    public List<ClearRewardJsonData> clearRewardJsonData;
 }
 
 public class ClearRewardData
 {
     public int id;
-    public int stageId;
-    public List<int> rewardIds;
-    public List<int> viewItemIDList;
+    public List<int> rewardIds = new();
+    public List<int> viewItemIDList = new();
 }
 
 
@@ -58,8 +56,6 @@ public class RewardDataBase : DataBase
 
     [SerializeField] private Dictionary<int, RewardData> rewards = new();
     [SerializeField] private Dictionary<int, ClearRewardData> clearRewards = new();
-
-    private Dictionary<int, int> clearRewardByStageIds = new(); 
 
     public override void Initialize()
     {
@@ -77,7 +73,7 @@ public class RewardDataBase : DataBase
             {
                 var rewardData = new RewardData();
                 rewardData.id = json.rewardID;
-                rewardData.type = (RewardType)json.type;
+                rewardData.type = (ItemCategory)json.type;
                 rewardData.itemId = json.itemID;
                 rewardData.amount = json.amount;
                 rewardData.weight = json.weight;
@@ -96,13 +92,12 @@ public class RewardDataBase : DataBase
         JsonLoader.LoadJsonList<ClearRewardAllData, ClearRewardJsonData, ClearRewardData>
             (
                 clearRewardAsset,
-                root => root.cleareRewardJsonData,
+                root => root.clearRewardJsonData,
 
                 json =>
                 {
                     var clearRewardData = new ClearRewardData();
                     clearRewardData.id = json.id;
-                    clearRewardData.stageId = json.stageID;
                     foreach (string id in json.rewardIDList.Split(','))
                     {
                         if(!string.IsNullOrEmpty(id))
@@ -121,7 +116,6 @@ public class RewardDataBase : DataBase
                 clearReward=>
                 {
                     clearRewards.TryAdd(clearReward.id, clearReward);
-                    clearRewardByStageIds.TryAdd(clearReward.stageId, clearReward.id);
                 }
             );
 
@@ -133,11 +127,6 @@ public class RewardDataBase : DataBase
     public RewardData GetReward(int rewardId)
     {
         return rewards.TryGetValue(rewardId, out var rewardData) ? rewardData : null;
-    }
-
-    public ClearRewardData GetClearRewardDataByStageId(int stageId)
-    {
-        return clearRewardByStageIds.TryGetValue(stageId, out var crid) ? GetClearReward(crid) : null;
     }
 
     public ClearRewardData GetClearReward(int clearRewardId)

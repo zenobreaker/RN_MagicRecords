@@ -9,7 +9,7 @@ public class StageInfoJson
     public int stageType;
     public int chapter;
     public string groupIds;
-    public string rewardIDs;
+    public int clearRewardId;
     public int wave;
 }
 
@@ -46,7 +46,7 @@ public class StageDataBase : MonoBehaviour
                       id = json.id,
                       type = (StageType)json.stageType,
                       groupIds = JsonLoader.ParseIntList(json.groupIds),
-                      rewardIds =  JsonLoader.ParseIntList(json.rewardIDs),
+                      clearRewardId =  json.clearRewardId,
                       wave = json.wave
                   };
                   return stage;
@@ -99,7 +99,7 @@ public class StageDataBase : MonoBehaviour
     public StageInfo GetStageInfo(int stageID)
     {
         if (stageInfoTable.TryGetValue(stageID, out StageInfo stageInfo))
-            return stageInfo;
+            return new StageInfo(stageInfo);
         else
             return null;
     }

@@ -63,6 +63,18 @@ public class MonsterStatData
     public float attack;
     public float defense;
     public float speed;
+
+    public MonsterStatData(MonsterStatData other)
+    {
+        id = other.id; 
+        monsterID = other.monsterID;
+        hp = other.hp;
+        attack = other.attack;
+        defense = other.defense;
+        speed = other.speed;
+    }
+
+    public MonsterStatData() { }
 }
 
 
@@ -213,7 +225,7 @@ public class MonsterDataBase : MonoBehaviour
     public MonsterStatData GetMonsterStatData(int monsterID)
     {
         return (monsterStatDatas.TryGetValue(monsterID, out var monsterStatData))
-            ? monsterStatData : null;
+            ? new MonsterStatData(monsterStatData) : null;
     }
 
 }

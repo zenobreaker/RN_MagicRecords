@@ -29,6 +29,16 @@ public class IngredientItemDataJson : ItemDataJson
     public int itemCategory;
 }
 
+[System.Serializable]
+public class CurrencyItemDataJson : ItemDataJson
+{
+    public int type;
+}
+
+public class CurrencyItemDataJsonAllData
+{
+    public List<CurrencyItemDataJson> currencyJsonData; 
+}
 
 public class EquipmentItemDataJsonAllData
 {
@@ -48,12 +58,18 @@ public class ItemDataBase : DataBase
     [Header("재료 아이템")]
     [SerializeField] private TextAsset ingredientItemJson;
 
+    [Header("재화 아이템")]
+    [SerializeField] private TextAsset currencyItemJson;
+    
+
     private Dictionary<int, EquipmentItem> equipmentItems = new();
     private Dictionary<int, IngredientItem> ingredientItems = new();
+    private Dictionary<int, CurrencyItem> currencyItems = new(); 
 
 
     public override void Initialize()
     {
+        InitializeCurrencyItemData(); 
         InitializeEquipmentItemData();
         InitializeIngredientItemData();
     }
@@ -125,7 +141,36 @@ public class ItemDataBase : DataBase
         Debug.Log($"Complete Message => ingredientItems : {ingredientItems.Count}");
     }
 
-        
+    public void InitializeCurrencyItemData()
+    {
+        if (currencyItemJson == null) return;
+
+
+        JsonLoader.LoadJsonList<CurrencyItemDataJsonAllData, CurrencyItemDataJson, CurrencyItem>
+            (
+                currencyItemJson,
+                root => root.currencyJsonData,
+
+                json =>
+                {
+                    var data = new CurrencyItem(
+                        (int)json.id
+                        , GetSprite(json.imagePath)
+                        , (CurrencyType)json.type
+                        );
+                    return data;
+                },
+
+                currency =>
+                {
+                    currencyItems.TryAdd(currency.id, currency);
+                }
+            );
+
+        Debug.Log("===================================================");
+        Debug.Log($"Complete Message => currencyItems  : {currencyItems.Count}");
+    }
+
     public EquipmentItem GetEquipmentItemData(int itemId)
     { 
         return equipmentItems.TryGetValue(itemId, out var equipmentItem) ? equipmentItem : null;
@@ -134,6 +179,11 @@ public class ItemDataBase : DataBase
     public IngredientItem GetIngredientItemData(int itemId)
     {
         return ingredientItems.TryGetValue(itemId, out var ingredientItem) ? ingredientItem : null;
+    }
+
+    public CurrencyItem GetCurrencyItemData(int itemId)
+    {
+        return currencyItems.TryGetValue(itemId, out var currentItem) ? currentItem : null;
     }
 
     private Sprite GetSprite(string path)
