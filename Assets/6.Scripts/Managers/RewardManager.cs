@@ -11,13 +11,15 @@ public class RewardManager
     private List<ItemData> rewards = new();
     private List<ItemData> viewRewards = new();
     private bool bIsRewardPending = false;
-
+  
     protected override void Awake()
     {
         base.Awake();
 
         AppManager.Instance.OnAwaked += () =>
         {
+            if (bIsAwaked) return; 
+
             ManagerWaiter.WaitForManager<UIManager>((uiManager) =>
             {
                 uiManager.OnJoinedLobby += OnJoinedLobby;
@@ -28,6 +30,8 @@ public class RewardManager
             {
                 OnAcceptedRewards += Inventory.AddItems;
             });
+
+            bIsAwaked = true; 
         };
     }
 

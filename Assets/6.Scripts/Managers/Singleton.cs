@@ -18,6 +18,8 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
+    protected bool bIsAwaked = false;
+
     protected virtual void Awake()
     {
         if (instance == null)

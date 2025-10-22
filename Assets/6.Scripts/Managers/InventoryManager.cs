@@ -16,6 +16,7 @@ public class InventoryManager : Singleton<InventoryManager>
 
         AppManager.Instance.OnAwaked += () =>
         {
+            if (bIsAwaked) return; 
             // Test
             var item = AppManager.Instance.GetEquipmentItem(1000);
             AddItem(item);
@@ -23,6 +24,8 @@ public class InventoryManager : Singleton<InventoryManager>
             AddItem(item);
             item = AppManager.Instance.GetEquipmentItem(3000);
             AddItem(item);
+
+            bIsAwaked = true; 
         };
     }
 

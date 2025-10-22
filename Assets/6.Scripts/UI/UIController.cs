@@ -8,6 +8,8 @@ public class UIController : MonoBehaviour, IUIContainer
 
     [SerializeField] private List<UICurrency> currencies;
 
+    protected bool bIsAwaked = false;
+
     protected virtual void OnEnable()
     {
         popUpParent = this.transform;

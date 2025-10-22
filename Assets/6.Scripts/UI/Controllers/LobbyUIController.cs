@@ -11,10 +11,12 @@ public class LobbyUIController
 
         AppManager.Instance.OnAwaked += () =>
         {
+            if (bIsAwaked) return; 
             ManagerWaiter.WaitForManager<UIManager>(uiManager =>
             {
                 uiManager.OnJoinedLobby += UpdateCurrencies;    
             });
+            bIsAwaked = true; 
         };
     }
 
