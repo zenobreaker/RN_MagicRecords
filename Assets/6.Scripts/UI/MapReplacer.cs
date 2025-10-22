@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -214,5 +215,25 @@ public class MapReplacer
     {
         var list = GetCanEnableNodeIds(currentId);
         return list.Contains(targetId);
+    }
+
+    public void RestoreMap(List<MapNode> savedNodes)
+    {
+        levels.Clear(); 
+        maxLevel = savedNodes.Max(x => x.level) + 1;
+
+        for(int i = 0; i < maxLevel; i++)
+            levels.Add(new List<MapNode>());
+
+        bool isConnected = false;
+        foreach (var node in savedNodes)
+        {
+            levels[node.level].Add(node);
+            if (node.nextNodeIds.Count > 0)
+                isConnected = true; 
+        }
+
+        if (isConnected == false)
+            ConnectToNode();
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class StageUIController
     : UIController
@@ -19,10 +20,12 @@ public class StageUIController
         {
             AppManager.Instance.OnAwaked += (() =>
             {
+                if (bIsAwaked) return;
                 ManagerWaiter.WaitForManager<UIManager>(uiManager =>
                 {
                     ui.OnReturnedStageSelectStage += UpdateCurrencies;
                 });
+                bIsAwaked = true; 
             });
         }
     }
@@ -64,5 +67,12 @@ public class StageUIController
                 };
             }
         }
+    }
+
+    public void OnBackButton()
+    {
+        AppManager.Instance.SaveExploreMap();
+
+        SceneManager.LoadScene(0);
     }
 }

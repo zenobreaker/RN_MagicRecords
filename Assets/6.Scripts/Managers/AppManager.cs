@@ -40,6 +40,7 @@ public class AppManager
         stageReplacer = new StageReplacer();
 
         OnAwaked?.Invoke();
+        OnAwaked = null;
     }
 
     protected override void SyncDataFromSingleton()
@@ -162,9 +163,28 @@ public class AppManager
     // 맵들 배치 
     private void ReplaceLevel()
     {
-        mapReplacer.Replace();
-        mapReplacer.ConnectToNode();
-        stageReplacer.AssignStages(mapReplacer.GetLevels());
+        MapData loadMap = SaveManager.LoadMap();
+        if (loadMap != null)
+        {
+            mapReplacer.RestoreMap(loadMap.nodes);
+            mapNodeID = loadMap.currentStageId;
+        }
+        else
+        {
+            mapReplacer.Replace();
+            mapReplacer.ConnectToNode();
+        }
+
+
+        StageNodeData loadStage = SaveManager.LoadStageNode();
+        if (loadStage != null)
+        {
+            stageReplacer.RestoreStages(loadStage);
+        }
+        else
+        {
+            stageReplacer.AssignStages(mapReplacer.GetLevels());
+        }
     }
     // 스테이지를 만들어 둔 것을 어디에 저장하고 있어야 할 듯 
     public StageInfo GetStageInfo(int stageID)
@@ -344,4 +364,28 @@ public class AppManager
     }
     #endregion
 
+    #region Save
+    public void SaveExploreMap()
+    {
+        // Save Map 
+        {
+            MapData mapData = new();
+            foreach (var level in mapReplacer.GetLevels())
+                foreach (var node in level)
+                    mapData.nodes.Add(node);
+
+            mapData.currentStageId = mapNodeID;
+            SaveManager.SaveMap(mapData);
+        }
+
+        // Save Stage
+        {
+            StageNodeData stageNodeData = new();
+            foreach (var pair in stageReplacer.GetNodeToStageId())
+                stageNodeData.stages.Add(new MapToStage { mapNodeId = pair.Key, stageId = pair.Value });
+
+            SaveManager.SaveStageNode(stageNodeData);
+        }
+    }
+    #endregion
 }

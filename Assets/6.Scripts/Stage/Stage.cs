@@ -44,13 +44,14 @@ public class StageInfo
 
 public class StageReplacer
 {
-    private Dictionary<int, StageInfo> nodeToStage = new(); // key : node id value : stage id 
-
+    private Dictionary<int, StageInfo> nodeToStage = new(); // key : node id value : stage
+    private Dictionary<int, int> nodeIdToStageId = new();
     public void AssignStages(List<List<MapNode>> levels)
     {
-        nodeToStage.Clear(); 
+        nodeToStage.Clear();
+        nodeIdToStageId.Clear();
 
-        for(int level = 0; level < levels.Count; level++)
+        for (int level = 0; level < levels.Count; level++)
         {
             if (level == 0)
                 continue;
@@ -60,9 +61,25 @@ public class StageReplacer
             {
                 var stageInfo = AppManager.Instance.CreateRandomStageInfo();
                 nodeToStage[node.id] = stageInfo;
+                nodeIdToStageId[node.id] = stageInfo.id;
             }
         }
     }
+
+    public void RestoreStages(StageNodeData stageNodeData)
+    {
+        nodeToStage.Clear();
+        nodeIdToStageId.Clear();
+
+        foreach (var stage in stageNodeData.stages)
+        {
+            var stageInfo = AppManager.Instance.GetStageInfo(stage.stageId);
+            nodeToStage[stage.mapNodeId] = stageInfo;
+            nodeIdToStageId[stage.mapNodeId] = stage.stageId;
+        }
+    }
+
+    public Dictionary<int, int> GetNodeToStageId() => nodeIdToStageId;
 
     public int GetStageIdByNodeId(int nodeId) => nodeToStage.TryGetValue(nodeId, out var stageInfo) ? stageInfo.id: -1;
     public StageInfo GetReplacedStageInfo(int nodeId) => nodeToStage.TryGetValue(nodeId, out var stageInfo) ? stageInfo : null;
