@@ -43,13 +43,13 @@ public class UIManager : Singleton<UIManager>
         base.Awake();
 
         if (Instance == this)
-            SceneManager.sceneLoaded += HandeSceneLoaded;
+            SceneManager.sceneLoaded += HandleSceneLoaded;
     }
 
     protected override void SyncDataFromSingleton()
     {
         base.SyncDataFromSingleton();
-        SceneManager.sceneLoaded -= HandeSceneLoaded;
+        SceneManager.sceneLoaded -= HandleSceneLoaded;
 
         mobileUIGroup = Instance.mobileUIGroup;
         pcUIGroup = Instance.pcUIGroup;
@@ -57,7 +57,7 @@ public class UIManager : Singleton<UIManager>
         soundUI = Instance.soundUI;
     }
 
-    private void HandeSceneLoaded(Scene scene, LoadSceneMode mode)
+    private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         openedUIs.Clear();
         if (scene.name == "Stage")
