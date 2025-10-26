@@ -23,16 +23,16 @@ public class CharacterInfoController : MonoBehaviour
             DrawnCharInfo += uiCharStatus.OnDrawCharStatus;
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        SetCharEquipmentDataData();
+        SetCharEquipmentData();
 
         DrawnCharInfo?.Invoke(selectedCharStatus, selectedCharEquipment);
         DrawenCharEquipment?.Invoke(selectedCharEquipment);
     }
 
 
-    private void SetCharEquipmentDataData()
+    private void SetCharEquipmentData()
     {
         if (PlayerManager.Instance == null) return;
 
