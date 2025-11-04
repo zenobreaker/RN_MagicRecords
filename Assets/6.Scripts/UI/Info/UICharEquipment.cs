@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class UICharEquipment : UiBase
 {
+    [SerializeField] Sprite emptySlot;
     [SerializeField] Image[] charEquipmentsSlots;
 
     public void OnDrawCharEquipment(CharEquipmentData ce)
@@ -17,9 +18,7 @@ public class UICharEquipment : UiBase
 
         for (var e = EquipParts.WEAPON; e < EquipParts.MAX; e++)
         {
-            var equipment = ce.equipments[(int)e]?.itemId is int id && id != -1
-            ? AppManager.Instance?.GetEquipmentItem(id)
-            : null;
+            var equipment = InventoryManager.Instance.FindItem(ce.equipments[(int)e]?.itemUniqueId);
             
             if(equipment != null)
             {
@@ -28,6 +27,7 @@ public class UICharEquipment : UiBase
             else
             {
                 // 빈 이미지로 처리 
+                charEquipmentsSlots[(int)e].sprite = emptySlot;
             }
         } // for(e)
     }
