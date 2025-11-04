@@ -13,9 +13,10 @@ public class Cheater
 
     bool bStunToggle = false;
 
-    private void Start()
+    protected override void Start()
     {
         player = FindAnyObjectByType<Player>();
+        base.Start();
     }
 
     protected override void SyncDataFromSingleton()
@@ -57,6 +58,14 @@ public class Cheater
 
         if (Input.GetKeyDown(KeyCode.Keypad1))
             Test_RewardPopUp();
+
+        if (Input.GetKeyDown(KeyCode.Keypad2))
+            Test_AddItem();
+    }
+
+    private void Test_AddItem()
+    {
+        InventoryManager.Instance.TestAddItems();
     }
 
     private void Test_PlayerRemoveBuff()
