@@ -18,7 +18,8 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
-    protected bool bIsAwaked = false;
+    private static bool bInitialized = false;
+    public static bool IsInitialized { get => bInitialized; }
 
     protected virtual void Awake()
     {
@@ -32,6 +33,12 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             SyncDataFromSingleton();
             Destroy(gameObject);
         }
+    }
+
+    protected virtual void Start()
+    {
+        bInitialized = true;
+        ManagerWaiter.NotifyManagerReady<T>((T)(object)this);
     }
 
     protected virtual void SyncDataFromSingleton()
