@@ -73,7 +73,7 @@ public class UISkillDetail : UiBase
     {
         if (selectedSkillData == null) return;
 
-        selectedSkillData.currentLevel = selectedSkillData.GetMaxSkillLevel();
+        selectedSkillData.SetMaxSkillLevel();
         DrawSkillLevel(selectedSkillData);
     }
 
@@ -81,8 +81,7 @@ public class UISkillDetail : UiBase
     {
         if (selectedSkillData == null) return;
 
-        selectedSkillData.currentLevel = Mathf.Clamp(
-            selectedSkillData.currentLevel-1, 0, selectedSkillData.currentLevel);
+        selectedSkillData.DecreaseSKillLevel();
         DrawSkillLevel(selectedSkillData);
     }
 
@@ -90,8 +89,7 @@ public class UISkillDetail : UiBase
     {
         if (selectedSkillData == null) return;
 
-        selectedSkillData.currentLevel = Mathf.Clamp(
-            selectedSkillData.currentLevel + 1, 0, selectedSkillData.GetMaxSkillLevel());
+        selectedSkillData.IncreaseSkillLevel();
         DrawSkillLevel(selectedSkillData);
     }
 

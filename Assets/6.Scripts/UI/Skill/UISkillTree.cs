@@ -27,17 +27,9 @@ public class UISkillTree : UiBase
         int lineCount = 0;
         for (int i = 0; i <= 50; i++)
         {
-            var skillList = skillTree.GetSkillForLevel(i);
-            if (skillList != null && skillList.Count > 0)
+            var runtimeList = skillTree.GetSkillRuntimeDatasByLevel(i);
+            if (runtimeList != null && runtimeList.Count > 0)
             {
-                var runtimeList = skillList
-                    .Select(sd => new SkillRuntimeData
-                    { 
-                        template = sd,
-                        currentLevel = 0,
-                        isUnlocked = false
-                    })
-                    .ToList();
                 skillLines.Add(runtimeList);
                 lineCount++;
             }
