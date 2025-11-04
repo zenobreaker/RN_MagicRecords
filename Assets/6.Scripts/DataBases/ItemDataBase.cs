@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -173,17 +174,17 @@ public class ItemDataBase : DataBase
 
     public EquipmentItem GetEquipmentItemData(int itemId)
     { 
-        return equipmentItems.TryGetValue(itemId, out var equipmentItem) ? equipmentItem : null;
+        return (EquipmentItem)(equipmentItems.TryGetValue(itemId, out var equipmentItem) ? equipmentItem.Copy() : null);
     }
 
     public IngredientItem GetIngredientItemData(int itemId)
     {
-        return ingredientItems.TryGetValue(itemId, out var ingredientItem) ? ingredientItem : null;
+        return (IngredientItem)(ingredientItems.TryGetValue(itemId, out var ingredientItem) ? ingredientItem.Copy() : null);
     }
 
     public CurrencyItem GetCurrencyItemData(int itemId)
     {
-        return currencyItems.TryGetValue(itemId, out var currentItem) ? currentItem : null;
+        return (CurrencyItem)(currencyItems.TryGetValue(itemId, out var currentItem) ? currentItem.Copy() : null);
     }
 
     private Sprite GetSprite(string path)
