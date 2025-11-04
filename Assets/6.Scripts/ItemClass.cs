@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 
 public abstract class ItemData
 {
     public int id;
+    public string uniqueID; 
     public Sprite icon;
     public ItemCategory category;
 
@@ -13,7 +15,10 @@ public abstract class ItemData
     {
         this.id = id;
         this.icon = icon;
+        this.uniqueID = Guid.NewGuid().ToString();
     }
+
+    public abstract ItemData Copy();
 }
 
 public class EquipmentItem : ItemData
@@ -22,7 +27,10 @@ public class EquipmentItem : ItemData
     public StatModifier modifier;
     
     public int owner = 0; 
-    public bool Eqeuipped = false; 
+    public bool Eqeuipped = false;
+
+    private int enhance; 
+    public int Enhance { get { return enhance; } }
 
     public EquipmentItem(int id, Sprite icon, string name, string description, EquipParts parts,
         StatusType mainStatus, float mainValue, bool isPercent)
@@ -36,6 +44,23 @@ public class EquipmentItem : ItemData
 
         category = ItemCategory.EQUIPMENT;
         itemCount = 1;
+        enhance = 0; 
+    }
+
+    public override ItemData Copy()
+    {
+        // StatModifier도 깊은 복사 (값 복사)
+        var newModifier = new StatModifier(modifier.type, modifier.value, modifier.valueType);
+
+        var copy = new EquipmentItem(id, icon, name, description, parts,
+            newModifier.type, newModifier.value, newModifier.valueType == ModifierValueType.PERCENT);
+
+        copy.owner = owner;
+        copy.uniqueID = uniqueID;
+        copy.Eqeuipped = Eqeuipped;
+        copy.itemCount = itemCount;
+
+        return copy;
     }
 
     public void EquipItem(StatusComponent status)
@@ -56,12 +81,22 @@ public class IngredientItem
         : base(id, icon)
     {
         category = (ItemCategory)itemCategory;
+        itemCount = 1; 
     }
 
     public IngredientItem(int id, Sprite icon, ItemCategory category = ItemCategory.INGREDIANT) 
         : base(id, icon)
     {
         this.category = category;
+        itemCount = 1; 
+    }
+
+    public override ItemData Copy()
+    {
+        var copy = new IngredientItem(id, icon, category);
+        copy.uniqueID = uniqueID;
+        copy.itemCount = itemCount;
+        return copy;
     }
 }
 
@@ -75,5 +110,13 @@ public class CurrencyItem
     {
         category = ItemCategory.CURRENCY;
         this.type = type;
+    }
+
+    public override ItemData Copy()
+    {
+        var copy = new CurrencyItem(id, icon, Type);
+        copy.uniqueID = uniqueID;
+        copy.itemCount = itemCount;
+        return copy;
     }
 }

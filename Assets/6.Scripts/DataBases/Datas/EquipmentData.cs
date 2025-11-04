@@ -6,6 +6,7 @@ public class EquipmentInfoData
 {
     public int slotId;
     public int itemId;
+    public string itemUniqueId; 
 }
 
 
@@ -40,6 +41,7 @@ public class CharEquipmentData
         Debug.Log($"Item equip {characterId} : {item.id}");
         equipments[(int)item.parts].slotId = (int)item.parts;
         equipments[(int)item.parts].itemId = item.id;
+        equipments[(int)item.parts].itemUniqueId = item.uniqueID;
     }
 
     public void UnequipItem(EquipmentItem item)
@@ -49,5 +51,17 @@ public class CharEquipmentData
         Debug.Log($"Item unequip {characterId} : {item.id}");
         equipments[(int)item.parts].slotId = 0;
         equipments[(int)item.parts].itemId = 0;
+        equipments[(int)item.parts].itemUniqueId = null;
+    }
+
+    public List<string> GetEquippedItemIDs()
+    {
+        List<string> ids = new();
+        foreach(var equip in  equipments)
+        {
+            ids.Add(equip.itemUniqueId);
+        }
+
+        return ids;
     }
 }

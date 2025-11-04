@@ -42,8 +42,8 @@ public class EquipmentComponent : MonoBehaviour
             Debug.Log("Set Equipments!! ");
             for(var e = EquipParts.WEAPON;  e < EquipParts.MAX; e++)
             {
-                var equipment = data.equipments[(int)e]?.itemId is int id && id != -1 ?
-                    AppManager.Instance?.GetEquipmentItem(id) : null;
+                var equipment = InventoryManager.Instance.FindItem(data.equipments[(int)e]?.itemUniqueId) as EquipmentItem;
+                equipment ??= AppManager.Instance.GetEquipmentItem(data.equipments[(int)e].itemId);
 
                 if (equipment != null)
                     EquipToSlot(equipment);

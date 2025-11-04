@@ -13,9 +13,11 @@ public static class StatusCalculator
         {
             foreach (var eq in equipment.equipments)
             {
-                if (eq.itemId <= 0) continue;
+                if (string.IsNullOrEmpty(eq.itemUniqueId)) continue;
 
-                var item = AppManager.Instance.GetEquipmentItem(eq.itemId);
+                var item = InventoryManager.Instance.FindItem(eq.itemUniqueId) as EquipmentItem;
+                item ??= AppManager.Instance.GetEquipmentItem(eq.itemId);
+                
                 if (item == null || item.modifier == null) continue;
 
                 if (item.modifier.type != type) continue;
