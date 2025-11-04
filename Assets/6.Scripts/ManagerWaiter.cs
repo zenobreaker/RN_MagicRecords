@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ManagerWaiter : Singleton<ManagerWaiter>
 {
+    private static readonly Dictionary<Type, List<Delegate>> waiters = new();
+
     public static bool TryGetManager<T>(out T manager) where T : MonoBehaviour
     {
         if(Singleton<T>.Instance != null)
@@ -18,12 +21,27 @@ public class ManagerWaiter : Singleton<ManagerWaiter>
 
     public static void WaitForManager<T>(Action<T> onReady) where T : MonoBehaviour
     {
-        Instance.StartCoroutine(WaitUntilManagerReady(onReady));
+        if(Singleton<T>.Instance != null && Singleton<T>.IsInitialized)
+        {
+            onReady?.Invoke(Singleton<T>.Instance);
+            return; 
+        }
+
+        if(!waiters.ContainsKey(typeof(T)))
+            waiters[typeof(T)] = new List<Delegate>();
+
+        waiters[typeof(T)].Add(onReady);
     }
 
-    private static IEnumerator WaitUntilManagerReady<T>(Action<T> onReady) where T : MonoBehaviour
+    public static void NotifyManagerReady<T>(T manager) where T : MonoBehaviour    
     {
-        yield return new WaitUntil(() => Singleton<T>.Instance != null);
-        onReady?.Invoke(Singleton<T>.Instance); 
+        if (!waiters.ContainsKey(typeof(T))) return;
+
+        foreach(var w in waiters[typeof(T)])
+        {
+            (w as Action<T>)?.Invoke(manager); 
+        }
+
+        waiters.Remove(typeof(T));
     }
 }
