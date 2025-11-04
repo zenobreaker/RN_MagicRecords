@@ -1,5 +1,7 @@
+using System;
+
 [System.Serializable]
-public class StatModifier 
+public class StatModifier :ICloneable
 {
     public StatusType type;
     public float value;
@@ -34,5 +36,10 @@ public class StatModifier
     public string GetFullValue()
     {
         return type.ToString() + " " + GetValueAndValueType(); 
+    }
+
+    public object Clone()
+    {
+        return new StatModifier(type, value, valueType);
     }
 }
