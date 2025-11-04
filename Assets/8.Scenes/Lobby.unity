@@ -512,6 +512,39 @@ MonoBehaviour:
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 0
   m_ConstraintCount: 2
+--- !u!1 &116740370 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6372159647807091890, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+  m_PrefabInstance: {fileID: 1152448966}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &116740376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 116740370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a531d6c4f17cb0340b02a37f7835bb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  classSkillTreeList:
+  - id: 1
+    allSkills:
+    - {fileID: 11400000, guid: 670a805b3eebd3c46b42647f9365105e, type: 2}
+    - {fileID: 11400000, guid: f6b7f2b99ce90da40a0073b767e980f6, type: 2}
+    - {fileID: 11400000, guid: 37d8b70de5477a44d92ce428f8d6ce42, type: 2}
+    - {fileID: 11400000, guid: 3c7e39de5436bbd4a9264131f8ae6425, type: 2}
+    - {fileID: 11400000, guid: 1af5de8cd065be747b8bfa3e531d0ae7, type: 2}
+    - {fileID: 11400000, guid: 9a41ec88b392b394795c4d65036c7ab4, type: 2}
+    - {fileID: 11400000, guid: a9c4eabb088d96d42a1759810bd8fcee, type: 2}
+    - {fileID: 11400000, guid: 1c48a00e8786dc7488a9d193ba13fced, type: 2}
+    - {fileID: 11400000, guid: 3dc0c4d2d41d18b44bfdbc5c77939506, type: 2}
+    - {fileID: 11400000, guid: 8b5d5b4fa095d4747856d4c19c778ae1, type: 2}
+  onwerSkillTreeList:
+  - id: 1
+    allSkills: []
 --- !u!1 &127244486
 GameObject:
   m_ObjectHideFlags: 0
@@ -9079,7 +9112,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6372159647807091890, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 116740376}
   m_SourcePrefab: {fileID: 100100000, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
 --- !u!1 &1154993958
 GameObject:
@@ -9210,6 +9246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content: {fileID: 0}
   childObject: {fileID: 0}
+  emptySlot: {fileID: 0}
   charEquipmentsSlots:
   - {fileID: 392205606}
   - {fileID: 361113557}
@@ -12676,6 +12713,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content: {fileID: 0}
   childObject: {fileID: 0}
+  emptySlot: {fileID: 1773437694, guid: ab7a7bb4ea221bb4bbb05129795100dd, type: 3}
   charEquipmentsSlots:
   - {fileID: 38527135}
   - {fileID: 846521012}
@@ -13537,66 +13575,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1687904763}
   m_CullTransparentMesh: 1
---- !u!1 &1699191388
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1699191390}
-  - component: {fileID: 1699191389}
-  m_Layer: 0
-  m_Name: SkillTreeManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1699191389
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1699191388}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a531d6c4f17cb0340b02a37f7835bb86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  classSkillTreeList:
-  - id: 1
-    allSkills:
-    - {fileID: 11400000, guid: 670a805b3eebd3c46b42647f9365105e, type: 2}
-    - {fileID: 11400000, guid: f6b7f2b99ce90da40a0073b767e980f6, type: 2}
-    - {fileID: 11400000, guid: 37d8b70de5477a44d92ce428f8d6ce42, type: 2}
-    - {fileID: 11400000, guid: 3c7e39de5436bbd4a9264131f8ae6425, type: 2}
-    - {fileID: 11400000, guid: 1af5de8cd065be747b8bfa3e531d0ae7, type: 2}
-    - {fileID: 11400000, guid: 9a41ec88b392b394795c4d65036c7ab4, type: 2}
-    - {fileID: 11400000, guid: a9c4eabb088d96d42a1759810bd8fcee, type: 2}
-    - {fileID: 11400000, guid: 1c48a00e8786dc7488a9d193ba13fced, type: 2}
-    - {fileID: 11400000, guid: 3dc0c4d2d41d18b44bfdbc5c77939506, type: 2}
-    - {fileID: 11400000, guid: 8b5d5b4fa095d4747856d4c19c778ae1, type: 2}
-  onwerSkillTreeList:
-  - id: 1
-    allSkills: []
---- !u!4 &1699191390
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1699191388}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1700466495
 GameObject:
   m_ObjectHideFlags: 0
@@ -17001,8 +16979,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2053950048}
-  - component: {fileID: 2053950047}
   - component: {fileID: 2053950049}
+  - component: {fileID: 2053950047}
   m_Layer: 0
   m_Name: PlayerManager
   m_TagString: Untagged
@@ -18221,6 +18199,7 @@ SceneRoots:
   - {fileID: 370007727}
   - {fileID: 1202780550}
   - {fileID: 1700466496}
+  - {fileID: 589836155}
   - {fileID: 504933534}
   - {fileID: 408358410}
   - {fileID: 538813347}
@@ -18228,9 +18207,7 @@ SceneRoots:
   - {fileID: 277358996}
   - {fileID: 1152448966}
   - {fileID: 899822479}
-  - {fileID: 1699191390}
   - {fileID: 5604655516343343121}
   - {fileID: 2053950048}
   - {fileID: 1324734334}
   - {fileID: 819505393}
-  - {fileID: 589836155}
