@@ -42,13 +42,14 @@ public class InventoryUI : UiBase
             {
                 slot.SetItemData(items[index]);
                 slot.gameObject.SetActive(true);
+                slot.OnClickedSlot -= ClickSlot;
                 slot.OnClickedSlot += ClickSlot;
                 index++;
             }
             else
             {
-                slot.gameObject.SetActive(false);
                 slot.OnClickedSlot -= ClickSlot;
+                slot.gameObject.SetActive(false);
             }
         });
     }
