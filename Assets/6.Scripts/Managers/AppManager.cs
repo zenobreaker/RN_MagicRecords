@@ -12,6 +12,7 @@ public class AppManager
 
     private DataBaseManager databaseManager;
     private SkillManager skillManager;
+    private SkillTreeManager skillTree;
     private RewardManager rewardManager;
 
     // 생성한 맵 정보를 가지고 있는 배치자 
@@ -34,13 +35,27 @@ public class AppManager
 
         databaseManager = GetComponent<DataBaseManager>();
         skillManager = GetComponent<SkillManager>();
+        skillTree = SkillTreeManager.Instance;   
         rewardManager = GetComponent<RewardManager>();
 
         mapReplacer = new MapReplacer();
         stageReplacer = new StageReplacer();
 
+        if (IsInitialized == false)
+        {
+            skillManager.OnDataChanaged += () => { PlayerManager.Instance.SetDirty(); };
+            InventoryManager.Instance.OnInit();
+            PlayerManager.Instance.OnInit();
+            SceneManager.sceneUnloaded += OnUnloadScene;
+        }
+
         OnAwaked?.Invoke();
         OnAwaked = null;
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveIfDirty(); 
     }
 
     protected override void SyncDataFromSingleton()
@@ -49,6 +64,7 @@ public class AppManager
         if (Instance != this)
         {
             skillManager = Instance.skillManager;
+            skillTree = Instance.skillTree;
             databaseManager = Instance.databaseManager;
 
             bCheat = Instance.bCheat;
@@ -70,13 +86,15 @@ public class AppManager
         }
     }
 
-    private void Start()
+    protected override void Start()
     {
         if (GameManager.Instance == null) return;
 
         GameManager.Instance.OnFinishStage += FinishStageProcess;
         GameManager.Instance.OnSuccedStage += SuccessStageProcess;
         GameManager.Instance.OnFailedStage += FailedStageProcess;
+        
+        base.Start(); 
     }
 
     private void OnDisable()
@@ -285,6 +303,20 @@ public class AppManager
     #endregion
 
     #region Skill 
+
+    public void EquipSavedClassActiveSkill(int classID, List<int> skillIDs)
+    {
+        if (skillManager == null || skillTree == null) return;
+
+        int slot = 0;
+        foreach (int skillID in skillIDs)
+        {
+            SkillRuntimeData runtimeData = skillTree.GetSkillRuntimeData(classID, skillID);
+            EquipActiveSkill(classID, slot, runtimeData);
+            slot++; 
+        }
+    }
+
     public void EquipActiveSkill(int charId, int slot, SkillRuntimeData skill)
     {
         if (skillManager == null) return;
@@ -304,6 +336,12 @@ public class AppManager
         if (skillManager == null) return null;
 
         return skillManager.GetActiveSkillList(charId);
+    }
+
+    public List<int> GetEquippedActiveSkillIDListByCharID(int charID)
+    {
+        if(skillManager == null) return null;
+        return skillManager.GetActiveSkillIDList(charID);
     }
 
     public void SetActiveSkills(int charId, SkillComponent skillComp)
@@ -365,6 +403,24 @@ public class AppManager
     #endregion
 
     #region Save
+
+    public void OnUnloadScene(Scene scene)
+    {
+        SaveIfDirty();
+    }
+
+    public void SaveIfDirty()
+    {
+        if (skillTree.IsDirty)
+            skillTree.SaveSkillTree();
+
+        if (InventoryManager.Instance.IsDirty)
+            InventoryManager.Instance.SaveIfDirty();
+
+        if (PlayerManager.Instance.IsDirty)
+            PlayerManager.Instance.SaveIfDirty();
+    }
+
     public void SaveExploreMap()
     {
         // Save Map 

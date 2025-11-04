@@ -1,15 +1,16 @@
-using System;
+Ôªøusing System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using System.Linq;
 using UnityEngine;
 
 public class SkillManager : MonoBehaviour
 {
     private readonly int SKILL_SLOT_MAX_COUNT = 4;
 
-    // ƒ≥∏Ø≈Õ∫∞∑Œ ¿Â¬¯«— Ω∫≈≥ 
+    // Ï∫êÎ¶≠ÌÑ∞Î≥ÑÎ°ú Ïû•Ï∞©Ìïú Ïä§ÌÇ¨ 
     private Dictionary<int, List<SkillRuntimeData>> equippedActiveSkills = new();
 
+    public event Action OnDataChanaged;
 
     private void Awake()
     {
@@ -23,18 +24,25 @@ public class SkillManager : MonoBehaviour
 
     public void EquipActiveSkill(int charId, int slot, SkillRuntimeData skill)
     {
-        // ¿ÃπÃ ¿Â¬¯µ«æÓ ¿÷¥Ÿ∏È ±◊∞Õ¿ª «ÿ¡¶«œ∞Ì ªı∑Œ ¿Â¬¯
+        // Ïù¥ÎØ∏ Ïû•Ï∞©ÎêòÏñ¥ ÏûàÎã§Î©¥ Í∑∏Í≤ÉÏùÑ Ìï¥Ï†úÌïòÍ≥† ÏÉàÎ°ú Ïû•Ï∞©
         int prevSlot = -1;
         prevSlot = equippedActiveSkills[charId].FindIndex(x => x == skill);
         if(prevSlot != -1)
             equippedActiveSkills[charId][prevSlot] = null;
 
         equippedActiveSkills[charId][slot] = skill;
+        OnDataChanaged?.Invoke();
     }
 
     public List<SkillRuntimeData> GetActiveSkillList(int charId)
     {
         return equippedActiveSkills[charId];
+    }
+
+    public List<int> GetActiveSkillIDList(int charID)
+    {
+        return equippedActiveSkills[charID]
+            .Select(skill => skill != null ? skill.GetSkillID() : 0).ToList();
     }
 
     public void SetActiveSkills(int charid, SkillComponent skillComp)

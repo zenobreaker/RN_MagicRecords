@@ -53,7 +53,7 @@ public class GameManager
     }
     #endregion
 
-    private void Start()
+    protected override void Start()
     {
         // SetBeginStage(); 
     }

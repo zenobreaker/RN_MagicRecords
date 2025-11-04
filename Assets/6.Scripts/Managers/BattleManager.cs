@@ -20,9 +20,11 @@ public class BattleManager
         Instance = this;
     }
 
-    private void Start()
+    protected override void Start()
     {
         battleTable = new Dictionary<Character, List<Character>>();
+        
+        base.Start(); 
     }
 
     private void OnEnable()

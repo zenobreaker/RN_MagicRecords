@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -11,24 +12,58 @@ public class SkillTree
     public List<SO_SkillData> allSkills;
 
     // 스킬 트리는 레벨 별로 배우는 스킬들로 지정한다. 
-    private Dictionary<int, List<SO_SkillData>> skillByLevelTable; 
-
-    public void Initialize()
+    private Dictionary<int, List<SO_SkillData>> skillByLevelTable;
+    private Dictionary<int, SkillRuntimeData> skillRuntimeDatas = new(); 
+    public void Initialize(Action action = null)
     {
         skillByLevelTable = allSkills.GroupBy(skill => skill.learnableLevel)
             .ToDictionary(g => g.Key, g => g.OrderBy(s => s.id).ToList());
 
-        //foreach(var skillpair in  skillByLevelTable)
-        //{
-        //    Debug.Log($"skill level : {skillpair.Key}");
-        //    foreach(var skill in skillpair.Value)
-        //        Debug.Log($"skill id : {skill.id}");
-        //}
+        skillRuntimeDatas.Clear();
+        foreach (var skillpair in skillByLevelTable)
+        {
+            foreach (var skill in skillpair.Value)
+            {
+                var runtimedata = new SkillRuntimeData
+                {
+                    template = skill,
+                    currentLevel = 0,
+                    isUnlocked = false,
+                };
+
+                if(action != null)
+                    runtimedata.OnDataChanged += action;
+                skillRuntimeDatas.Add(skill.id, runtimedata);
+            }
+        }
     }
 
     public List<SO_SkillData> GetSkillForLevel(int level)
     {
         return skillByLevelTable.TryGetValue(level, out var skills)
             ? skills : new List<SO_SkillData>(); 
+    }
+
+    public SkillRuntimeData GetSkillRuntimeDataByID(int id)
+    {
+        return skillRuntimeDatas.TryGetValue(id, out var value) ? value : null;
+    }
+
+    public List<SkillRuntimeData> GetSkillRuntimeDatasByLevel(int level)
+    {
+        List<SkillRuntimeData> runtimeList = GetSkillForLevel(level).Select(sd =>
+        skillRuntimeDatas[sd.id]).ToList();
+
+        foreach (SkillRuntimeData skill in runtimeList)
+        {
+            var currentData = GetSkillRuntimeDataByID(skill.template.id);
+            if (currentData == null)
+                continue;
+
+            skill.currentLevel = currentData.currentLevel;
+            skill.isUnlocked = currentData.isUnlocked;
+        }
+
+        return runtimeList;
     }
 }

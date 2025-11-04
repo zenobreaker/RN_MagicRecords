@@ -18,7 +18,7 @@ public class RewardManager
 
         AppManager.Instance.OnAwaked += () =>
         {
-            if (bIsAwaked) return; 
+            if (IsInitialized) return; 
 
             ManagerWaiter.WaitForManager<UIManager>((uiManager) =>
             {
@@ -30,8 +30,6 @@ public class RewardManager
             {
                 OnAcceptedRewards += Inventory.AddItems;
             });
-
-            bIsAwaked = true; 
         };
     }
 
