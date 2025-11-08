@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,46 +13,58 @@ public class InventoryUI : UiBase
         base.OnEnable();
 
         category = ItemCategory.EQUIPMENT;
-        StopAllCoroutines();
-        StartCoroutine(WaitForManager()); 
+
+        // Use ManagerWaiter convenience helper to auto register/unregister events
+        ManagerWaiter.RegisterManagerEvent<InventoryManager>(this,
+            onRegister: inventory =>
+            {
+                inventory.OnInitialized += DrawInventory;
+                inventory.OnDataChanged += DrawInventory;
+                DrawInventory();
+            },
+            onUnregister: inventory =>
+            {
+                inventory.OnInitialized -= DrawInventory;
+                inventory.OnDataChanged -= DrawInventory;
+            });
     }
 
-    private IEnumerator WaitForManager()
+    protected override void OnDisable()
     {
-        yield return new WaitUntil(() => InventoryManager.Instance != null);
-        DrawInventory();
+        base.OnDisable();
+        // No manual unsubscribe needed; RegisterManagerEvent attaches a ManagerEventUnsubscriber to this GameObject
     }
 
     private void DrawInventory()
     {
-        if (InventoryManager.Instance == null) return;
+        var manager = InventoryManager.Instance;
+        if (manager == null) return;
 
-        items = InventoryManager.Instance.GetItems(category);
+        items = manager.GetItems(category);
         if (items == null)
-        {
-
             return;
-        }
 
-        InitReplaceContentObject(items.Count);
+        UIListDrawer.DrawList<UIInvenSlot, ItemData>(
+          items, (slot, item, index) =>
+          {
+              // Use provided item to avoid indexing closure
+              slot.SetItemData(item);
+              if (slot.gameObject.activeSelf == false)
+                  slot.gameObject.SetActive(true);
 
-        int index = 0;
-        SetContentChildObjectsCallback<UIInvenSlot>(slot =>
-        {
-            if (index < items.Count)
-            {
-                slot.SetItemData(items[index]);
-                slot.gameObject.SetActive(true);
-                slot.OnClickedSlot -= ClickSlot;
-                slot.OnClickedSlot += ClickSlot;
-                index++;
-            }
-            else
-            {
-                slot.OnClickedSlot -= ClickSlot;
-                slot.gameObject.SetActive(false);
-            }
-        });
+              slot.OnClickedSlot -= ClickSlot;
+              slot.OnClickedSlot += ClickSlot;
+              slot.DrawSlot();
+          },
+          slot =>
+          {
+              slot.OnClickedSlot -= ClickSlot;
+              if (slot.gameObject.activeSelf == true)
+                  slot.gameObject.SetActive(false);
+          },
+          InitReplaceContentObject,
+           SetContentChildObjectsCallback<UIInvenSlot>
+          );
     }
 
     public void OnClickedCategoryButton(int category)
