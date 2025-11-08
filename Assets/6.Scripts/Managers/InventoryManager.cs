@@ -14,6 +14,8 @@ public class InventoryManager
     private bool isDirty = false;
     public bool IsDirty => isDirty;
     public Action OnDataChanged;
+    public event Action OnInitialized; // Added: event to notify when initialization is finished
+
     public void OnInit()
     {
         categoriesItems.Clear();
@@ -21,7 +23,12 @@ public class InventoryManager
         categoriesItems.Add(ItemCategory.INGREDIANT, new List<ItemData>());
 
         var loadData = SaveManager.LoadInventoryData();
-        if (loadData == null) return;
+        if (loadData == null)
+        {
+            // Still notify listeners that initialization is complete even if no saved data
+            OnInitialized?.Invoke();
+            return;
+        }
 
         foreach (var info in loadData.itemInfoList)
         {
@@ -45,6 +52,9 @@ public class InventoryManager
                     break;
             }
         }
+
+        // Notify listeners that initialization is finished
+        OnInitialized?.Invoke();
     }
 
 

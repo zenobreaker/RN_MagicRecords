@@ -186,7 +186,7 @@ public class SkillTreeManager
         return null;
     }
 
-    public void SaveSkillTree()
+    public void SaveIfDirty()
     {
         if (isDirty == false) 
             return; 
