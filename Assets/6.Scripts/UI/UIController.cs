@@ -14,6 +14,23 @@ public class UIController : MonoBehaviour, IUIContainer
     {
         popUpParent = this.transform;
         UIRegistry.Register<IUIContainer>(this);
+
+        // Use RegisterManagerEvent helper to auto manage subscription lifecycle
+        ManagerWaiter.RegisterManagerEvent<CurrencyManager>(this,
+            onRegister: manager =>
+            {
+                manager.OnUpdatedCurrency += UpdateCurrencies;
+                UpdateCurrencies();
+            },
+            onUnregister: manager =>
+            {
+                manager.OnUpdatedCurrency -= UpdateCurrencies;
+            });
+    }
+
+    protected virtual void OnDisable()
+    {
+        // No manual unsubscription required when using RegisterManagerEvent
     }
 
     public void SetActiveTarget(GameObject target)
