@@ -63,6 +63,7 @@ public class UIMapReplacer : MonoBehaviour
         }
     }
 
+    // 영역 재계산
     private void CalcFinalRectArea()
     {
         if (Content == null || mapReplacer == null) return;
