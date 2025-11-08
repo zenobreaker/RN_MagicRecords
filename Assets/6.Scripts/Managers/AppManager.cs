@@ -35,7 +35,7 @@ public class AppManager
 
         databaseManager = GetComponent<DataBaseManager>();
         skillManager = GetComponent<SkillManager>();
-        skillTree = SkillTreeManager.Instance;   
+        skillTree = SkillTreeManager.Instance;
         rewardManager = GetComponent<RewardManager>();
 
         mapReplacer = new MapReplacer();
@@ -55,7 +55,7 @@ public class AppManager
 
     private void OnApplicationQuit()
     {
-        SaveIfDirty(); 
+        SaveIfDirty();
     }
 
     protected override void SyncDataFromSingleton()
@@ -74,7 +74,7 @@ public class AppManager
 
             // 전역 상태 가져오기
             bCreate = Instance.bCreate;
-            
+
             chapter = Instance.chapter;
             maxChapter = Instance.maxChapter;
             prevNodeId = Instance.prevNodeId;
@@ -93,8 +93,8 @@ public class AppManager
         GameManager.Instance.OnFinishStage += FinishStageProcess;
         GameManager.Instance.OnSuccedStage += SuccessStageProcess;
         GameManager.Instance.OnFailedStage += FailedStageProcess;
-        
-        base.Start(); 
+
+        base.Start();
     }
 
     private void OnDisable()
@@ -118,15 +118,15 @@ public class AppManager
     private void AcceptReward()
     {
         // 전부 클리어 했다면 최종 보상을 지급한다. 
-        if(bAllCleared)
+        if (bAllCleared)
         {
             SetChapterClearReward(chapter);
-            return; 
+            return;
         }
 
         // 특정 스테이지 클리어 보상
-        var  stage = stageReplacer.GetReplacedStageInfo(mapNodeID);
-        if(stage  == null)
+        var stage = stageReplacer.GetReplacedStageInfo(mapNodeID);
+        if (stage == null)
         {
             Debug.LogWarning($"보상을 받을 스테이지 ID를 찾을 수 없습니다.");
             return;
@@ -155,7 +155,7 @@ public class AppManager
 
     public bool EnableNode(MapNode node)
     {
-        if(node == null) return false;
+        if (node == null) return false;
 
         return EnableNode(node.id);
     }
@@ -251,17 +251,17 @@ public class AppManager
     {
         // 보상 지급
         AcceptReward();
-        
+
         // 마지막 챕터까지 클리어 했다면 탐사 진입 전 로비로 이동시킨다. 
         if (bAllCleared)
         {
             SceneManager.LoadScene(0);
             bAllCleared = false;
             ResetData();
-            
+
             return;
         }
-        
+
         SceneManager.LoadScene(1);
     }
 
@@ -313,7 +313,7 @@ public class AppManager
         {
             SkillRuntimeData runtimeData = skillTree.GetSkillRuntimeData(classID, skillID);
             EquipActiveSkill(classID, slot, runtimeData);
-            slot++; 
+            slot++;
         }
     }
 
@@ -321,7 +321,7 @@ public class AppManager
     {
         if (skillManager == null) return;
 
-        skillManager.EquipActiveSkill(charId, slot, skill); 
+        skillManager.EquipActiveSkill(charId, slot, skill);
     }
 
     public void UnequipActiveSkill(int charId, int slot)
@@ -340,20 +340,20 @@ public class AppManager
 
     public List<int> GetEquippedActiveSkillIDListByCharID(int charID)
     {
-        if(skillManager == null) return null;
+        if (skillManager == null) return null;
         return skillManager.GetActiveSkillIDList(charID);
     }
 
     public void SetActiveSkills(int charId, SkillComponent skillComp)
     {
-        if(skillManager == null  || skillComp == null) return;
+        if (skillManager == null || skillComp == null) return;
         skillManager.SetActiveSkills(charId, skillComp);
     }
 
     #endregion
 
     #region Database
-    public ItemData GetItemData(int itemId, ItemCategory category )
+    public ItemData GetItemData(int itemId, ItemCategory category)
     {
         if (category == ItemCategory.EQUIPMENT)
             return GetEquipmentItem(itemId);
@@ -377,6 +377,12 @@ public class AppManager
     {
         return databaseManager?.GetCurrencyItem(itemId);
     }
+
+    public List<ItemData> GetShopItems(ItemCategory category)
+    {
+        return databaseManager?.GetShopItems(category);
+    }
+
     #endregion
 
     #region Reward
@@ -387,7 +393,7 @@ public class AppManager
 
     public ClearRewardData GetStageClearRewardData(int stageid)
     {
-        return databaseManager?.GetStageClearReward(stageid); 
+        return databaseManager?.GetStageClearReward(stageid);
     }
 
     public ClearRewardData GetChapterClearRewardData(int clearedChapter)
@@ -411,14 +417,9 @@ public class AppManager
 
     public void SaveIfDirty()
     {
-        if (skillTree.IsDirty)
-            skillTree.SaveSkillTree();
-
-        if (InventoryManager.Instance.IsDirty)
-            InventoryManager.Instance.SaveIfDirty();
-
-        if (PlayerManager.Instance.IsDirty)
-            PlayerManager.Instance.SaveIfDirty();
+        skillTree?.SaveIfDirty();
+        InventoryManager.Instance?.SaveIfDirty();
+        PlayerManager.Instance?.SaveIfDirty();
     }
 
     public void SaveExploreMap()
