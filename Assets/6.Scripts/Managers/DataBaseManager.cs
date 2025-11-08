@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using NUnit.Framework;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class DataBaseManager : MonoBehaviour
 {
@@ -6,6 +8,7 @@ public class DataBaseManager : MonoBehaviour
     private MonsterDataBase monsterDataBase;
     private ItemDataBase itemDataBase;
     private RewardDataBase rewardDataBase;
+    private ShopDataBase shopDataBase;
 
     private void Awake()
     {
@@ -20,6 +23,12 @@ public class DataBaseManager : MonoBehaviour
 
         if (gameObject.TryComponentInChildren<RewardDataBase>(out rewardDataBase))
             rewardDataBase.Initialize();
+
+        if (gameObject.TryComponentInChildren<ShopDataBase>(out shopDataBase))
+        {
+            shopDataBase.Initialize();
+            shopDataBase.Initialize_Lookup(itemDataBase);
+        }
     }
 
     public int GetRandomStageID(int chapter)
@@ -97,5 +106,15 @@ public class DataBaseManager : MonoBehaviour
         }
 
         return GetClearRewardData(clearId);
+    }
+
+    public ShopItem GetShopItem(int itemID)
+    {
+        return shopDataBase?.GetShopItemData(itemID);   
+    }
+
+    public List<ItemData> GetShopItems(ItemCategory category)
+    {
+        return shopDataBase?.GetShopItems(category);
     }
 }
