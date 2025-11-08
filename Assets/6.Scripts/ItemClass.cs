@@ -11,11 +11,22 @@ public abstract class ItemData
     public string name;
     public string description;
     public int itemCount = 0;
-    public ItemData(int id, Sprite icon)
+    public ItemData(int id, Sprite icon = null)
     {
         this.id = id;
         this.icon = icon;
         this.uniqueID = Guid.NewGuid().ToString();
+    }
+
+    public ItemData (ItemData other)
+    {
+        id = other.id;
+        uniqueID = other.uniqueID;
+        icon = other.icon;
+        category = other.category;
+        name = other.name;
+        description = other.description;
+        itemCount = other.itemCount;
     }
 
     public abstract ItemData Copy();
@@ -118,5 +129,40 @@ public class CurrencyItem
         copy.uniqueID = uniqueID;
         copy.itemCount = itemCount;
         return copy;
+    }
+}
+
+
+public class ShopItem : ItemData
+{
+    private int targetItemID;
+    public int TargetItemID => targetItemID;
+    private CurrencyType currencyType;
+    public CurrencyType CurrencyType => currencyType;
+    private int price;
+    public int Price => price; 
+
+    public ShopItem(int id, int targetItemID, Sprite icon = null,
+        int pirce = 0, CurrencyType currencyType = CurrencyType.NONE) 
+        : base(id, icon)
+    {
+        this.price = pirce;
+        this.targetItemID = targetItemID;
+        this.currencyType = currencyType;
+    }
+    public ShopItem(ItemData data) :base(data) 
+    { 
+        if(data is ShopItem shopItem)
+        {
+            this.targetItemID = shopItem.targetItemID;
+            this.price = shopItem.price;
+            this.currencyType = shopItem.currencyType;
+        }
+    }
+
+
+    public override ItemData Copy()
+    {
+        return new ShopItem(id, targetItemID, icon, price, currencyType);
     }
 }

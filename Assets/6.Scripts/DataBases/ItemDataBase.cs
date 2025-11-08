@@ -172,6 +172,17 @@ public class ItemDataBase : DataBase
         Debug.Log($"Complete Message => currencyItems  : {currencyItems.Count}");
     }
 
+    public ItemData GetItem(int id)
+    {
+        ItemData item = GetEquipmentItemData(id);
+        if (item == null)
+            item = GetIngredientItemData(id);
+        if (item == null)
+            item = GetCurrencyItemData(id);
+
+        return item;
+    }
+
     public EquipmentItem GetEquipmentItemData(int itemId)
     { 
         return (EquipmentItem)(equipmentItems.TryGetValue(itemId, out var equipmentItem) ? equipmentItem.Copy() : null);
@@ -186,12 +197,4 @@ public class ItemDataBase : DataBase
     {
         return (CurrencyItem)(currencyItems.TryGetValue(itemId, out var currentItem) ? currentItem.Copy() : null);
     }
-
-    private Sprite GetSprite(string path)
-    {
-        //Assets/7.Sprites/Resources/Equipments/Weapons/img_equipment_weapon_gun_0.png
-        var sprite = Resources.Load<Sprite>(path);
-        return sprite; 
-    }
-
 }

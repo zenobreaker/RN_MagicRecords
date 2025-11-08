@@ -124,3 +124,18 @@ public enum EquipParts
     WHEEL,
     MAX = 6,
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//  Item Rank 
+public enum ItemRank
+{
+    NONE,
+    COMMON,
+    MAGIC,
+    RARE, 
+    UNIQUE,
+    LEGENDARY,
+
+    MAX = LEGENDARY,
+}
+
