@@ -23,6 +23,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject pcUIGroup;
     [SerializeField] private GameObject popupUI;
     [SerializeField] private GameObject popupUIReward;
+    [SerializeField] private GameObject popupUIShop;
     public UiBase soundUI;
 
     public event Action OnJoinedLobby;
@@ -179,6 +180,12 @@ public class UIManager : Singleton<UIManager>
         OpenRewardPopUp(itemDatas.ToArray());
     }
 
+    public void OpenShopPopUp(ItemData itemData, int price, CurrencyType currencyType)
+    {
+        var ui = OpenPopUp(popupUIShop);
+        if (ui != null && ui.TryGetComponent<UIPopUpShop>(out var target))
+            target.SetData(itemData, price, currencyType);
+    }
 
     public void OpenItemPopUp(ItemData itemData)
     {

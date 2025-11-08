@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public abstract class UIPopUp 
     : UiBase
@@ -24,6 +25,24 @@ public abstract class UIPopUp
         if(popupArea != null && RectTransformUtility.RectangleContainsScreenPoint(popupArea, eventData.position) == false)
         {
             CloseUI();
+        }
+    }
+}
+
+public abstract class UIPopUpBase : UIPopUp
+{
+    private Button panelButton;
+
+    protected virtual void Awake()
+    {
+        panelButton = GetComponent<Button>();
+
+        if (panelButton != null)
+        {
+            panelButton.onClick.AddListener(() =>
+            {
+                UIManager.Instance.ClosePopup();
+            });
         }
     }
 }

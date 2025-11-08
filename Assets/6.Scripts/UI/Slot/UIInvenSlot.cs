@@ -8,15 +8,4 @@ public class UIInvenSlot : UIItemSlot
     {
         itemImage = GetComponent<Image>();
     }
-
-    public override void SetItemData(ItemData itemData)
-    {
-        base.SetItemData(itemData);
-        DrawSlot(); 
-    }
-
-    protected override void DrawSlot()
-    {
-        base.DrawSlot();
-    }
 }

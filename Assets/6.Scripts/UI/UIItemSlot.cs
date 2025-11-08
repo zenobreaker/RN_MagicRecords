@@ -2,9 +2,11 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UISlot<T> : MonoBehaviour
+public abstract class UISlot<T> : MonoBehaviour
 {
-    public Action<T> OnClickedSlot; 
+    public Action<T> OnClickedSlot;
+
+    public abstract void DrawSlot();
 
     public virtual void OnClick()
     {
@@ -22,10 +24,10 @@ public class UIItemSlot : UISlot<ItemData>
 
     public virtual void SetItemData(ItemData itemData)
     {
-        this.itemData = itemData; 
+        this.itemData = itemData;
     }
 
-    protected virtual void DrawSlot()
+    public override void DrawSlot()
     {
         if (itemImage == null)
             return; 
@@ -43,4 +45,5 @@ public class UIItemSlot : UISlot<ItemData>
     {
         OnClickedSlot?.Invoke(itemData); 
     }
+
 }

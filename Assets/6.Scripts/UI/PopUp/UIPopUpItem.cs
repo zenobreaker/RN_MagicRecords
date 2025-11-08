@@ -2,30 +2,20 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIPopUpItem : UIPopUp
+public class UIPopUpItem : UIPopUpBase
 {
-    [SerializeField] private ItemData item;
-    [SerializeField] private Image itemIconImage; 
-    [SerializeField] private TextMeshProUGUI itemNameText; 
-    [SerializeField] private TextMeshProUGUI itemMainOptionText; 
-    [SerializeField] private TextMeshProUGUI itemMainDescText;
-    [SerializeField] private Button equipButton; 
-    [SerializeField] private Button useButton; 
-    [SerializeField] private Button exitButton; 
+    [SerializeField] protected ItemData item;
+    [SerializeField] protected Image itemIconImage; 
+    [SerializeField] protected TextMeshProUGUI itemNameText; 
+    [SerializeField] protected TextMeshProUGUI itemMainOptionText; 
+    [SerializeField] protected TextMeshProUGUI itemMainDescText;
+    [SerializeField] protected Button equipButton; 
+    [SerializeField] protected Button useButton; 
+    [SerializeField] protected Button exitButton; 
 
-    private Button panelButton;
-
-    protected void Awake()
+    protected override void Awake()
     {
-        panelButton = GetComponent<Button>(); 
-
-        if(panelButton != null)
-        {
-            panelButton.onClick.AddListener(() =>
-            {
-                UIManager.Instance.ClosePopup();
-            });
-        }
+        base.Awake();
 
         if( exitButton != null)
         {
@@ -88,7 +78,7 @@ public class UIPopUpItem : UIPopUp
         }
     }
 
-    private void DrawItemOption()
+    protected void DrawItemOption()
     {
         if(item == null) return;
         if (itemMainOptionText == null) return;

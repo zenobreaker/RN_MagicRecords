@@ -24,6 +24,7 @@ public class UIPopUpRewards : UIPopUp
             {
                 slot.SetItemData(rewardItems[index]);
                 slot.gameObject.SetActive(true);
+                slot.DrawSlot();
                 index++; 
             }
             else
