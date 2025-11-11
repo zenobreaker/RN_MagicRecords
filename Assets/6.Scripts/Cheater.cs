@@ -61,6 +61,14 @@ public class Cheater
 
         if (Input.GetKeyDown(KeyCode.Keypad2))
             Test_AddItem();
+
+        if (Input.GetKeyDown(KeyCode.Keypad3))
+            Test_AddCurrencies();
+    }
+
+    private void Test_AddCurrencies()
+    {
+        CurrencyManager.Instance.Cheat_AddedCurrenices();
     }
 
     private void Test_AddItem()
