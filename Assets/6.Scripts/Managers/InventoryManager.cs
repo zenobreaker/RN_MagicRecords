@@ -7,8 +7,7 @@ using UnityEngine.SceneManagement;
 public class InventoryManager
     : Singleton<InventoryManager>
 {
-    private List<ItemData> items = new();
-    private Dictionary<ItemCategory, List<ItemData>> categoriesItems = new();
+    private Dictionary<ItemCategory, Inventory> inventories = new();
     private Dictionary<string, ItemData> uniqueIdLookup = new();    // key : unique id 
 
     private bool isDirty = false;
@@ -18,9 +17,10 @@ public class InventoryManager
 
     public void OnInit()
     {
-        categoriesItems.Clear();
-        categoriesItems.Add(ItemCategory.EQUIPMENT, new List<ItemData>());
-        categoriesItems.Add(ItemCategory.INGREDIANT, new List<ItemData>());
+        inventories.Clear();
+        inventories.Add(ItemCategory.EQUIPMENT, new EquipmentInventory());
+        inventories.Add(ItemCategory.INGREDIANT, new StackableInventory());
+        inventories.Add(ItemCategory.CURRENCY, new CurrencyInventory());
 
         var loadData = SaveManager.LoadInventoryData();
         if (loadData == null)
@@ -42,13 +42,13 @@ public class InventoryManager
             switch (info.itemCategoy)
             {
                 case ItemCategory.EQUIPMENT:
-                    categoriesItems[ItemCategory.EQUIPMENT].Add(item);
+                    inventories[ItemCategory.EQUIPMENT].AddItem(item);
                     break;
                 case ItemCategory.INGREDIANT:
-                    categoriesItems[ItemCategory.INGREDIANT].Add(item);
+                    inventories[ItemCategory.INGREDIANT].AddItem(item);
                     break;
                 case ItemCategory.CURRENCY:
-                    categoriesItems[ItemCategory.INGREDIANT].Add(item);
+                    inventories[ItemCategory.CURRENCY].AddItem(item);
                     break;
             }
         }
@@ -71,8 +71,9 @@ public class InventoryManager
 
     protected override void SyncDataFromSingleton()
     {
-        this.items = Instance.items;
-        categoriesItems = Instance.categoriesItems;
+        inventories = Instance.inventories;
+        uniqueIdLookup = Instance.uniqueIdLookup;
+        isDirty = Instance.isDirty;
     }
 
     public void AddItems(List<ItemData> items)
@@ -85,14 +86,7 @@ public class InventoryManager
     {
         if (item == null) return;
 
-        if (item.category == ItemCategory.CURRENCY && CurrencyManager.Instance != null)
-        {
-            CurrencyManager.Instance.AddCurrency(item);
-            return;
-        }
-
-        items.Add(item);
-        categoriesItems[item.category].Add(item);
+        inventories[item.category].AddItem(item);
         uniqueIdLookup[item.uniqueID] = item;
 
         OnDataChanged?.Invoke();
@@ -101,8 +95,7 @@ public class InventoryManager
 
     public void RemoveItem(ItemData item)
     {
-        items.Remove(item);
-        categoriesItems[item.category].Remove(item);
+        inventories[item.category].RemoveItem(item);
         uniqueIdLookup.Remove(item.uniqueID);
 
         OnDataChanged?.Invoke();
@@ -117,8 +110,8 @@ public class InventoryManager
 
     public List<ItemData> GetItems(ItemCategory category)
     {
-        if (categoriesItems.TryGetValue(category, out var value))
-            return value;
+        if (inventories.TryGetValue(category, out var value))
+            return value.GetItems();
         return null;
     }
 
@@ -178,20 +171,29 @@ public class InventoryManager
         if (isDirty == false) return;
 
         ItemInfoListData listData = new();
-        foreach (var item in items)
+        
+        foreach(KeyValuePair<ItemCategory, Inventory> pair in inventories)
         {
-            ItemInfoSaveData save = new();
-            save.itemId = item.id;
-            save.uniqueId = item.uniqueID;
-            save.itemCategoy = item.category;
-            save.itemCount = item.itemCount;
-            save.enhanceLevel = item is EquipmentItem ? (item as EquipmentItem).Enhance : 0;
+            var items = pair.Value.GetItems();
+            foreach (var item in items)
+            {
+                ItemInfoSaveData save = new();
+                save.itemId = item.id;
+                save.uniqueId = item.uniqueID;
+                save.itemCategoy = item.category;
+                save.itemCount = item.itemCount;
+                save.enhanceLevel = item is EquipmentItem ? (item as EquipmentItem).Enhance : 0;
 
-            listData.itemInfoList.Add(save);
+                listData.itemInfoList.Add(save);
+            }
         }
-
+        
         SaveManager.SaveInvetoryData(listData);
         isDirty = false; 
     }
 
+    public Inventory GetInvetory(ItemCategory category)
+    {
+        return inventories[category];
+    }
 }
