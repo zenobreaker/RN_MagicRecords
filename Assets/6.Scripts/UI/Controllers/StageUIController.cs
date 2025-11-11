@@ -39,6 +39,9 @@ public class StageUIController
     {
         if (ManagerWaiter.TryGetManager<UIManager>(out UIManager ui))
             ui.OnReturnedStageSelectStage -= UpdateCurrencies;
+
+        if (ManagerWaiter.TryGetManager(out CurrencyManager manager))
+            manager.OnUpdatedCurrency -= UpdateCurrencies;
     }
 
     private void InitUIMapReplace()

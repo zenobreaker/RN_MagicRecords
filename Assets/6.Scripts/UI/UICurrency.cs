@@ -13,8 +13,8 @@ public class UICurrency : MonoBehaviour
 
     private void Awake()
     {
-        currencyIcon = GetComponentInChildren<Image>();
-        currencyText = GetComponentInChildren<TextMeshProUGUI>();
+        currencyIcon = transform.FindChildByName("Icon").GetComponentInChildren<Image>();
+        currencyText = transform.FindChildByName("Cost").GetComponentInChildren<TextMeshProUGUI>();
     }
 
     private void Draw()

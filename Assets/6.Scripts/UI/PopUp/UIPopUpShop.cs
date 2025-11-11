@@ -8,7 +8,6 @@ public class UIPopUpShop : UIPopUpBase
     [SerializeField] protected ItemData item;
     [SerializeField] protected Image itemIconImage;
     [SerializeField] protected TextMeshProUGUI itemNameText;
-    [SerializeField] protected TextMeshProUGUI itemMainOptionText;
     [SerializeField] protected TextMeshProUGUI itemMainDescText;
     [SerializeField] protected TextMeshProUGUI priceText;
     [SerializeField] protected Button buyButton;
@@ -49,7 +48,7 @@ public class UIPopUpShop : UIPopUpBase
             plusButton.onClick.AddListener(() =>
             {
                 amount++;
-                DrawAmount();
+                CalcPrice();
             });
         }
 
@@ -58,7 +57,7 @@ public class UIPopUpShop : UIPopUpBase
             minusButton.onClick.AddListener(() =>
             {
                 amount = Math.Max(1, amount - 1);
-                DrawAmount();
+                CalcPrice();
             });
         }
     }
@@ -89,41 +88,32 @@ public class UIPopUpShop : UIPopUpBase
         if (priceText != null)
             priceText.text = $"{price}";
 
-        DrawItemOption();
         DrawAmountButtons();
         DrawAmount();
     }
 
-    protected void DrawItemOption()
-    {
-        if (item == null) return;
-        if (itemMainOptionText == null) return;
-
-        if (item is EquipmentItem equipment)
-        {
-            itemMainOptionText.text = equipment.modifier.GetFullValue();
-        }
-        else
-        {
-            itemMainOptionText.text = string.Empty;
-        }
-    }
 
     private void DrawAmountButtons()
     {
         if (item == null) return;
 
-        if(item is EquipmentItem)
+        if (item is ShopItem shopItem)
         {
-            if (plusButton != null) plusButton.gameObject.SetActive(false);
-            if (minusButton != null) minusButton.gameObject.SetActive(false);
-            if (maximumButton != null) maximumButton.gameObject.SetActive(false);
-        }   
-        else
-        {
-            if (plusButton != null) plusButton.gameObject.SetActive(true);
-            if (minusButton != null) minusButton.gameObject.SetActive(true);
-            if (maximumButton != null) maximumButton.gameObject.SetActive(true);
+            if (shopItem.TargetItemData == null)
+                return;
+
+            if (shopItem.TargetItemData is EquipmentItem)
+            {
+                if (plusButton != null) plusButton.gameObject.SetActive(false);
+                if (minusButton != null) minusButton.gameObject.SetActive(false);
+                if (maximumButton != null) maximumButton.gameObject.SetActive(false);
+            }
+            else
+            {
+                if (plusButton != null) plusButton.gameObject.SetActive(true);
+                if (minusButton != null) minusButton.gameObject.SetActive(true);
+                if (maximumButton != null) maximumButton.gameObject.SetActive(true);
+            }
         }
     }
 
@@ -134,34 +124,57 @@ public class UIPopUpShop : UIPopUpBase
         amountField.text = amount.ToString();
     }
 
+    private void CalcPrice()
+    {
+        if(item == null) return;    
+
+        if(item is ShopItem shopItem)
+        {
+            price = shopItem.Price * amount;
+            DrawPopUp();
+            return;
+        }
+
+        return;
+    }
+
     private void TryBuyItem()
     {
         if (item == null) return;
 
-        // CurrencyManager로 지불 시도
-        if (CurrencyManager.Instance == null)
+        if (item is ShopItem shopItem)
         {
-            Debug.LogWarning("CurrencyManager missing.");
-            return;
+            if (shopItem.TargetItemData == null)
+            {
+                Debug.LogWarning("Target Item Missing.");
+                return;
+            }
+
+            // CurrencyManager로 지불 시도
+            if (CurrencyManager.Instance == null)
+            {
+                Debug.LogWarning("CurrencyManager missing.");
+                return;
+            }
+
+            bool success = CurrencyManager.Instance.SpendCurrency(priceCurrency, price);
+            if (!success)
+            {
+                // 피드백: 통화 부족
+                Debug.Log($"Not enough currency: need {price} of {priceCurrency}");
+                // TODO: UX 피드백(토스트/애니메이션 등)
+                return;
+            }
+
+            // 아이템을 인벤토리에 추가: 복사하여 고유 ID 생성
+            ItemData newItem = shopItem.TargetItemData.Copy();
+            if (newItem != null)
+                newItem.uniqueID = Guid.NewGuid().ToString();
+            //TODO 아이템 데이터 넣을 때 개수까지 처리하도록 해보게 
+            InventoryManager.Instance?.AddItem(newItem ?? item);
+
+            // 구매 후 팝업 닫기
+            UIManager.Instance.ClosePopup();
         }
-
-        bool success = CurrencyManager.Instance.SpendCurrency(priceCurrency, price);
-        if (!success)
-        {
-            // 피드백: 통화 부족
-            Debug.Log($"Not enough currency: need {price} of {priceCurrency}");
-            // TODO: UX 피드백(토스트/애니메이션 등)
-            return;
-        }
-
-        // 아이템을 인벤토리에 추가: 복사하여 고유 ID 생성
-        ItemData newItem = item.Copy();
-        if (newItem != null)
-            newItem.uniqueID = Guid.NewGuid().ToString();
-
-        InventoryManager.Instance?.AddItem(newItem ?? item);
-
-        // 구매 후 팝업 닫기
-        UIManager.Instance.ClosePopup();
     }
 }

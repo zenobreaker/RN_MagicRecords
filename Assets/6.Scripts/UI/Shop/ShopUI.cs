@@ -57,4 +57,10 @@ public class ShopUI : UiBase
             return;
         UIManager.Instance.OpenShopPopUp(item, shopItem.Price, (CurrencyType)shopItem.CurrencyType);
     }
+
+    public void OnCategoryButton(int categoryNumber)
+    {
+        this.category = (ItemCategory)categoryNumber;
+        DrawShop();
+    }
 }

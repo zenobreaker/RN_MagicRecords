@@ -28,11 +28,6 @@ public class UIController : MonoBehaviour, IUIContainer
             });
     }
 
-    protected virtual void OnDisable()
-    {
-        // No manual unsubscription required when using RegisterManagerEvent
-    }
-
     public void SetActiveTarget(GameObject target)
     {
         target.SetActive(!target.activeInHierarchy);
