@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -62,6 +62,12 @@ public class ManagerWaiter : Singleton<ManagerWaiter>
         {
             try
             {
+                if (owner == null || owner.gameObject == null)
+                    return; // 이미 파괴된 오브젝트
+
+                if (!owner.gameObject.activeInHierarchy)
+                    return; // 씬 전환 중 비활성화된 상태면 무시
+
                 onRegister?.Invoke(manager);
                 // attach unsubscriber to owner to invoke unregister when owner is disabled
                 var proxy = owner.gameObject.AddComponent<ManagerEventUnsubscriber>();
