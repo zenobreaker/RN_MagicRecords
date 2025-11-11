@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -196,5 +198,10 @@ public class ItemDataBase : DataBase
     public CurrencyItem GetCurrencyItemData(int itemId)
     {
         return (CurrencyItem)(currencyItems.TryGetValue(itemId, out var currentItem) ? currentItem.Copy() : null);
+    }
+
+    internal CurrencyItem GetCurrencyItemByType(CurrencyType type)
+    {
+        return (CurrencyItem)(currencyItems.Values.FirstOrDefault(item => item.Type == type)?.Copy());
     }
 }

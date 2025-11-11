@@ -72,8 +72,10 @@ public class ShopDataBase : DataBase
                 continue;
             }
 
-            shopItem = new ShopItem(itemData);
-            lookupItems[shopItem.category].Unique(shopItem);
+            ShopItem refreshData  = new ShopItem(itemData);
+            refreshData.SetShopData(shopItem);
+            refreshData.ResolveTargetItem(database);
+            lookupItems[refreshData.category].Unique(refreshData);
         }
     }
 

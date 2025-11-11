@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -71,6 +72,11 @@ public class DataBaseManager : MonoBehaviour
     public CurrencyItem GetCurrencyItem(int itemId)
     {
         return itemDataBase?.GetCurrencyItemData(itemId);
+    }
+
+    public CurrencyItem GetCurrencyItemByType(CurrencyType type)
+    {
+        return itemDataBase?.GetCurrencyItemByType(type);
     }
 
     public RewardData GetRewardData(int rewardId)
