@@ -46,6 +46,7 @@ public class AppManager
             skillManager.OnDataChanaged += () => { PlayerManager.Instance.SetDirty(); };
             InventoryManager.Instance.OnInit();
             PlayerManager.Instance.OnInit();
+            CurrencyManager.Instance.OnInit((CurrencyInventory)InventoryManager.Instance.GetInvetory(ItemCategory.CURRENCY));
             SceneManager.sceneUnloaded += OnUnloadScene;
         }
 
@@ -376,6 +377,16 @@ public class AppManager
     public CurrencyItem GetCurrencyItem(int itemId)
     {
         return databaseManager?.GetCurrencyItem(itemId);
+    }
+
+    public CurrencyItem GetCurrencyItemByType(CurrencyType type)
+    {
+        return databaseManager?.GetCurrencyItemByType(type);
+    }
+
+    public ShopItem GetShopItem(int itemId)
+    {
+        return databaseManager?.GetShopItem(itemId);
     }
 
     public List<ItemData> GetShopItems(ItemCategory category)

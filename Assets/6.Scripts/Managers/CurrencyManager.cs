@@ -1,25 +1,29 @@
 using System;
 using System.Collections.Generic;
 
-public class CurrencyManager 
+public class CurrencyManager
     : Singleton<CurrencyManager>
 {
+    private CurrencyInventory currencyInventory = new();
 
-    private Dictionary<CurrencyType, int> currencies = new();
     public event Action OnUpdatedCurrency;
-    protected override void Awake()
-    {
-        base.Awake();
-        currencies.Clear();
 
-        currencies[CurrencyType.GOLD] = 0;
-        currencies[CurrencyType.DIAMOND] = 0;
-        currencies[CurrencyType.EXPOLORE_CREDIT] = 0;
+    public void OnInit(CurrencyInventory inventory)
+    {
+        if (inventory == null) return;
+
+        currencyInventory = inventory;
+    }
+
+    public void Cheat_AddedCurrenices()
+    {
+        AddCurrency(CurrencyType.GOLD, 999999);
+        AddCurrency(CurrencyType.DIAMOND, 999999);
     }
 
     protected override void SyncDataFromSingleton()
     {
-        currencies = Instance.currencies;
+        currencyInventory = Instance.currencyInventory;
     }
 
     public void AddCurrency(ItemData item)
@@ -32,22 +36,13 @@ public class CurrencyManager
 
     public void AddCurrency(CurrencyType type, int amount)
     {
-        if (!currencies.ContainsKey(type))
-            currencies[type] = 0;
-        currencies[type] += amount;
-        OnUpdatedCurrency?.Invoke();
+        currencyInventory.AddCurrency(type, amount, OnUpdatedCurrency);
     }
 
     public bool SpendCurrency(CurrencyType type, int amount)
     {
-        if(currencies.TryGetValue(type, out var current) && current >= amount)
-        {
-            currencies[type] -= amount;
-            OnUpdatedCurrency?.Invoke();
-            return true; 
-        }
-        return false; 
+        return currencyInventory.SpendCurrency(type, amount, OnUpdatedCurrency);
     }
 
-    public int GetCurrency(CurrencyType type) => currencies.TryGetValue(type, out var v) ? v : 0;
+    public int GetCurrency(CurrencyType type) => currencyInventory.GetCurrency(type);
 }
