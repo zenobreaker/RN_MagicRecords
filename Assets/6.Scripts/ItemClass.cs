@@ -141,12 +141,13 @@ public class ShopItem : ItemData
     public CurrencyType CurrencyType => currencyType;
     private int price;
     public int Price => price; 
+    public ItemData TargetItemData { get; private set; }
 
     public ShopItem(int id, int targetItemID, Sprite icon = null,
-        int pirce = 0, CurrencyType currencyType = CurrencyType.NONE) 
+        int price = 0, CurrencyType currencyType = CurrencyType.NONE) 
         : base(id, icon)
     {
-        this.price = pirce;
+        this.price = price;
         this.targetItemID = targetItemID;
         this.currencyType = currencyType;
     }
@@ -155,11 +156,25 @@ public class ShopItem : ItemData
         if(data is ShopItem shopItem)
         {
             this.targetItemID = shopItem.targetItemID;
-            this.price = shopItem.price;
+            this.price = shopItem.Price;
             this.currencyType = shopItem.currencyType;
         }
     }
 
+    public void SetShopData(ShopItem shopItem)
+    {
+        if (shopItem == null) return;
+
+        this.targetItemID = shopItem.targetItemID;
+        this.price = shopItem.Price;
+        this.currencyType = shopItem.currencyType;
+    }
+
+    public void ResolveTargetItem(ItemDataBase database)
+    {
+        if (database == null) return;
+        TargetItemData = database.GetItem(TargetItemID);
+    }
 
     public override ItemData Copy()
     {
