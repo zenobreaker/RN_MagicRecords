@@ -12,7 +12,7 @@ public abstract class UIPopUp
 
     protected virtual void OpenPopUp()
     {
-        UIManager.Instance?.OpenUI(this);
+        
     }
 
     public override void CloseUI()

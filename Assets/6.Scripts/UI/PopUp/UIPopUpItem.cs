@@ -9,7 +9,6 @@ public class UIPopUpItem : UIPopUpBase
     [SerializeField] protected TextMeshProUGUI itemNameText; 
     [SerializeField] protected TextMeshProUGUI itemMainOptionText; 
     [SerializeField] protected TextMeshProUGUI itemMainDescText;
-    [SerializeField] protected Button equipButton; 
     [SerializeField] protected Button useButton; 
     [SerializeField] protected Button exitButton; 
 
@@ -25,24 +24,6 @@ public class UIPopUpItem : UIPopUpBase
             });
         }
 
-        if(equipButton != null)
-        {
-            equipButton.onClick.AddListener(() =>
-            {
-                if (item == null ) return;
-                if (InventoryManager.Instance == null) return;
-
-                var equipment = item as EquipmentItem;
-                if (equipment == null) return;
-
-                if(equipment.Eqeuipped == false)
-                    InventoryManager.Instance.EquipItem(1, equipment);
-                else
-                    InventoryManager.Instance.UnequipItem(1, equipment);
-
-                DrawPopUp();
-            });
-        }
     }
 
     public void SetData(ItemData item)
@@ -64,16 +45,10 @@ public class UIPopUpItem : UIPopUpBase
         if(itemMainDescText!=null)
             itemMainDescText.text = item.description;
 
-        DrawEquipButton();
         DrawItemOption();
-        if (item is EquipmentItem)
+        if (item is not EquipmentItem)
         {
-            equipButton.gameObject.SetActive(true);
-            useButton.gameObject.SetActive(false);
-        }
-        else 
-        {
-            equipButton.gameObject.SetActive(false);
+          //  equipButton.gameObject.SetActive(false);
             useButton.gameObject.SetActive(true);
         }
     }
@@ -89,18 +64,4 @@ public class UIPopUpItem : UIPopUpBase
         }
     }
 
-    private void DrawEquipButton()
-    {
-        if (item == null) return; 
-
-        if (item is EquipmentItem equipment)
-        {
-            TextMeshProUGUI tm = equipButton.GetComponentInChildren<TextMeshProUGUI>();
-            if (tm == null) return;
-            if (equipment.Eqeuipped)
-                tm.text = "Unequip";
-            else
-                tm.text = "Equip";
-        }
-    }
 }
