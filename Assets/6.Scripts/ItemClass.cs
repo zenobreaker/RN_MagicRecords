@@ -1,4 +1,5 @@
-using System;
+ï»¿using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class ItemData
@@ -7,15 +8,19 @@ public abstract class ItemData
     public string uniqueID; 
     public Sprite icon;
     public ItemCategory category;
+    public ItemRank rank; 
 
     public string name;
     public string description;
-    public int itemCount = 0;
+    protected int itemCount = 0;
+
+    public event Action<ItemData> OnChanged;
     public ItemData(int id, Sprite icon = null)
     {
         this.id = id;
         this.icon = icon;
         this.uniqueID = Guid.NewGuid().ToString();
+        rank = ItemRank.NONE;
     }
 
     public ItemData (ItemData other)
@@ -27,6 +32,26 @@ public abstract class ItemData
         name = other.name;
         description = other.description;
         itemCount = other.itemCount;
+        rank = other.rank;  
+    }
+
+    public int GetCount() => itemCount;
+    public virtual void SetCount(int newCount)
+    {
+        itemCount = newCount;
+        NotifyChanged();
+    }
+
+    public virtual void ModifyCount(int delta)
+    {
+        itemCount += delta;
+        if (itemCount < 0) itemCount = 0;
+        NotifyChanged();
+    }
+
+    protected void NotifyChanged()
+    {
+        OnChanged?.Invoke(this);
     }
 
     public abstract ItemData Copy();
@@ -44,7 +69,7 @@ public class EquipmentItem : ItemData
     public int Enhance { get { return enhance; } }
 
     public EquipmentItem(int id, Sprite icon, string name, string description, EquipParts parts,
-        StatusType mainStatus, float mainValue, bool isPercent)
+        ItemRank rank, StatusType mainStatus, float mainValue, bool isPercent)
         :base(id, icon)
     {
         this.name = name;
@@ -55,15 +80,16 @@ public class EquipmentItem : ItemData
 
         category = ItemCategory.EQUIPMENT;
         itemCount = 1;
-        enhance = 0; 
+        enhance = 0;
+        this.rank = rank;
     }
 
     public override ItemData Copy()
     {
-        // StatModifierµµ ±íÀº º¹»ç (°ª º¹»ç)
+        // StatModifierë„ ê¹Šì€ ë³µì‚¬ (ê°’ ë³µì‚¬)
         var newModifier = new StatModifier(modifier.type, modifier.value, modifier.valueType);
 
-        var copy = new EquipmentItem(id, icon, name, description, parts,
+        var copy = new EquipmentItem(id, icon, name, description, parts, rank,
             newModifier.type, newModifier.value, newModifier.valueType == ModifierValueType.PERCENT);
 
         copy.owner = owner;
@@ -74,6 +100,11 @@ public class EquipmentItem : ItemData
         return copy;
     }
 
+    public string GetMainOptionText()
+    {
+        return modifier.GetFullValue();
+    }
+
     public void EquipItem(StatusComponent status)
     {
         status?.ApplyBuff(modifier);
@@ -82,6 +113,18 @@ public class EquipmentItem : ItemData
     public void UnequipItem(StatusComponent status)
     {
         status?.RemoveBuff(modifier);
+    }
+
+    public void EnhanceItem(int enhanceLevel, bool loaded = false)
+    {
+        enhance = enhanceLevel;
+        Debug.Log($"ê°•í™” ì „ {modifier.value}");
+        modifier.value = EnhanceCalculator.CaclculateEnhancedStat(this, 
+            AppManager.Instance.GetEnhanceStatDatas(rank));
+        Debug.Log($"ê°•í™” í›„ {modifier.value}");
+        if (loaded)
+            return;
+        NotifyChanged();
     }
 }
 

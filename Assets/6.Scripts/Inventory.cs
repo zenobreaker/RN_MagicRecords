@@ -1,14 +1,19 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Inventory 
+public abstract class Inventory
 {
     protected List<ItemData> items = new();
+
+    public event Action<Inventory> OnInventoryChanged;
 
     public virtual void AddItem(ItemData item)
     {
         items.Add(item);
+
+        item.OnChanged += HandleItemChanged;
+        OnInventoryChanged?.Invoke(this);
     }
 
     public virtual void RemoveItem(ItemData item)
@@ -16,11 +21,35 @@ public abstract class Inventory
         items.Remove(item);
     }
 
+    public virtual bool RemoveItem(int itemID, int itemCount)
+    {
+        ItemData item = items.Find(x => x.id == itemID);
+        if (item == null) return false;
+
+        item.ModifyCount(-1 * itemCount);
+        if (item.GetCount() <= 0)
+            RemoveItem(item);
+
+        OnInventoryChanged?.Invoke(this);
+
+        return true;
+    }
+
     public virtual List<ItemData> GetItems() => items;
+
+    public virtual ItemData GetItem(int itemID)
+    {
+        return items.Find(x => x.id == itemID);
+    }
+
+    public void HandleItemChanged(ItemData item)
+    {
+        OnInventoryChanged?.Invoke(this);
+    }
 
     public virtual void SaveInventory()
     {
-        
+
     }
 }
 
@@ -28,30 +57,30 @@ public class EquipmentInventory : Inventory
 {
     public override void AddItem(ItemData item)
     {
-        if (item == null) return; 
+        if (item == null) return;
         if (item.category != ItemCategory.EQUIPMENT)
         {
             Debug.LogWarning("Cannot add non-equipment item to EquipmentInventory.");
             return;
         }
 
-        // Àåºñ´Â Ç×»ó °³º° ½½·Ô(´ÜÀÏ °³Ã¼)·Î Ãß°¡µÇ¾î¾ß ÇÔ.
-        // Àü´ÞµÈ ÀÎ½ºÅÏ½º°¡ ÀÌ¹Ì ÀÎº¥Åä¸®¿¡ Á¸ÀçÇÏ°Å³ª uniqueID°¡ ºñ¾îÀÖ´Ù¸é º¹»çÇØ¼­ °íÀ¯ ID ºÎ¿© ÈÄ Ãß°¡ÇÑ´Ù.
+        // ìž¥ë¹„ëŠ” í•­ìƒ ê°œë³„ ìŠ¬ë¡¯(ë‹¨ì¼ ê°œì²´)ë¡œ ì¶”ê°€ë˜ì–´ì•¼ í•¨.
+        // ì „ë‹¬ëœ ì¸ìŠ¤í„´ìŠ¤ê°€ ì´ë¯¸ ì¸ë²¤í† ë¦¬ì— ì¡´ìž¬í•˜ê±°ë‚˜ uniqueIDê°€ ë¹„ì–´ìžˆë‹¤ë©´ ë³µì‚¬í•´ì„œ ê³ ìœ  ID ë¶€ì—¬ í›„ ì¶”ê°€í•œë‹¤.
         ItemData toAdd = item;
 
-        // Ç×»ó ¼ö·®Àº 1·Î °­Á¦
-        toAdd.itemCount = 1;
+        // í•­ìƒ ìˆ˜ëŸ‰ì€ 1ë¡œ ê°•ì œ
+        toAdd.SetCount(1);
 
         bool needsCopy = false;
 
-        // uniqueID°¡ ¾øÀ¸¸é º¹»ç ÇÊ¿ä
+        // uniqueIDê°€ ì—†ìœ¼ë©´ ë³µì‚¬ í•„ìš”
         if (string.IsNullOrEmpty(toAdd.uniqueID))
         {
             needsCopy = true;
         }
         else
         {
-            // µ¿ÀÏÇÑ uniqueID¸¦ °¡Áø Ç×¸ñÀÌ ÀÌ¹Ì ÀÖÀ¸¸é »õ·Î¿î º¹»çº»À» ¸¸µé¾î¼­ ´Ù¸¥ ½½·Ô¿¡ Ãß°¡ÇÏµµ·Ï ÇÔ
+            // ë™ì¼í•œ uniqueIDë¥¼ ê°€ì§„ í•­ëª©ì´ ì´ë¯¸ ìžˆìœ¼ë©´ ìƒˆë¡œìš´ ë³µì‚¬ë³¸ì„ ë§Œë“¤ì–´ì„œ ë‹¤ë¥¸ ìŠ¬ë¡¯ì— ì¶”ê°€í•˜ë„ë¡ í•¨
             foreach (var existing in items)
             {
                 if (existing != null && existing.category == ItemCategory.EQUIPMENT && existing.uniqueID == toAdd.uniqueID)
@@ -62,7 +91,7 @@ public class EquipmentInventory : Inventory
             }
         }
 
-        // Àü´ÞµÈ °´Ã¼¿Í ÀÎº¥Åä¸® ³» µ¿ÀÏ ÂüÁ¶°¡ ÀÖÀ¸¸é º¹»ç ÇÊ¿ä
+        // ì „ë‹¬ëœ ê°ì²´ì™€ ì¸ë²¤í† ë¦¬ ë‚´ ë™ì¼ ì°¸ì¡°ê°€ ìžˆìœ¼ë©´ ë³µì‚¬ í•„ìš”
         if (!needsCopy)
         {
             foreach (var existing in items)
@@ -81,15 +110,15 @@ public class EquipmentInventory : Inventory
             if (copy != null)
             {
                 copy.uniqueID = Guid.NewGuid().ToString();
-                copy.itemCount = 1;
+                copy.SetCount(1);
                 toAdd = copy;
             }
             else
             {
-                // ¾ÈÀüÀåÄ¡: º¹»ç ½ÇÆÐ ½Ã¿¡µµ uniqueID ºÎ¿©(°¡´ÉÇÑ °æ¿ì)ÇÏ¿© Ãß°¡
+                // ì•ˆì „ìž¥ì¹˜: ë³µì‚¬ ì‹¤íŒ¨ ì‹œì—ë„ uniqueID ë¶€ì—¬(ê°€ëŠ¥í•œ ê²½ìš°)í•˜ì—¬ ì¶”ê°€
                 if (string.IsNullOrEmpty(toAdd.uniqueID))
                     toAdd.uniqueID = Guid.NewGuid().ToString();
-                toAdd.itemCount = 1;
+                toAdd.SetCount(1);
             }
         }
 
@@ -101,17 +130,17 @@ public class StackableInventory : Inventory
 {
     public override void AddItem(ItemData item)
     {
-        if (item == null) return; 
+        if (item == null) return;
         if (item.category == ItemCategory.EQUIPMENT)
         {
             Debug.LogWarning("Cannot add equipment item to StackableInventory.");
             return;
         }
-        // ½ºÅÃÇü ¾ÆÀÌÅÛÀº µ¿ÀÏ ID°¡ ÀÖÀ¸¸é ¼ö·®¸¸ Áõ°¡½ÃÅ²´Ù.
+        // ìŠ¤íƒí˜• ì•„ì´í…œì€ ë™ì¼ IDê°€ ìžˆìœ¼ë©´ ìˆ˜ëŸ‰ë§Œ ì¦ê°€ì‹œí‚¨ë‹¤.
         var existingItem = items.Find(i => i != null && i.id == item.id);
         if (existingItem != null)
         {
-            existingItem.itemCount += item.itemCount;
+            existingItem.ModifyCount(item.GetCount());
         }
         else
         {
@@ -120,16 +149,26 @@ public class StackableInventory : Inventory
     }
     public override void RemoveItem(ItemData item)
     {
-        if (item == null) return; 
+        if (item == null) return;
         var existingItem = items.Find(i => i != null && i.id == item.id);
         if (existingItem != null)
         {
-            existingItem.itemCount -= item.itemCount;
-            if (existingItem.itemCount <= 0)
+            existingItem.ModifyCount(-1 * item.GetCount());
+            if (existingItem.GetCount() <= 0)
             {
                 items.Remove(existingItem);
             }
         }
+    }
+
+    public int GetItemCount(int itemID)
+    {
+        var existingItem = items.Find(i => i != null && i.id == itemID);
+        if (existingItem != null)
+        {
+            return existingItem.GetCount();
+        }
+        return 0;
     }
 }
 
@@ -140,14 +179,16 @@ public class CurrencyInventory : Inventory
         var currencyItem = items.Find(i => (i as CurrencyItem)?.Type == type) as CurrencyItem;
         if (currencyItem != null)
         {
-            currencyItem.itemCount += amount;
+            currencyItem.ModifyCount(+amount);
         }
-
-        var currency =  AppManager.Instance?.GetCurrencyItemByType(type);
-        if(currency != null)
+        else
         {
-            currency.itemCount = amount;
-            AddItem(currency); 
+            var currency = AppManager.Instance?.GetCurrencyItemByType(type);
+            if (currency != null)
+            {
+                currency.SetCount(amount);
+                AddItem(currency);
+            }
         }
 
         updateCurrency?.Invoke();
@@ -156,17 +197,15 @@ public class CurrencyInventory : Inventory
     public bool SpendCurrency(CurrencyType type, int amount, Action updatedCurrency = null)
     {
         var currencyItem = items.Find(i => (i as CurrencyItem)?.Type == type) as CurrencyItem;
-        if (currencyItem != null)
-        {
-            currencyItem.itemCount -= amount;
-            if (currencyItem.itemCount <= 0)
-                RemoveItem(currencyItem);
-            
-            updatedCurrency?.Invoke(); 
-            return true;
-        }
+        if (currencyItem == null)
+            return false;
 
-        return false; 
+        bool success = RemoveItem(currencyItem.id, amount);
+
+        if (success)
+            updatedCurrency?.Invoke();
+
+        return success;
     }
 
     public int GetCurrency(CurrencyType type)
@@ -174,7 +213,7 @@ public class CurrencyInventory : Inventory
         var currencyItem = items.Find(i => (i as CurrencyItem)?.Type == type) as CurrencyItem;
         if (currencyItem != null)
         {
-            return currencyItem.itemCount;
+            return currencyItem.GetCount();
         }
 
         return 0;
