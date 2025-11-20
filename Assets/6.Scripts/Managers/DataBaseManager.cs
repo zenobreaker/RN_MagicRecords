@@ -10,6 +10,8 @@ public class DataBaseManager : MonoBehaviour
     private ItemDataBase itemDataBase;
     private RewardDataBase rewardDataBase;
     private ShopDataBase shopDataBase;
+    private EnhanceDataBase enhanceDataBase;
+
 
     private void Awake()
     {
@@ -29,6 +31,11 @@ public class DataBaseManager : MonoBehaviour
         {
             shopDataBase.Initialize();
             shopDataBase.Initialize_Lookup(itemDataBase);
+        }
+
+        if (gameObject.TryComponentInChildren<EnhanceDataBase>(out enhanceDataBase))
+        {
+            enhanceDataBase.Initialize();
         }
     }
 
@@ -55,7 +62,7 @@ public class DataBaseManager : MonoBehaviour
 
     public MonsterStatData GetMonsterStatData(int monsterID)
     {
-        if(monsterDataBase == null) return null;
+        if (monsterDataBase == null) return null;
         return monsterDataBase.GetMonsterStatData(monsterID);
     }
 
@@ -116,11 +123,26 @@ public class DataBaseManager : MonoBehaviour
 
     public ShopItem GetShopItem(int itemID)
     {
-        return shopDataBase?.GetShopItemData(itemID);   
+        return shopDataBase?.GetShopItemData(itemID);
     }
 
     public List<ItemData> GetShopItems(ItemCategory category)
     {
         return shopDataBase?.GetShopItems(category);
+    }
+
+    public EnhanceLevelData GetEnhanceLevelData(int rank, int enhanceLevel)
+    {
+        return enhanceDataBase?.GetEnhanceLevelData(rank, enhanceLevel);
+    }
+
+    public EnhanceStatData GetEnhanceStatData(int rank, int level)
+    {
+        return enhanceDataBase?.GetEnhanceStatData(rank, level);
+    }
+
+    public List<EnhanceStatData> GetEnhanceStatDatas(int rank)
+    {
+        return enhanceDataBase?.GetEnhanceStatDatas(rank);
     }
 }

@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -40,7 +38,7 @@ public class CurrencyItemDataJson : ItemDataJson
 
 public class CurrencyItemDataJsonAllData
 {
-    public List<CurrencyItemDataJson> currencyJsonData; 
+    public List<CurrencyItemDataJson> currencyJsonData;
 }
 
 public class EquipmentItemDataJsonAllData
@@ -63,16 +61,16 @@ public class ItemDataBase : DataBase
 
     [Header("재화 아이템")]
     [SerializeField] private TextAsset currencyItemJson;
-    
+
 
     private Dictionary<int, EquipmentItem> equipmentItems = new();
     private Dictionary<int, IngredientItem> ingredientItems = new();
-    private Dictionary<int, CurrencyItem> currencyItems = new(); 
+    private Dictionary<int, CurrencyItem> currencyItems = new();
 
 
     public override void Initialize()
     {
-        InitializeCurrencyItemData(); 
+        InitializeCurrencyItemData();
         InitializeEquipmentItemData();
         InitializeIngredientItemData();
     }
@@ -96,10 +94,11 @@ public class ItemDataBase : DataBase
                         , (string)json.name
                         , (string)json.description
                         , (EquipParts)json.equipParts
+                        , (ItemRank)json.rank
                         , (StatusType)json.statusType
                         , (float)json.statusValue
                         , json.isPercent);
-                    
+
                     return equipmentData;
                 },
 
@@ -129,7 +128,7 @@ public class ItemDataBase : DataBase
                     var data = new IngredientItem(
                         (int)json.id
                         , GetSprite(json.imagePath)
-                        ,json.itemCategory
+                        , json.itemCategory
                         );
                     return data;
                 },
@@ -186,7 +185,7 @@ public class ItemDataBase : DataBase
     }
 
     public EquipmentItem GetEquipmentItemData(int itemId)
-    { 
+    {
         return (EquipmentItem)(equipmentItems.TryGetValue(itemId, out var equipmentItem) ? equipmentItem.Copy() : null);
     }
 

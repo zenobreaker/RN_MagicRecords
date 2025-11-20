@@ -394,6 +394,21 @@ public class AppManager
         return databaseManager?.GetShopItems(category);
     }
 
+    public EnhanceLevelData GetEnhanceLevelData(ItemRank rank, int enhanceLevel)
+    {
+        return databaseManager?.GetEnhanceLevelData((int)rank, enhanceLevel);
+    }
+
+    public EnhanceStatData GetEnhanceStatData(ItemRank rank, int enhanceLevel)
+    {
+        return databaseManager?.GetEnhanceStatData((int)rank, enhanceLevel);
+    }
+
+    public List<EnhanceStatData> GetEnhanceStatDatas(ItemRank rank)
+    {
+        return databaseManager?.GetEnhanceStatDatas((int)rank);
+    }
+
     #endregion
 
     #region Reward
