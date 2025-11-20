@@ -14,7 +14,7 @@ public class StageUIController
 
         if (ManagerWaiter.TryGetManager(out UIManager ui))
         {
-            ui.OnReturnedStageSelectStage += UpdateCurrencies;
+            Init(ui);
         }
         else
         {
@@ -23,11 +23,17 @@ public class StageUIController
                 if (bIsAwaked) return;
                 ManagerWaiter.WaitForManager<UIManager>(uiManager =>
                 {
-                    ui.OnReturnedStageSelectStage += UpdateCurrencies;
+                    Init(uiManager);
                 });
                 bIsAwaked = true; 
             });
         }
+    }
+
+    private void Init(UIManager ui)
+    {
+        ui.OnReturnedStageSelectStage += UpdateCurrencies;
+        ui.RegistUI(UIType.STAGE_INTO, uiStageInfo);
     }
 
     protected void Start()
@@ -66,7 +72,7 @@ public class StageUIController
                 {
                     uiStageInfo.SetStageData(node.Node, stageInfo);
                     if (stageInfo != null && AppManager.Instance.EnableNode(node.Node) && stageInfo.bIsCleared == false)
-                        UIManager.Instance.OpenUI(uiStageInfo);
+                        UIManager.Instance.OpenUI(UIType.STAGE_INTO);
                 };
             }
         }

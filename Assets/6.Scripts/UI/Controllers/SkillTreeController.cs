@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SkillTreeController : MonoBehaviour
+public class SkillTreeController : UiBase
 {
     private UISkillTree uiSkillTree;
     private UISkillDetail uiSkillDetail;

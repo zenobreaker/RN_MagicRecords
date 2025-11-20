@@ -6,7 +6,14 @@ using UnityEngine.SceneManagement;
 [System.Serializable]
 public enum UIType
 {
-    StageInfo,
+    NONE, 
+    INVENTORY, 
+    ENHANCEMENT,
+    SHOP,
+    INFOMATION,
+    SKILL,
+    STAGE_INTO, 
+    EXPLORE_MAIN,
 }
 
 public enum GameLocate
@@ -24,6 +31,9 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject popupUI;
     [SerializeField] private GameObject popupUIReward;
     [SerializeField] private GameObject popupUIShop;
+    [SerializeField] private GameObject popupUIEquipment;
+
+
     public UiBase soundUI;
 
     public event Action OnJoinedLobby;
@@ -78,11 +88,22 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
+    public void RegistUI(UIType type, UiBase ui)
+    {
+        uiTable[type] = ui;
+    }
+
     public void OpenUI(UiBase ui)
     {
         if (ui == null) return;
         ui.gameObject.SetActive(true);
         openedUIs.Push(ui);
+    }
+
+    public void OpenUI(UIType type)
+    {
+        if(uiTable.TryGetValue(type, out var ui))
+            OpenUI(ui);
     }
 
     public void CloseTopUI()
@@ -189,9 +210,18 @@ public class UIManager : Singleton<UIManager>
 
     public void OpenItemPopUp(ItemData itemData)
     {
-        var ui = OpenPopUp(popupUI);
-        if (ui != null && ui.TryGetComponent<UIPopUpItem>(out var target))
-            target.SetData(itemData);
+        if (itemData is EquipmentItem)
+        {
+            var ui = OpenPopUp(popupUIEquipment);
+            if (ui != null && ui.TryGetComponent<UIPopUpEquipment>(out var target))
+                target.SetData(itemData);
+        }
+        else
+        {
+            var ui = OpenPopUp(popupUI);
+            if (ui != null && ui.TryGetComponent<UIPopUpItem>(out var target))
+                target.SetData(itemData);
+        }
     }
 
     private GameObject OpenPopUp(GameObject popUpObj)

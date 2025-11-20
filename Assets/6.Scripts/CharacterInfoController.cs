@@ -1,15 +1,15 @@
 ﻿using System;
 using UnityEngine;
 
-public class CharacterInfoController : MonoBehaviour
+public class CharacterInfoController : UiBase
 {
     private UICharEquipment uiCharEquipment;
-    private UICharStatus uiCharStatus; 
+    private UICharStatus uiCharStatus;
 
-    private CharStatusData selectedCharStatus; 
+    private CharStatusData selectedCharStatus;
     private CharEquipmentData selectedCharEquipment;
 
-    private Action<CharStatusData, CharEquipmentData> DrawnCharInfo; 
+    private Action<CharStatusData, CharEquipmentData> DrawnCharInfo;
     private Action<CharEquipmentData> DrawenCharEquipment;
 
     private void Awake()
@@ -23,7 +23,7 @@ public class CharacterInfoController : MonoBehaviour
             DrawnCharInfo += uiCharStatus.OnDrawCharStatus;
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
         SetCharEquipmentData();
 
