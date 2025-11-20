@@ -31,7 +31,7 @@ public class CurrencyManager
         if (item == null || (item is CurrencyItem) == false) return;
 
         CurrencyItem currency = item as CurrencyItem;
-        AddCurrency(currency.Type, currency.itemCount);
+        AddCurrency(currency.Type, currency.GetCount());
     }
 
     public void AddCurrency(CurrencyType type, int amount)

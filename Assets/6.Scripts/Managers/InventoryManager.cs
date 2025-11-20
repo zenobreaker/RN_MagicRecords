@@ -22,6 +22,14 @@ public class InventoryManager
         inventories.Add(ItemCategory.INGREDIANT, new StackableInventory());
         inventories.Add(ItemCategory.CURRENCY, new CurrencyInventory());
 
+        foreach(var pair in inventories)
+        {
+            pair.Value.OnInventoryChanged += (inventory) =>
+            {
+                isDirty = true;
+            };
+        }
+
         var loadData = SaveManager.LoadInventoryData();
         if (loadData == null)
         {
@@ -35,7 +43,10 @@ public class InventoryManager
             var item = AppManager.Instance.GetItemData(info.itemId, info.itemCategoy);
             if (item == null) continue;
             item.uniqueID = info.uniqueId;
-            item.itemCount = info.itemCount;
+            item.SetCount(info.itemCount);
+
+            if (item is EquipmentItem equipment)
+                equipment.EnhanceItem(info.enhanceLevel);
 
             uniqueIdLookup[item.uniqueID] = item;
 
@@ -90,7 +101,7 @@ public class InventoryManager
         uniqueIdLookup[item.uniqueID] = item;
 
         OnDataChanged?.Invoke();
-        isDirty = true;
+        //isDirty = true;
     }
 
     public void RemoveItem(ItemData item)
@@ -99,7 +110,21 @@ public class InventoryManager
         uniqueIdLookup.Remove(item.uniqueID);
 
         OnDataChanged?.Invoke();
-        isDirty = true;
+        //isDirty = true;
+    }
+
+    public bool RemoveItem(int itemID, int itemCount)
+    {
+        foreach(var pair in inventories)
+        {
+            var inventory = pair.Value;
+            var item = inventory.GetItem(itemID);
+
+            if(item != null)
+              return inventory.RemoveItem(itemID, itemCount);
+        }
+
+        return false; 
     }
 
     public ItemData FindItem(string uniqueId)
@@ -114,6 +139,16 @@ public class InventoryManager
             return value.GetItems();
         return null;
     }
+
+    public int GetItemCount(int itemID)
+    {
+        if (inventories.TryGetValue(ItemCategory.INGREDIANT, out var value))
+            if (value is StackableInventory stack)
+                return stack.GetItemCount(itemID);
+        return 0;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
 
     public void EquipItem(int charid, CharEquipmentData equip)
     {
@@ -166,6 +201,10 @@ public class InventoryManager
         isDirty = true;
     }
 
+    /// <summary>
+    /// /////////////////////////////////////////////////////////////
+    /// </summary>
+
     public void SaveIfDirty()
     {
         if (isDirty == false) return;
@@ -181,7 +220,7 @@ public class InventoryManager
                 save.itemId = item.id;
                 save.uniqueId = item.uniqueID;
                 save.itemCategoy = item.category;
-                save.itemCount = item.itemCount;
+                save.itemCount = item.GetCount();
                 save.enhanceLevel = item is EquipmentItem ? (item as EquipmentItem).Enhance : 0;
 
                 listData.itemInfoList.Add(save);

@@ -74,7 +74,7 @@ public class RewardManager
                 ItemData item = AppManager.Instance.GetItemData(reward.itemId, reward.type);
                 if (item != null)
                 {
-                    item.itemCount = reward.amount;
+                    item.SetCount(reward.amount);
                     rewards.Add(item);
                 }
             }
@@ -84,8 +84,7 @@ public class RewardManager
                     rewards.Add(target);
                 else
                 {
-                    target.itemCount += reward.amount;
-                    target.itemCount += rangeValue;
+                    target.ModifyCount(+reward.amount + rangeValue);
                 }
             }
 
