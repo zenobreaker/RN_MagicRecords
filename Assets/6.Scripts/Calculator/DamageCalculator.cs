@@ -31,6 +31,17 @@ public static class DamageCalculator
         float value = damageEvent.value;
         float defense = status.GetStatusValue(StatusType.DEFENSE);
 
+        // 최대 체력 비례 데미지 
+        if(damageEvent.IsMaxHPPercent)
+        {
+            float hp = status.GetStatusValue(StatusType.HEALTH);
+            value = status.GetMaxHP() * damageEvent.MaxHPRatio; 
+        }
+
+        // 방어 무시 
+        if (damageEvent.IgnoreDefense)
+            return value;
+
         //최소 방어력 제한
         defense = Mathf.Max(defense, -CONST_DEFNSE + 0.001f);
 

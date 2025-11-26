@@ -1,7 +1,8 @@
-using UnityEngine;
-using TMPro;
 using System.Collections;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEngine.Rendering.DebugUI;
 
 public class DamageText : MonoBehaviour
 {
@@ -64,5 +65,43 @@ public class DamageText : MonoBehaviour
         gameObject.SetActive(true);
 
         transform.SetAsLastSibling();// 가장 앞에 그려지게 하기 위해 사용 
+    }
+
+    public void DrawDamage(Vector3 position, float value, DamageEvent evt)
+    {
+        if (text == null) return;
+
+        int finalValue = Mathf.RoundToInt(value);
+        bool isCrit = evt.isCrit;
+
+        string colorTag = "FFFFFF";
+        if (isCrit)
+        {
+            colorTag = ColorUtility.ToHtmlStringRGB(critColor);
+        }
+
+        if(evt.hitData.DamageType == DamageType.DOT_BLEED )
+        {
+            colorTag = Constants.BLEED_DMG_COLOR;
+        }
+        else if(evt.hitData.DamageType == DamageType.DOT_BURN)
+        {
+            colorTag = Constants.BURN_DMG_COLOR;
+        }
+        else if(evt.hitData.DamageType == DamageType.DOT_POISON)
+        {
+            colorTag = Constants.POISON_DMG_COLOR;
+        }
+
+        text.text = $"<color=#{colorTag}>{finalValue}</color>";
+
+        currentTime = lifeTime;
+
+        tdPos = position;
+        transform.position = tdPos;
+
+        gameObject.SetActive(true);
+
+        transform.SetAsLastSibling();
     }
 }

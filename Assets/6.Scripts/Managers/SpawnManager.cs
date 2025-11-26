@@ -22,8 +22,8 @@ public class SpawnManager : MonoBehaviour
     public SO_PlayerObjects soPlayerObject;
     public SO_NPCObjects soNpcObject;
 
-    private List<Player> spawnedPlayers = new();
-    private List<Enemy> spawnedEnemies = new();
+    private List<Character> spawnedPlayers = new();
+    private List<Character> spawnedEnemies = new();
 
     public event Action OnCompleteSpawnedPlayer;
     public event Action OnCompleteSpawnedEnemy;
@@ -133,18 +133,16 @@ public class SpawnManager : MonoBehaviour
 
     public void OnEndSpawn() { }
 
-    private void OnPlayerDead(Player player)
+    private void OnPlayerDead(Character player)
     {
-        player.OnDead -= OnPlayerDead;
         spawnedPlayers.Remove(player);
 
         if (spawnedPlayers.Count == 0)
             OnAllPlayersDead?.Invoke();
     }
 
-    private void OnEnemyDead(Enemy enemy)
+    private void OnEnemyDead(Character enemy)
     {
-        enemy.OnDead -= OnEnemyDead;
         spawnedEnemies.Remove(enemy);
 
         if (spawnedEnemies.Count == 0)

@@ -165,14 +165,19 @@ public class DamageEvent
     public bool isCrit;
     public bool isFisrtHit;
 
-    public HitData hitData;
+    public HitData hitData = new();
+
+    public bool IgnoreDefense = false;
+    public bool IsMaxHPPercent = false;
+    public float MaxHPRatio = 0f; 
 
     public DamageEvent(float value, bool isCrit = false, bool isFisrtHit = false, HitData hitData = null)
     {
         this.value = value;
         this.isCrit = isCrit;
         this.isFisrtHit = isFisrtHit;
-        this.hitData = hitData;
+        if(hitData != null ) 
+            this.hitData = hitData;
     }
 }
 

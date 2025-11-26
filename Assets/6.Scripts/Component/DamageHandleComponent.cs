@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 
 [System.Serializable]
@@ -81,14 +82,27 @@ public class DamageHandleComponent : MonoBehaviour
         float value = DamageCalculator.CalcDamage(status, damageEvent);
 
         health?.Damage(value);
-        
-        // 월드 좌표로 변환해서 보내야 적이 회전하는 경우에도 데미지 텍스트가 온전히 화면으로 보임 
-        Vector3 pos = transform.position + Vector3.up * dmgFontOffsetY;
-        DamageText dt = ObjectPooler.SpawnFromPool<DamageText>("DamageText", pos);
-        dt?.DrawDamage(pos, value, damageEvent.isCrit);
+
+        ShowDamageText(value, damageEvent);
+
+        if(damageEvent.hitData.DamageType == DamageType.DOT_POISON ||
+            damageEvent.hitData.DamageType == DamageType.DOT_BURN ||
+            damageEvent.hitData.DamageType == DamageType.DOT_BLEED)
+        {
+            return; 
+        }
 
         // Play Damage Animation
         PlayDamageAnimation(damageEvent.hitData);
+    }
+
+    private void ShowDamageText(float value, DamageEvent damageEvent)
+    {
+        // 월드 좌표로 변환해서 보내야 적이 회전하는 경우에도 데미지 텍스트가 온전히 화면으로 보임 
+        Vector3 pos = transform.position + Vector3.up * dmgFontOffsetY;
+        DamageText dt = ObjectPooler.SpawnFromPool<DamageText>("DamageText", pos);
+        dt?.DrawDamage(pos, value, damageEvent);
+
     }
 
     public void PlayDamageAnimation(HitData data)
