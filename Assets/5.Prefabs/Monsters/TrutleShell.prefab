@@ -569,6 +569,7 @@ GameObject:
   - component: {fileID: 53763143311511417}
   - component: {fileID: 7393046643433022218}
   - component: {fileID: 8499944717287439343}
+  - component: {fileID: 3118038307218091534}
   m_Layer: 0
   m_Name: TrutleShell
   m_TagString: Untagged
@@ -809,19 +810,15 @@ MonoBehaviour:
     - type: 0
       value:
         baseValue: 10
-        buffedValue: 0
     - type: 1
       value:
         baseValue: 1
-        buffedValue: 0
     - type: 2
       value:
         baseValue: 1
-        buffedValue: 0
     - type: 5
       value:
         baseValue: 10
-        buffedValue: 0
 --- !u!114 &3959749324113535563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -937,6 +934,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillEventHandler: {fileID: 0}
+--- !u!114 &3118038307218091534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4064022371553776242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caf57f0d6445d6e43a20754fc915766b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tickInterval: 0.1
 --- !u!1 &4603522227996034708
 GameObject:
   m_ObjectHideFlags: 0
