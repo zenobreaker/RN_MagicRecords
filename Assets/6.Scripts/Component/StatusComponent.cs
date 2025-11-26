@@ -117,6 +117,8 @@ public class StatusComponent : MonoBehaviour
     [SerializeField]
     private Status status;
 
+    private HealthPointComponent healthPointComponent;
+
     public Action<float> OnSetHealth;
 
     private void Start()
@@ -125,7 +127,19 @@ public class StatusComponent : MonoBehaviour
             status = new Status();
 
         status.Init();
+
+        healthPointComponent = GetComponent<HealthPointComponent>();
     }
+
+
+    //-------------------------------------------------------------------------
+    // EffectSystem에서 호출하는 API
+    //-------------------------------------------------------------------------
+
+    /// <summary>
+    /// 효과 시스템이  스탯을 적용하거나 제거할 때 사용
+    /// </summary>
+    /// <param name="modifier"></param>
 
     public void ApplyBuff(StatModifier modifier)
     {
@@ -140,6 +154,10 @@ public class StatusComponent : MonoBehaviour
         status?.RemoveBuff(modifier);
     }
 
+    //-------------------------------------------------------------------------
+    // 직접 스탯을 변경하고 싶을 때 
+    //-------------------------------------------------------------------------
+
     public void SetStatusValue(StatusType type, float value)
     {
         if (status == null || status.Get(type) == null) return;
@@ -152,6 +170,16 @@ public class StatusComponent : MonoBehaviour
 
         return status.Get(type).FinalValue;
     }
+
+    public float GetMaxHP()
+    {
+        return healthPointComponent?.GetMaxHP ?? 0.0f;
+    }
+
+    /// <summary>
+    /// 캐릭터 기본 스탯 초기 설정
+    /// </summary>
+    /// <param name="data"></param>
 
     public void SetStatusData(CharStatusData data)
     {
