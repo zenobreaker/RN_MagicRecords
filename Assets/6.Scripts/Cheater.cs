@@ -51,7 +51,10 @@ public class Cheater
 
         // 플레이어 공격력 버프 온
         if (Input.GetKeyDown(KeyCode.Keypad4))
+        {
             Test_PlayerAttackBuff();
+            Test_PlayerAddBurn();
+        }
 
         if (Input.GetKeyDown(KeyCode.Keypad5))
             Test_PlayerRemoveBuff();
@@ -80,10 +83,10 @@ public class Cheater
     {
         if (player == null) return;
 
-        BuffComponent buff = player.GetComponent<BuffComponent>();
+        EffectComponent buff = player.GetComponent<EffectComponent>();
         if (buff == null) return;
 
-        buff.RemoveBuff("AttackBuff");
+        buff.RemoveEffect("AttackBuff");
         Debug.Log("Cheater - Buff Off");
     }
 
@@ -91,14 +94,26 @@ public class Cheater
     {
         if (player == null) return;
 
-        BuffComponent buff = player.GetComponent<BuffComponent>();
+        EffectComponent buff = player.GetComponent<EffectComponent>();
         if (buff == null) return;
 
         Debug.Log("Buff On");
 
-        StatBuff attackbuff = new StatBuff("AttackBuff", 10.0f, StatusType.ATTACK, 0.2f);
-        buff.ApplyBuff(attackbuff); 
+        StatBuffEffect attackbuff = new StatBuffEffect("AttackBuff", 10.0f, StatusType.ATTACK, 0.2f);
+        buff.ApplyEffect(attackbuff, player, null); 
     }
+
+    private void Test_PlayerAddBurn()
+    {
+        if(player == null) return;  
+        if(EffectManager.Instance == null) return;
+
+        Debug.Log("Debuff On");
+
+        BurnEffect burn = new BurnEffect("burn", "", 10.0f, 3.0f, 10.0f);
+        EffectManager.Instance.RegisterEffect(player, null, burn);
+    }
+
 
     private void Test_PlayerInvicible()
     {
