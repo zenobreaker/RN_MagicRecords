@@ -72,7 +72,16 @@ public enum StatusType
 //  Damage 
 public enum DamageType
 {
-    NORMAL = 0, STRONG, KNOCKBACK, DOWN, AIRBORNE, MAX
+    NORMAL = 0, 
+    STRONG,
+    KNOCKBACK, 
+    DOWN, 
+    AIRBORNE, 
+    DOT_BLEED, 
+    DOT_BURN, 
+    DOT_POISON, 
+
+    MAX
 }
 
 
@@ -139,3 +148,13 @@ public enum ItemRank
     MAX = LEGENDARY,
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//  Passive Trigger 
+public enum TriggerEvent
+{
+    ON_GAME_START = 0,  
+    ON_ENTER_ROOM =1,
+    On_ATTACK,
+    ON_DEAMGED,
+    ON_ENENMY_KILLED
+}
