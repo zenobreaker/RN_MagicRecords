@@ -20,8 +20,6 @@ public class Enemy
     private LaunchComponent launch;
     protected ActionComponent currentAction;
 
-    public Action<Enemy> OnDead;
-
     protected override void Awake()
     {
         base.Awake();

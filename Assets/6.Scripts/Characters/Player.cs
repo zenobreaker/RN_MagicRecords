@@ -24,8 +24,6 @@ public class Player
 
     private bool bIsUsedSkill = false;
 
-    public event Action<Player> OnDead;
-
     private Action<InputAction.CallbackContext> onAction;
     private Action<InputAction.CallbackContext> onDash;
     private Action<InputAction.CallbackContext>[] onSkillActions;

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 
@@ -29,6 +28,7 @@ public class Character
 
     public Action OnBeginDoAction;
     public Action OnEndDoAction;
+    public Action<Character> OnDead;
 
     protected virtual void Awake()
     {
@@ -52,6 +52,11 @@ public class Character
     {
         Regist_MovableStopper();
         Regist_MovableSlower();
+    }
+
+    protected virtual void OnDisbale()
+    {
+        OnDead = null;
     }
 
     protected virtual void End_Damaged() { bInAction = false; }
@@ -121,4 +126,9 @@ public class Character
     #endregion
 
     protected virtual void Dead() { }
+
+    public static implicit operator GameObject(Character c)
+    {
+        return c != null ? c.gameObject : null;
+    }
 }
