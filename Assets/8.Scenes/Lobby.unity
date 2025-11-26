@@ -736,39 +736,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
---- !u!1 &116740370 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6372159647807091890, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-  m_PrefabInstance: {fileID: 1152448966}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &116740376
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 116740370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a531d6c4f17cb0340b02a37f7835bb86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  classSkillTreeList:
-  - id: 1
-    allSkills:
-    - {fileID: 11400000, guid: 670a805b3eebd3c46b42647f9365105e, type: 2}
-    - {fileID: 11400000, guid: f6b7f2b99ce90da40a0073b767e980f6, type: 2}
-    - {fileID: 11400000, guid: 37d8b70de5477a44d92ce428f8d6ce42, type: 2}
-    - {fileID: 11400000, guid: 3c7e39de5436bbd4a9264131f8ae6425, type: 2}
-    - {fileID: 11400000, guid: 1af5de8cd065be747b8bfa3e531d0ae7, type: 2}
-    - {fileID: 11400000, guid: 9a41ec88b392b394795c4d65036c7ab4, type: 2}
-    - {fileID: 11400000, guid: a9c4eabb088d96d42a1759810bd8fcee, type: 2}
-    - {fileID: 11400000, guid: 1c48a00e8786dc7488a9d193ba13fced, type: 2}
-    - {fileID: 11400000, guid: 3dc0c4d2d41d18b44bfdbc5c77939506, type: 2}
-    - {fileID: 11400000, guid: 8b5d5b4fa095d4747856d4c19c778ae1, type: 2}
-  onwerSkillTreeList:
-  - id: 1
-    allSkills: []
 --- !u!1 &127244486
 GameObject:
   m_ObjectHideFlags: 0
@@ -11763,16 +11730,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6372159647807091890, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 116740376}
-    - targetCorrespondingSourceObject: {fileID: 9019792263151780328, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1887244711}
-    - targetCorrespondingSourceObject: {fileID: 9019792263151780328, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1887244713}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
 --- !u!1 &1154993958
 GameObject:
@@ -19739,38 +19697,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1862335466}
   m_CullTransparentMesh: 1
---- !u!1 &1887244709 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9019792263151780328, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-  m_PrefabInstance: {fileID: 1152448966}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1887244711
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1887244709}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59070b07109a6b040a18b56f0bbb3d4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  jsonAsset: {fileID: 4900000, guid: f179a067e1a4d31438e3846943ff746c, type: 3}
---- !u!114 &1887244713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1887244709}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b67d0e946424c3e46a8e43ca6cf29ad3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  jsonAsset: {fileID: 4900000, guid: 47cf826583f0a144b872990edf10e4da, type: 3}
-  enhanceStatJson: {fileID: 4900000, guid: c2d0ae628c9642f4d961a16e8a3a83f0, type: 3}
 --- !u!1 &1892411164
 GameObject:
   m_ObjectHideFlags: 0
@@ -23021,10 +22947,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIManager
       objectReference: {fileID: 0}
-    - target: {fileID: 5224402702422177920, guid: e7e51f948a4735148a9e195c6b094aba, type: 3}
-      propertyPath: popupUIEquipment
-      value: 
-      objectReference: {fileID: 932111732265891008, guid: 1b14d7f134880a246a93b0ad6a292f04, type: 3}
     - target: {fileID: 8070538811074939595, guid: e7e51f948a4735148a9e195c6b094aba, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
