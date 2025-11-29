@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,12 +12,7 @@ public interface IEffectTrigger
 // 효과 액션 인터페이스
 public interface IEffectAction
 {
-    void Execute(GameObject target, int stackCount);
-}
-
-public interface IEffecCache
-{
-    void Cache(GameObject owner);
+    void Execute(GameObject target,GameObject caster, int stackCount);
 }
 
 
@@ -37,7 +33,11 @@ public abstract class BaseEffect
     public List<IEffectAction> Actions { get; private set; } = new();
 
     protected GameObject owner;
-    protected GameObject appliedBy; 
+    protected GameObject appliedBy;
+    public GameObject FxObject { get; set; }
+    public Sprite FxIcon { get; set; }
+
+    public event Action<BaseEffect> OnRemovedUI;
 
     public BaseEffect(string id, string desc, float duration)
     {
@@ -55,12 +55,12 @@ public abstract class BaseEffect
 
         // 즉시형 or 지속형
         foreach (IEffectAction action in Actions)
-            action.Execute(owner, StackCount);
+            action.Execute(owner, appliedBy, StackCount);
     }
 
     public virtual void OnRemove()
     {
-
+        OnRemovedUI?.Invoke(this);
     }
 
     public void ResetDuration()
@@ -73,7 +73,8 @@ public abstract class BaseEffect
         if (StackCount < MaxStack)
             StackCount++;
 
-        if (StackPolicy == BuffStackPolicy.REFRESH_ONLY)
+        if (StackPolicy == BuffStackPolicy.REFRESH_ONLY || 
+            StackPolicy == BuffStackPolicy.STACKABLE)
             ResetDuration();
     }
 
@@ -90,7 +91,7 @@ public abstract class BaseEffect
             if (trigger.CheckTrigger(owner))
             {
                 foreach (IEffectAction action in Actions)
-                    action.Execute(owner, StackCount);
+                    action.Execute(owner, appliedBy, StackCount);
             }
         }
     }

@@ -11,7 +11,7 @@ public class ApplyStatModifierAction
     public ApplyStatModifierAction(StatModifier modifier)
     { this.modifier = modifier; }
 
-    public void Execute(GameObject owner, int stackCount)
+    public void Execute(GameObject owner, GameObject caster, int stackCount)
     {
         if (owner.TryGetComponent<StatusComponent>(out StatusComponent status))
         {

@@ -12,6 +12,8 @@ public class SO_HUDHandler : ScriptableObject
     public event Action<float> OnChangeMP;
     public event Action<float, float> OnChangeMP_TwoParam;
 
+    public event Action<BaseEffect> OnEffect; 
+
 
     public void OnInitValue_HP(float value) => OnInitHP?.Invoke(value);
     public void OnInitValue_MP(float value) => OnInitMP?.Invoke(value);
@@ -23,4 +25,9 @@ public class SO_HUDHandler : ScriptableObject
     public void OnChangeValue_MP(float value) => OnChangeMP.Invoke(value);
 
     public void OnChangeValue_MP(float value1, float value2) => OnChangeMP_TwoParam?.Invoke(value1, value2);
+
+    public void OnApplyEffect(BaseEffect effect)
+    {
+        OnEffect?.Invoke(effect);
+    }
 }

@@ -8,18 +8,27 @@ public class ApplyDamageAction
 {
     private DamageType type; 
     private float power; 
-    private HealthPointComponent healthPoint;
-    private DamageEvent damageEvent;
+ 
+ 
+
     public ApplyDamageAction(DamageType type = DamageType.NORMAL, float power = 0.0f)
     {
         this.type = type;
         this.power= power;
     }
 
-    public void Execute(GameObject target, int stackCount)
+    public void Execute(GameObject target, GameObject caster, int stackCount)
     {
         if (!target.TryGetComponent<DamageHandleComponent>(out var damageHandle))
             return;
+
+        float finalPower = power;   
+
+        // 시전자 공격력 반영 
+        if(caster!= null && caster.TryGetComponent<StatusComponent>(out var casterStatus) )
+        {
+            finalPower *= casterStatus.GetStatusValue(StatusType.ATTACK) * 0.3f; 
+        }
 
         var evt = new DamageEvent(0);
         evt.hitData.DamageType = type;
@@ -29,16 +38,16 @@ public class ApplyDamageAction
             case DamageType.DOT_POISON:
                 evt.IsMaxHPPercent = true;
                 evt.IgnoreDefense = true;
-                evt.MaxHPRatio = power * stackCount;
+                evt.MaxHPRatio = (finalPower * stackCount ) * 0.01f;
                 break;
             case DamageType.DOT_BURN:
                 evt.IsMaxHPPercent = false;
                 evt.IgnoreDefense = false;
-                evt.value = power * stackCount;
+                evt.value = finalPower * stackCount;
                 break;
             case DamageType.DOT_BLEED:
                 evt.IgnoreDefense = true; 
-                evt.value = power * stackCount; 
+                evt.value = finalPower * stackCount; 
                 break;
         }
 
