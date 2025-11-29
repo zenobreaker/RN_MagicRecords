@@ -99,6 +99,7 @@ public class Cheater
 
         Debug.Log("Buff On");
 
+
         StatBuffEffect attackbuff = new StatBuffEffect("AttackBuff", 10.0f, StatusType.ATTACK, 0.2f);
         buff.ApplyEffect(attackbuff, player, null); 
     }
@@ -110,8 +111,11 @@ public class Cheater
 
         Debug.Log("Debuff On");
 
-        BurnEffect burn = new BurnEffect("burn", "", 10.0f, 3.0f, 10.0f);
-        EffectManager.Instance.RegisterEffect(player, null, burn);
+        //BurnEffect burn = new BurnEffect("burn", "", 10.0f, 3.0f, 10.0f);
+        //EffectManager.Instance.RegisterEffect(player, null, burn);
+        EffectManager.Instance.RegisterEffect_Burn(player, null, 10.0f, 10.0f);
+        EffectManager.Instance.RegisterEffect_Bleed(player, null, 10.0f, 3.0f);
+        EffectManager.Instance.RegisterEffect_Poison(player, null, 10.0f, 3.0f);
     }
 
 
