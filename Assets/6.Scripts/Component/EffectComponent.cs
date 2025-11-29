@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class EffectComponent : MonoBehaviour
 {
-    [SerializeField]
-    private float tickInterval = 0.1f;
-
     private Character owner;
 
     private Dictionary<string, BaseEffect> activeEffects= new Dictionary<string, BaseEffect>();
     private List<BaseEffect> expiredEffects = new();
 
+    private SO_HUDHandler handler; 
+
     private void Awake()
     {
         owner = GetComponent<Character>();
         Debug.Assert(owner != null);
+
+        handler = Resources.Load<SO_HUDHandler>("SO_HUDHandler");
     }
 
     private void Update()
@@ -57,13 +58,15 @@ public class EffectComponent : MonoBehaviour
                 case BuffStackPolicy.IGNOREIFEXSIST:
                     return;
             }
+            newEffect = existingEffect;
         }
         else
         {
             activeEffects.Add(newEffect.ID, newEffect);
-            //newEffect.TickInterval = tickInterval;
             newEffect.OnApply(owner, appliedBy);
         }
+
+        handler?.OnApplyEffect(newEffect);
     }
 
     public void RemoveEffect(BaseEffect effect)
