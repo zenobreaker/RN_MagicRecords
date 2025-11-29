@@ -3,7 +3,6 @@ using UnityEngine;
 public abstract class DoTStatusEffect
     : BaseEffect
 {
-    protected float damagePerTick;
     protected float tickInterval;
 
     protected StatusComponent appliersStatus; 
