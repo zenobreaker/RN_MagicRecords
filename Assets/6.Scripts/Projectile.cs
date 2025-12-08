@@ -98,13 +98,14 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    public void SetDamageInfo(GameObject attacker, DamageData damageData)
+    public void SetDamageInfo(GameObject attacker, DamageData damageData,
+        bool bExtraCrit = false)
     {
         if (attacker == null) return;
         if (damageData == null) return;
 
         ownerObject = attacker.gameObject;
-        damageEvent = damageData.GetMyDamageEvent(attacker);
+        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit);
     }
 
 }
