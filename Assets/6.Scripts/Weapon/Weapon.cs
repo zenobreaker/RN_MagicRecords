@@ -47,23 +47,16 @@ public class DamageData
     [Header("Hit")]
     public HitData hitData;
 
-    public DamageEvent GetMyDamageEvent(GameObject attacker, bool bFirstHit = false)
+    public DamageEvent GetMyDamageEvent(GameObject attacker,
+        bool bFirstHit = false, bool bExtraCrit = false )
     {
-        if (attacker == null)
-            return null;
-
-        return GetMyDamageEvent(attacker, attacker.GetComponent<StatusComponent>(), bFirstHit);
+        return GetMyDamageEvent(attacker, attacker.GetComponent<StatusComponent>(), bFirstHit, bExtraCrit);
     }
 
-    public DamageEvent GetMyDamageEvent(GameObject attacker, StatusComponent status, bool bFirstHit = false)
+    public DamageEvent GetMyDamageEvent(GameObject attacker, StatusComponent status, 
+        bool bFirstHit = false, bool bExtraCrit = false)
     {
-        if (attacker == null)
-            return null;
-
-        if (status == null)
-            return null;
-
-        return DamageCalculator.GetMyDamageEvent(status, this, bFirstHit);
+        return DamageCalculator.GetMyDamageEvent(status, this, bFirstHit, bExtraCrit);
     }
 
     public void PlayHitSound()
@@ -159,25 +152,27 @@ public class ActionData
     }
 }
 
-public class DamageEvent
+public struct DamageEvent
 {
     public float value;
     public bool isCrit;
     public bool isFisrtHit;
 
-    public HitData hitData = new();
+    public HitData hitData;
 
-    public bool IgnoreDefense = false;
-    public bool IsMaxHPPercent = false;
-    public float MaxHPRatio = 0f; 
+    public bool IgnoreDefense;
+    public bool IsMaxHPPercent;
+    public float MaxHPRatio; 
 
     public DamageEvent(float value, bool isCrit = false, bool isFisrtHit = false, HitData hitData = null)
     {
         this.value = value;
         this.isCrit = isCrit;
         this.isFisrtHit = isFisrtHit;
-        if(hitData != null ) 
-            this.hitData = hitData;
+        IgnoreDefense = false;
+        IsMaxHPPercent = false;
+        MaxHPRatio = 0f;
+        this.hitData = hitData;
     }
 }
 
