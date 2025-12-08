@@ -103,7 +103,7 @@ public class Enemy
 
         // Look Attacker 
         LookAttacker(attacker);
-        ApplyLaunch(attacker, causer, damageEvent?.hitData);
+        ApplyLaunch(attacker, causer, damageEvent.hitData);
 
         StartCoroutine(Change_Color(changeColorTime));
 

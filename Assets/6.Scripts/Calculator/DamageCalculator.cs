@@ -3,19 +3,23 @@
 public static class DamageCalculator
 {
     private readonly static float CONST_DEFNSE = 100.0f;
-    public static DamageEvent GetMyDamageEvent(StatusComponent status, DamageData data, bool bFirstHit = false)
+    public static DamageEvent GetMyDamageEvent(StatusComponent status, DamageData data, 
+        bool bFirstHit = false, bool bExtraCrit = false)
     {
-        if (status == null) return null;
-        
         float attack = status.GetStatusValue(StatusType.ATTACK);
         float critRatio = status.GetStatusValue(StatusType.CRIT_RATIO);
         float critDmg = status.GetStatusValue(StatusType.CRIT_DMG);
         bool crit = false;
 
         float result = attack * data.Power;
-        float v = Random.Range(0.0f, 1.0f);
-        if (v <= critRatio)
-            crit = true;
+        
+        crit = bExtraCrit;
+        if (bExtraCrit == false)
+        {
+            float v = Random.Range(0.0f, 1.0f);
+            if (v <= critRatio)
+                crit = true;
+        }
 
         if (crit)
             result *= critDmg;
@@ -25,7 +29,7 @@ public static class DamageCalculator
 
     public static float CalcDamage(StatusComponent status, DamageEvent damageEvent)
     {
-        if (status == null ||  damageEvent == null) 
+        if (status == null) 
             return 0.0f;
 
         float value = damageEvent.value;

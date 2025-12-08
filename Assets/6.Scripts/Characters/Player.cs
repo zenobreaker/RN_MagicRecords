@@ -114,7 +114,7 @@ public class Player
     }
     protected void OnEnable()
     {
-        BattleManager.Instance?.ResistPlayer(this);
+        BattleManager.Instance?.RegistPlayer(this);
     }
 
     protected void OnDisable()
@@ -225,7 +225,7 @@ public class Player
             return;
         }
 
-        ApplyLaunch(attacker, causer, damageEvent?.hitData);
+        ApplyLaunch(attacker, causer, damageEvent.hitData);
         damageHandle?.OnDamage(damageEvent);
 
         if (healthPoint.Dead == false)
