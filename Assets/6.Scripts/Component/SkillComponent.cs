@@ -8,7 +8,7 @@ public enum SkillSlot
     Slot1 = 0, Slot2, Slot3, Slot4, MAX,
 }
 
-public class SkillComponent 
+public class SkillComponent
     : ActionComponent
 {
     private StateComponent state;
@@ -21,6 +21,9 @@ public class SkillComponent
 
     // 장착 스킬 정보 
     private Dictionary<string, ActiveSkill> skillSlotTable;
+
+    // 어떤 인터페이스든 구현체를 저장
+    private Dictionary<Type, object> capabilityTable = new();
 
     // 스킬 사용 관련 이벤트 핸들러
     public SO_SkillEventHandler skillEventHandler;
@@ -38,7 +41,7 @@ public class SkillComponent
 
         damageHandle = GetComponent<DamageHandleComponent>();
         if (damageHandle != null)
-            damageHandle.OnDamaged += OnDamaged; 
+            damageHandle.OnDamaged += OnDamaged;
 
         Awake_SkillSlotTable();
     }
@@ -66,7 +69,7 @@ public class SkillComponent
             return;
 
         // 쿨다운 업데이트 
-        int slot = 0; 
+        int slot = 0;
         foreach (KeyValuePair<string, ActiveSkill> pair in skillSlotTable)
         {
             if (pair.Value == null) continue;
@@ -82,19 +85,47 @@ public class SkillComponent
         }
     }
 
+    // 기능 등록 (패시브가 호출)
+    public void RegisterCapability<T>(T capability) where T : class
+    {
+        var type = typeof(T);
+        if (capabilityTable.ContainsKey(type))
+            capabilityTable[type] = capability;  // 이미 있으면 덮어쓰기 
+        else
+            capabilityTable.Add(type, capability);  
+    }
+
+    // 기능 조회 (액티브가 호출)
+    public T GetCapability<T>() where T : class
+    {
+        var type = typeof(T);
+        if (capabilityTable.TryGetValue(type, out object value))
+            return (T)value;
+        return null;
+    }
+
+    // 기능 해제 (패시브가 사라지거나 해제 시) 
+    public void UnregisterCapability<T>()
+    {
+        var type = typeof(T);
+        if (capabilityTable.ContainsKey(type))
+        {
+            capabilityTable.Remove(type);
+        }
+    }
 
     public bool CanUseSkill(string skillName)
     {
-        if(skillSlotTable.TryGetValue(skillName, out var skill))
+        if (skillSlotTable.TryGetValue(skillName, out var skill))
             return skill != null && skill.IsOnCooldown == false && bIsSkillAction == false;
 
-        return false; 
+        return false;
     }
 
     // 스킬 장착 
-    public void SetActiveSkill(SkillSlot slot , ActiveSkill skill)
+    public void SetActiveSkill(SkillSlot slot, ActiveSkill skill)
     {
-        if(skill == null) return;
+        if (skill == null) return;
         SetActiveSkill(slot.ToString(), skill);
         skillEventHandler?.OnSetting_ActiveSkill(slot, skill);
     }
@@ -104,11 +135,11 @@ public class SkillComponent
     {
         if (skill == null) return;
 
-        if(skillSlotTable.ContainsKey(slotName))
+        if (skillSlotTable.ContainsKey(slotName))
             skillSlotTable[slotName] = skill;
-        else 
+        else
             skillSlotTable.Add(slotName, skill);
-        
+
         skillSlotTable[slotName].SetOwner(rootObject);
         skillSlotTable[slotName].InitializedData();
     }
@@ -144,7 +175,7 @@ public class SkillComponent
 
     public override void StartAction()
     {
-        if(string.IsNullOrEmpty(currentSkillName)) return;
+        if (string.IsNullOrEmpty(currentSkillName)) return;
         base.StartAction();
 
         skillSlotTable[currentSkillName]?.Start_DoAction();
@@ -152,38 +183,38 @@ public class SkillComponent
 
     public override void BeginDoAction()
     {
-        if(string.IsNullOrEmpty(currentSkillName)) return;
+        if (string.IsNullOrEmpty(currentSkillName)) return;
         base.BeginDoAction();
-        
+
         skillSlotTable[currentSkillName]?.Begin_DoAction();
-        
+
         OnBeginDoAction?.Invoke();
         skillEventHandler?.OnBegin_UseSkill();
     }
 
     public override void EndDoAction()
     {
-        if(string.IsNullOrEmpty(currentSkillName)) return;
+        if (string.IsNullOrEmpty(currentSkillName)) return;
         base.EndDoAction();
 
-        bIsSkillAction = false; 
+        bIsSkillAction = false;
         skillSlotTable[currentSkillName]?.End_DoAction();
         currentSkillName = string.Empty;
 
         Debug.Log($"Skill End DoAction");
-        OnEndDoAction?.Invoke(); 
+        OnEndDoAction?.Invoke();
         skillEventHandler?.OnEnd_UseSkill();
     }
 
-    public override void BeginJudgeAttack(AnimationEvent e) 
+    public override void BeginJudgeAttack(AnimationEvent e)
     {
-        if (string.IsNullOrEmpty(currentSkillName)) return; 
+        if (string.IsNullOrEmpty(currentSkillName)) return;
         base.BeginJudgeAttack(e);
 
         skillSlotTable[currentSkillName]?.Begin_JudgeAttack(e);
     }
 
-    public override void EndJudgeAttack(AnimationEvent e) 
+    public override void EndJudgeAttack(AnimationEvent e)
     {
         if (string.IsNullOrEmpty(currentSkillName)) return;
         base.EndJudgeAttack(e);
@@ -204,5 +235,15 @@ public class SkillComponent
         base.PlayCameraShake();
 
         skillSlotTable[currentSkillName]?.Play_CameraShake();
+    }
+
+    public void NotifyBulletInit(int bulletCount)
+    {
+        skillEventHandler?.OnUpdateMagciBulletLoad(bulletCount);
+    }
+
+    public void NotifyMagicBulletChanged(Queue<BulletData> bullets)
+    {
+        skillEventHandler?.OnChangedBullets(bullets);   
     }
 }

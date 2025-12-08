@@ -15,4 +15,6 @@ public class SO_SkillData : ScriptableObject
 
     [Header("Skill Leading Skill ID's")]
     public List<int> leadingSkillList;
+
+    public virtual Skill CreateSkill() { return SkillFactory.CreateSkill(this); }
 }

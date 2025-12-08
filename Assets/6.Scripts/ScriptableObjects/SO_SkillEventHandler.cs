@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -18,7 +19,12 @@ public class SO_SkillEventHandler : ScriptableObject
 
     public event Action OnDisableSkill;
 
-#region EQUIP SKILL
+    public event Action<int> OnUpdateMagicBulletLoad;
+    public event Action<Queue<BulletData>> OnChangeBullets;
+
+    public int MagicBulletCount { get; private set; }
+
+    #region EQUIP SKILL
     public void OnSetting_ActiveSkill(SkillSlot slot, ActiveSkill skill) => OnSetActiveSkill?.Invoke(slot, skill);  
 
 #endregion
@@ -37,4 +43,15 @@ public class SO_SkillEventHandler : ScriptableObject
 
     // 장착 해제 
     public void OnUnequipment() => OnDisableSkill?.Invoke();
+
+
+    public void OnChangedBullets(Queue<BulletData> bullets)
+    {
+        OnChangeBullets?.Invoke(bullets);
+    }
+
+    public void OnUpdateMagciBulletLoad(int maxBulltes)
+    {
+        OnUpdateMagicBulletLoad?.Invoke(maxBulltes);
+    }
 }

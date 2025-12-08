@@ -62,9 +62,4 @@ public class SO_ActiveSkillData : SO_SkillData
     public List<PhaseSkill> phaseList;
 
     public SO_ActiveSkillData Clone() => Instantiate(this);
-
-    public ActiveSkill CreateActiveSkill()
-    {
-        return SkillFactory.CreateSkill(id, this); 
-    }
 }

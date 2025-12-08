@@ -125,7 +125,7 @@ public class DebugUI : MonoBehaviour
         SkillComponent skill = debug_Character.GetComponent<SkillComponent>();
         if (skill != null || skillData != null)
         {
-            ActiveSkill activeSkill = skillData.CreateActiveSkill();
+            ActiveSkill activeSkill = (ActiveSkill)skillData.CreateSkill();
 
             if (activeSkill != null)
             {

@@ -13,6 +13,7 @@ public class UISkillDetail : UiBase
     [SerializeField] private Button maximumButton;
     [SerializeField] private Button downButton;
     [SerializeField] private Button upButton;
+    [SerializeField] private Button equipButton; 
 
     private SkillRuntimeData selectedSkillData;
 
@@ -37,6 +38,12 @@ public class UISkillDetail : UiBase
         DrawSkillName(data);
 
         DrawSkillDesc(data);
+
+        if (data.template is SO_PassiveSkillData)
+            equipButton?.gameObject.SetActive(false);
+        else if(data.template is SO_ActiveSkillData)
+            equipButton?.gameObject.SetActive(true);
+
     }
 
     private void DrawSkillLevel(SkillRuntimeData data)

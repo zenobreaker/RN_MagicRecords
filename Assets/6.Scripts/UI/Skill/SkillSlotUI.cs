@@ -1,4 +1,4 @@
-using TMPro;
+ï»¿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,20 +11,30 @@ public class SkillSlotUI : MonoBehaviour
     [SerializeField] private Image img_Cooldown;
     [SerializeField] private TextMeshProUGUI txt_Cooldown;
 
-
+    private SO_SkillEventHandler handler; 
     private float currCooldown;
 
-    public void SetSkillHandler(SO_SkillEventHandler hanlder)
+    private void OnDisable()
     {
-        if (hanlder == null)
-            return; 
+        if (handler == null) return; 
 
-        hanlder.OnSetActiveSkill += OnDrawSkill;
-        hanlder.OnInSkillCooldown += OnIsCooldown;
-        hanlder.OnSkillCooldown += OnSkillCoolDown;
+        handler.OnSetActiveSkill-= OnDrawSkill;
+        handler.OnInSkillCooldown -= OnIsCooldown;
+        handler.OnSkillCooldown -= OnSkillCoolDown;
     }
 
-    // ½ºÅ³ ÀÌ¹ÌÁö ±×¸®±â
+    public void SetSkillHandler(SO_SkillEventHandler handler)
+    {
+        if (handler == null)
+            return;
+
+        this.handler = handler; 
+        handler.OnSetActiveSkill += OnDrawSkill;
+        handler.OnInSkillCooldown += OnIsCooldown;
+        handler.OnSkillCooldown += OnSkillCoolDown;
+    }
+
+    // ìŠ¤í‚¬ ì´ë¯¸ì§€ ê·¸ë¦¬ê¸°
     private void OnDrawSkill(SkillSlot slot, ActiveSkill activeSkill)
     {
         bool bCheck = true;
@@ -33,15 +43,15 @@ public class SkillSlotUI : MonoBehaviour
         if (bCheck == false)
             return;
 
-        img_Skill.sprite = activeSkill.skillSprite;
+        img_Skill.sprite = activeSkill.Icon;
 
         OnIsCooldown(slot, activeSkill.IsOnCooldown);
     }
 
-    // °í¹Î »çÇ× => ½ºÅ³ ÄðÅ¸ÀÓ °ªÀÌ ´Ù µ¹¸é ¾î¶»°Ô Ã³¸®ÇÏ°Ô ÇÒ±î?
-    // 1. ÇÚµé·¯¿¡°Ô ±×·¯ÇÑ Á¤º¸±îÁö ¸Ã¾Æ³õ´Â´Ù.
-    // 2. ¿©±â¼­ µû·Î Ã³¸®ÇÑ´Ù. ½ºÅ³ °ªÀ¸·Î 
-    // ½ºÅ³ ÄðÅ¸ÀÓ °¨¼Ò
+    // ê³ ë¯¼ ì‚¬í•­ => ìŠ¤í‚¬ ì¿¨íƒ€ìž„ ê°’ì´ ë‹¤ ëŒë©´ ì–´ë–»ê²Œ ì²˜ë¦¬í•˜ê²Œ í• ê¹Œ?
+    // 1. í•¸ë“¤ëŸ¬ì—ê²Œ ê·¸ëŸ¬í•œ ì •ë³´ê¹Œì§€ ë§¡ì•„ë†“ëŠ”ë‹¤.
+    // 2. ì—¬ê¸°ì„œ ë”°ë¡œ ì²˜ë¦¬í•œë‹¤. ìŠ¤í‚¬ ê°’ìœ¼ë¡œ 
+    // ìŠ¤í‚¬ ì¿¨íƒ€ìž„ ê°ì†Œ
     private void OnSkillCoolDown(SkillSlot slot, float cooldown, float maxCooldown)
     {
         if (slot != mySlot) return;
@@ -53,7 +63,7 @@ public class SkillSlotUI : MonoBehaviour
         txt_Cooldown.text = currentValue;
     }
 
-    // ½ºÅ³ÀÌ ÄðÅ¸ÀÓ ÁßÀÎÁö ¾Æ´ÑÁö¿¡ µû¸¥ µ¿ÀÛ 
+    // ìŠ¤í‚¬ì´ ì¿¨íƒ€ìž„ ì¤‘ì¸ì§€ ì•„ë‹Œì§€ì— ë”°ë¥¸ ë™ìž‘ 
     private void OnIsCooldown(SkillSlot slot, bool isCooldown)
     {
         if (slot != mySlot) return; 

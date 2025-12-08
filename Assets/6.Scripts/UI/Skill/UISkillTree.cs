@@ -2,32 +2,41 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static SkillTreeController;
 
 public class UISkillTree : UiBase
 {
-//    private int maxLineCount = 5; // MaxLevel / 5 
-
-    private SkillTreeManager.SkillTreeCategory selectedCategory;
-    private SkillTree selectedSkillTree;
-
+    //    private int maxLineCount = 5; // MaxLevel / 5 
     public event Action<SkillRuntimeData> OnDrawedDetail;
 
-    public void OnClickCategoryButton(SkillTreeManager.SkillTreeCategory category)
+    public void DrawSkillTree(SkillTree skillTree, SkillTreeController.Skill_Category category)
     {
-        selectedCategory = category;
-        //selectedSkillTree = 
+        if(skillTree == null) return;
+
+        bool filterActive = category == Skill_Category.CLASS_ACTIVE ||
+                            category == Skill_Category.COMMON_ACTIVE;
+
+        bool filterPassive = category == Skill_Category.CLASS_PASSIVE||
+                            category == Skill_Category.COMMON_PASSIVE;
+
+        DrawFilterTree(skillTree, filterActive, filterPassive);
     }
 
-    public void DrawSkillTree(SkillTree skillTree)
+    private void DrawFilterTree(SkillTree skillTree, bool active, bool passive)
     {
-        // 스킬트리를 보고 라인을 그린다. 
         if (skillTree == null) return;
 
         List<List<SkillRuntimeData>> skillLines = new();
+
         int lineCount = 0;
         for (int i = 0; i <= 50; i++)
         {
-            var runtimeList = skillTree.GetSkillRuntimeDatasByLevel(i);
+            var runtimeList = skillTree.GetSkillRuntimeDatasByLevel(
+                i,
+                onlyActive: active,
+                onlyPassive: passive
+                );
+
             if (runtimeList != null && runtimeList.Count > 0)
             {
                 skillLines.Add(runtimeList);
@@ -35,6 +44,10 @@ public class UISkillTree : UiBase
             }
         }
 
+        DrawSkillTreeLines(lineCount, skillLines);
+    }
+    private void DrawSkillTreeLines(int lineCount, List<List<SkillRuntimeData>> skillLines)
+    {
         // 라인 오브젝트 배치 
         InitReplaceContentObject(lineCount);
 
