@@ -14,7 +14,7 @@ public class SkillTree
     // 스킬 트리는 레벨 별로 배우는 스킬들로 지정한다. 
     private Dictionary<int, List<SO_SkillData>> skillByLevelTable;
     private Dictionary<int, SkillRuntimeData> skillRuntimeDatas = new(); 
-    public void Initialize(Action action = null)
+    public void Initialize(Action<SkillRuntimeData> action = null)
     {
         skillByLevelTable = allSkills.GroupBy(skill => skill.learnableLevel)
             .ToDictionary(g => g.Key, g => g.OrderBy(s => s.id).ToList());
@@ -37,11 +37,22 @@ public class SkillTree
             }
         }
     }
-
-    public List<SO_SkillData> GetSkillForLevel(int level)
+    
+    public List<SO_SkillData> GetSkillForLevel(int level, bool onlyActive  = false, bool onlyPassive = false)
     {
-        return skillByLevelTable.TryGetValue(level, out var skills)
-            ? skills : new List<SO_SkillData>(); 
+        if (skillByLevelTable == null)
+            return new();
+
+        if (skillByLevelTable.TryGetValue(level, out var skills) == false)
+            return new();
+
+        if(onlyActive)
+            return skills.Where(s=> s is SO_ActiveSkillData).ToList(); 
+
+        if(onlyPassive)
+            return skills.Where(s => s is SO_PassiveSkillData).ToList();    
+
+        return skills;
     }
 
     public SkillRuntimeData GetSkillRuntimeDataByID(int id)
@@ -49,10 +60,10 @@ public class SkillTree
         return skillRuntimeDatas.TryGetValue(id, out var value) ? value : null;
     }
 
-    public List<SkillRuntimeData> GetSkillRuntimeDatasByLevel(int level)
+    public List<SkillRuntimeData> GetSkillRuntimeDatasByLevel(int level, bool onlyActive = false, bool onlyPassive = false)
     {
-        List<SkillRuntimeData> runtimeList = GetSkillForLevel(level).Select(sd =>
-        skillRuntimeDatas[sd.id]).ToList();
+        List<SkillRuntimeData> runtimeList = GetSkillForLevel(level, onlyActive, onlyPassive).Select(sd =>
+        skillRuntimeDatas[sd.id])?.ToList();
 
         foreach (SkillRuntimeData skill in runtimeList)
         {

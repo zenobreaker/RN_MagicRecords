@@ -8,6 +8,16 @@ public class SkillTreeController : UiBase
     private UISkillReplaceDetail uiSkillReplace;
     private SkillTreeManager skillTreeManager;
 
+    public enum Skill_Category
+    {
+        CLASS_ACTIVE,
+        CLASS_PASSIVE,
+        COMMON_ACTIVE,
+        COMMON_PASSIVE,
+    };
+    private Skill_Category category;
+    private int classID = 1;
+
     private void Awake()
     {
         uiSkillTree = FindAnyObjectByType<UISkillTree>();
@@ -39,21 +49,54 @@ public class SkillTreeController : UiBase
         }
     }
 
-    private void Start()
+    protected override void OnEnable()
     {
-        if (uiSkillTree == null || skillTreeManager == null) return;
+        base.OnEnable();
 
-        uiSkillTree.DrawSkillTree(skillTreeManager.GetSkillTableByClassId(1));
+        category = Skill_Category.CLASS_ACTIVE;
+
+        RefreshUI();
+    }
+
+    public override void RefreshUI()
+    {
+        DrawSkillTree();
     }
 
     public void OnSelctedSkillData(SkillRuntimeData data)
     {
         if (skillTreeManager == null) return;
-        skillTreeManager.SelectedSkillData = data; 
+        skillTreeManager.SelectedSkillData = data;
     }
 
     public void HideUI()
     {
         gameObject.SetActive(false);
+    }
+
+    public void OnDrawSkillTree(int category)
+    {
+        this.category = (Skill_Category)category;
+
+        RefreshUI(); 
+    }
+
+    private void DrawSkillTree()
+    {
+        if (skillTreeManager == null || uiSkillTree == null) return;
+
+        SkillTreeManager.SkillTreeCategory treeCategroy = SkillTreeManager.SkillTreeCategory.Theme;
+        
+        if (category == Skill_Category.CLASS_PASSIVE ||
+            category == Skill_Category.CLASS_ACTIVE)
+            treeCategroy = SkillTreeManager.SkillTreeCategory.Theme;
+        else if (category == Skill_Category.COMMON_ACTIVE ||
+            category == Skill_Category.COMMON_PASSIVE)
+            treeCategroy = SkillTreeManager.SkillTreeCategory.Common;
+
+
+        SkillTree skilltree = skillTreeManager.GetSkillTree(treeCategroy, classID);
+
+        uiSkillTree.DrawSkillTree(skilltree, category);
     }
 }

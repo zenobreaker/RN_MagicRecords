@@ -20,8 +20,9 @@ public class GameManager
     public event Action OnBattleStage;
     public event Action OnFinishStage;
     public event Action OnSuccedStage;
-    public event Action OnFailedStage; 
-    
+    public event Action OnFailedStage;
+
+    public event Action<float> OnUpdated;
 
     private StageManager stageManager;
 
@@ -58,6 +59,14 @@ public class GameManager
         // SetBeginStage(); 
     }
 
+    protected void Update()
+    {
+        if (state == GameState.PROCESS_BATTLE)
+        {
+            OnUpdated?.Invoke(Time.deltaTime);
+        }
+    }
+
 
     #region SET_STATE
     public void SetBeginStage() => SetGameState(GameState.BEGIN_STAGE);
@@ -76,7 +85,11 @@ public class GameManager
     {
         switch (state)
         {
-            case GameState.BEGIN_STAGE: OnBeginStage?.Invoke(); break;
+            case GameState.BEGIN_STAGE:
+                {
+                    OnBeginStage?.Invoke(); 
+                }
+                break;
             case GameState.PROCESS_BATTLE:
                 {
                     OnBattleStage?.Invoke();
@@ -104,7 +117,7 @@ public class GameManager
 
     public void FailedStage()
     {
-        OnFailedStage?.Invoke(); 
+        OnFailedStage?.Invoke();
     }
 
     public void EnterStage(StageInfo info)

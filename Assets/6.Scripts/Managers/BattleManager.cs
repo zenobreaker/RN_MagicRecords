@@ -53,7 +53,7 @@ public class BattleManager
 
     public void UnreistEnemy(Character character) => enemies.Remove(character);
 
-    public void ResistPlayer(Character character) => players.Unique(character);
+    public void RegistPlayer(Character character) => players.Unique(character);
 
     public void UnreistPlayer(Character character) => players.Remove(character);
 

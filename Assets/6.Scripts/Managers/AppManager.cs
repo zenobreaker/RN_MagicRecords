@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NUnit.Framework.Constraints;
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
@@ -29,6 +30,10 @@ public class AppManager
     private int prevNodeId = -1; // 이전에 고른 id 
     private bool bAllCleared = false;
 
+
+    // 패시브 스킬을 처리하는 시스템 클래스 
+    private PassiveSystem passiveSystem = new(); 
+
     protected override void Awake()
     {
         base.Awake();
@@ -49,6 +54,9 @@ public class AppManager
             CurrencyManager.Instance.OnInit((CurrencyInventory)InventoryManager.Instance.GetInvetory(ItemCategory.CURRENCY));
             SceneManager.sceneUnloaded += OnUnloadScene;
         }
+
+
+        passiveSystem?.OnInit(); 
 
         OnAwaked?.Invoke();
         OnAwaked = null;
@@ -90,6 +98,9 @@ public class AppManager
     protected override void Start()
     {
         if (GameManager.Instance == null) return;
+
+        GameManager.Instance.OnBeginStage += OnLose;
+        GameManager.Instance.OnUpdated += OnUpdate;
 
         GameManager.Instance.OnFinishStage += FinishStageProcess;
         GameManager.Instance.OnSuccedStage += SuccessStageProcess;
@@ -345,10 +356,42 @@ public class AppManager
         return skillManager.GetActiveSkillIDList(charID);
     }
 
-    public void SetActiveSkills(int charId, SkillComponent skillComp)
+    public void SetActiveSkills(int jobID, SkillComponent skillComp)
     {
         if (skillManager == null || skillComp == null) return;
-        skillManager.SetActiveSkills(charId, skillComp);
+        skillManager.SetActiveSkills(jobID, skillComp);
+    }
+
+    public void AddPassiveSkill(int jobID, PassiveSkill passiveSkill)
+    {
+        if (passiveSystem == null) return;
+        passiveSystem.Add(jobID, passiveSkill); 
+    }
+
+    public void RemovePassiveSkill(int jobID, PassiveSkill passiveSkill)
+    {
+        if (passiveSystem == null) return;
+        passiveSystem.Remove(jobID, passiveSkill);
+    }   
+
+    public void OnAcquire(int jobID, GameObject ownerObj)
+    {
+        passiveSystem?.OnAcquire(jobID, ownerObj);
+    }
+
+    public void OnLose()
+    {
+        passiveSystem?.OnLose();
+    }
+
+    public void OnUpdate(float dt)
+    {
+        passiveSystem?.OnUpdate(dt);
+    }
+
+    public void OnChangedLevelPassiveSkill(int jobID, SkillRuntimeData data)
+    {
+        passiveSystem?.OnChangedLevel(jobID, data);
     }
 
     #endregion

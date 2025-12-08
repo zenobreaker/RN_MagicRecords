@@ -54,12 +54,12 @@ public class SkillManager : MonoBehaviour
         for(int i = 0; i < SKILL_SLOT_MAX_COUNT; i++)
         {
             SkillRuntimeData skillData = (i < equipped.Count) ? equipped[i] : null;
-            ActiveSkill active = null;
+            Skill active = null;
 
             if (skillData?.template is SO_ActiveSkillData da)
-                active = da.CreateActiveSkill();
+                active = da.CreateSkill();
 
-            skillComp.SetActiveSkill((SkillSlot)i, active);
+            skillComp.SetActiveSkill((SkillSlot)i, active as ActiveSkill);
         }
     }
 }

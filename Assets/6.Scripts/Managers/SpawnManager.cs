@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -54,7 +54,7 @@ public class SpawnManager : MonoBehaviour
         Debug.Log($"Spawn Player");
 #endif
 
-        //TODO : ���� ĳ���͸� �����ؾ��ϸ� ���⸦ ����
+        //TODO : 여러 캐릭터를 조작해야하면 여기를 수정
         GameObject playerObj = soPlayerObject.GetPlayerObject(id);
         if (playerObj != null)
         {
@@ -66,7 +66,11 @@ public class SpawnManager : MonoBehaviour
 
             if(playerGO.TryGetComponent<Player>(out var player))
             {
-                //Setting Skills
+                //TODO : class(=job) 기능이 생기면 그 아이디로 지정해야 한다.
+                // Passive 등록한 이력 처리
+                AppManager.Instance.OnAcquire(1, playerGO);
+
+                // Setting Skills
                 player.SetActiveSkills();
 
                 // Setting Status

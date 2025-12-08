@@ -11,7 +11,7 @@ public class SkillRuntimeData
     public int currentLevel;    // 플레이어가 배운 현재 레벨
     public bool isUnlocked;     // 해금 여부
 
-    public Action OnDataChanged; 
+    public Action<SkillRuntimeData> OnDataChanged; 
 
     public int GetSkillID()
     {
@@ -44,28 +44,28 @@ public class SkillRuntimeData
     {
         isUnlocked = true;
 
-        OnDataChanged?.Invoke();
+        OnDataChanged?.Invoke(this);
     }
 
     public void IncreaseSkillLevel()
     {
         currentLevel = Mathf.Clamp(currentLevel + 1, 0, GetMaxSkillLevel());
 
-        OnDataChanged?.Invoke();
+        OnDataChanged?.Invoke(this);
     }
 
     public void DecreaseSKillLevel()
     {
         currentLevel = Mathf.Clamp(currentLevel - 1, 0, currentLevel);
 
-        OnDataChanged?.Invoke();
+        OnDataChanged?.Invoke(this);
     }
 
     public void SetMaxSkillLevel()
     {
         currentLevel = GetMaxSkillLevel();
 
-        OnDataChanged?.Invoke();
+        OnDataChanged?.Invoke(this);
     }
 
     public override string ToString()
@@ -83,9 +83,10 @@ public class SkillTreeManager
     : Singleton<SkillTreeManager>
 {
     [SerializeField] private List<SkillTree> classSkillTreeList;
+    [SerializeField] private SkillTree commonSkillTree;
     [SerializeField] private List<SkillTree> onwerSkillTreeList;
 
-    //private int selectedCharacterId = -1;  // 스킬트리를 결정한 캐릭터 ID 
+    private int selectedCharacterID = -1;  // 스킬트리를 결정한 캐릭터 ID 
     //private int selectedClassId = 1;          // 스킬트리를 결정한 직업 ID 
 
     // 선택한 스킬 정보 
@@ -99,6 +100,7 @@ public class SkillTreeManager
         Personal,   // 캐릭터 전용
     }
     private Dictionary<int, SkillTree> skillByClassIdTable = new();
+    private Dictionary<int, SkillTree> skillByOwnerIDTable = new();
     private Dictionary<SkillTreeCategory, SkillTree> skillTreeByCategoryTable = new();
 
     private bool isDirty = false;
@@ -129,6 +131,7 @@ public class SkillTreeManager
         {
             isDirty = Instance.isDirty;
             classSkillTreeList = Instance.classSkillTreeList;
+            commonSkillTree = Instance.commonSkillTree;
             onwerSkillTreeList = Instance.onwerSkillTreeList;
         }
     }
@@ -136,6 +139,24 @@ public class SkillTreeManager
     public SkillTree GetSkillTableByClassId(int classId)
     {
         return skillByClassIdTable[classId];
+    }
+
+    public SkillTree GetSkillTree(SkillTreeCategory category, int classID)
+    {
+        switch(category)
+        {
+            case SkillTreeCategory.Theme:
+                return skillByClassIdTable[classID];
+
+            case SkillTreeCategory.Common:
+                return commonSkillTree;
+
+            case SkillTreeCategory.Personal:
+                return skillByOwnerIDTable[selectedCharacterID];
+        }
+
+
+        return null; 
     }
 
 
@@ -158,7 +179,7 @@ public class SkillTreeManager
 
         foreach (SkillTree skillTree in classSkillTreeList)
         {
-            skillTree.Initialize(() => { isDirty = true; OnDataChanged?.Invoke(); });
+            skillTree.Initialize(OnSkillRuntimeDataChanged);
             skillByClassIdTable.Add(skillTree.id, skillTree);
         }
     }
@@ -176,6 +197,12 @@ public class SkillTreeManager
 
             runtimeSkill.currentLevel = skillSave.skillLevel;
             runtimeSkill.isUnlocked = skillSave.unlocked;
+
+            if (runtimeSkill.template is SO_PassiveSkillData so_passive)
+            {
+                //앱매니저에게 해당 스킬이 레벨업되었다고 알림
+                AppManager.Instance?.OnChangedLevelPassiveSkill(so_passive.jobID, runtimeSkill);
+            }
         }
     }
 
@@ -184,6 +211,18 @@ public class SkillTreeManager
         if(skillByClassIdTable.TryGetValue(classID, out SkillTree tree))
             return tree.GetSkillRuntimeDataByID(skillID);
         return null;
+    }
+
+    public void OnSkillRuntimeDataChanged(SkillRuntimeData data)
+    {
+        isDirty = true;
+        OnDataChanged?.Invoke(); 
+
+        if(data.template is SO_PassiveSkillData so_passive)
+        {
+            //앱매니저에게 해당 스킬이 레벨업되었다고 알림
+            AppManager.Instance?.OnChangedLevelPassiveSkill(so_passive.jobID, data);
+        }
     }
 
     public void SaveIfDirty()
