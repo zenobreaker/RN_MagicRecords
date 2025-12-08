@@ -75,7 +75,7 @@ public class DamageHandleComponent : MonoBehaviour
 
     public void OnDamage(DamageEvent damageEvent)
     {
-        if (damageEvent == null) return;
+        //if (damageEvent == null) return;
 
         OnDamaged?.Invoke();
 
