@@ -7,11 +7,9 @@ using UnityEngine;
 public class ReinforcedMagicBullet 
     : ActiveSkill
 {
-    public ReinforcedMagicBullet() : base()
-    {
-    }
-
-    public ReinforcedMagicBullet(SO_ActiveSkillData skillData) : base(skillData)
+  
+    public ReinforcedMagicBullet(SO_SkillData skillData)
+        : base(skillData)
     {
     }
 
@@ -56,7 +54,16 @@ public class ReinforcedMagicBullet
         base.Begin_JudgeAttack(e);
 
 
-        // 마탄 오브젝트 생성 
+        // 1. 탄환 소모 시도 및 크리티컬 여부 확인
+        bool isCrit = false;
+        var provider = skillComponent?.GetCapability<IMagicBulletProvider>();
+        if (provider != null)
+        {
+            // 공급자가 있을 때만 탄환 로직 수행
+            provider.TryConsumBullet(out isCrit);
+        }
+
+        // 2. 마탄 오브젝트 생성 
         Vector3 localOffset = phaseSkill.spawnPosition; // 스폰 위치(로컬 기준)
         Vector3 position = ownerObject.transform.TransformPoint(localOffset); // 로컬 -> 월드 좌표로 변경
         Quaternion rotation = ownerObject.transform.rotation * phaseSkill.ValidSpawnQuaternion;
@@ -64,7 +71,7 @@ public class ReinforcedMagicBullet
         GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
         if (obj.TryGetComponent<Projectile>(out var projectile))
         {
-            projectile.SetDamageInfo(ownerObject, phaseSkill.damageData);
+            projectile.SetDamageInfo(ownerObject, phaseSkill.damageData, isCrit);
             projectile.AddIgnore(ownerObject);
             projectile.OnProjectileHit -= OnProjectileHit;
             projectile.OnProjectileHit += OnProjectileHit;

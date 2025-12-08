@@ -13,38 +13,9 @@ public enum SkillPhase
 
 [System.Serializable]
 public abstract class ActiveSkill 
-    : ICooldownable
+    : Skill
+    ,ICooldownable
 {
-
-    public ActiveSkill()
-    {
-       
-    }
-
-    public ActiveSkill(SO_ActiveSkillData skillData)
-    {
-        skillId = skillData.id;
-        skillSprite = skillData.skillImage;
-        phaseList = skillData.phaseList;
-        this.limitCooldown = skillData.limitCooldown;
-        this.maxCooldown = skillData.cooldown;
-        this.castingTime = skillData.castingTime;
-    }
-
-    public ActiveSkill(float limitCooldown, float maxCooldown, float castingTime)
-    {
-        this.limitCooldown = limitCooldown;
-        this.maxCooldown = maxCooldown;
-        this.castingTime = castingTime;
-    }
-
-    protected int skillId; 
-    public int SkillId { get { return skillId; } }
-    public Sprite skillSprite; 
-    //protected SO_ActiveSkillData skillData;
-    //public SO_ActiveSkillData SO_SkillData { get => skillData; set => skillData = value; }
-
-   // protected SkillPhase skillPhase;
     protected int phaseIndex;
     protected List<PhaseSkill> phaseList;
     protected PhaseSkill phaseSkill;
@@ -53,6 +24,7 @@ public abstract class ActiveSkill
     protected GameObject ownerObject;
     protected Animator animator;
     protected WeaponController weaponController;
+    protected SkillComponent skillComponent;
 
     public bool IsOnCooldown => currentCooldown > 0;
     protected float limitCooldown; 
@@ -64,6 +36,18 @@ public abstract class ActiveSkill
     public float CurrentCooldown { get => currentCooldown; }
     public float MaxCooldown { get => maxCooldown; }
 
+    public ActiveSkill(SO_SkillData skillData)
+        : base(skillData)
+    {
+        if (skillData is SO_ActiveSkillData activeSkillData)
+        {
+            phaseList = activeSkillData.phaseList;
+            this.limitCooldown = activeSkillData.limitCooldown;
+            this.maxCooldown = activeSkillData.cooldown;
+            this.castingTime = activeSkillData.castingTime;
+        }
+    }
+
 
     public virtual void SetOwner(GameObject gameObject)
     {
@@ -74,6 +58,8 @@ public abstract class ActiveSkill
         {
             weaponController = user.GetWeaponController();
         }
+
+         skillComponent  = ownerObject.GetComponent<SkillComponent>();  
 
         foreach (var phase in phaseList)
         {
