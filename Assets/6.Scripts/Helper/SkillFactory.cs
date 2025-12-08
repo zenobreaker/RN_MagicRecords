@@ -7,15 +7,17 @@ public static class SkillFactory
     private static readonly Dictionary<int, ActiveSkill> creators
         = new();
 
-    public static ActiveSkill CreateSkill(int skillId, SO_ActiveSkillData data)
+    public static Skill CreateSkill(SO_SkillData data)
     {
-        ActiveSkill skill = skillId switch
+        if(data == null) return null;
+
+        Skill skill = data.id switch
         {
             1 => new ReinforcedMagicBullet(data),
+            11 => new MagicBulletLoad(data),
             _ => null
         };
 
         return skill; 
     }
-
 }
