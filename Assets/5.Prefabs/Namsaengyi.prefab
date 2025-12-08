@@ -881,6 +881,9 @@ MonoBehaviour:
     - type: 5
       value:
         baseValue: 1
+    - type: 6
+      value:
+        baseValue: 1.5
 --- !u!114 &7950985210200753739
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -940,7 +943,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caf57f0d6445d6e43a20754fc915766b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tickInterval: 0.1
 --- !u!114 &4016163101208496260
 MonoBehaviour:
   m_ObjectHideFlags: 0
