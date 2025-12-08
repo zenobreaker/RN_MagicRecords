@@ -1,0 +1,112 @@
+{
+  "PassiveSkillDataJson": [
+    {
+      "id": "11",
+      "skillKeycode": "magicbulletload",
+      "maxLevel": "3",
+      "bonusOptionList": null,
+      "enhanceSkillTargetList": null,
+      "leadingSkillList": null,
+      "coefficient": "0",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "bullet"
+    },
+    {
+      "id": "12",
+      "skillKeycode": "forbidden-magic",
+      "maxLevel": "3",
+      "bonusOptionList": "debuff_passive_curse,buff_passive_attack,buff_passive_critrate",
+      "enhanceSkillTargetList": null,
+      "leadingSkillList": null,
+      "coefficient": "0",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "curse"
+    },
+    {
+      "id": "13",
+      "skillKeycode": "injection-elemental",
+      "maxLevel": "3",
+      "bonusOptionList": null,
+      "enhanceSkillTargetList": null,
+      "leadingSkillList": null,
+      "coefficient": "0",
+      "activation": "0",
+      "class ": "shooter",
+      "concept": "bullet"
+    },
+    {
+      "id": "14",
+      "skillKeycode": "renovated-bullet",
+      "maxLevel": "3",
+      "bonusOptionList": "increaseAttackRate6",
+      "enhanceSkillTargetList": null,
+      "leadingSkillList": null,
+      "coefficient": "0",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "bullet"
+    },
+    {
+      "id": "15",
+      "skillKeycode": "forbidden-grief",
+      "maxLevel": "3",
+      "bonusOptionList": null,
+      "enhanceSkillTargetList": null,
+      "leadingSkillList": null,
+      "coefficient": "1",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "curse"
+    },
+    {
+      "id": "16",
+      "skillKeycode": "forbidden-hatred",
+      "maxLevel": "3",
+      "bonusOptionList": "debuff_passive_curse_hatred",
+      "enhanceSkillTargetList": null,
+      "leadingSkillList": null,
+      "coefficient": "0",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "curse"
+    },
+    {
+      "id": "17",
+      "skillKeycode": "forbidden-anger",
+      "maxLevel": "3",
+      "bonusOptionList": "increaseCritDmg10",
+      "enhanceSkillTargetList": null,
+      "leadingSkillList": null,
+      "coefficient": "0",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "curse"
+    },
+    {
+      "id": "18",
+      "skillKeycode": "curse-beyond",
+      "maxLevel": "3",
+      "bonusOptionList": null,
+      "enhanceSkillTargetList": null,
+      "leadingSkillList": null,
+      "coefficient": "0",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "curse"
+    },
+    {
+      "id": "19",
+      "skillKeycode": "crushedIronCannon",
+      "maxLevel": "1",
+      "bonusOptionList": null,
+      "enhanceSkillTargetList": null,
+      "leadingSkillList": null,
+      "coefficient": "0",
+      "activation": "0",
+      "class ": "shooter",
+      "concept": "bullet"
+    }
+  ]
+}
