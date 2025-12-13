@@ -374,6 +374,11 @@ public class AppManager
         passiveSystem.Remove(jobID, passiveSkill);
     }   
 
+    public void OnApplySttaicEffct(int jobID, GameObject ownerObj)
+    {
+        passiveSystem?.OnApplyStaticEffect(jobID, ownerObj);
+    }
+
     public void OnAcquire(int jobID, GameObject ownerObj)
     {
         passiveSystem?.OnAcquire(jobID, ownerObj);

@@ -237,6 +237,9 @@ public class SkillComponent
         skillSlotTable[currentSkillName]?.Play_CameraShake();
     }
 
+
+    ///////////////////////////////////////////////////////////////////////////
+    #region NOTIFY
     public void NotifyBulletInit(int bulletCount)
     {
         skillEventHandler?.OnUpdateMagciBulletLoad(bulletCount);
@@ -246,4 +249,6 @@ public class SkillComponent
     {
         skillEventHandler?.OnChangedBullets(bullets);   
     }
+
+    #endregion
 }

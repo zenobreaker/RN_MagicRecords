@@ -42,13 +42,13 @@ public class StatusEffectComponent : MonoBehaviour
     }
 
 
-    private void AddStatusEffect(StatusEffectType inType)
+    public void AddStatusEffect(StatusEffectType inType)
     {
         statusEffectType |= inType;
         OnStatusEffectChanged?.Invoke(statusEffectType, inType);
     }
 
-    private void RemoveStatusEffect(StatusEffectType inType)
+    public void RemoveStatusEffect(StatusEffectType inType)
     {
         statusEffectType &= ~inType;
         OnStatusEffectChanged?.Invoke(statusEffectType, inType);

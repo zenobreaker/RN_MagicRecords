@@ -95,6 +95,21 @@ public class PassiveSystem
     //    return !methodInfo.Attributes.HasFlag(System.Reflection.MethodAttributes.NewSlot);
     //}
 
+    // 패시브 추가 스탯 적용
+    public void OnApplyStaticEffect(int jobID, GameObject ownerObj)
+    {
+        if (passiveSkillList.ContainsKey(jobID) == false || ownerObj == null) return;
+
+        StatusComponent status = ownerObj.GetComponent<StatusComponent>();
+        if (status == null) return;
+
+        foreach (PassiveSkill skill in passiveSkillList[jobID])
+        {
+            skill.OnApplyStaticEffect(status);
+        }
+    }
+
+    // 패시브 소지 효과 
     public void OnAcquire(int jobID, GameObject ownerObj)
     {
         if (passiveSkillList.ContainsKey(jobID) == false) return;

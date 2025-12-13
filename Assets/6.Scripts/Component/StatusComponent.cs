@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 
 [System.Serializable]
@@ -74,26 +75,37 @@ public class Status
     public List<StatusEntry> statusEntries = new List<StatusEntry>(); 
 
     private Dictionary<StatusType, StatusValue> statusValueTable;
+    private bool isInitialized = false; 
 
     public void Init()
     {
+        if (isInitialized) return; 
+
         statusValueTable = new Dictionary<StatusType, StatusValue>();
+        
+        // 에디터에서 넣은 기본값만 초기 테이블에 등록 
         foreach (var entry in statusEntries)
             statusValueTable[entry.type] = entry.value;
+
+        isInitialized = true;
     }
 
     public StatusValue Get(StatusType type)
     {
-        if (statusValueTable == null)
-            Init();
+        if (isInitialized == false) Init();
 
-        return statusValueTable.TryGetValue(type, out var val) ? val : null;
+        if(statusValueTable.TryGetValue(type, out var val) == false)
+        {
+            val = new StatusValue();
+            statusValueTable[type] = val;
+        }
+
+        return val;
     }
 
     public void Set(StatusType type, float value)
     {
-        if (statusValueTable == null) Init();
-        statusValueTable[type].Set(value); 
+        Get(type).Set(value); 
     }
 
     public void ApplyBuff(StatModifier modifier)
@@ -121,14 +133,17 @@ public class StatusComponent : MonoBehaviour
 
     public Action<float> OnSetHealth;
 
-    private void Start()
+    private void Awake()
     {
         if(status == null)
             status = new Status();
 
-        status.Init();
-
         healthPointComponent = GetComponent<HealthPointComponent>();
+    }
+
+    private void Start()
+    {
+        status?.Init();
     }
 
 
@@ -160,13 +175,13 @@ public class StatusComponent : MonoBehaviour
 
     public void SetStatusValue(StatusType type, float value)
     {
-        if (status == null || status.Get(type) == null) return;
+        if (status == null) return;
         status.Set(type, value);
     }
 
     public float GetStatusValue(StatusType type)
     {
-        if (status == null || status.Get(type) == null) return 0;
+        if (status == null) return 0;
 
         return status.Get(type).FinalValue;
     }

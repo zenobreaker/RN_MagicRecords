@@ -8,6 +8,8 @@ public abstract class Skill
     public string Name { get { return skillName; } }
     protected string skillDescription;
     public string Description { get { return skillDescription; } }
+    protected int skillLevel;
+    public int SkillLevel { get { return skillLevel; } }
 
     public Sprite Icon { get; private set; }
 
@@ -24,4 +26,6 @@ public abstract class Skill
     {
 
     }
+
+    public void SetLevel(int level) { skillLevel = level; }
 }

@@ -8,21 +8,11 @@ public struct BulletData
         { this.isCrit = isCrit; }
 }
 
-// 탄환 소모 액티브 스킬과 이 패시브 간의 규약용 인터페이스
-public interface IMagicBulletProvider
-{
-    // 탄환 소모를 시도하고, 성공 시 크리티컬 여부 반환
-    bool TryConsumBullet(out bool isCrit);
 
-    // 현재 탄환 개수 (UI 표시용 등..) 
-    int CurrentBulletCount { get; }
-}
-
-// TODO : 속성 마법을 사용하면 탄환에 속성 부여하는 기능의 연결 인터페이스
-public interface IElementaryResponder
-{
-
-}
+/// <summary>
+///  패시브 - 마법탄 장전 
+///  습득 시 4/6/7 발 탄환을 장전, 탄환류 스킬에 소모됨 
+/// </summary>
 
 public class MagicBulletLoad 
     : PassiveSkill
