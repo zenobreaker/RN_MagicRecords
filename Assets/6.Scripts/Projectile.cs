@@ -26,7 +26,7 @@ public class Projectile : MonoBehaviour
     private List<GameObject> ignores = new List<GameObject>();
 
     private GameObject ownerObject; 
-    private DamageEvent damageEvent; 
+    private DamageEvent damageEvent;
 
     public void AddIgnore(GameObject ignore)
     {
@@ -94,7 +94,7 @@ public class Projectile : MonoBehaviour
         {
             Vector3 hitPoint = collider.ClosestPoint(other.transform.position);
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
-            damage?.OnDamage(ownerObject, null, hitPoint, damageEvent);
+            damage?.OnDamage(ownerObject, null, hitPoint, ref damageEvent);
         }
     }
 

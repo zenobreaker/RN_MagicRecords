@@ -13,6 +13,7 @@ public abstract class ActionComponent
     protected GameObject rootObject;
     protected bool bInAction;
     public bool InAction { get => bInAction; private set => bInAction = value; }
+    public event Action<GameObject, DamageEvent> OnAttackHit;
 
     public virtual void DoAction()
     {
@@ -34,4 +35,9 @@ public abstract class ActionComponent
     public virtual void PlaySound() { }
     public virtual void PlayCameraShake() { }
 
+    ///////////////////////////////////////////////////////////////////////////
+    public void NotifyAttackHit(GameObject target, DamageEvent evt)
+    {
+        OnAttackHit?.Invoke(target, evt);
+    }
 }
