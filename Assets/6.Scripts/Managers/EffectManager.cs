@@ -22,20 +22,20 @@ public class EffectManager : Singleton<EffectManager>
     }
     
 
-    public void RegisterEffect(GameObject owner, GameObject appliedBy, BaseEffect effect)
+    public void RegisterEffect(GameObject target, GameObject appliedBy, BaseEffect effect)
     {
-        if (!activeEffects.ContainsKey(owner))
+        if (!activeEffects.ContainsKey(target))
         {
-            var buff = owner.GetComponent<EffectComponent>();
-            activeEffects[owner] = buff;
+            var buff = target.GetComponent<EffectComponent>();
+            activeEffects[target] = buff;
 
-            if (owner.TryGetComponent<Character>(out var character))
+            if (target.TryGetComponent<Character>(out var character))
             {
                 character.OnDead += UnregisterAllEffects;
             }
         }
 
-        activeEffects[owner]?.ApplyEffect(effect, owner, appliedBy);
+        activeEffects[target]?.ApplyEffect(effect, target, appliedBy);
     }
 
     public void UnregisterEffect(Character target, BaseEffect effect)
@@ -54,42 +54,50 @@ public class EffectManager : Singleton<EffectManager>
         }
     }
 
-    public void RegisterEffect_Burn(GameObject owner, GameObject appliedBy, float duration, float basePower)
+    public void RegisterEffect_Burn(GameObject target, GameObject appliedBy, float duration, float basePower)
     {
         var effectObj = effectsDict["Burn"];
         if (effectObj == null) return;
 
         float tick = effectObj.tickInterval;
-        BaseEffect effect = EffectFactory.CreateDotStatusEffect("Burn", "", duration, tick, basePower);
-        effect.FxObject = effectObj.vfxObject;
-        effect.FxIcon = effectObj.icon;
+        BaseEffect effect = EffectFactory.CreateDotStatusEffect("Burn", "", duration, effectObj, tick, basePower);
 
-        RegisterEffect(owner, appliedBy, effect);
+        RegisterEffect(target, appliedBy, effect);
     }
 
-    public void RegisterEffect_Bleed(GameObject owner, GameObject appliedBy, float duration, float basePower)
+    public void RegisterEffect_Bleed(GameObject target, GameObject appliedBy, float duration, float basePower)
     {
         var effectObj = effectsDict["Bleed"];
         if (effectObj == null) return;
 
         float tick = effectObj.tickInterval;
-        BaseEffect effect = EffectFactory.CreateDotStatusEffect("Bleed", "", duration, tick, basePower);
-        effect.FxObject = effectObj.vfxObject;
-        effect.FxIcon = effectObj.icon;
+        BaseEffect effect = EffectFactory.CreateDotStatusEffect("Bleed", "", duration, effectObj, tick, basePower);
 
-        RegisterEffect(owner, appliedBy, effect);
+        RegisterEffect(target, appliedBy, effect);
     }
 
-    public void RegisterEffect_Poison(GameObject owner, GameObject appliedBy, float duration, float basePower)
+    public void RegisterEffect_Poison(GameObject target, GameObject appliedBy, float duration, float basePower)
     {
         var effectObj = effectsDict["Poison"];
         if (effectObj == null) return;
 
         float tick = effectObj.tickInterval;
-        BaseEffect effect = EffectFactory.CreateDotStatusEffect("Poison", "", duration, tick, basePower);
-        effect.FxObject = effectObj.vfxObject;
-        effect.FxIcon = effectObj.icon;
+        BaseEffect effect = EffectFactory.CreateDotStatusEffect("Poison", "", duration, effectObj, tick, basePower);
 
-        RegisterEffect(owner, appliedBy, effect);
+        RegisterEffect(target, appliedBy, effect);
+    }
+
+    // 저주 상태이상을 등록하는 메서드
+    public void RegisterEffect_Curse(GameObject target, GameObject appliedBy, float duration)
+    {
+        // 1. 데이터(SO_BaseEffect) 조회 (만약 저주도 SO로 관리한다면)
+        var effectObj = effectsDict["Curse"];
+        if (effectObj == null) return;
+
+        // 2. CurseEffect 객체 생성 (BaseEffect를 상속받은 CurseEffect 클래스를 인스턴스화)
+        BaseEffect effect = EffectFactory.CreateEffect("Curse", "", duration, effectObj);
+        
+        // 3. 중앙 등록 함수 호출
+        RegisterEffect(target, appliedBy, effect);
     }
 }

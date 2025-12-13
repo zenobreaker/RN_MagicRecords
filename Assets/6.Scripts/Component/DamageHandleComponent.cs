@@ -60,29 +60,26 @@ public class DamageHandleComponent : MonoBehaviour
         }
     }
 
-    //public float CalcDamage(float value)
-    //{
-    //    float result = value;
-
-    //    if(status != null)
-    //    {
-    //        float defense = status.GetStatusValue(StatusType.DEFENSE);
-    //        result = Mathf.Max(result - defense, 0.0f);
-    //    }
-
-    //    return result;
-    //}
-
-    public void OnDamage(DamageEvent damageEvent)
+    public void OnDamage(GameObject attacker, ref DamageEvent damageEvent)
     {
-        //if (damageEvent == null) return;
-
         OnDamaged?.Invoke();
 
-        float value = DamageCalculator.CalcDamage(status, damageEvent);
+        float value = DamageCalculator.CalcDamage(status, ref damageEvent);
+        // 저주에 의한 피해량 수정 
+        if(this.TryGetComponent<EffectComponent>(out var effectComp))
+        {
+            if(effectComp.HasEffect("Curse" ) is CurseEffect curse)
+            {
+                value *= (1.0f + curse.GetDamageIncrease());
+                Debug.Log($"저주(Curse) 효과로 인해 최종 피해량 {curse.GetDamageIncrease() * 100}% 증가!");
+            }
+        }
 
+        // 체력 감소 및 이벤트 
         health?.Damage(value);
+        BattleManager.Instance?.NotifyAttackHit(attacker, this.gameObject, ref damageEvent);
 
+        // 텍스트 처리 
         ShowDamageText(value, damageEvent);
 
         if(damageEvent.hitData.DamageType == DamageType.DOT_POISON ||

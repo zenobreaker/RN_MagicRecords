@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,17 +6,21 @@ public class EffectComponent : MonoBehaviour
 {
     private Character owner;
 
-    private Dictionary<string, BaseEffect> activeEffects= new Dictionary<string, BaseEffect>();
+    private Dictionary<string, BaseEffect> activeEffects = new Dictionary<string, BaseEffect>();
     private List<BaseEffect> expiredEffects = new();
 
-    private SO_HUDHandler handler; 
+    private SO_HUDHandler handler;
+    private StatusEffectComponent statusEffect;
 
     private void Awake()
     {
         owner = GetComponent<Character>();
         Debug.Assert(owner != null);
 
-        handler = Resources.Load<SO_HUDHandler>("SO_HUDHandler");
+        statusEffect = owner.GetComponent<StatusEffectComponent>();
+
+        if(owner is Player)
+            handler = Resources.Load<SO_HUDHandler>("SO_HUDHandler");
     }
 
     private void Update()
@@ -41,7 +45,7 @@ public class EffectComponent : MonoBehaviour
         }
     }
 
-    public void ApplyEffect(BaseEffect newEffect, GameObject owner, GameObject appliedBy)
+    public void ApplyEffect(BaseEffect newEffect, GameObject target, GameObject appliedBy)
     {
         if (newEffect == null) return;
 
@@ -63,7 +67,7 @@ public class EffectComponent : MonoBehaviour
         else
         {
             activeEffects.Add(newEffect.ID, newEffect);
-            newEffect.OnApply(owner, appliedBy);
+            newEffect.OnApply(target, appliedBy);
         }
 
         handler?.OnApplyEffect(newEffect);
@@ -82,7 +86,32 @@ public class EffectComponent : MonoBehaviour
         if (activeEffects.TryGetValue(buffID, out BaseEffect baseEffect))
         {
             baseEffect.OnRemove();
+
+            // 상태 플래그 동기화 처리
+            if(baseEffect is CrowdControlEffect cc)
+            {
+                SynchronizeStatusFlag(cc.EffectFlag, isAdding: false);
+            }
+
+
             activeEffects.Remove(buffID);
         }
+    }
+    public BaseEffect HasEffect(string effectName)
+    {
+        if (activeEffects.TryGetValue(effectName, out BaseEffect value))
+            return value;
+        else
+            return null; 
+    }
+
+    private void SynchronizeStatusFlag(StatusEffectType type, bool isAdding)
+    {
+        if (statusEffect == null) return;
+
+        if (isAdding)
+            statusEffect.AddStatusEffect(type);
+        else
+            statusEffect.RemoveStatusEffect(type);
     }
 }

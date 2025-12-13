@@ -15,6 +15,7 @@ public static class SkillFactory
         {
             1 => new ReinforcedMagicBullet(data),
             11 => new MagicBulletLoad(data),
+            12 => new Passive_ForbiddenCurse(data),
             _ => null
         };
 

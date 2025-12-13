@@ -67,14 +67,18 @@ public class SpawnManager : MonoBehaviour
             if(playerGO.TryGetComponent<Player>(out var player))
             {
                 //TODO : class(=job) 기능이 생기면 그 아이디로 지정해야 한다.
+                int jobID = 1; 
                 // Passive 등록한 이력 처리
-                AppManager.Instance.OnAcquire(1, playerGO);
+                AppManager.Instance?.OnAcquire(jobID, playerGO);
 
                 // Setting Skills
                 player.SetActiveSkills();
 
                 // Setting Status
                 player.SetStatus();
+
+                // Setting Passive Status 
+                AppManager.Instance?.OnApplySttaicEffct(jobID, playerGO);
 
                 // Setting Equipment 
                 player.SetEquipments();
