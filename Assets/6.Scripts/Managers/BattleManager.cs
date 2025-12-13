@@ -6,6 +6,8 @@ using UnityEngine;
 public class BattleManager
     : Singleton<BattleManager>
 {
+    public event Action<GameObject, GameObject, DamageEvent> OnAnyAttackHit;
+
     private event Action OnFinishBeginBattle;
 
     private List<Character> players = new List<Character>();
@@ -131,5 +133,10 @@ public class BattleManager
                 ai.SetCanMove(true);
 
         }
+    }
+
+    public void NotifyAttackHit(GameObject attacker, GameObject target, ref DamageEvent evt)
+    {
+        OnAnyAttackHit?.Invoke(attacker, target, evt);
     }
 }

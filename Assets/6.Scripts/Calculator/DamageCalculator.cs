@@ -27,7 +27,7 @@ public static class DamageCalculator
         return new DamageEvent(result, crit, bFirstHit, data.hitData);
     }
 
-    public static float CalcDamage(StatusComponent status, DamageEvent damageEvent)
+    public static float CalcDamage(StatusComponent status, ref DamageEvent damageEvent)
     {
         if (status == null) 
             return 0.0f;

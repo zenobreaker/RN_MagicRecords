@@ -42,7 +42,7 @@ public class PhaseSkill
     }
 
 
-    public void SetDamageData(float baseDamage, float coefficient = 1.0f)
+    public void SetDamageData(float baseDamage, float coefficient = 1.0f, int level = 1)
     {
         damageData = new DamageData();
         damageData.Power = baseDamage * coefficient;

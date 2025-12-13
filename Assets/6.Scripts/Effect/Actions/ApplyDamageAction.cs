@@ -52,6 +52,6 @@ public class ApplyDamageAction
         }
 
         Debug.Log("Burn Call");
-        damageHandle.OnDamage(evt);
+        damageHandle.OnDamage(caster, ref evt);
     }
 }

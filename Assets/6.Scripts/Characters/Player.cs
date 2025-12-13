@@ -213,7 +213,8 @@ public class Player
 
     public WeaponController GetWeaponController() => weaponController;
 
-    public void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, DamageEvent damageEvent)
+    public void OnDamage(GameObject attacker, Weapon causer,
+        Vector3 hitPoint, ref DamageEvent damageEvent)
     {
         //if (isInvicible)
         //    return;
@@ -226,7 +227,7 @@ public class Player
         }
 
         ApplyLaunch(attacker, causer, damageEvent.hitData);
-        damageHandle?.OnDamage(damageEvent);
+        damageHandle?.OnDamage(attacker, ref damageEvent);
 
         if (healthPoint.Dead == false)
         {

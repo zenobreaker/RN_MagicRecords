@@ -56,6 +56,11 @@ public class Cheater
             Test_PlayerAddBurn();
         }
 
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            Test_SetSkill();
+        }
+
         if (Input.GetKeyDown(KeyCode.Keypad5))
             Test_PlayerRemoveBuff();
 
@@ -119,6 +124,21 @@ public class Cheater
     }
 
 
+    private void Test_SetSkill()
+    {
+        SkillComponent skill = player?.GetComponent<SkillComponent>();
+        //if (skill != null || skillData != null)
+        //{
+        //    ActiveSkill activeSkill = (ActiveSkill)skillData.CreateSkill();
+
+        //    if (activeSkill != null)
+        //    {
+        //        skill.SetActiveSkill(SkillSlot.Slot1, activeSkill);
+        //        Debug.Log($"skill ÀåÂø ¿Ï·á");
+        //    }
+        //}
+    }
+
     private void Test_PlayerInvicible()
     {
         
@@ -136,7 +156,7 @@ public class Cheater
                 if(enemy.TryGetComponent<HealthPointComponent>(out var health))
                 {
                     DamageEvent e = new DamageEvent(health.GetMaxHP);
-                    enemy.OnDamage(null, null, Vector3.zero, e);
+                    enemy.OnDamage(null, null, Vector3.zero, ref e);
                 }
             }
         }

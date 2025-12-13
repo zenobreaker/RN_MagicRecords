@@ -93,10 +93,7 @@ public class DebugUI : MonoBehaviour
 
         Draw_PlayerState();
 
-        if (Input.GetKeyDown(KeyCode.Alpha9))
-        {
-            Test_SetSkill();
-        }
+   
 
         if (Input.GetKeyDown(KeyCode.O))
         {
@@ -120,20 +117,6 @@ public class DebugUI : MonoBehaviour
         Time.timeScale = value;
     }
 
-    private void Test_SetSkill()
-    {
-        SkillComponent skill = debug_Character.GetComponent<SkillComponent>();
-        if (skill != null || skillData != null)
-        {
-            ActiveSkill activeSkill = (ActiveSkill)skillData.CreateSkill();
-
-            if (activeSkill != null)
-            {
-                skill.SetActiveSkill(SkillSlot.Slot1, activeSkill);
-                Debug.Log($"skill 장착 완료");
-            }
-        }
-    }
 
 
 #region Input & Comob

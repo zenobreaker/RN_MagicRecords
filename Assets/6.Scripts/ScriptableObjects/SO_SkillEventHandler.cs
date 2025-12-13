@@ -10,13 +10,11 @@ using UnityEngine;
 public class SO_SkillEventHandler : ScriptableObject
 {
     public event Action<SkillSlot, ActiveSkill> OnSetActiveSkill;
-
     public event Action<SkillSlot, bool> OnInSkillCooldown;
     public event Action<SkillSlot, float, float> OnSkillCooldown;
 
     public event Action OnBeginUseSkill;
     public event Action OnEndUseSkill;
-
     public event Action OnDisableSkill;
 
     public event Action<int> OnUpdateMagicBulletLoad;
@@ -43,7 +41,6 @@ public class SO_SkillEventHandler : ScriptableObject
 
     // 장착 해제 
     public void OnUnequipment() => OnDisableSkill?.Invoke();
-
 
     public void OnChangedBullets(Queue<BulletData> bullets)
     {
