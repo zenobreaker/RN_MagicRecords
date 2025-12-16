@@ -4,21 +4,22 @@ using UnityEngine.UI;
 
 public class SkillSlotUI : MonoBehaviour
 {
-    public SkillSlot mySlot; 
+    public SkillSlot mySlot;
 
     [Header("UI Settings")]
     [SerializeField] private Image img_Skill;
     [SerializeField] private Image img_Cooldown;
     [SerializeField] private TextMeshProUGUI txt_Cooldown;
+    [SerializeField] private Sprite emptySloSpt;
 
-    private SO_SkillEventHandler handler; 
+    private SO_SkillEventHandler handler;
     private float currCooldown;
 
     private void OnDisable()
     {
-        if (handler == null) return; 
+        if (handler == null) return;
 
-        handler.OnSetActiveSkill-= OnDrawSkill;
+        handler.OnSetActiveSkill -= OnDrawSkill;
         handler.OnInSkillCooldown -= OnIsCooldown;
         handler.OnSkillCooldown -= OnSkillCoolDown;
     }
@@ -28,7 +29,7 @@ public class SkillSlotUI : MonoBehaviour
         if (handler == null)
             return;
 
-        this.handler = handler; 
+        this.handler = handler;
         handler.OnSetActiveSkill += OnDrawSkill;
         handler.OnInSkillCooldown += OnIsCooldown;
         handler.OnSkillCooldown += OnSkillCoolDown;
@@ -37,15 +38,12 @@ public class SkillSlotUI : MonoBehaviour
     // 스킬 이미지 그리기
     private void OnDrawSkill(SkillSlot slot, ActiveSkill activeSkill)
     {
-        bool bCheck = true;
-        bCheck &= mySlot == slot; 
-        bCheck &= activeSkill != null;
-        if (bCheck == false)
-            return;
+        if (mySlot == slot && activeSkill != null)
+            img_Skill.sprite = activeSkill.Icon;
+        else if (mySlot == slot && activeSkill == null)
+            img_Skill.sprite = emptySloSpt;
 
-        img_Skill.sprite = activeSkill.Icon;
-
-        OnIsCooldown(slot, activeSkill.IsOnCooldown);
+        OnIsCooldown(slot, activeSkill != null && activeSkill.IsOnCooldown);
     }
 
     // 고민 사항 => 스킬 쿨타임 값이 다 돌면 어떻게 처리하게 할까?
@@ -66,8 +64,8 @@ public class SkillSlotUI : MonoBehaviour
     // 스킬이 쿨타임 중인지 아닌지에 따른 동작 
     private void OnIsCooldown(SkillSlot slot, bool isCooldown)
     {
-        if (slot != mySlot) return; 
-        if (isCooldown == false )
+        if (slot != mySlot) return;
+        if (isCooldown == false)
             currCooldown = 0;
 
         img_Cooldown.gameObject.SetActive(isCooldown);
