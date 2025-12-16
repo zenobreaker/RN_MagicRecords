@@ -44,6 +44,12 @@ public class PassiveBulletUI : MonoBehaviour
     {
         bulletUIs = new BulletUI[maxBullets];
 
+        if( transform.childCount > 0 )
+        {
+            for(int i = transform.childCount - 1;  i >= 0; i--)
+                Destroy(transform.GetChild(i).gameObject);
+        }
+
         for (int i = 0; i < bulletUIs.Length; i++)
         {
             var ui = Instantiate(bulletUIObj, transform);

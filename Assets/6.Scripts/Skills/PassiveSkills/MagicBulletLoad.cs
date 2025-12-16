@@ -67,6 +67,12 @@ public class MagicBulletLoad
         NotifyBulletChanged();
     }
 
+    public override void OnLose()
+    {
+        bullets.Clear();
+        NotifyBulletChanged();
+    }
+
     public override void OnChangedLevel(int newLevel)
     {
         skillLevel = newLevel;

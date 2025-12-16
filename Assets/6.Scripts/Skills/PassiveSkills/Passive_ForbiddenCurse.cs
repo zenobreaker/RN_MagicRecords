@@ -15,6 +15,10 @@ public class Passive_ForbiddenCurse : PassiveSkill
     private float curseChance = 1.0f;
     private float curseDuration = 5.0f;
 
+    private StatusComponent status;
+    private StatModifier atkModifier; 
+    private StatModifier critModifier;
+
     public Passive_ForbiddenCurse(SO_SkillData data)
         : base(data)
     {
@@ -27,9 +31,10 @@ public class Passive_ForbiddenCurse : PassiveSkill
 
     public override void OnApplyStaticEffect(StatusComponent status)
     {
-        status?.ApplyBuff(new StatModifier(StatusType.ATTACK, atkBonus, ModifierValueType.FIXED));
-        status?.ApplyBuff(new StatModifier(StatusType.CRIT_RATIO, critRateBonus, ModifierValueType.FIXED));
-        Debug.Log($" Crit Ratio : {status?.GetStatusValue(StatusType.CRIT_RATIO)}");
+        this.status = status;
+        status?.ApplyBuff(atkModifier = new StatModifier(StatusType.ATTACK, atkBonus, ModifierValueType.FIXED));
+        status?.ApplyBuff(critModifier = new StatModifier(StatusType.CRIT_RATIO, critRateBonus, ModifierValueType.FIXED));
+        Debug.Log($" Attack {status?.GetStatusValue(StatusType.ATTACK)} Crit Ratio : {status?.GetStatusValue(StatusType.CRIT_RATIO)}");
     }
 
     public override void OnAcquire(GameObject owner)
@@ -40,6 +45,12 @@ public class Passive_ForbiddenCurse : PassiveSkill
 
         BattleManager.Instance.OnAnyAttackHit -= OnTargetHit;
         BattleManager.Instance.OnAnyAttackHit += OnTargetHit;
+    }
+
+    public override void OnLose()
+    {
+        status?.RemoveBuff(atkModifier);
+        status?.RemoveBuff(critModifier);
     }
 
     private void OnTargetHit(GameObject attacker, GameObject target, DamageEvent evt)
