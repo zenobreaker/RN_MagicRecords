@@ -68,7 +68,7 @@ public class DamageHandleComponent : MonoBehaviour
         BattleManager.Instance?.NotifyAttackHit(attacker, this.gameObject, damageEvent);
         
         float value = DamageCalculator.CalcDamage(status, damageEvent);
-        
+
         // 저주에 의한 피해량 수정 
         if(damageEvent.IsDOTEffect() == false && this.TryGetComponent<EffectComponent>(out var effectComp))
         {

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class EffectComponent : MonoBehaviour
 {
+    public int DebuffCount { get; private set; } = 0;
+
     private Character owner;
 
     private Dictionary<string, BaseEffect> activeEffects = new Dictionary<string, BaseEffect>();
@@ -66,6 +68,9 @@ public class EffectComponent : MonoBehaviour
         }
         else
         {
+            if (newEffect.Type == EffectType.DEBUFF)
+                DebuffCount++;
+
             activeEffects.Add(newEffect.ID, newEffect);
             newEffect.OnApply(target, appliedBy);
         }
@@ -76,6 +81,9 @@ public class EffectComponent : MonoBehaviour
     public void RemoveEffect(BaseEffect effect)
     {
         if (effect == null) return;
+        if (effect.Type == EffectType.DEBUFF)
+            DebuffCount--;
+
         RemoveEffect(effect.ID);
     }
 
@@ -97,6 +105,7 @@ public class EffectComponent : MonoBehaviour
             activeEffects.Remove(buffID);
         }
     }
+
     public BaseEffect HasEffect(string effectName)
     {
         if (activeEffects.TryGetValue(effectName, out BaseEffect value))

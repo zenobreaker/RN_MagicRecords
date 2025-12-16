@@ -32,6 +32,8 @@ public abstract class BaseEffect
     public List<IEffectTrigger> Triggers { get; private set; } = new();
     public List<IEffectAction> Actions { get; private set; } = new();
 
+    public EffectType Type { get; protected set; } = EffectType.NONE;
+
     protected GameObject owner;
     protected GameObject appliedBy;
     public GameObject FxObject { get; set; }

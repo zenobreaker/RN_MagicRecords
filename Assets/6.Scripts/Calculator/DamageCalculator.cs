@@ -45,6 +45,9 @@ public static class DamageCalculator
 
         float value = damageEvent.value;
         float defense = status.GetStatusValue(StatusType.DEFENSE);
+        float multiplier = 1.0f; // 데미지 증폭
+        if( damageEvent.DamageAmp > 0.0f)
+            multiplier *= damageEvent.DamageAmp;
 
         // 잃은 체력 비례 데미지
         if( damageEvent.IsMissingHPRatio)
@@ -63,15 +66,15 @@ public static class DamageCalculator
 
         // 방어 무시 
         if (damageEvent.IgnoreDefense)
-            return value;
+            return value * multiplier;
 
         //최소 방어력 제한
-        defense = Mathf.Max(defense, -CONST_DEFNSE + 0.001f);
+        defense = Mathf.Max(defense, -1.0f * CONST_DEFNSE + 0.001f);
 
         // 데미지 계산 공식 
         // 피해 감소율 = 피격자 방어력 / (방어 상수 + 피격자 방어력)
         float ratio = defense / (CONST_DEFNSE + defense);
-        
-        return  value * (1 - ratio); 
+
+        return  (value * (1 - ratio)) * multiplier;
     }
 }

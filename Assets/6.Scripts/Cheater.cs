@@ -10,12 +10,14 @@ public class Cheater
 {
 
     Player player;
+    Enemy enemy;
 
     bool bStunToggle = false;
 
     protected override void Start()
     {
         player = FindAnyObjectByType<Player>();
+        enemy = FindAnyObjectByType<Enemy>();
         base.Start();
     }
 
@@ -52,7 +54,7 @@ public class Cheater
         // 플레이어 공격력 버프 온
         if (Input.GetKeyDown(KeyCode.Keypad4))
         {
-            Test_PlayerAttackBuff();
+            //Test_PlayerAttackBuff();
             Test_PlayerAddBurn();
         }
 
@@ -111,16 +113,16 @@ public class Cheater
 
     private void Test_PlayerAddBurn()
     {
-        if(player == null) return;  
+        if(enemy == null) return;  
         if(EffectManager.Instance == null) return;
 
         Debug.Log("Debuff On");
 
         //BurnEffect burn = new BurnEffect("burn", "", 10.0f, 3.0f, 10.0f);
         //EffectManager.Instance.RegisterEffect(player, null, burn);
-        EffectManager.Instance.RegisterEffect_Burn(player, null, 10.0f, 10.0f);
-        EffectManager.Instance.RegisterEffect_Bleed(player, null, 10.0f, 3.0f);
-        EffectManager.Instance.RegisterEffect_Poison(player, null, 10.0f, 3.0f);
+        EffectManager.Instance.RegisterEffect_Burn(enemy, null, 10.0f, 10.0f);
+        EffectManager.Instance.RegisterEffect_Bleed(enemy, null, 10.0f, 3.0f);
+        EffectManager.Instance.RegisterEffect_Poison(enemy, null, 10.0f, 3.0f);
     }
 
 

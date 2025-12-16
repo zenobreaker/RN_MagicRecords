@@ -120,6 +120,8 @@ public class Status
     }
     public void RemoveBuff(StatModifier modifier)
     {
+        if (modifier == null) return; 
+
         Get(modifier.type)?.RemoveModifier(modifier); 
     }
 }

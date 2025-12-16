@@ -185,6 +185,7 @@ public class DamageEvent
     public bool IgnoreDefense;  // 방어력 무시 데미지
     public bool IsMaxHPPercent; // 최대 체력 비례 데미지 
     public float MaxHPRatio;
+    public float DamageAmp; 
 
     public int AttackInstanceID { get; set; }
 
@@ -198,7 +199,8 @@ public class DamageEvent
         IgnoreDefense = false;
         IsMaxHPPercent = false;
         MaxHPRatio = 0f;
-        
+        DamageAmp = 0f;
+
         if (hitData != null)
             this.hitData = hitData;
         else

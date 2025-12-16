@@ -18,6 +18,7 @@ public static class SkillFactory
             12 => new Passive_ForbiddenCurse(data),
             15 => new Passive_ContemptuousWoe(data),
             16 => new Passive_AbominableHatred(data),
+            17 => new Passive_RuinousWrath(data),   
             _ => null
         };
 
