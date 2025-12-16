@@ -24,12 +24,6 @@ public class ApplyDamageAction
 
         float finalPower = power;   
 
-        // 시전자 공격력 반영 
-        if(caster!= null && caster.TryGetComponent<StatusComponent>(out var casterStatus) )
-        {
-            finalPower *= casterStatus.GetStatusValue(StatusType.ATTACK) * 0.3f; 
-        }
-
         var evt = new DamageEvent(0);
         evt.hitData.DamageType = type;
 
@@ -49,9 +43,14 @@ public class ApplyDamageAction
                 evt.IgnoreDefense = true; 
                 evt.value = finalPower * stackCount; 
                 break;
+            case DamageType.DOT_HATERD:
+                evt.IsMaxHPPercent = false;
+                evt.IgnoreDefense = true;
+                evt.value = finalPower * stackCount;
+                break; 
         }
 
-        Debug.Log("Burn Call");
-        damageHandle.OnDamage(caster, ref evt);
+        Debug.Log("DOT Call");
+        damageHandle.OnDamage(caster, evt);
     }
 }

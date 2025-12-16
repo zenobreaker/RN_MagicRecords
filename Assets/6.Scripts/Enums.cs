@@ -81,6 +81,8 @@ public enum DamageType
     DOT_BURN, 
     DOT_POISON, 
 
+    DOT_HATERD,
+
     MAX
 }
 
