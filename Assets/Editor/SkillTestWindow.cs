@@ -110,21 +110,28 @@ public class SkillTestWindow : EditorWindow
             GUILayout.Label("테스트용 스킬 레벨");
             testSkilLevel = EditorGUILayout.IntSlider(testSkilLevel, 1, selectedSkill.maxLevel);
 
+
+            // 스킬 해제 버튼 
+            GUILayout.Space(5);
+            EditorGUI.BeginDisabledGroup(Application.isPlaying == false);
+            if (GUILayout.Button("스킬 해제"))
+            {
+                SkillTestInvoker.UndoSkill(selectedSlot, selectedSkill); 
+            }
+            EditorGUI.EndDisabledGroup();
+
             // 선택 취소 버튼
+            GUILayout.Space(5);
+
             if (GUILayout.Button("선택 해제"))
                 selectedSkill = null;
 
             GUILayout.EndVertical();
-
-            GUILayout.Space(10);
         }
 
-        DrawSkillGrid();
-
-
-        GUILayout.Space(10);
+        GUILayout.Space(5);
         EditorGUI.BeginDisabledGroup(selectedSkill == null);
-        if (GUILayout.Button("테스트 실행"))
+        if (GUILayout.Button("스킬 장착"))
         {
             if (Application.isPlaying == false)
             {
@@ -136,11 +143,14 @@ public class SkillTestWindow : EditorWindow
             SendSkillTestCommand(selectedSkill);
         }
         EditorGUI.EndDisabledGroup();
+
+        GUILayout.Space(10);
+        DrawSkillGrid();
     }
 
     private void SendSkillTestCommand(SO_SkillData skill)
     {
-        SkillTestInvoker.ReceiveSkillForTest(selectedSlot, skill);
+        SkillTestInvoker.ReceiveSkillForTest(selectedSlot, skill, testSkilLevel);
         Debug.Log($"Skill Test : {skill.skillName} 실행 요청 전송");
     }
 }
