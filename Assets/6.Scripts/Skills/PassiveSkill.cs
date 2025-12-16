@@ -25,9 +25,8 @@ public abstract class PassiveSkill
     }
 
 
-    public virtual void OnApplyStaticEffect(StatusComponent status) { }
-
     public virtual void OnAcquire(GameObject owner) { }
+    public virtual void OnApplyStaticEffect(StatusComponent status) { }
     public virtual void OnChangedLevel (int newLevel) { }
     public virtual void OnLose() { }
     public virtual void OnUpdate(float dt) { }

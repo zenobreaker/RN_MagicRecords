@@ -11,6 +11,7 @@ public class CurseEffect : BaseEffect
     public CurseEffect(string id, string desc, float duration) 
         : base(id, desc, duration)
     {
+        Type = EffectType.DEBUFF;
     }
 
     public override void OnApply(GameObject owner, GameObject appliedBy)

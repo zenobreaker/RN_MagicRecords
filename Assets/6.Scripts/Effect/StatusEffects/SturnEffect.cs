@@ -7,6 +7,7 @@ public class StunEffect : CrowdControlEffect
     public StunEffect(string id, string desc, float duration) 
         : base(id, desc, duration)
     {
+        Type = EffectType.DEBUFF;
     }
 
     public override void OnApply(GameObject owner, GameObject appliedBy)
