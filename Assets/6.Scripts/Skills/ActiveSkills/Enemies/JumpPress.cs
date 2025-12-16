@@ -196,9 +196,8 @@ public class JumpPress
 
             if (other.TryGetComponent<IDamagable>(out var damage))
             {
-                DamageEvent evt = phaseSkill.damageData.GetMyDamageEvent(ownerObject);
-                damage.OnDamage(ownerObject, null, other.transform.position, 
-                    ref evt);
+                damage.OnDamage(ownerObject, null, other.transform.position,
+                    phaseSkill.damageData.GetMyDamageEvent(ownerObject));
             }
         }
     }

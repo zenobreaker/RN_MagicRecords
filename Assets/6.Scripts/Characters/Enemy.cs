@@ -94,12 +94,12 @@ public class Enemy
     }
 
     public void OnDamage(GameObject attacker,
-        Weapon causer, Vector3 hitPoint, ref DamageEvent damageEvent)
+        Weapon causer, Vector3 hitPoint, DamageEvent damageEvent)
     {
         if (healthPoint != null && healthPoint.Dead)
             return;
         
-        damageHandle?.OnDamage(attacker, ref damageEvent);
+        damageHandle?.OnDamage(attacker, damageEvent);
 
         // Look Attacker 
         LookAttacker(attacker);

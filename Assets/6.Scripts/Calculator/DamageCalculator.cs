@@ -3,6 +3,15 @@
 public static class DamageCalculator
 {
     private readonly static float CONST_DEFNSE = 100.0f;
+    private static int GLOBAL_ATTACK_ID_COUNTER = 0; 
+
+    private static int GetNextAttackInstanceID()
+    {
+        if (GLOBAL_ATTACK_ID_COUNTER >= int.MaxValue)
+            GLOBAL_ATTACK_ID_COUNTER = 0;
+        return GLOBAL_ATTACK_ID_COUNTER++;
+    }
+
     public static DamageEvent GetMyDamageEvent(StatusComponent status, DamageData data, 
         bool bFirstHit = false, bool bExtraCrit = false)
     {
@@ -24,10 +33,12 @@ public static class DamageCalculator
         if (crit)
             result *= critDmg;
 
-        return new DamageEvent(result, crit, bFirstHit, data.hitData);
+        DamageEvent evt = new DamageEvent(result, crit, bFirstHit, data.hitData);
+        evt.AttackInstanceID = GetNextAttackInstanceID();
+        return evt;
     }
 
-    public static float CalcDamage(StatusComponent status, ref DamageEvent damageEvent)
+    public static float CalcDamage(StatusComponent status, DamageEvent damageEvent)
     {
         if (status == null) 
             return 0.0f;
@@ -35,11 +46,19 @@ public static class DamageCalculator
         float value = damageEvent.value;
         float defense = status.GetStatusValue(StatusType.DEFENSE);
 
+        // 잃은 체력 비례 데미지
+        if( damageEvent.IsMissingHPRatio)
+        {
+            float mx = status.GetMaxHP();
+            float curhp = status.GetCurrentHP();
+            float missingHP =  mx - curhp;
+            value += missingHP * damageEvent.MissingHPRatio;
+        }
+
         // 최대 체력 비례 데미지 
         if(damageEvent.IsMaxHPPercent)
         {
-            float hp = status.GetStatusValue(StatusType.HEALTH);
-            value = status.GetMaxHP() * damageEvent.MaxHPRatio; 
+            value += status.GetMaxHP() * damageEvent.MaxHPRatio; 
         }
 
         // 방어 무시 

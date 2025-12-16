@@ -85,8 +85,8 @@ public class Weapon_Combo : Weapon
         {
             Vector3 hitPoint = colliders[this.index].ClosestPoint(other.transform.position);
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
-            DamageEvent evt = damageDatas[this.index].GetMyDamageEvent(rootObject);
-            damage.OnDamage(rootObject, this, hitPoint, ref evt); 
+            damage.OnDamage(rootObject, this, hitPoint,
+                damageDatas[this.index].GetMyDamageEvent(rootObject)); 
         }
     }
 }

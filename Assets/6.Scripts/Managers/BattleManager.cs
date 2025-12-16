@@ -7,6 +7,7 @@ public class BattleManager
     : Singleton<BattleManager>
 {
     public event Action<GameObject, GameObject, DamageEvent> OnAnyAttackHit;
+    public event Action<GameObject, GameObject, float> OnAnyAttackHitFinish;
 
     private event Action OnFinishBeginBattle;
 
@@ -135,8 +136,13 @@ public class BattleManager
         }
     }
 
-    public void NotifyAttackHit(GameObject attacker, GameObject target, ref DamageEvent evt)
+    public void NotifyAttackHit(GameObject attacker, GameObject target, DamageEvent evt)
     {
         OnAnyAttackHit?.Invoke(attacker, target, evt);
+    }
+
+    public void NotifyAttackHitFinish(GameObject attacker, GameObject target, float damage)
+    {
+        OnAnyAttackHitFinish?.Invoke(attacker, target, damage);
     }
 }

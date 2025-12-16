@@ -156,7 +156,7 @@ public class Cheater
                 if(enemy.TryGetComponent<HealthPointComponent>(out var health))
                 {
                     DamageEvent e = new DamageEvent(health.GetMaxHP);
-                    enemy.OnDamage(null, null, Vector3.zero, ref e);
+                    enemy.OnDamage(null, null, Vector3.zero, e);
                 }
             }
         }

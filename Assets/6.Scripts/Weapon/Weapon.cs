@@ -21,6 +21,12 @@ public class HitData
     {
         SoundManager.Instance.PlaySFX(HitSoundName);
     }
+
+    public bool IsDOTEffect()
+    {
+        return DamageType == DamageType.DOT_BLEED || DamageType == DamageType.DOT_BURN ||
+            DamageType == DamageType.DOT_HATERD || DamageType == DamageType.DOT_POISON;
+    }
 }
 
 
@@ -152,7 +158,19 @@ public class ActionData
     }
 }
 
-public struct DamageEvent
+//public class MissingHPDamageModifier
+//{
+//    // 비례율 (예: 0.05)
+//    public float Ratio { get; set; }
+
+//    // 최대 피해 상한선 (0 또는 음수면 상한 없음)
+//    public float DamageCap { get; set; }
+
+//    // 이 모디파이어의 출처 (디버깅용: "Passive_Woe", "Item_Blade")
+//    public string SourceId { get; set; }
+//}
+
+public class DamageEvent
 {
     public float value;
     public bool isCrit;
@@ -160,19 +178,37 @@ public struct DamageEvent
 
     public HitData hitData;
 
-    public bool IgnoreDefense;
-    public bool IsMaxHPPercent;
-    public float MaxHPRatio; 
+    //TODO : 잃은 체력 비례 데미지의 대한 상한 조건이 서로 상이할 경우 사용
+    //public List<MissingHPDamageModifier> MissingHPModifiers { get; } = new List<MissingHPDamageModifier>();
+    public bool IsMissingHPRatio; // 잃은 체력 비례 데미지
+    public float MissingHPRatio; 
+    public bool IgnoreDefense;  // 방어력 무시 데미지
+    public bool IsMaxHPPercent; // 최대 체력 비례 데미지 
+    public float MaxHPRatio;
+
+    public int AttackInstanceID { get; set; }
 
     public DamageEvent(float value, bool isCrit = false, bool isFisrtHit = false, HitData hitData = null)
     {
         this.value = value;
         this.isCrit = isCrit;
         this.isFisrtHit = isFisrtHit;
+        IsMissingHPRatio = false;
+        MissingHPRatio = 0f; 
         IgnoreDefense = false;
         IsMaxHPPercent = false;
         MaxHPRatio = 0f;
-        this.hitData = hitData;
+        
+        if (hitData != null)
+            this.hitData = hitData;
+        else
+            this.hitData = new();
+    }
+
+    public bool IsDOTEffect()
+    {
+        if (hitData == null) return false; 
+        return hitData.IsDOTEffect();
     }
 }
 

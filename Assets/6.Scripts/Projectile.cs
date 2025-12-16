@@ -94,7 +94,7 @@ public class Projectile : MonoBehaviour
         {
             Vector3 hitPoint = collider.ClosestPoint(other.transform.position);
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
-            damage?.OnDamage(ownerObject, null, hitPoint, ref damageEvent);
+            damage?.OnDamage(ownerObject, null, hitPoint, damageEvent);
         }
     }
 
