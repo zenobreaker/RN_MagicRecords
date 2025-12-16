@@ -125,7 +125,6 @@ public class SkillComponent
     // 스킬 장착 
     public void SetActiveSkill(SkillSlot slot, ActiveSkill skill)
     {
-        if (skill == null) return;
         SetActiveSkill(slot.ToString(), skill);
         skillEventHandler?.OnSetting_ActiveSkill(slot, skill);
     }
@@ -133,15 +132,13 @@ public class SkillComponent
     // AI에서 접근할 때는 첫 번째 인자는 스킬 이름으로 오므로 주의해야 함 
     public void SetActiveSkill(string slotName, ActiveSkill skill)
     {
-        if (skill == null) return;
-
         if (skillSlotTable.ContainsKey(slotName))
             skillSlotTable[slotName] = skill;
         else
             skillSlotTable.Add(slotName, skill);
 
-        skillSlotTable[slotName].SetOwner(rootObject);
-        skillSlotTable[slotName].InitializedData();
+        skillSlotTable[slotName]?.SetOwner(rootObject);
+        skillSlotTable[slotName]?.InitializedData();
     }
 
     // 슬롯의 있는 스킬 사용 

@@ -78,7 +78,7 @@ public class SpawnManager : MonoBehaviour
                 player.SetStatus();
 
                 // Setting Passive Status 
-                AppManager.Instance?.OnApplySttaicEffct(jobID, playerGO);
+                AppManager.Instance?.OnApplyStaticEffct(jobID, playerGO);
 
                 // Setting Equipment 
                 player.SetEquipments();

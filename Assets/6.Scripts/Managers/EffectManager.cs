@@ -100,4 +100,18 @@ public class EffectManager : Singleton<EffectManager>
         // 3. 중앙 등록 함수 호출
         RegisterEffect(target, appliedBy, effect);
     }
+
+    public void RegisterEffect_Hatred(GameObject target, GameObject appliedBy, float duration, float basePower)
+    {
+        if (effectsDict.ContainsKey("Curse_Hatred") == false)
+            return;
+
+        SO_BaseEffect so = effectsDict["Curse_Hatred"];
+        float tick = so.tickInterval;
+        BaseEffect effect = EffectFactory.CreateDotStatusEffect("Curse_Hatred", "", duration,
+            so, tick, basePower);
+
+        RegisterEffect(target, appliedBy, effect);
+    }
+
 }

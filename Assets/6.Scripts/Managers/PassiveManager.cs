@@ -129,8 +129,15 @@ public class PassiveSystem
         }
     }
 
-    public void OnLose() 
+    public void OnLose(int jobID, GameObject ownerObj)
     {
+        if (passiveSkillList.ContainsKey(jobID) == false || ownerObj == null) return;
+        
+        foreach (PassiveSkill skill in passiveSkillList[jobID])
+        {
+            skill.OnLose(); 
+        }
+
         updatablePassive.Clear();
     }
 

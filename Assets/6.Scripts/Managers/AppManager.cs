@@ -99,7 +99,7 @@ public class AppManager
     {
         if (GameManager.Instance == null) return;
 
-        GameManager.Instance.OnBeginStage += OnLose;
+        GameManager.Instance.OnBeginStage += OnBeginStage;
         GameManager.Instance.OnUpdated += OnUpdate;
 
         GameManager.Instance.OnFinishStage += FinishStageProcess;
@@ -374,7 +374,7 @@ public class AppManager
         passiveSystem.Remove(jobID, passiveSkill);
     }   
 
-    public void OnApplySttaicEffct(int jobID, GameObject ownerObj)
+    public void OnApplyStaticEffct(int jobID, GameObject ownerObj)
     {
         passiveSystem?.OnApplyStaticEffect(jobID, ownerObj);
     }
@@ -384,9 +384,9 @@ public class AppManager
         passiveSystem?.OnAcquire(jobID, ownerObj);
     }
 
-    public void OnLose()
+    public void OnLose(int jobID, GameObject ownerObj)
     {
-        passiveSystem?.OnLose();
+        passiveSystem?.OnLose(jobID, ownerObj);
     }
 
     public void OnUpdate(float dt)
@@ -483,6 +483,11 @@ public class AppManager
     #endregion
 
     #region Save
+
+    private void OnBeginStage()
+    {
+        //TODO : 선택한 휠러의 직업들을 가져와 세팅해야 한다. 
+    }
 
     public void OnUnloadScene(Scene scene)
     {

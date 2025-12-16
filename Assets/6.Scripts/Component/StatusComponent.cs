@@ -191,6 +191,11 @@ public class StatusComponent : MonoBehaviour
         return healthPointComponent?.GetMaxHP ?? 0.0f;
     }
 
+    public float GetCurrentHP()
+    {
+        return healthPointComponent?.GetCurrentHP ?? 0.0f;
+    }
+
     /// <summary>
     /// 캐릭터 기본 스탯 초기 설정
     /// </summary>
