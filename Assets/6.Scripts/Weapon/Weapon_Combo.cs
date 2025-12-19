@@ -49,6 +49,11 @@ public class Weapon_Combo : Weapon
 
         this.index = index % so_Combo.MaxComboIndex();
 
+        if(this.index == so_Combo.MaxComboIndex() -1)
+        {
+            InvokeLastAttackEvent();
+        }
+
         Debug.Assert(so_Combo.comboDatas.Count > 0);
         Debug.Assert(so_Combo.comboDatas[this.index] != null);
 

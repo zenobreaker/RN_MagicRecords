@@ -12,26 +12,32 @@ public struct BulletData
 /// <summary>
 ///  패시브 - 마법탄 장전 
 ///  습득 시 4/6/7 발 탄환을 장전, 탄환류 스킬에 소모됨 
+///  마지막 공격 시, 탄환 1발 장전 
 /// </summary>
 
-public class MagicBulletLoad 
+public class Passive_MagicBulletLoad
     : PassiveSkill
     , IMagicBulletProvider
 {
     private int maxBullets;
+    private int currentBullet;
     private Queue<BulletData> bullets;
     private SkillComponent skillComponent;
+    private WeaponComponent weaponComponent;
 
-    public MagicBulletLoad(int skillID, string skillName, string skillDesc, Sprite skillIcon) 
+
+    public Passive_MagicBulletLoad(int skillID, string skillName, string skillDesc, Sprite skillIcon) 
         : base(skillID, skillName, skillDesc, skillIcon)
     {
         bullets = new();
+        currentBullet = 0;
     }
 
-    public MagicBulletLoad(SO_SkillData skillData)
+    public Passive_MagicBulletLoad(SO_SkillData skillData)
         : base(skillData)
     {
         bullets = new();
+        currentBullet = 0; 
     }
 
 
@@ -59,6 +65,12 @@ public class MagicBulletLoad
             owner.TryGetComponent<SkillComponent>(out skillComponent))
         {
             skillComponent.RegisterCapability<IMagicBulletProvider>(this);
+        }
+
+        if (owner != null && 
+            owner.TryGetComponent<WeaponComponent>(out weaponComponent))
+        {
+            BindLastAttackEvent();
         }
 
         CalculateMaxBullet();
@@ -104,6 +116,30 @@ public class MagicBulletLoad
         }
         NotifyBulletInit();
     }
+
+    private void BindLastAttackEvent()
+    {
+        Weapon weapon = weaponComponent?.GetCurrentWeapon();
+        if (weapon != null)
+        {
+            weapon.OnLastAttackExecuted -= ExecuteReload;
+            weapon.OnLastAttackExecuted += ExecuteReload;
+        }
+    }
+
+    private void ExecuteReload(GameObject owner)
+    {
+        if (bullets.Count >= maxBullets)
+            return; 
+
+        ++currentBullet;
+        bool isCrit = currentBullet == 4 || currentBullet == 7;
+        currentBullet = currentBullet % maxBullets;
+        bullets.Enqueue(new BulletData(isCrit));
+
+        NotifyBulletChanged();
+    }
+    
 
     private void NotifyBulletInit()
     {

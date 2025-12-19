@@ -14,7 +14,7 @@ public static class SkillFactory
         Skill skill = data.id switch
         {
             1 => new ReinforcedMagicBullet(data),
-            11 => new MagicBulletLoad(data),
+            11 => new Passive_MagicBulletLoad(data),
             12 => new Passive_ForbiddenCurse(data),
             15 => new Passive_ContemptuousWoe(data),
             16 => new Passive_AbominableHatred(data),

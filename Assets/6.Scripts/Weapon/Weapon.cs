@@ -246,6 +246,8 @@ public class Weapon : MonoBehaviour
     protected StatusComponent status;
     protected PlayerMovingComponent moving;
 
+    public event Action<GameObject> OnLastAttackExecuted; 
+
     private DashComponent dash;
 
     protected virtual void Awake()
@@ -269,6 +271,11 @@ public class Weapon : MonoBehaviour
     {
         foreach (var actionData in actionDatas)
             actionData.Initialize();
+    }
+
+    protected virtual void InvokeLastAttackEvent()
+    {
+        OnLastAttackExecuted?.Invoke(rootObject);
     }
 
     public void Equip()

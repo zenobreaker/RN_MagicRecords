@@ -201,6 +201,12 @@ public class WeaponComponent
     }
 
 
+    public Weapon GetCurrentWeapon()
+    {
+        if (weaponTable == null) return null;
+        return weaponTable[type];
+    }
+
     public void DoAction(int index = 0)
     {
         if (animator == null)
