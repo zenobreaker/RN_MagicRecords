@@ -564,7 +564,6 @@ GameObject:
   - component: {fileID: 3959749324113535563}
   - component: {fileID: 5955705144880262104}
   - component: {fileID: 7173717769855266637}
-  - component: {fileID: 6498789050055894400}
   - component: {fileID: 7784810982792390044}
   - component: {fileID: 53763143311511417}
   - component: {fileID: 7393046643433022218}
@@ -751,14 +750,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 4064022371553776242}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eeebf713e8cc7634e8adbf48ae66e8af, type: 3}
+  m_Script: {fileID: 11500000, guid: 44ac8307bd942804f8f0e192d7b440a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   surfaceNames: []
   damageColor: {r: 0, g: 0, b: 0, a: 0}
   changeColorTime: 0.15
-  spikeShot: {fileID: 11400000, guid: f18986f394989954aba7f76f86268a6c, type: 2}
-  jumpPress: {fileID: 11400000, guid: ddd659119339803458644eecf63cac8f, type: 2}
 --- !u!114 &5135938527064577933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -790,9 +787,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageMotions:
   - damageType: 0
-    AO_DamageMotion: {fileID: 0}
+    damageMotion: {fileID: 0}
   dmgFontOffsetY: 1.5
   DamageAnimStateName: Hit
+  baseController: {fileID: 0}
 --- !u!114 &4253606629208600931
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -864,23 +862,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CanMoveName: CanMove
-  MoveEnableName: MoveEnable
   AIStateTypeName: State
   TargetName: Target
---- !u!114 &6498789050055894400
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4064022371553776242}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9866de94719c52840ac1a17bf41d6ae2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bgAgent: {fileID: 2837080727573005035}
-  attackRange: 3
+  AttackDistanceName: AttackDistance
 --- !u!114 &7784810982792390044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -946,7 +930,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caf57f0d6445d6e43a20754fc915766b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tickInterval: 0.1
 --- !u!1 &4603522227996034708
 GameObject:
   m_ObjectHideFlags: 0

@@ -152,7 +152,6 @@ GameObject:
   - component: {fileID: 6901587717282527279}
   - component: {fileID: 997373703696574292}
   - component: {fileID: 67459897668217305}
-  - component: {fileID: 6010133733085186359}
   - component: {fileID: 8675013748762111550}
   - component: {fileID: 4983050901823228102}
   - component: {fileID: 3629987957699391292}
@@ -242,7 +241,6 @@ MonoBehaviour:
   m_BlackboardVariableOverridesList:
   - rid: 6694591355817296086
   - rid: 6694591430074302853
-  - rid: 6694591449434424244
   m_IsInitialised: 0
   m_IsStarted: 0
   references:
@@ -264,14 +262,6 @@ MonoBehaviour:
           m_Value1: 14691750773752167143
         Name: Perception
         m_Value: {fileID: 997373703696574292}
-    - rid: 6694591449434424244
-      type: {class: 'BlackboardVariable`1[[WeaponComponent, Assembly-CSharp]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 1418558948390487325
-          m_Value1: 63124126237012022
-        Name: Weapon
-        m_Value: {fileID: 3629987957699391292}
 --- !u!54 &4553498976953711013
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -345,9 +335,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageMotions:
   - damageType: 0
-    AO_DamageMotion: {fileID: 0}
+    damageMotion: {fileID: 0}
   dmgFontOffsetY: 1.5
   DamageAnimStateName: Hit
+  baseController: {fileID: 0}
 --- !u!114 &616710037572865386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419,23 +410,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CanMoveName: CanMove
-  MoveEnableName: MoveEnable
   AIStateTypeName: State
   TargetName: Target
---- !u!114 &6010133733085186359
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 622183319653172843}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9866de94719c52840ac1a17bf41d6ae2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bgAgent: {fileID: 419020559172569803}
-  attackRange: 3
+  AttackDistanceName: AttackDistance
 --- !u!114 &8675013748762111550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -510,7 +487,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caf57f0d6445d6e43a20754fc915766b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tickInterval: 0.1
 --- !u!1 &2842864236305708554
 GameObject:
   m_ObjectHideFlags: 0
