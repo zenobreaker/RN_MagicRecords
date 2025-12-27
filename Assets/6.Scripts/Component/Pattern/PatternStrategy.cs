@@ -2,15 +2,26 @@ using UnityEngine;
 
 public class AIContext
 {
-    public float timeSinceLastPattern;
-    public float CurrentHP;
-    public Vector3 SelfPosition;
-    public Vector3 PlayerPosition; 
+    public GameObject Owner;
+    public GameObject Target;
+    public HealthPointComponent HealthPoint;
+
+    public AIContext(GameObject owner)
+    {
+        Owner = owner;
+        HealthPoint = owner.GetComponent<HealthPointComponent>();   
+    }
+
+    public float CurrentHP => HealthPoint != null ? HealthPoint.GetCurrentHP : 0f; 
+    public Vector3 SelfPosition => Owner.transform.position;    
+    public Vector3 TargetPosition => Target != null ? Target.transform.position : Vector3.zero; 
 }
 
 public interface IPatternCondition
 {
     bool Evaluate(float value, AIContext ctx);
+
+    void ResetCondition();
 }
 
 public interface IUpdatableCondition : IPatternCondition
@@ -36,6 +47,8 @@ public abstract class PatternConditionBase : IPatternCondition
 
     protected abstract float GetContextValue(AIContext ctx);
 
+    public virtual void ResetCondition() { }
+
     public bool Evaluate(float value, AIContext ctx)
     {
         float contextValue = GetContextValue(ctx);
@@ -56,7 +69,10 @@ public class CooldownCondition : IUpdatableCondition
         this.maxCooldown = targetValue;
     }
 
-    public void ResetCooldown() => cooldown = 0.0f;
+    public void ResetCondition()
+    {
+        cooldown = 0.0f;
+    }
 
     public void Update(float deltaTime)
     {
@@ -71,7 +87,7 @@ public class CooldownCondition : IUpdatableCondition
 
 public class HealthCondition : PatternConditionBase
 {
-    public HealthCondition(IComparisonOperator comparisonOperator, float targetValue) 
+    public HealthCondition(IComparisonOperator comparisonOperator, float targetValue)
         : base(comparisonOperator, targetValue)
     {
     }
@@ -82,13 +98,13 @@ public class HealthCondition : PatternConditionBase
 
 public class DistanceCondition : PatternConditionBase
 {
-    public DistanceCondition(IComparisonOperator comparisonOperator, float targetValue) 
+    public DistanceCondition(IComparisonOperator comparisonOperator, float targetValue)
         : base(comparisonOperator, targetValue)
     {
     }
 
     protected override float GetContextValue(AIContext ctx)
-    => Vector3.Distance(ctx.SelfPosition, ctx.PlayerPosition );
+    => Vector3.Distance(ctx.SelfPosition, ctx.TargetPosition);
 }
 
 

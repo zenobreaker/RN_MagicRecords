@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 
@@ -36,22 +36,9 @@ public struct PatternCondition
 [System.Serializable]
 public class PatternEntry
 {
+    public string slotName;
     public List<PatternCondition> conditions = new List<PatternCondition>();
-    public ActiveSkill skill;
-
-    public PatternEntry(List<PatternCondition> conditions, ActiveSkill skill)
-    {
-        this.conditions = conditions;
-        this.skill = skill;
-
-        foreach (var condition in conditions)
-        {
-            if (condition.type == PatternConditionType.Cooldown)
-                skill.SetCooldown(condition.value);
-        }
-
-        InitiaizePattern();
-    }
+    public SO_ActiveSkillData skill;
 
     private bool bCanUse = false;
     public bool CanUse => bCanUse;
@@ -84,6 +71,25 @@ public class PatternEntry
         }
     }
 
+    public ActiveSkill GetActiveSkill()
+    {
+#if UNITY_EDITOR
+        var activeSkill = skill?.CreateSkill();
+        if (activeSkill == null)
+            Debug.Log($"Pattern Skill is Not Created");
+        return (ActiveSkill)activeSkill;
+#endif
+#pragma warning disable CS0162 // 접근할 수 없는 코드가 있습니다.
+        return (ActiveSkill)skill?.CreateSkill();
+#pragma warning restore CS0162 // 접근할 수 없는 코드가 있습니다.
+    }
+
+    public void ResetCondition()
+    {
+        foreach (var condition in strategyTable)
+            condition.Value.ResetCondition(); 
+    }
+
     public void Update(float time, AIContext ctx)
     {
         foreach (var pair in strategyTable)
@@ -93,17 +99,18 @@ public class PatternEntry
         }
     }
 
-    public void CheckUsePattern(AIContext ctx)
+    public bool CheckUsePattern(AIContext ctx)
     {
-        bCanUse = true;
-
+        bool checkAllCondition = true; 
         foreach (var condition in conditions)
         {
             if (strategyTable.TryGetValue(condition.type, out IPatternCondition value))
             {
-                bCanUse &= value.Evaluate(condition.value, ctx);
+                checkAllCondition &= value.Evaluate(condition.value, ctx);
             }
         }
+
+        return checkAllCondition;
     }
 
 }

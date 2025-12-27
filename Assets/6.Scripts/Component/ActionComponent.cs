@@ -15,6 +15,8 @@ public abstract class ActionComponent
     public bool InAction { get => bInAction; private set => bInAction = value; }
     public event Action<GameObject, DamageEvent> OnAttackHit;
 
+    public int Priority { get; set; }
+
     public virtual void DoAction()
     {
         OnDoAction?.Invoke(); 

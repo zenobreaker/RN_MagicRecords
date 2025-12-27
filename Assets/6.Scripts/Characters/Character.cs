@@ -26,9 +26,11 @@ public class Character
     protected bool bInAction = false; 
     public virtual bool InAction { get { return bInAction; } protected set { bInAction = value; } }
 
+    #region ACTION
     public Action OnBeginDoAction;
     public Action OnEndDoAction;
     public Action<Character> OnDead;
+    #endregion
 
     protected virtual void Awake()
     {
@@ -59,7 +61,7 @@ public class Character
         OnDead = null;
     }
 
-    protected virtual void End_Damaged() { bInAction = false; }
+    public virtual void End_Damaged() { bInAction = false; }
 
 
     public void SetGenericTeamId(GenenricTeamId id)

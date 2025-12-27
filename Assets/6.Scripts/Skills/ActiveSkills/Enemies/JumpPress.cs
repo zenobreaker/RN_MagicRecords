@@ -25,7 +25,7 @@ public class JumpPress
     private GameObject targetObject; 
 
 
-    public JumpPress(SO_ActiveSkillData skillData)
+    public JumpPress(SO_SkillData skillData)
         :base(skillData) 
     {
         groundMask = 1 << LayerMask.NameToLayer("Default");

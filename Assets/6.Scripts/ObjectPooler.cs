@@ -169,7 +169,10 @@ public partial class ObjectPooler : MonoBehaviour
     public static void ReturnToPool(GameObject obj)
     {
         if (!Instance.poolDictionary.ContainsKey(obj.name))
-            throw new Exception($"Pool with tag {obj.name} doesn't exist.");
+        {
+            //throw new Exception($"Pool with tag {obj.name} doesn't exist.");
+            return;
+        }
 
         Instance.poolDictionary[obj.name].Enqueue(obj);
     }
@@ -193,7 +196,7 @@ public partial class ObjectPooler : MonoBehaviour
         Queue<GameObject> poolQueue = poolDictionary[tag];
         if (poolQueue.Count <= 0)
         {
-            Pool pool = pools.Find( x => x.tag == tag);
+            Pool pool = pools.Find(x => x.tag == tag);
             //var obj = CreateNewObject(pool.tag, pool.prefab);
             GameObject obj = CreateNewObjectSetParent(pool.tag, pool.prefab);
             ArrangePool(tag, obj);

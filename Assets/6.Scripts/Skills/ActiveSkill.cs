@@ -25,6 +25,7 @@ public abstract class ActiveSkill
     protected Animator animator;
     protected WeaponController weaponController;
     protected SkillComponent skillComponent;
+    protected StateComponent state; 
 
     public bool IsOnCooldown => currentCooldown > 0;
     protected float limitCooldown; 
@@ -53,6 +54,7 @@ public abstract class ActiveSkill
     {
         ownerObject = gameObject;
         animator = gameObject.GetComponent<Animator>();
+        state = gameObject.GetComponent<StateComponent>(); 
 
         if (ownerObject.TryGetComponent(out IWeaponUser user))
         {
@@ -103,6 +105,9 @@ public abstract class ActiveSkill
         // 쿨타임 
         currentCooldown = initCooldown;
 
+        // 상태 변경 
+        state?.SetActionMode(); 
+
         // 첫 번째 페이즈 
         ExecutePhase(0);
     }
@@ -114,7 +119,10 @@ public abstract class ActiveSkill
 
     public virtual void Start_DoAction() { }
     public virtual void Begin_DoAction() { }
-    public virtual void End_DoAction() { }
+    public virtual void End_DoAction() 
+    {
+        state?.SetIdleMode(); 
+    }
 
     public virtual void Begin_JudgeAttack(AnimationEvent e) { }
     public virtual void End_JudgeAttack(AnimationEvent e) { }

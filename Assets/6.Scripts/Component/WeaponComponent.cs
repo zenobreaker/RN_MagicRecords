@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 
 public enum WeaponType
@@ -102,7 +100,6 @@ public class WeaponComponent
     #endregion
 
     private StateComponent state;
-    private SkillComponent skill;
     private StatusEffectComponent statusEffect;
     private DashComponent dash; 
 
@@ -123,7 +120,6 @@ public class WeaponComponent
         animator = GetComponent<Animator>();
 
         state = GetComponent<StateComponent>();
-        skill = GetComponent<SkillComponent>();
         statusEffect = GetComponent<StatusEffectComponent>();
 
         Awake_InitWeapon();
@@ -234,6 +230,7 @@ public class WeaponComponent
     {
         base.BeginDoAction();
 
+        Debug.Log($"Weapon Begin DoAction");
         OnBeginDoAction?.Invoke();
         weaponTable[type]?.Begin_DoAction();
     }

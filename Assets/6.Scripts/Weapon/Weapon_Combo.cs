@@ -61,7 +61,7 @@ public class Weapon_Combo : Weapon
         // Play Animation 
         {
             animator.SetFloat(actionDatas[this.index].ActionSpeedHash, actionDatas[this.index].ActionSpeed);
-            animator.Play(actionDatas[this.index].StateName);
+            animator.CrossFade(actionDatas[this.index].StateName, 0.1f);
             weaponController?.DoAction(actionDatas[this.index].WeaponActionName);
 
 #if UNITY_EDITOR

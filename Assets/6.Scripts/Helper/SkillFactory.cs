@@ -18,7 +18,9 @@ public static class SkillFactory
             12 => new Passive_ForbiddenCurse(data),
             15 => new Passive_ContemptuousWoe(data),
             16 => new Passive_AbominableHatred(data),
-            17 => new Passive_RuinousWrath(data),   
+            17 => new Passive_RuinousWrath(data),
+            1001 => new JumpPress(data),
+            1002 => new SpikeShot(data),
             _ => null
         };
 

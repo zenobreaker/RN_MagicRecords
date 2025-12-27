@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Enemy
     : Character
     , IDamagable
     , ILaunchable
+    , IActionable
 {
 
     [Header("Material Settings")]
@@ -19,6 +21,8 @@ public class Enemy
     private DamageHandleComponent damageHandle;
     private LaunchComponent launch;
     protected ActionComponent currentAction;
+    protected SkillComponent skill;
+    protected WeaponComponent weapon;
 
     protected override void Awake()
     {
@@ -45,6 +49,20 @@ public class Enemy
         currentAction = GetComponent<ActionComponent>();
         damageHandle = GetComponent<DamageHandleComponent>();
         launch = GetComponent<LaunchComponent>();
+
+        skill = GetComponent<SkillComponent>();
+        weapon = GetComponent<WeaponComponent>(); 
+
+        Awake_SkillEventHandle(skill, weapon); 
+    }
+
+    private void Awake_SkillEventHandle(SkillComponent skill, WeaponComponent weapon)
+    {
+        if (skill == null || weapon == null) return;
+
+        skill.OnSkillUse += OnSkillUse;
+        skill.OnBeginDoAction += weapon.OnBeginSkillAction;
+        skill.OnEndDoAction += weapon.OnEndSkillAction;
     }
 
     protected override void Start()
@@ -68,6 +86,14 @@ public class Enemy
 
         BattleManager.Instance?.UnreistEnemy(this);
         ObjectPooler.ReturnToPool(gameObject);
+    }
+
+    public void OnSkillUse(bool bIsUse)
+    {
+        if (bIsUse)
+        {
+            SetActionComponent(skill); 
+        }
     }
 
     public override void Start_DoAction()
@@ -120,7 +146,7 @@ public class Enemy
         collider.isTrigger = true;
         rigidbody.isKinematic = true;
 
-        animator.SetTrigger("Dead");
+        animator?.SetTrigger("Dead");
         //MovableStopper.Instance.Delete(this);
         //MovableSlower.Instance.Delete(this);
         //Destroy(gameObject, 5);
@@ -145,7 +171,7 @@ public class Enemy
         }
     }
 
-    protected override void End_Damaged()
+    public override void End_Damaged()
     {
         base.End_Damaged();
 
@@ -196,5 +222,15 @@ public class Enemy
 
         if(healthPoint != null)
             healthPoint.SetMaxHP = statData.hp;
+    }
+
+    public void SetActionComponent(ActionComponent action)
+    {
+        currentAction = action; 
+    }
+
+    public ActionComponent GetCurrentAction()
+    {
+        return currentAction; 
     }
 }

@@ -6,7 +6,7 @@ public class SpikeShot
 {
     private WarningSign_Rect rectSign; 
 
-    public SpikeShot(SO_ActiveSkillData skillData) : base(skillData)
+    public SpikeShot(SO_SkillData skillData) : base(skillData)
     {
     }
 

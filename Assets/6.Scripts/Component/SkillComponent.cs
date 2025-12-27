@@ -11,7 +11,6 @@ public enum SkillSlot
 public class SkillComponent
     : ActionComponent
 {
-    private StateComponent state;
     private WeaponComponent weapon;
     private DamageHandleComponent damageHandle;
 
@@ -34,8 +33,6 @@ public class SkillComponent
     {
         rootObject = transform.root.gameObject;
 
-        state = GetComponent<StateComponent>();
-        Debug.Assert(state != null);
         weapon = GetComponent<WeaponComponent>();
         Debug.Assert(weapon != null);
 
@@ -48,6 +45,7 @@ public class SkillComponent
 
     private void OnDamaged()
     {
+        // 스킬 사용 중일 때 피격 당한 경우 특별한 상태가 아니라면 종료 처리
         if (IsSkillAction)
             EndDoAction();
     }
@@ -56,10 +54,10 @@ public class SkillComponent
     {
         skillSlotTable = new Dictionary<string, ActiveSkill>
         {
-            {"Slot1", null },
-            {"Slot2", null },
-            {"Slot3", null },
-            {"Slot4", null },
+            {"SLOT1", null },
+            {"SLOT2", null },
+            {"SLOT3", null },
+            {"SLOT4", null },
         };
     }
 

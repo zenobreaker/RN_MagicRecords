@@ -269,7 +269,7 @@ public class Player
         }
     }
 
-    protected override void End_Damaged()
+    public override void End_Damaged()
     {
         base.End_Damaged();
         

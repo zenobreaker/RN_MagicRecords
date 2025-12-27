@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 
 [System.Serializable]
 public class DamageMotionData
 {
     public DamageType damageType;
-    public AnimatorOverrideController AO_DamageMotion;
+    public AnimationClip damageMotion;
 }
 
 [System.Serializable]
@@ -20,6 +19,8 @@ public class DamageMotionNameData
 
 public class DamageHandleComponent : MonoBehaviour
 {
+    public Action OnDamaged;
+    
     [SerializeField]
     private List<DamageMotionData> damageMotions = new List<DamageMotionData>();
     private Dictionary<DamageType, List<DamageMotionData>> damageMotionTable;
@@ -30,19 +31,33 @@ public class DamageHandleComponent : MonoBehaviour
     [SerializeField]
     private string DamageAnimStateName = "Hit";
 
-    private Animator animator; 
+    [Header("Base Controller")]
+    [SerializeField] protected RuntimeAnimatorController baseController;
+
+
+    private Character character; 
+    private Animator animator;
+    private AnimatorOverrideController overrideController;
     private HealthPointComponent health;
     private StatusComponent status;
-
-    public Action OnDamaged;
+   
+    private AnimatorOverrideController overridecontroller;
 
     private void Awake()
     {
+        character = GetComponent<Character>();
         animator = GetComponent<Animator>();
         health = GetComponent<HealthPointComponent>();
         status = GetComponent<StatusComponent>();
 
         Awake_SetDamageMotionData();
+
+        Debug.Assert(animator != null);
+        if (animator != null && baseController != null)
+        {
+            overridecontroller = new AnimatorOverrideController(baseController);
+            animator.runtimeAnimatorController = overridecontroller;
+        }
     }
 
     private void Awake_SetDamageMotionData()
@@ -109,16 +124,20 @@ public class DamageHandleComponent : MonoBehaviour
     public void PlayDamageAnimation(HitData data)
     {
         if(data == null) return;
-        if (animator == null) return;
+        // 애니메이터가 없거나 해당 스테이트가 없는 경우 
+        if(animator == null || animator.runtimeAnimatorController == null)
+        {
+            character?.End_Damaged();
+            return; 
+        }
+
         if (damageMotionTable == null) return; 
 
-        if(damageMotionTable.TryGetValue(data.DamageType, out List<DamageMotionData> list))
+        if(overrideController != null && damageMotionTable.TryGetValue(data.DamageType, out List<DamageMotionData> list))
         {
-            if (list.Count > data.HitImpactIndex && list[data.HitImpactIndex].AO_DamageMotion != null)
-                animator.runtimeAnimatorController = list[data.HitImpactIndex].AO_DamageMotion;
+            overrideController["Hit"] = list[data.HitImpactIndex].damageMotion;
         }
 
         animator.SetTrigger(DamageAnimStateName);
     }
-
 }

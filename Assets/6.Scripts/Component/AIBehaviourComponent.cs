@@ -7,14 +7,10 @@ using UnityEngine;
 public class AIBehaviourComponent : MonoBehaviour
 {
 
-    [SerializeField]
-    private string CanMoveName = "CanMove";
-    [SerializeField]
-    private string MoveEnableName = "MoveEnable";
-    [SerializeField]
-    private string AIStateTypeName = "State";
-    [SerializeField]
-    private string TargetName = "Target";
+    [SerializeField] private string CanMoveName = "CanMove";
+    [SerializeField] private string AIStateTypeName = "State";
+    [SerializeField] private string TargetName = "Target";
+    [SerializeField] private string AttackDistanceName = "AttackDistance";
 
     private BehaviorGraphAgent bgAgent;
     private StateComponent state;
@@ -64,20 +60,6 @@ public class AIBehaviourComponent : MonoBehaviour
     {
         bgAgent?.SetVariableValue<bool>(CanMoveName, canMove);
     }
-
-    public bool GetMoveEnable()
-    {
-        if (bgAgent.GetVariable<bool>(MoveEnableName, out BlackboardVariable<bool> result))
-            return result.Value;
-
-        return true; 
-    }
-
-    public void SetMoveEnable(bool moveEnable)
-    {
-        bgAgent?.SetVariableValue<bool> (MoveEnableName, moveEnable);
-    }
-
     public GameObject GetTarget()
     {
         if(bgAgent.GetVariable<GameObject>(TargetName, out BlackboardVariable<GameObject> target))
@@ -111,7 +93,6 @@ public class AIBehaviourComponent : MonoBehaviour
             case StateType.Stop: SetWaitMode(); bCanMove = false; break; 
         }
 
-        bCanMove &= GetMoveEnable();
         SetCanMove(bCanMove);
     }
 }
