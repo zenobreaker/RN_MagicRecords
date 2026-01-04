@@ -1,0 +1,196 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a45f9791fc77e874c9cfd4fd8604a80c, type: 3}
+  m_Name: test_genericskill 1
+  m_EditorClassIdentifier: 
+  id: 112
+  skillName: TestGS2
+  skillDescription: 
+  learnableLevel: 0
+  maxLevel: 0
+  skillUpgradeCost: 
+  skillImage: {fileID: 21300000, guid: 4b90ae1275049444fad10361e889fffc, type: 3}
+  leadingSkillList: 
+  cost: 0
+  cooldown: 0
+  limitCooldown: 0
+  castingTime: 0
+  phaseList:
+  - phaseName: "1\uBC88 \uD398\uC774\uC988"
+    modules:
+    - rid: 7308159180900401302
+    - rid: 7308159202074034583
+    - rid: 7308159180900401259
+    baseDamage: 1
+    confficient: 0
+    hitDelay: 0
+    duration: 0
+    damageData:
+      damageType: 0
+      Power: 5
+      bDownable: 0
+      bLauncher: 0
+      SoundName: Hit
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    skillObject: {fileID: 0}
+    objectName: 
+    actionData:
+      subStateName: 
+      stateName: 
+      layerName: 
+      actionSpeed: 0
+      weaponActionName: 
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      bCanMove: 0
+    soundName: 
+    spawnPosition: {x: 0, y: 0, z: 0}
+    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+  - phaseName: "2\uBC88 \uD398\uC774\uC988"
+    modules:
+    - rid: 5085156208516268146
+    - rid: 5085156208516268138
+    - rid: 5085156208516268147
+    - rid: 5085156208516268145
+    baseDamage: 1
+    confficient: 0
+    hitDelay: 0
+    duration: 0
+    damageData:
+      damageType: 0
+      Power: 5
+      bDownable: 0
+      bLauncher: 0
+      SoundName: Hit
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    skillObject: {fileID: 0}
+    objectName: 
+    actionData:
+      subStateName: 
+      stateName: 
+      layerName: 
+      actionSpeed: 0
+      weaponActionName: 
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      bCanMove: 0
+    soundName: 
+    spawnPosition: {x: 0, y: 0, z: 0}
+    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 5085156208516268138
+      type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 5
+        impulseDirection: {x: 0, y: 0, z: 0}
+        settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
+    - rid: 5085156208516268145
+      type: {class: Module_SpawnProjectile, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 2
+        damageData:
+          damageType: 0
+          Power: 5
+          bDownable: 0
+          bLauncher: 0
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          settings: {fileID: 0}
+          hitData:
+            DamageType: 0
+            Distance: 0
+            HeightValue: 0
+            StopFrame: 0
+            HitImpactIndex: 0
+            HitSoundName: 
+            HitParticle: {fileID: 0}
+            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+        spawnPosition: {x: 0, y: 1, z: 1}
+        spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+        skillObject: {fileID: 0}
+        objectName: ReinForcedMagicBullet
+    - rid: 5085156208516268146
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        soundName: Gun_Normal2
+    - rid: 5085156208516268147
+      type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        actionData:
+          subStateName: Attack01
+          stateName: Skill
+          layerName: 
+          actionSpeed: 1.5
+          weaponActionName: Action
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          settings: {fileID: 0}
+          bCanMove: 0
+    - rid: 7308159180900401259
+      type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        signType: 1
+        duration: 1.5
+        isSetTargetPos: 0
+        spawnCount: 3
+        angleBetween: 30
+        startAngleOffset: 0
+        radius: 1
+        rectSize: {x: 0, y: 2}
+        maxRectSize: {x: 0.5, y: 2}
+        fanRadius: 2
+        fanAngle: 90
+    - rid: 7308159180900401302
+      type: {class: Module_SetTargetByPerception, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        isAutoTarget: 1
+        defaultDistance: 0
+    - rid: 7308159202074034583
+      type: {class: Module_LookAtTarget, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        useBlackboardPos: 1
+        lookAtOwnerTarget: 0
+        turnSpeed: 0

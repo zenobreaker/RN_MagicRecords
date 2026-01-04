@@ -25,7 +25,10 @@ MonoBehaviour:
   limitCooldown: 5
   castingTime: 0.3
   phaseList:
-  - baseDamage: 0
+  - phaseName: 
+    modules:
+    - rid: 7308159156281147392
+    baseDamage: 0
     confficient: 0
     hitDelay: 0.015
     duration: 0
@@ -63,7 +66,9 @@ MonoBehaviour:
     soundName: 
     spawnPosition: {x: 0, y: 1, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
-  - baseDamage: 0
+  - phaseName: 
+    modules: []
+    baseDamage: 0
     confficient: 0
     hitDelay: 0.015
     duration: 0
@@ -101,7 +106,9 @@ MonoBehaviour:
     soundName: 
     spawnPosition: {x: 0, y: 1, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
-  - baseDamage: 20
+  - phaseName: 
+    modules: []
+    baseDamage: 20
     confficient: 0
     hitDelay: 0.015
     duration: 0
@@ -139,3 +146,17 @@ MonoBehaviour:
     soundName: 
     spawnPosition: {x: 0, y: 1, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 7308159156281147392
+      type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        signType: 0
+        warningSignName: 
+        duration: 1
+        radius: 1
+        rectSize: {x: 1, y: 1}
+        fanRadius: 2
+        fanAngle: 90

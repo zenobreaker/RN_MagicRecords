@@ -95,7 +95,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6462511364942132879}
-  - component: {fileID: 2696988160443799930}
+  - component: {fileID: 8434281636617683050}
   m_Layer: 0
   m_Name: WaringSign_Circle
   m_TagString: Untagged
@@ -120,7 +120,7 @@ Transform:
   - {fileID: 2992450826416608617}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2696988160443799930
+--- !u!114 &8434281636617683050
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -129,13 +129,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4095088222910462062}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba8f4d12a1ceb59449b31ec540446049, type: 3}
+  m_Script: {fileID: 11500000, guid: d1f5ef9127322054ca9888c6df3862ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   mainPlane: {fileID: 7475266165497203580}
   subPlane: {fileID: 2992450826416608617}
-  growSpeed: 1
-  maxScale: 2
 --- !u!1 &8123457183315339602
 GameObject:
   m_ObjectHideFlags: 0
