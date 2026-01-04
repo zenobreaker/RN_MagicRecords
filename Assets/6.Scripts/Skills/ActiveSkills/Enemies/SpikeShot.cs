@@ -66,8 +66,6 @@ public class SpikeShot
         {
             projectile.SetDamageInfo(ownerObject, phaseSkill.damageData);
             projectile.AddIgnore(ownerObject);
-            //projectile.OnProjectileHit -= OnProjectileHit;
-            //projectile.OnProjectileHit += OnProjectileHit;
         }
     }
 

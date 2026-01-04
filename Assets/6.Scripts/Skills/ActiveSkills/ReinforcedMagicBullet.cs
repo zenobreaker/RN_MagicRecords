@@ -1,5 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+
+// 3. 마탄 전용 로직 모듈 (특수 로직도 모듈화 가능!)
+[Serializable]
+public class Module_MagicBulletConsum : SkillModule
+{
+    private IMagicBulletProvider provider; 
+
+    public override void Init(GameObject owner)
+    {
+        provider = owner.GetComponent<SkillComponent>()?.GetCapability<IMagicBulletProvider>();
+    }
+
+    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    {
+        if (skill == null) return;
+     
+        bool isCrit = false; 
+        provider?.TryConsumBullet(out isCrit);
+        skill.Blackboard["isCrit"] = isCrit;
+    }
+}
 
 /// <summary>
 /// 강화 마탄 - 전방으로 여러 효과가 내장된 강화된 마탄을 발사한다.
@@ -29,14 +51,6 @@ public class ReinforcedMagicBullet
         animator.SetFloat(phaseSkill.actionData.ActionSpeedHash, phaseSkill.actionData.ActionSpeed);
         animator.Play(phaseSkill?.actionData?.StateName, layer, 0);
         weaponController?.DoAction(phaseSkill?.actionData?.WeaponActionName, layer);
-    }
-
-    private void OnProjectileHit(Collider self, Collider other, Vector3 point)
-    {
-        // hit Sound Play
-        //SoundManager.Instance.PlaySFX(doactionData[index].hitSoundName);
-
-        //Instantiate<GameObject>(doactionData[index].HitParticle, point, rootObject.transform.rotation);
     }
 
 
@@ -73,24 +87,6 @@ public class ReinforcedMagicBullet
         {
             projectile.SetDamageInfo(ownerObject, phaseSkill.damageData, isCrit);
             projectile.AddIgnore(ownerObject);
-            projectile.OnProjectileHit -= OnProjectileHit;
-            projectile.OnProjectileHit += OnProjectileHit;
         }
-    }
-
-    public override void Play_Sound()
-    {
-        if (phaseSkill == null) return;
-        base.Play_Sound();
-
-        phaseSkill.actionData.Play_Sound();
-    }
-
-    public override void Play_CameraShake()
-    {
-        if (phaseSkill == null) return;
-        base.Play_CameraShake();
-
-        phaseSkill.actionData.Play_CameraShake();
     }
 }

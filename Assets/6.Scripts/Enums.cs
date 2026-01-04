@@ -170,3 +170,15 @@ public enum TriggerEvent
     ON_DEAMGED,
     ON_ENENMY_KILLED
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//  Skill Trigger Time
+public enum SkillTriggerTime
+{
+    OnExecute,
+    OnBeginDoAction,
+    OnJudgeAttack,
+    OnEndDoAction,
+    OnSoundEvent,
+    OnCameraShake,
+}

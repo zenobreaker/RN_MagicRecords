@@ -1,13 +1,20 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
 public class PhaseSkill
 {
+    public string phaseName;
+
+    [Header("Module")]
+    [SerializeReference]
+    [SelectImplementationAttribute]
+    public List<SkillModule> modules; 
+
     [Header("Phase Data")]
     public float baseDamage;
-    public float confficient = 1.0f; // ½ºÅ³ ·¹º§ º° °è¼öÄ¡
+    public float confficient = 1.0f; // ìŠ¤í‚¬ ë ˆë²¨ ë³„ ê³„ìˆ˜ì¹˜
     public float hitDelay = -1.0f;
     public float duration = -1.0f;
 
@@ -17,7 +24,7 @@ public class PhaseSkill
     [Header("Option List")]
     public List<int> bonusOptionList;
 
-    // ¿ÀºêÁ§Æ® Ç®¸µ Àû¿ë »óÅÂ¶ó¸é ±»ÀÌ ¿ÀºêÁ§Æ® ÀÚÃ¼¸¦ °¡Áú ÇÊ¿ä°¡ ¾ø±äÇÔ.
+    // ì˜¤ë¸Œì íŠ¸ í’€ë§ ì ìš© ìƒíƒœë¼ë©´ êµ³ì´ ì˜¤ë¸Œì íŠ¸ ìì²´ë¥¼ ê°€ì§ˆ í•„ìš”ê°€ ì—†ê¸´í•¨.
     [Header("Skill Prefab")]
     public GameObject skillObject;
     public string objectName;

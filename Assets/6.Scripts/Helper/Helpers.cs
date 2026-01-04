@@ -203,8 +203,31 @@ public static class PositionHelpers
 
         return points;
     }
+
+    // 2. 방향 벡터를 각도로 변환 (XZ 평면 기준)
+    public static float VectorToAngle(Vector3 direction)
+    {
+        return Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg;
+    }
+
+    // 3. 각도를 방향 벡터로 변환
+    public static Vector3 AngleToVector(float angle)
+    {
+        float radian = angle * Mathf.Deg2Rad;
+        return new Vector3(Mathf.Cos(radian), 0, Mathf.Sin(radian));
+    }
+
+    public static Quaternion GetDirection(Transform owner, int index, int totalCount,
+        float angleBetween, float offset)
+    {
+        float currentAngle = offset;
+        if (totalCount > 1)
+            currentAngle += (index - (totalCount - 1) * 0.5f) * angleBetween;
+        return owner.rotation * Quaternion.Euler(0, currentAngle, 0);
+    }
 }
 
+//////////////////////////////////////////////////////////////////////////////
 public static class AnimatorLayerCache
 {
     private static readonly Dictionary<Animator, Dictionary<string, int>> cache
@@ -230,3 +253,29 @@ public static class AnimatorLayerCache
         return index;
     }
 }
+
+//////////////////////////////////////////////////////////////////////////////
+
+public static class Extend_Skill
+{
+    public static T GetValue<T>(this Dictionary<string, object> dict, string key
+        , T defaultValue = default)
+    {
+        if(dict != null && dict.TryGetValue(key, out var value) && value is T castedValue )
+        {
+            return castedValue;
+        }
+
+        return defaultValue;
+    }
+
+    public static void SetValue(this Dictionary<string, object> dict, string key, 
+        object value)
+    {
+        if (dict == null) return;
+
+        dict[key] = value;
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////
