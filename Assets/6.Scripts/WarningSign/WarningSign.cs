@@ -1,7 +1,17 @@
 using System;
 using UnityEngine;
 
-public class WarningSign : MonoBehaviour
+public interface IWarningData
+{
+    float Radius { get; }
+    Vector2 RectSize { get; }
+    Vector2 MaxRectSize { get; }
+
+    float FanAngle { get; }
+    float FanRadius { get; }
+}
+
+public abstract class WarningSign : MonoBehaviour
 {
     [SerializeField] protected Transform mainPlane;
     [SerializeField] protected Transform subPlane;
@@ -17,7 +27,7 @@ public class WarningSign : MonoBehaviour
     protected virtual void OnEnable()
     {
         startTime = Time.time;
-        currentScale = 0.0f; 
+        currentScale = 0.0f;
         subPlane.localScale = Vector3.zero;
         mainPlane.localScale = Vector3.one * maxScale;
     }
@@ -46,6 +56,11 @@ public class WarningSign : MonoBehaviour
     public void SetData(float scale, float duration = 1.0f)
     {
         maxScale = scale;
+        this.duration = duration;
+    }
+
+    public virtual void Setup(IWarningData data, float duration) 
+    {
         this.duration = duration;
     }
 }

@@ -42,6 +42,20 @@ public class WarningSign_Rect : WarningSign
             gameObject.SetActive(false);
     }
 
+    public override void Setup(IWarningData data, float duration)
+    {
+        base.Setup(data, duration);
+
+        maxRectScale = data.MaxRectSize;
+        currentRectScale = data.RectSize;
+
+        subPlane.localScale = new Vector3(currentRectScale.x, 1f, currentRectScale.y);
+        mainPlane.localScale = new Vector3(maxRectScale.x, 1f, maxRectScale.y);
+
+        SetMainPlanePosition();
+        SetSubPosBottom();
+    }
+
     public void SetRectData(float maxWidth, float maxHeight, 
         float width = 0.0f, float height = 0.0f, float duration = 1.0f)
     {
