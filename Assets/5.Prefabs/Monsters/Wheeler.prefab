@@ -183,9 +183,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6746276920753908412}
   - component: {fileID: 1890258274882156024}
-  - component: {fileID: 8147495067969455372}
   - component: {fileID: 1239581195011125100}
   - component: {fileID: 159238280600315504}
+  - component: {fileID: 1098723213137776559}
   - component: {fileID: 6010760231534463131}
   - component: {fileID: 2441158066591678201}
   - component: {fileID: 6935533249999259378}
@@ -246,29 +246,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!136 &8147495067969455372
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2648386498377329606}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!114 &1239581195011125100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -360,6 +337,27 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
+--- !u!65 &1098723213137776559
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2648386498377329606}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2, y: 1, z: 3}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!195 &6010760231534463131
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -397,6 +395,7 @@ MonoBehaviour:
   surfaceNames: []
   damageColor: {r: 0, g: 0, b: 0, a: 0}
   changeColorTime: 0.15
+  isBoss: 0
 --- !u!114 &6935533249999259378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -592,7 +591,16 @@ MonoBehaviour:
     - type: 3
       ctype: 4
       value: 1
-    skill: {fileID: 11400000, guid: f18986f394989954aba7f76f86268a6c, type: 2}
+    skill: {fileID: 11400000, guid: c59277076ca99464eb051c2681c4ff82, type: 2}
+  - slotName: slot2
+    conditions:
+    - type: 0
+      ctype: 4
+      value: 7
+    - type: 3
+      ctype: 4
+      value: 3
+    skill: {fileID: 11400000, guid: 7f3a86edc1afce34d890f7f459bbb08b, type: 2}
   defaultAttack:
     slotName: 
     conditions: []

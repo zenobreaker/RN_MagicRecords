@@ -165,7 +165,7 @@ GameObject:
   - component: {fileID: 7418277009466354878}
   - component: {fileID: 3282444826817650643}
   m_Layer: 0
-  m_Name: TrutleShell
+  m_Name: TurtleShell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -342,6 +342,7 @@ MonoBehaviour:
   surfaceNames: []
   damageColor: {r: 0, g: 0, b: 0, a: 0}
   changeColorTime: 0.15
+  isBoss: 0
 --- !u!114 &3576898495295860963
 MonoBehaviour:
   m_ObjectHideFlags: 0
