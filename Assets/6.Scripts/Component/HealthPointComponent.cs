@@ -20,10 +20,12 @@ public class HealthPointComponent : MonoBehaviour
     private Image hpGauge;
     private Image delayGauge;
     private Canvas uiEnemyCanvas;
+    private Character ownerChar;
 
     private float currentHideTime;
     private bool isShow;
     private bool isEnemy;
+    private bool isBoss; 
 
     public float SetMaxHP { set => maxHealthPoint = value; }
     public float GetMaxHP { get => maxHealthPoint; }
@@ -40,14 +42,16 @@ public class HealthPointComponent : MonoBehaviour
             handler = Resources.Load<SO_HUDHandler>(path);
         }
         Debug.Log($"[{gameObject.name}] maxHealthPoint (Awake) = {maxHealthPoint}");
+        ownerChar = GetComponent<Character>(); 
+        isShow = false;
+        
         InitCurrentHealth();
 
-        isShow = false;
-
-        if (GetComponent<Enemy>() != null)
+        if (ownerChar is Enemy enemyComp)
         {
             isEnemy = true;
-            var enemy = (Enemy)GetComponent<Enemy>();
+            isBoss = enemyComp.Boss;
+            if (enemyComp.Boss) return; 
             uiEnemyCanvas = UIHelpers.CreateBillboardCanvas(uiEnemyName, transform, Camera.main);
             uiEnemyCanvas.gameObject.SetActive(false);
 
@@ -96,8 +100,10 @@ public class HealthPointComponent : MonoBehaviour
     {
         currentHealthPoint = maxHealthPoint;
 
-        if(GetComponent<Player>() != null ) 
+        if (GetComponent<Player>() != null)
+        {
             handler?.OnInitValue_HP(currentHealthPoint);
+        }
     }
 
     public void SetHealthPoint(float value)
@@ -117,6 +123,11 @@ public class HealthPointComponent : MonoBehaviour
         if (isEnemy == false)
         {
             handler?.OnChangeValue_HP(currentHealthPoint, maxHealthPoint);
+        }
+
+        if(isEnemy && isBoss)
+        {
+            handler?.OnChangedValue_BossHP(ownerChar, currentHealthPoint, maxHealthPoint);
         }
 
         if (hpGauge != null)

@@ -116,9 +116,7 @@ public class DamageHandleComponent : MonoBehaviour
     {
         // 월드 좌표로 변환해서 보내야 적이 회전하는 경우에도 데미지 텍스트가 온전히 화면으로 보임 
         Vector3 pos = transform.position + Vector3.up * dmgFontOffsetY;
-        DamageText dt = ObjectPooler.SpawnFromPool<DamageText>("DamageText", pos);
-        dt?.DrawDamage(pos, value, damageEvent);
-
+        UIManager.Instance?.DrawDamageText(pos, value, damageEvent);
     }
 
     public void PlayDamageAnimation(HitData data)

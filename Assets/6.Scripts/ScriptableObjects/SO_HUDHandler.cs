@@ -11,6 +11,8 @@ public class SO_HUDHandler : ScriptableObject
     public event Action<float, float> OnChangeHP_TwoParam;
     public event Action<float> OnChangeMP;
     public event Action<float, float> OnChangeMP_TwoParam;
+    public event Action<Character, float, float> OnChangedBossHP_TowParam;
+
 
     public event Action<BaseEffect> OnEffect;
 
@@ -33,5 +35,6 @@ public class SO_HUDHandler : ScriptableObject
         OnEffect?.Invoke(effect);
     }
 
-
+    public void OnChangedValue_BossHP(Character boss, float value1, float value2)
+        => OnChangedBossHP_TowParam?.Invoke(boss, value1, value2);
 }

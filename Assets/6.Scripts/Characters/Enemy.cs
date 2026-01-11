@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Bson;
 using System.Collections;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Enemy
@@ -9,7 +8,6 @@ public class Enemy
     , ILaunchable
     , IActionable
 {
-
     [Header("Material Settings")]
     [SerializeField] private string[] surfaceNames;
     [SerializeField] private Color damageColor;
@@ -18,11 +16,16 @@ public class Enemy
     private Color[] originColors;
     private Material[] skinMaterials;
 
+    [SerializeField] private bool isBoss = false;
+    public bool Boss { get => isBoss; set { isBoss = value; } }
+
     private DamageHandleComponent damageHandle;
     private LaunchComponent launch;
     protected ActionComponent currentAction;
     protected SkillComponent skill;
     protected WeaponComponent weapon;
+
+    private MonsterGrade grade; 
 
     protected override void Awake()
     {
@@ -85,6 +88,7 @@ public class Enemy
             state.OnStateTypeChanged -= ChangeType; 
 
         BattleManager.Instance?.UnreistEnemy(this);
+        CancelInvoke();
         ObjectPooler.ReturnToPool(gameObject);
     }
 
@@ -212,6 +216,19 @@ public class Enemy
     }
 
 
+    public void SetGrade(MonsterGrade monsterGrade)
+    {
+        grade = monsterGrade;
+        if (grade == MonsterGrade.BOSS)
+            isBoss = true; 
+    }
+
+    public void SetGrade(MonsterData data)
+    {
+        if(data != null)
+            SetGrade(data.monsterGrade); 
+    }
+
     public void SetStatData(MonsterStatData statData)
     {
         if (statData == null || status == null) return;
@@ -219,7 +236,7 @@ public class Enemy
         status.SetStatusValue(StatusType.ATTACK, statData.attack);
         status.SetStatusValue(StatusType.DEFENSE, statData.defense);
         status.SetStatusValue(StatusType.MOVESPEED, statData.speed);
-
+        
         if(healthPoint != null)
             healthPoint.SetMaxHP = statData.hp;
     }
