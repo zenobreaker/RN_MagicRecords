@@ -16,7 +16,7 @@ public class DataBaseManager : MonoBehaviour
     private void Awake()
     {
         if (gameObject.TryComponentInChildren<StageDataBase>(out stageDataBase))
-            stageDataBase.InitializeStageData();
+            stageDataBase.Initialize();
 
         if (gameObject.TryComponentInChildren<MonsterDataBase>(out monsterDataBase))
             monsterDataBase.InitializeData();
@@ -51,6 +51,25 @@ public class DataBaseManager : MonoBehaviour
         if (stageDataBase == null) return null;
 
         return stageDataBase.GetStageInfo(stageID);
+    }
+
+    public int GetRandomBossStageID(int chapter)
+    {
+        if(stageDataBase == null) return -1;
+
+        return stageDataBase.GetRandomBossStageId(chapter);
+    }
+
+    public StageInfo GetBossStageInfo(int chapter, int stageID)
+    {
+        if (stageDataBase == null) return null;
+        
+        return stageDataBase.GetBossStageInfo(chapter, stageID);
+    }
+
+    public MonsterData GetMonsterData(int monsterID)
+    {
+        return monsterDataBase?.GetMonsterData(monsterID);
     }
 
     public MonsterGroupData GetMonsterGroupData(int groupID)

@@ -223,16 +223,27 @@ public class AppManager
         return databaseManager.GetStageInfo(stageID);
     }
 
-    public int GetRandomStageID()
+    public StageInfo GetBossStageInfo(int chapter, int stageID)
     {
-        if (databaseManager == null) return -1;
-        return databaseManager.GetRandomStageID(0);
+        if(databaseManager == null) return null;    
+        return databaseManager.GetBossStageInfo(chapter, stageID);
     }
 
     public StageInfo CreateRandomStageInfo()
     {
-        var stageId = databaseManager.GetRandomStageID(0);
+        var stageId = databaseManager.GetRandomStageID(chapter);
         return GetStageInfo(stageId);
+    }
+
+    public StageInfo CreateRandomBossStageInfo()
+    {
+        var stageId = databaseManager.GetRandomBossStageID(chapter);
+        return GetBossStageInfo(chapter, stageId);
+    }
+
+    public MonsterData GetMonsterData(int monsterID)
+    {
+        return databaseManager?.GetMonsterData(monsterID); 
     }
 
     public MonsterGroupData GetGroupData(int groupID)

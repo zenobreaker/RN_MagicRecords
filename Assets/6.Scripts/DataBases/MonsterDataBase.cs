@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -110,7 +111,7 @@ public class MonsterDataBase : MonoBehaviour
 
     [Header("몬스터 Data Json")]
     [SerializeField] private TextAsset monsterJson;
-    [SerializeField] private List<MonsterData> monsterDatas = new();
+    [SerializeField] private Dictionary<int, MonsterData> monsterDatas = new();
 
     [Header("몬스터 Group Data Json")]
     [SerializeField] private TextAsset monsterGroupJson;
@@ -154,7 +155,7 @@ public class MonsterDataBase : MonoBehaviour
 
                 monster =>
                 {
-                    monsterDatas.Add(monster);
+                    monsterDatas.Add(monster.monsterID, monster);
                 }
             );
     }
@@ -228,4 +229,8 @@ public class MonsterDataBase : MonoBehaviour
             ? new MonsterStatData(monsterStatData) : null;
     }
 
+    public MonsterData GetMonsterData(int monsterID)
+    {
+        return (monsterDatas.TryGetValue(monsterID, out var monsterData)) ? monsterData: null;
+    }
 }

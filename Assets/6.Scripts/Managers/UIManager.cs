@@ -37,13 +37,14 @@ public class UIManager : Singleton<UIManager>
     public UiBase soundUI;
 
     public event Action OnJoinedLobby;
+    public event Action OnJoinedStage; 
     public event Action OnReturnedStageSelectStage;
 
     private Dictionary<UIType, UiBase> uiTable = new Dictionary<UIType, UiBase>();
     private Stack<UiBase> openedUIs = new Stack<UiBase>();
-
     private Stack<UiBase> openPopUps = new();
-    private GameLocate currLocate; 
+    private GameLocate currLocate;
+    private GameObject currentUIGroup; 
 
     public bool IsLTitle() => currLocate == GameLocate.TITLE;
     public bool IsLobby() => currLocate == GameLocate.LOBBY;
@@ -71,7 +72,7 @@ public class UIManager : Singleton<UIManager>
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         openedUIs.Clear();
-        if (scene.name == "Stage")
+        if (scene.name == "Stage" || scene.name == "UnitTest")
         {
             currLocate = GameLocate.IN_GAME;
             SetStageUserInterface();
@@ -132,8 +133,9 @@ public class UIManager : Singleton<UIManager>
         else
             currentObject = mobileUIGroup;
 
+        currentUIGroup = currentObject;
         if (currentObject == null) return;
-
+        
         var go = Instantiate<GameObject>(currentObject);
         go?.SetActive(true);
     }
@@ -251,5 +253,16 @@ public class UIManager : Singleton<UIManager>
                 Destroy(top.gameObject);
             }
         }
+    }
+
+    public void DrawDamageText(Vector3 pos, float value, DamageEvent damageEvent)
+    {
+        if(currentUIGroup == null) return;
+
+        Transform dtParent = currentUIGroup.transform.FindChildByName("DmgTxtParent");
+        if(dtParent == null) return;
+
+        DamageText dt = ObjectPooler.SpawnFromPool<DamageText>("DamageText", dtParent);
+        dt?.DrawDamage(pos, value, damageEvent);
     }
 }

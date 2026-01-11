@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -20,13 +20,21 @@ public class StageInfoJsonAllData
 }
 
 
-public class StageDataBase : MonoBehaviour
+public class StageDataBase : DataBase
 {
     [Header("Stage Data Json")]
     [SerializeField] private TextAsset stageJson;
-    [SerializeField] private Dictionary<int, StageInfo> stageInfoTable = new();
+    // 스테이지 정보 테이블 - key : id,  value : stage info 
+    private Dictionary<int, StageInfo> stageInfoTable = new();
+    // 스테이지 챕터별 테이블 - key : chapter,  value : 해당 챕터에 등장하는 stage id  
+    private Dictionary<int, List<int>> stageChapterTable = new();
+    // 보스 스테이지 테이블  - key : boss chatper, value : 해당 챕터에 등장하는 boss stage list 
+    private Dictionary<int, List<int>> bossChapterTable = new();
 
-    [SerializeField] private Dictionary<int, List<int>> stageChapterTable = new(); 
+    public override void Initialize()
+    {
+        InitializeStageData();
+    }
 
     public void InitializeStageData()
     {
@@ -46,7 +54,8 @@ public class StageDataBase : MonoBehaviour
                       id = json.id,
                       type = (StageType)json.stageType,
                       groupIds = JsonLoader.ParseIntList(json.groupIds),
-                      clearRewardId =  json.clearRewardId,
+                      clearRewardId = json.clearRewardId,
+                      chapter = json.chapter,
                       wave = json.wave
                   };
                   return stage;
@@ -56,6 +65,17 @@ public class StageDataBase : MonoBehaviour
               {
                   // Stage Info 
                   stageInfoTable.TryAdd(stage.id, stage);
+
+                  if (stage.type == StageType.Boss_Combat)
+                  {
+                      if (bossChapterTable.TryGetValue(stage.chapter, out List<int> bossIds))
+                          bossIds.Add(stage.id);
+                      else
+                      {
+                          bossChapterTable.Add(stage.chapter, new List<int>());
+                          bossChapterTable[stage.chapter].Add(stage.id);
+                      }
+                  }
 
                   // Stage Chapter
                   if (stageChapterTable.TryGetValue(stage.chapter, out List<int> ids))
@@ -72,7 +92,8 @@ public class StageDataBase : MonoBehaviour
         // Complete Message 
         Debug.Log("===================================================");
         Debug.Log($"Complete Message => stageInfoTable : {stageInfoTable.Count}, " +
-            $"stageChapterTable : {stageChapterTable.Count} ");
+            $"stageChapterTable : {stageChapterTable.Count}, " +
+            $"bossChapterTable : {bossChapterTable.Count}");
     }
 
     public List<int> GetIdsByChapter(int chapter)
@@ -102,5 +123,29 @@ public class StageDataBase : MonoBehaviour
             return new StageInfo(stageInfo);
         else
             return null;
+    }
+
+    public StageInfo GetBossStageInfo(int chapter, int stageID)
+    {
+        if (bossChapterTable.TryGetValue(chapter, out List<int> ids))
+        {
+            foreach (var id in ids)
+            {
+                if (id == stageID)
+                    return GetStageInfo(stageID);
+            }
+        }
+        return null;
+    }
+
+    public int GetRandomBossStageId(int chapter)
+    {
+        if (bossChapterTable.TryGetValue(chapter, out List<int> ids))
+        {
+            if (ids.Count == 0) return -1;
+            int randID = Random.Range(0, ids.Count);
+            return ids[randID];
+        }
+        return -1;
     }
 }

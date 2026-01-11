@@ -55,11 +55,20 @@ public class StageReplacer
         {
             if (level == 0)
                 continue;
+            bool isLastLevel = (level == levels.Count - 1);
 
-            // TODO : 보스 스테이지는 따로 처리해야 할 수 있다.
             foreach(var node in levels[level])
             {
-                var stageInfo = AppManager.Instance.CreateRandomStageInfo();
+                StageInfo stageInfo;
+
+                if (isLastLevel)
+                {
+                    // 보스용 스테이지 풀에서 랜덤추출 
+                    stageInfo = AppManager.Instance.CreateRandomBossStageInfo();
+                }
+                else
+                    stageInfo = AppManager.Instance.CreateRandomStageInfo();
+
                 nodeToStage[node.id] = stageInfo;
                 nodeIdToStageId[node.id] = stageInfo.id;
             }

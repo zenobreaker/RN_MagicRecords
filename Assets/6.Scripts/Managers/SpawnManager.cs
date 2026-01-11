@@ -126,6 +126,9 @@ public class SpawnManager : MonoBehaviour
                     // Set Stat 
                     enemy.SetStatData(statData);
 
+                    // Set Grade 
+                    enemy.SetGrade(AppManager.Instance?.GetMonsterData(id));
+
                     // Dead Event
                     enemy.OnDead += OnEnemyDead;
 
