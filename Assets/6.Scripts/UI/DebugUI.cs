@@ -81,6 +81,24 @@ public class DebugUI : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        if (debug_Character != null)
+        {
+            ComboComponent combo = debug_Character.GetComponent<ComboComponent>();
+            Debug.Assert(combo != null);
+            Debug.Assert(combo.ComboInputHanlder != null);
+            combo.ComboInputHanlder.OnInputResetTime -= Draw_InputResetTime;
+            combo.ComboInputHanlder.OnComboIndex -= Draw_ComboText;
+            combo.ComboInputHanlder.OnInputCommandType -= Draw_InputText;
+            combo.ComboInputHanlder.OnInputEnabled -= Draw_InputEnabled;
+            combo.ComboInputHanlder.OnInputEnableTime -= Draw_InputEnableTime;
+            combo.ComboInputHanlder.OnInputBuffered -= Draw_InputBuffered;
+            combo.ComboInputHanlder.OnInputBufferTime -= Draw_InputBufferTime;
+            combo.ComboInputHanlder.OnInputReset -= Draw_InputReset;
+        }
+    }
+
 
     private void LateUpdate()
     {
