@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7184774083390554323}
   - component: {fileID: 7053035957550731466}
   - component: {fileID: 3337285038975108788}
+  - component: {fileID: 3806654061284044991}
   m_Layer: 0
   m_Name: AppManager_Instance
   m_TagString: Untagged
@@ -114,12 +115,33 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 36a0b4b219f6f1c49a8816f1a7f7d89f, type: 2}
     - {fileID: 11400000, guid: 08dcee51faf7fc74ba4c41eed3a16656, type: 2}
     - {fileID: 11400000, guid: f6d2bc57817418f43a226318634dc72e, type: 2}
+    - {fileID: 11400000, guid: f428bb04f80b18549add6df814c5e8e0, type: 2}
+    - {fileID: 11400000, guid: 7d617631a73d4764995e8b83e6a6a808, type: 2}
   commonSkillTree:
     id: 0
     allSkills: []
   onwerSkillTreeList:
   - id: 1
     allSkills: []
+--- !u!114 &3806654061284044991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6372159647807091890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88ded0f1c6415c74fb0a0d8d30032e7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  records:
+  - {fileID: 11400000, guid: b43e4c1e976b6c740a8271de1f08cdc9, type: 2}
+  - {fileID: 11400000, guid: ddff9e450425b094499c33018d2dda20, type: 2}
+  - {fileID: 11400000, guid: d146ca87e838027499ca3d9e611d0f84, type: 2}
+  - {fileID: 11400000, guid: 0e12af7152d5cad4d8bb2926a13fdace, type: 2}
+  - {fileID: 11400000, guid: 7dab8136fe695b74ea03ef1612c95450, type: 2}
+  - {fileID: 11400000, guid: 089300cd86edda249975e249e34fa50e, type: 2}
 --- !u!1 &9019792263151780328
 GameObject:
   m_ObjectHideFlags: 0
@@ -135,6 +157,7 @@ GameObject:
   - component: {fileID: 2754422831267449024}
   - component: {fileID: 6804515957158635903}
   - component: {fileID: 2580549109944447637}
+  - component: {fileID: 8657921885828630550}
   m_Layer: 0
   m_Name: DataBases
   m_TagString: Untagged
@@ -171,7 +194,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   monsterStatJson: {fileID: 4900000, guid: 1f291d41f0053a84b9b5ef33b0affeab, type: 3}
   monsterJson: {fileID: 4900000, guid: 91df284a9acbabb49a2f51874f990cc3, type: 3}
-  monsterDatas: []
   monsterGroupJson: {fileID: 4900000, guid: ae5fb2f48556c3b4ab7b8c90cdfefeb5, type: 3}
 --- !u!114 &8417928899325399326
 MonoBehaviour:
@@ -185,6 +207,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7c303027e635f3478171fccdb5b710c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  jsonAsset: {fileID: 0}
   stageJson: {fileID: 4900000, guid: 9a4e7b29df426a74ea8d6c61f3a3ede8, type: 3}
 --- !u!114 &2185832905276735178
 MonoBehaviour:
@@ -243,3 +266,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jsonAsset: {fileID: 4900000, guid: 47cf826583f0a144b872990edf10e4da, type: 3}
   enhanceStatJson: {fileID: 4900000, guid: c2d0ae628c9642f4d961a16e8a3a83f0, type: 3}
+--- !u!114 &8657921885828630550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9019792263151780328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09fe09fe2216b55429b1371aee9938da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jsonAsset: {fileID: 4900000, guid: 0a32fec89b88a694ea6f33cf1eaa3a55, type: 3}
+  recordDataJsonAsset: {fileID: 4900000, guid: 0ddfaef4a7c0c2142a4269e0f29ae4ad, type: 3}

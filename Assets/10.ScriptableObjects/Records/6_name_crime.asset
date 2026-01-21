@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
+  m_Name: 6_name_crime
+  m_EditorClassIdentifier: 
+  id: 6
+  recordName: name_crime
+  description: "\uB9C8\uBC95\uD0C4 \uC7A5\uC804 - \uC624\uD1A0 \uB9AC\uB85C\uB4DC
+    : \uC77C\uC815 \uC2DC\uAC04 \uB9C8\uB2E4 \uB9C8\uBC95\uD0C4\uD658 \uC7A5\uC804"
+  icon: {fileID: 0}
+  targetFilter: 1
+  type: 2
+  rarity: 0
+  status: 0
+  valueType: 0
+  effectValue: 10
+  triggerEvent: 
+  className: Record_AutoReload

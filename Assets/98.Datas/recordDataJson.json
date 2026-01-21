@@ -1,0 +1,64 @@
+﻿{
+  "recordDataJson": [
+    {
+      "id": "1",
+      "recordType": "1",
+      "stat": "ATK",
+      "targetFilter": "ALL",
+      "calcType": "1",
+      "value": "0.05",
+      "triggerEvent": "Passive",
+      "className": null
+    },
+    {
+      "id": "2",
+      "recordType": "1",
+      "stat": "DEF",
+      "targetFilter": "ALL",
+      "calcType": "1",
+      "value": "0.05",
+      "triggerEvent": "Passive",
+      "className": null
+    },
+    {
+      "id": "3",
+      "recordType": "1",
+      "stat": "SPD",
+      "targetFilter": "ALL",
+      "calcType": "1",
+      "value": "0.01",
+      "triggerEvent": "Passive",
+      "className": null
+    },
+    {
+      "id": "4",
+      "recordType": "1",
+      "stat": "ASPD",
+      "targetFilter": "ALL",
+      "calcType": "1",
+      "value": "0.05",
+      "triggerEvent": "Passive",
+      "className": null
+    },
+    {
+      "id": "5",
+      "recordType": "1",
+      "stat": "CRIT_RATIO",
+      "targetFilter": "ALL",
+      "calcType": "0",
+      "value": "5",
+      "triggerEvent": "Passive",
+      "className": null
+    },
+    {
+      "id": "6",
+      "recordType": "2",
+      "stat": "NONE",
+      "targetFilter": "Shooter",
+      "calcType": "0",
+      "value": "10",
+      "triggerEvent": "Repeat",
+      "className": "Record_AutoReload"
+    }
+  ]
+}
