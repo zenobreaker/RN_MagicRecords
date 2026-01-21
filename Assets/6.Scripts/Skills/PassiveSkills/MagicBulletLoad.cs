@@ -53,6 +53,22 @@ public class Passive_MagicBulletLoad
         NotifyBulletChanged();
         return true; 
     }
+
+    public void Reload(int amount)
+    {
+        for(int i = 0; i < amount; i++)
+        {
+            if (bullets.Count >= maxBullets) break;
+
+            ++currentBullet;
+            bool isCrit = currentBullet == 4 || currentBullet == 7;
+            currentBullet = currentBullet % maxBullets;
+            bullets.Enqueue(new BulletData(isCrit));
+        }
+
+        NotifyBulletChanged();
+    }
+
     public int CurrentBulletCount => bullets.Count;
 
     public override void OnAcquire(GameObject owner)
@@ -83,6 +99,12 @@ public class Passive_MagicBulletLoad
     {
         bullets.Clear();
         NotifyBulletChanged();
+     
+        Weapon weapon = weaponComponent?.GetCurrentWeapon();
+        if (weapon != null)
+        {
+            weapon.OnLastAttackExecuted -= ExecuteReload;
+        }
     }
 
     public override void OnChangedLevel(int newLevel)
@@ -150,4 +172,6 @@ public class Passive_MagicBulletLoad
     {
         skillComponent?.NotifyMagicBulletChanged(this.bullets);
     }
+
+  
 }
