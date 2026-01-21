@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class EffectGroupUI : MonoBehaviour
@@ -14,14 +15,13 @@ public class EffectGroupUI : MonoBehaviour
 
     private void Awake()
     {
-
         if (handler == null)
             handler = Resources.Load<SO_HUDHandler>(path);
 
         SetHUDHandler(handler);
     }
 
-    protected void SetHUDHandler(SO_HUDHandler handler)
+    protected virtual void SetHUDHandler(SO_HUDHandler handler)
     {
         if (handler == null) return;
 
@@ -30,8 +30,13 @@ public class EffectGroupUI : MonoBehaviour
 
     protected virtual void OnEffect(BaseEffect baseEffect)
     {
+        UpdateEffectIcon(baseEffect);
+    }
+
+    protected void UpdateEffectIcon(BaseEffect baseEffect)
+    {
         if (baseEffect.FxIcon == null)
-            return; 
+            return;
 
         if (icons.ContainsKey(baseEffect.ID) == false)
         {
@@ -53,7 +58,7 @@ public class EffectGroupUI : MonoBehaviour
         }
     }
 
-    public void RemoveIcon(BaseEffect baseEffect)
+    protected void RemoveIcon(BaseEffect baseEffect)
     {
         if(!icons.ContainsKey(baseEffect.ID)) return;
 

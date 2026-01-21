@@ -12,6 +12,9 @@ public abstract class PassiveSkill
 {
     protected GameObject owner;
 
+    public PassiveSkill() : base()
+    {
+    }
     public PassiveSkill(int skillID, string skillName, string skillDesc, Sprite skillIcon)
         : base(skillID, skillName, skillDesc, skillIcon )
     {
@@ -47,6 +50,9 @@ public interface IMagicBulletProvider
 {
     // 탄환 소모를 시도하고, 성공 시 크리티컬 여부 반환
     bool TryConsumBullet(out bool isCrit);
+
+    // 외부에서 충전해주기 위함
+    void Reload(int amount);
 
     // 현재 탄환 개수 (UI 표시용 등..) 
     int CurrentBulletCount { get; }

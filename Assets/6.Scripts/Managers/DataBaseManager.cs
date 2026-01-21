@@ -11,7 +11,7 @@ public class DataBaseManager : MonoBehaviour
     private RewardDataBase rewardDataBase;
     private ShopDataBase shopDataBase;
     private EnhanceDataBase enhanceDataBase;
-
+    private RecordDataBase recordDataBase;
 
     private void Awake()
     {
@@ -31,6 +31,11 @@ public class DataBaseManager : MonoBehaviour
         {
             shopDataBase.Initialize();
             shopDataBase.Initialize_Lookup(itemDataBase);
+        }
+
+        if (gameObject.TryComponentInChildren<RecordDataBase>(out recordDataBase))
+        {
+            recordDataBase.Initialize();
         }
 
         if (gameObject.TryComponentInChildren<EnhanceDataBase>(out enhanceDataBase))
@@ -163,5 +168,15 @@ public class DataBaseManager : MonoBehaviour
     public List<EnhanceStatData> GetEnhanceStatDatas(int rank)
     {
         return enhanceDataBase?.GetEnhanceStatDatas(rank);
+    }
+
+    public RecordData GetRecordData(int recordID)
+    {
+        return recordDataBase?.GetRecordData(recordID);    
+    }
+
+    public List<RecordData> GetAllRecordData()
+    {
+        return recordDataBase?.GetAllRecordData(); 
     }
 }
