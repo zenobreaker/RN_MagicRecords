@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -12,6 +11,8 @@ public class PassiveSystem
 
     public void Add(int jobID, PassiveSkill skill)
     {
+        if (skill == null) return; 
+
         if (passiveSkillList.ContainsKey(jobID))
         {
             passiveSkillList[jobID].Unique(skill);
@@ -34,7 +35,8 @@ public class PassiveSystem
         passiveSkillList.Clear();
 
         //TODO : 직업이 추가되면 리스트 추가
-        passiveSkillList[1] = new();
+        passiveSkillList[Constants.GLOBAL_SHOTER_JOB_ID] = new();
+        passiveSkillList[Constants.GLOBAL_RECORD_JOB_ID] = new(); // 레코드 ID 
     }
 
 
@@ -146,6 +148,20 @@ public class PassiveSystem
         foreach (PassiveSkill skill in updatablePassive)
         {
             skill.OnUpdate(dt);
+        }
+    }
+
+    public void RefreshParyEffects(List<GameObject> partyMembers)
+    {
+        foreach (var member in partyMembers)
+        {
+            StatusComponent status = member.GetComponent<StatusComponent>();
+            if (status == null) continue;
+
+            foreach (var record in passiveSkillList[Constants.GLOBAL_RECORD_JOB_ID])
+            {
+                record.OnApplyStaticEffect(status);
+            }
         }
     }
 }

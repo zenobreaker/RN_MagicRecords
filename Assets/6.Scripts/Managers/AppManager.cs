@@ -5,16 +5,20 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class AppManager
     : Singleton<AppManager>
 {
     public Action OnAwaked;
+    public event Action<List<RecordData>> OnShowRecordUI;
+    public event Action<RecordData> OnRecordSelectedComplete;
 
     private DataBaseManager databaseManager;
     private SkillManager skillManager;
     private SkillTreeManager skillTree;
     private RewardManager rewardManager;
+    private RecordManager recordManager;  
 
     // 생성한 맵 정보를 가지고 있는 배치자 
     private MapReplacer mapReplacer;
@@ -32,7 +36,7 @@ public class AppManager
 
 
     // 패시브 스킬을 처리하는 시스템 클래스 
-    private PassiveSystem passiveSystem = new(); 
+    private PassiveSystem passiveSystem = new();
 
     protected override void Awake()
     {
@@ -42,6 +46,7 @@ public class AppManager
         skillManager = GetComponent<SkillManager>();
         skillTree = SkillTreeManager.Instance;
         rewardManager = GetComponent<RewardManager>();
+        recordManager= GetComponent<RecordManager>();
 
         mapReplacer = new MapReplacer();
         stageReplacer = new StageReplacer();
@@ -56,7 +61,7 @@ public class AppManager
         }
 
 
-        passiveSystem?.OnInit(); 
+        passiveSystem?.OnInit();
 
         OnAwaked?.Invoke();
         OnAwaked = null;
@@ -75,6 +80,7 @@ public class AppManager
             skillManager = Instance.skillManager;
             skillTree = Instance.skillTree;
             databaseManager = Instance.databaseManager;
+            recordManager = Instance.recordManager;
 
             bCheat = Instance.bCheat;
 
@@ -225,7 +231,7 @@ public class AppManager
 
     public StageInfo GetBossStageInfo(int chapter, int stageID)
     {
-        if(databaseManager == null) return null;    
+        if (databaseManager == null) return null;
         return databaseManager.GetBossStageInfo(chapter, stageID);
     }
 
@@ -243,7 +249,7 @@ public class AppManager
 
     public MonsterData GetMonsterData(int monsterID)
     {
-        return databaseManager?.GetMonsterData(monsterID); 
+        return databaseManager?.GetMonsterData(monsterID);
     }
 
     public MonsterGroupData GetGroupData(int groupID)
@@ -376,14 +382,14 @@ public class AppManager
     public void AddPassiveSkill(int jobID, PassiveSkill passiveSkill)
     {
         if (passiveSystem == null) return;
-        passiveSystem.Add(jobID, passiveSkill); 
+        passiveSystem.Add(jobID, passiveSkill);
     }
 
     public void RemovePassiveSkill(int jobID, PassiveSkill passiveSkill)
     {
         if (passiveSystem == null) return;
         passiveSystem.Remove(jobID, passiveSkill);
-    }   
+    }
 
     public void OnApplyStaticEffct(int jobID, GameObject ownerObj)
     {
@@ -468,6 +474,16 @@ public class AppManager
         return databaseManager?.GetEnhanceStatDatas((int)rank);
     }
 
+    public RecordData GetRecordData(int recordID)
+    {
+        return databaseManager?.GetRecordData(recordID);
+    }
+
+    public List<RecordData> GetAllRecordData()
+    { 
+        return databaseManager?.GetAllRecordData(); 
+    }
+
     #endregion
 
     #region Reward
@@ -491,6 +507,30 @@ public class AppManager
     {
         rewardManager?.GiveChapterReward(clearedChapter);
     }
+    #endregion
+
+    #region Record Data 
+    public void TriggerRecordUI(List<RecordData> records)
+    {
+        Time.timeScale = 0;
+        OnShowRecordUI?.Invoke(records);
+    }
+
+    public void OnRecordSelected(RecordData selected)
+    {
+        // 선택된 레코드를 패시브 시스템에 등록
+        var rp = recordManager?.GetRecordPassive(selected.id);
+        AddPassiveSkill(9999, rp);
+        
+        OnRecordSelectedComplete?.Invoke(selected); 
+        Time.timeScale = 1f; 
+    }
+
+    public void GenerateRecord(int recordCount)
+    {
+        recordManager?.GenerateOption(recordCount);
+    }
+
     #endregion
 
     #region Save

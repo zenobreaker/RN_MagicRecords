@@ -128,12 +128,15 @@ public class Status
 
 public class StatusComponent : MonoBehaviour
 {
-    [SerializeField]
-    private Status status;
+    [SerializeField] private Status status;
+    
+    
+    public Action<float> OnSetHealth;
+    public TargetFilterType FilterType { get; private set; }
 
     private HealthPointComponent healthPointComponent;
+    private TargetFilterType filterType;
 
-    public Action<float> OnSetHealth;
 
     private void Awake()
     {
@@ -141,6 +144,11 @@ public class StatusComponent : MonoBehaviour
             status = new Status();
 
         healthPointComponent = GetComponent<HealthPointComponent>();
+
+        //TODO : 임시적으로 특정 필터로 적용 
+        filterType = TargetFilterType.Shooter;
+
+        FilterType = filterType; 
     }
 
     private void Start()
@@ -215,5 +223,17 @@ public class StatusComponent : MonoBehaviour
         SetStatusValue(StatusType.CRIT_DMG, data.GetStatusValue(StatusType.CRIT_DMG));
         SetStatusValue(StatusType.HEALTH, data.GetStatusValue(StatusType.HEALTH));
         OnSetHealth?.Invoke(data.GetStatusValue(StatusType.HEALTH));
+    }
+
+
+    //-------------------------------------------------------------------------
+    // 직업군 관련
+    public bool IsSameJob(TargetFilterType? filter = null)
+    {
+        if(filter == null) return false;
+
+        if(filter == TargetFilterType.ALL) return true;
+        
+        return filterType == (TargetFilterType)filter;
     }
 }

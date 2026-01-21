@@ -31,9 +31,9 @@ public enum ItemCategory
 public enum CurrencyType
 {
     NONE,
-    GOLD, 
+    GOLD,
     DIAMOND,
-    EXPOLORE_CREDIT, 
+    EXPOLORE_CREDIT,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -41,8 +41,8 @@ public enum CurrencyType
 public enum RewardType
 {
     NONE,
-    CURRENCY = 1, 
-    EXP, 
+    CURRENCY = 1,
+    EXP,
     INGREDIENT,
     EQUIPMENT,
 
@@ -54,14 +54,14 @@ public enum RewardType
 //  Status
 public enum StatusType
 {
-    NONE = 0, 
-    ATTACK = 1, 
-    DEFENSE = 2, 
-    ATTACKSPEED = 3, 
+    NONE = 0,
+    ATTACK = 1,
+    DEFENSE = 2,
+    ATTACKSPEED = 3,
     MOVESPEED = 4,
-    CRIT_RATIO = 5,  
-    CRIT_DMG = 6, 
-    
+    CRIT_RATIO = 5,
+    CRIT_DMG = 6,
+
     HEALTH,
     HEALTH_REGEN,
 
@@ -72,14 +72,14 @@ public enum StatusType
 //  Damage 
 public enum DamageType
 {
-    NORMAL = 0, 
+    NORMAL = 0,
     STRONG,
-    KNOCKBACK, 
-    DOWN, 
-    AIRBORNE, 
-    DOT_BLEED, 
-    DOT_BURN, 
-    DOT_POISON, 
+    KNOCKBACK,
+    DOWN,
+    AIRBORNE,
+    DOT_BLEED,
+    DOT_BURN,
+    DOT_POISON,
 
     DOT_HATERD,
 
@@ -126,7 +126,7 @@ public enum ModifierValueType
 //  Effect Type 
 public enum EffectType
 {
-    NONE, 
+    NONE,
     BUFF,
     DEBUFF,
     NEUTRAL,
@@ -153,7 +153,7 @@ public enum ItemRank
     NONE,
     COMMON,
     MAGIC,
-    RARE, 
+    RARE,
     UNIQUE,
     LEGENDARY,
 
@@ -164,8 +164,8 @@ public enum ItemRank
 //  Passive Trigger 
 public enum TriggerEvent
 {
-    ON_GAME_START = 0,  
-    ON_ENTER_ROOM =1,
+    ON_GAME_START = 0,
+    ON_ENTER_ROOM = 1,
     On_ATTACK,
     ON_DEAMGED,
     ON_ENENMY_KILLED
@@ -181,4 +181,27 @@ public enum SkillTriggerTime
     OnEndDoAction,
     OnSoundEvent,
     OnCameraShake,
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//  Record Type 
+public enum RecordType
+{
+    NONE,
+    STAT,
+    AGUMENT, // 증강
+    MODIFY,  // 변형
+    UNIQUE, // 독자적
+}
+
+// 필터링을 위한 Enum (시트의 TargetFilter와 맞춤)
+public enum TargetFilterType
+{
+    ALL,
+    Shooter, 
+}
+
+public enum RecordRarity
+{
+
 }

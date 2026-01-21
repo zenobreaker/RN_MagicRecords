@@ -21,7 +21,7 @@ public class EffectComponent : MonoBehaviour
 
         statusEffect = owner.GetComponent<StatusEffectComponent>();
 
-        if(owner is Player)
+        if (owner is Player || (owner is Enemy enemy && enemy.Boss))
             handler = Resources.Load<SO_HUDHandler>("SO_HUDHandler");
     }
 
@@ -75,7 +75,10 @@ public class EffectComponent : MonoBehaviour
             newEffect.OnApply(target, appliedBy);
         }
 
-        handler?.OnApplyEffect(newEffect);
+        if (owner is Player)
+            handler?.OnApplyEffect(newEffect);
+        else if (owner is Enemy enemy && enemy.Boss)
+            handler?.OnChangedBossEffect(owner, newEffect);
     }
 
     public void RemoveEffect(BaseEffect effect)
@@ -96,7 +99,7 @@ public class EffectComponent : MonoBehaviour
             baseEffect.OnRemove();
 
             // 상태 플래그 동기화 처리
-            if(baseEffect is CrowdControlEffect cc)
+            if (baseEffect is CrowdControlEffect cc)
             {
                 SynchronizeStatusFlag(cc.EffectFlag, isAdding: false);
             }
@@ -111,7 +114,7 @@ public class EffectComponent : MonoBehaviour
         if (activeEffects.TryGetValue(effectName, out BaseEffect value))
             return value;
         else
-            return null; 
+            return null;
     }
 
     private void SynchronizeStatusFlag(StatusEffectType type, bool isAdding)

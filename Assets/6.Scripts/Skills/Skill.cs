@@ -13,6 +13,11 @@ public abstract class Skill
 
     public Sprite Icon { get; private set; }
 
+    public Skill()
+    {
+
+    }
+
     public Skill (int id, string name, string desc, Sprite icon)
     {
         skillID = id;
