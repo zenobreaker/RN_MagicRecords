@@ -59,6 +59,16 @@
       "value": "10",
       "triggerEvent": "Repeat",
       "className": "Record_AutoReload"
+    },
+    {
+      "id": "7",
+      "recordType": "2",
+      "stat": "NONE",
+      "targetFilter": "ALL",
+      "calcType": "1",
+      "value": "0.5",
+      "triggerEvent": "HPChanged",
+      "className": "Record_FinalEffort"
     }
   ]
 }

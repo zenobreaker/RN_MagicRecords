@@ -9,7 +9,7 @@ public class SO_Action : ScriptableObject
     public List<ActionData> actionDatas = new List<ActionData>();
 
     public bool GetCanMove(int index)
-    {
+    { 
         return actionDatas.Count > index && actionDatas[index].bCanMove;
     }
 }

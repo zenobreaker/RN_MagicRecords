@@ -46,11 +46,8 @@ public class ReinforcedMagicBullet
         if (phaseSkill == null || phaseSkill.actionData == null)
             return;
 
-        int layer = AnimatorLayerCache.GetLayerIndex(animator, phaseSkill?.actionData?.LayerName);
-
-        animator.SetFloat(phaseSkill.actionData.ActionSpeedHash, phaseSkill.actionData.ActionSpeed);
-        animator.Play(phaseSkill?.actionData?.StateName, layer, 0);
-        weaponController?.DoAction(phaseSkill?.actionData?.WeaponActionName, layer);
+        ownerCharacter?.PlayAction(phaseSkill?.actionData);
+        weaponController?.DoAction(phaseSkill?.actionData);
     }
 
 

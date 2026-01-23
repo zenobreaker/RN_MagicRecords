@@ -42,7 +42,8 @@ public class Cheater
         // 필드에 모든 적 체력 0 
         if(Input.GetKeyDown(KeyCode.Keypad8))
         {
-            Test_AllEnemyDead(); 
+            //Test_AllEnemyDead();
+            Test_PlayerDamaged();
         }
 
         // 플레이이어 무적
@@ -119,7 +120,7 @@ public class Cheater
         Debug.Log("Debuff On");
 
         //BurnEffect burn = new BurnEffect("burn", "", 10.0f, 3.0f, 10.0f);
-        //EffectManager.Instance.RegisterEffect(player, null, burn);
+        EffectManager.Instance.RegisterEffect_Burn(player, null, 10.0f, 10.0f);
         EffectManager.Instance.RegisterEffect_Burn(enemy, null, 10.0f, 10.0f);
         EffectManager.Instance.RegisterEffect_Bleed(enemy, null, 10.0f, 3.0f);
         EffectManager.Instance.RegisterEffect_Poison(enemy, null, 10.0f, 3.0f);
@@ -146,6 +147,13 @@ public class Cheater
         
     }
 
+    private void Test_PlayerDamaged()
+    {
+        if (player == null) return;
+
+        DamageEvent dev = new DamageEvent(70);
+        player.OnDamage(null, null, Vector3.zero, dev);
+    }
     private void Test_AllEnemyDead()
     {
         Debug.Log("All Enemy Kill!");

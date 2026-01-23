@@ -11,7 +11,8 @@ public static class RecordFactory
         return data.className switch
         {
             "Record_AutoReload" => new Record_AutoReload(data),
+            "Record_FinalEffort" => new Record_FinalEffort(data),
             _ => new RecordPassive(data)
-        }; 
+        };
     }
 }
