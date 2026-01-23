@@ -10,25 +10,21 @@ public class Module_PlayAnimation : SkillModule
     [Header("Skill Action")]
     public ActionData actionData;
 
-    private Animator animator;
+    private Character ownerCharacter;
     private WeaponController weaponController;
 
     public override void Init(GameObject owner)
     {
         actionData.Initialize();
-        animator = owner.GetComponent<Animator>();
+        ownerCharacter = owner.GetComponent<Character>();
+
         weaponController = owner.GetComponent<IWeaponUser>()?.GetWeaponController();
     }
 
     public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (animator == null) return;
-
-        int layer = AnimatorLayerCache.GetLayerIndex(animator, actionData?.LayerName);
-
-        animator.SetFloat(actionData.ActionSpeedHash, actionData.ActionSpeed);
-        animator.Play(actionData?.StateName, layer, 0);
-        weaponController?.DoAction(actionData?.WeaponActionName, layer);
+        ownerCharacter?.PlayAction(actionData);
+        weaponController?.DoAction(actionData);
     }
 }
 

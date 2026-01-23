@@ -45,8 +45,6 @@ public class Weapon_Combo : Weapon
     {
         base.DoAction(index);
 
-        Debug.Assert(animator != null, "Animation is null");
-
         this.index = index % so_Combo.MaxComboIndex();
 
         if(this.index == so_Combo.MaxComboIndex() -1)
@@ -60,8 +58,7 @@ public class Weapon_Combo : Weapon
   
         // Play Animation 
         {
-            animator.SetFloat(actionDatas[this.index].ActionSpeedHash, actionDatas[this.index].ActionSpeed);
-            animator.CrossFade(actionDatas[this.index].StateName, 0.1f);
+            ownerCharacter?.PlayAction(actionDatas[this.index]);
             weaponController?.DoAction(actionDatas[this.index].WeaponActionName);
 
 #if UNITY_EDITOR

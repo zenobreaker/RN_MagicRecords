@@ -40,7 +40,7 @@ public abstract class ActiveSkill
     protected float currentCooldown;
 
     protected GameObject ownerObject;
-    protected Animator animator;
+    protected Character ownerCharacter;
     protected WeaponController weaponController;
     protected SkillComponent skillComponent;
     protected StateComponent state; 
@@ -72,7 +72,7 @@ public abstract class ActiveSkill
     public virtual void SetOwner(GameObject gameObject)
     {
         ownerObject = gameObject;
-        animator = gameObject.GetComponent<Animator>();
+        ownerCharacter = gameObject.GetComponent<Character>();
         state = gameObject.GetComponent<StateComponent>(); 
 
         if (ownerObject.TryGetComponent(out IWeaponUser user))

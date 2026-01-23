@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 
@@ -126,6 +126,25 @@ public class Character
         animator.speed = originAnimSpeed;
     }
     #endregion
+
+
+    public virtual void PlayerAction(ActionData actionData)
+    {
+        int layer = AnimatorLayerCache.GetLayerIndex(animator, actionData?.LayerName);
+
+        PlayAction(actionData, layer);
+    }
+
+    public virtual void PlayAction(ActionData actionData, int layer = 0)
+    {
+        if (actionData == null || animator == null) return;
+
+        // 애니메이션 재생 속도 설정 
+        float finalSpeed = actionData.ActionSpeed * (status != null ? status.GetStatusValue(StatusType.ATTACKSPEED) : 1.0f);
+
+        animator.SetFloat(actionData.ActionSpeedHash, finalSpeed);
+        animator.CrossFade(actionData?.StateName, 0.1f, layer);
+    }
 
     protected virtual void Dead() { }
 

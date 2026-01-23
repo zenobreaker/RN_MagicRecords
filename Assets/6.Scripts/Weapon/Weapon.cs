@@ -239,7 +239,7 @@ public class Weapon : MonoBehaviour
     private bool bDirtyMove = false;
 
     protected GameObject rootObject;    // 무기를 가진 대상
-    protected Animator animator;
+    protected Character ownerCharacter;
     protected WeaponController weaponController;
 
     protected StateComponent state;
@@ -257,7 +257,7 @@ public class Weapon : MonoBehaviour
 
         state = rootObject.GetComponent<StateComponent>();
         status = rootObject.GetComponent<StatusComponent>();
-        animator = rootObject.GetComponent<Animator>();
+        ownerCharacter = rootObject.GetComponent<Character>();
         moving = rootObject.GetComponent<PlayerMovingComponent>();
         dash = rootObject.GetComponent<DashComponent>();
 

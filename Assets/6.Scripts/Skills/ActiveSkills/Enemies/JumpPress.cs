@@ -70,9 +70,8 @@ public class JumpPress
 
         if (string.IsNullOrEmpty(phaseSkill?.actionData?.StateName) == false)
         {
-            animator.SetFloat(phaseSkill.actionData.ActionSpeedHash, phaseSkill.actionData.ActionSpeed);
-            animator.Play(phaseSkill?.actionData?.StateName, 0, 0);
-            weaponController?.DoAction(phaseSkill?.actionData?.StateName);
+            ownerCharacter?.PlayAction(phaseSkill?.actionData);
+            weaponController?.DoAction(phaseSkill?.actionData);
         }
     }
 

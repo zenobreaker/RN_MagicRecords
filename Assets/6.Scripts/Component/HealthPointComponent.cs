@@ -33,7 +33,7 @@ public class HealthPointComponent : MonoBehaviour
     public float GetCurrentHpRatio { get => currentHealthPoint / maxHealthPoint; }
 
     public bool Dead { get => currentHealthPoint <= 0.0f; }
-
+    public event Action<float, float> OnChangedHP_TwoParam; 
 
     private void Start()
     {
@@ -138,5 +138,7 @@ public class HealthPointComponent : MonoBehaviour
             hpGauge.fillAmount = currentHealthPoint / maxHealthPoint;
             uiEnemyCanvas?.gameObject.SetActive(true);
         }
+
+        OnChangedHP_TwoParam?.Invoke(currentHealthPoint, maxHealthPoint);
     }
 }
