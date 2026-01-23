@@ -874,7 +874,7 @@ MonoBehaviour:
         baseValue: 0
     - type: 3
       value:
-        baseValue: 0.2
+        baseValue: 1
     - type: 4
       value:
         baseValue: 1.5
@@ -898,9 +898,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageMotions:
   - damageType: 0
-    AO_DamageMotion: {fileID: 22100000, guid: b163837c09901e44fbcddae10f6f9321, type: 2}
+    damageMotion: {fileID: 0}
   dmgFontOffsetY: 1.5
   DamageAnimStateName: Hit
+  baseController: {fileID: 0}
 --- !u!114 &4893751878293026052
 MonoBehaviour:
   m_ObjectHideFlags: 0

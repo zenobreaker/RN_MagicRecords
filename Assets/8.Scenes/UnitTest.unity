@@ -1621,22 +1621,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -54.2
       objectReference: {fileID: 0}
-    - target: {fileID: 8090013001880484130, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8090013001880484130, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8090013001880484130, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 1216.8572
-      objectReference: {fileID: 0}
-    - target: {fileID: 8090013001880484130, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -426.01544
-      objectReference: {fileID: 0}
     - target: {fileID: 8312557885548543211, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
@@ -4481,6 +4465,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3806654061284044991, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: records.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3806654061284044991, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: 'records.Array.data[6]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 518be190c326e1a47a20ecae152b2269, type: 2}
     - target: {fileID: 6372159647807091890, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: m_Name
       value: AppManager_Instance
@@ -5408,19 +5400,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &100053229128478019
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8483897820822612606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50017fa3a3611b44398a234567980e14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  modelRoot: {fileID: 8483897820822612606}
 --- !u!1 &221892561267237777
 GameObject:
   m_ObjectHideFlags: 0
@@ -8415,7 +8394,7 @@ MonoBehaviour:
         baseValue: 0
     - type: 3
       value:
-        baseValue: 0.2
+        baseValue: 1
     - type: 4
       value:
         baseValue: 1.5
@@ -8553,7 +8532,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 302340465374025940}
-  - component: {fileID: 100053229128478019}
   - component: {fileID: 888379329}
   m_Layer: 3
   m_Name: Model
