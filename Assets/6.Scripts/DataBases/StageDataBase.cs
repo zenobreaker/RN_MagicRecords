@@ -75,6 +75,7 @@ public class StageDataBase : DataBase
                           bossChapterTable.Add(stage.chapter, new List<int>());
                           bossChapterTable[stage.chapter].Add(stage.id);
                       }
+                      return;
                   }
 
                   // Stage Chapter
