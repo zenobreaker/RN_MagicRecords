@@ -18,21 +18,10 @@ public class AppManager
     private SkillManager skillManager;
     private SkillTreeManager skillTree;
     private RewardManager rewardManager;
-    private RecordManager recordManager;  
-
-    // 생성한 맵 정보를 가지고 있는 배치자 
-    private MapReplacer mapReplacer;
-    public MapReplacer MapReplacer { get { return mapReplacer; } }
-    private StageReplacer stageReplacer;
-    private bool bCreate = false;
+    private RecordManager recordManager;
+    private ExploreManager exploreManager;
 
     [SerializeField] private bool bCheat;
-
-    private int chapter = 1;
-    private int maxChapter = 1;
-    private int mapNodeID = 0;  // 현재 고른 mapNode 
-    private int prevNodeId = -1; // 이전에 고른 id 
-    private bool bAllCleared = false;
 
 
     // 패시브 스킬을 처리하는 시스템 클래스 
@@ -47,9 +36,7 @@ public class AppManager
         skillTree = SkillTreeManager.Instance;
         rewardManager = GetComponent<RewardManager>();
         recordManager= GetComponent<RecordManager>();
-
-        mapReplacer = new MapReplacer();
-        stageReplacer = new StageReplacer();
+        exploreManager = GetComponent<ExploreManager>();
 
         if (IsInitialized == false)
         {
@@ -60,8 +47,34 @@ public class AppManager
             SceneManager.sceneUnloaded += OnUnloadScene;
         }
 
+        if (exploreManager != null)
+        {
+            ManagerWaiter.WaitForManager<UIManager>((uiManager) =>
+            {
+                uiManager.OnReturnedStageSelectStage += exploreManager.OnReturnedStageSelectScene;
+            });
+        }
 
         passiveSystem?.OnInit();
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnBeginStage += OnBeginStage;
+            GameManager.Instance.OnUpdated += OnUpdate;
+
+            GameManager.Instance.OnFinishStage += FinishStageProcess;
+            GameManager.Instance.OnSuccedStage += SuccessStageProcess;
+            GameManager.Instance.OnFailedStage += FailedStageProcess;
+        }
+
+        if (exploreManager != null)
+        {
+            exploreManager.OnExploreStart += HandleExploreStart;
+            exploreManager.OnReturnToMain += HandleReturnToMain;
+            exploreManager.OnStageSelected += HandleStageSelect;
+            exploreManager.OnStageClear += HandleStageClear;
+            exploreManager.OnExploreFinish += HanldeExploreFinish;
+        }
 
         OnAwaked?.Invoke();
         OnAwaked = null;
@@ -81,69 +94,60 @@ public class AppManager
             skillTree = Instance.skillTree;
             databaseManager = Instance.databaseManager;
             recordManager = Instance.recordManager;
-
+            exploreManager = Instance.exploreManager;
+                    
             bCheat = Instance.bCheat;
-
-            mapReplacer = Instance.mapReplacer;
-            stageReplacer = Instance.stageReplacer;
-
-            // 전역 상태 가져오기
-            bCreate = Instance.bCreate;
-
-            chapter = Instance.chapter;
-            maxChapter = Instance.maxChapter;
-            prevNodeId = Instance.prevNodeId;
-            mapNodeID = Instance.mapNodeID;
-
-            bAllCleared = Instance.bAllCleared;
 
             OnAwaked = Instance.OnAwaked;
         }
-    }
-
-    protected override void Start()
-    {
-        if (GameManager.Instance == null) return;
-
-        GameManager.Instance.OnBeginStage += OnBeginStage;
-        GameManager.Instance.OnUpdated += OnUpdate;
-
-        GameManager.Instance.OnFinishStage += FinishStageProcess;
-        GameManager.Instance.OnSuccedStage += SuccessStageProcess;
-        GameManager.Instance.OnFailedStage += FailedStageProcess;
-
-        base.Start();
     }
 
     private void OnDisable()
     {
         if (GameManager.Instance == null) return;
 
+        GameManager.Instance.OnBeginStage -= OnBeginStage;
+        GameManager.Instance.OnUpdated -= OnUpdate;
+
         GameManager.Instance.OnFinishStage -= FinishStageProcess;
         GameManager.Instance.OnSuccedStage -= SuccessStageProcess;
         GameManager.Instance.OnFailedStage -= FailedStageProcess;
+
+        if(exploreManager != null)
+        {
+            exploreManager.OnExploreStart -= HandleExploreStart;
+            exploreManager.OnReturnToMain -= HandleReturnToMain;
+            exploreManager.OnStageSelected -= HandleStageSelect;
+            exploreManager.OnStageClear -= HandleStageClear;
+            exploreManager.OnExploreFinish -= HanldeExploreFinish;
+        }
     }
 
     #region Explore 
+
+    public ExploreManager GetExploreManager() { return exploreManager; }    
+
+    public MapReplacer GetMapReplacer()
+    {
+        return exploreManager == null ? null : exploreManager.MapReplacer;
+    }
     private void ResetData()
     {
-        chapter = 1;
-        bCreate = false;
-        mapNodeID = 0;
-        prevNodeId = -1;
+        exploreManager?.ResetData();
     }
 
     private void AcceptReward()
     {
         // 전부 클리어 했다면 최종 보상을 지급한다. 
-        if (bAllCleared)
+        if (exploreManager.AllStageClear)
         {
+            int chapter = exploreManager.Chapter;
             SetChapterClearReward(chapter);
             return;
         }
 
         // 특정 스테이지 클리어 보상
-        var stage = stageReplacer.GetReplacedStageInfo(mapNodeID);
+        StageInfo stage = exploreManager?.GetReplacedStageInfo();
         if (stage == null)
         {
             Debug.LogWarning($"보상을 받을 스테이지 ID를 찾을 수 없습니다.");
@@ -153,76 +157,23 @@ public class AppManager
         rewardManager?.GiveStageReward(stage);
     }
 
-    public void InitLevel()
-    {
-        if (bCreate == false)
-        {
-            bCreate = true;
-            ReplaceLevel();
-        }
 
-#if UNITY_EDITOR
-        // 자신이 갈 수 있는 노드 출력하기 
-        var enableIds = mapReplacer.GetCanEnableNodeIds(mapNodeID);
-        foreach (int id in enableIds)
-        {
-            Debug.Log($"Can going id : {id}");
-        }
-#endif
+    public void EnterTheExplorationProcess()
+    {
+        // 탐사 데이터 초기화 
+        exploreManager?.StartExplore();
+
+        SceneManager.LoadScene(1);
     }
 
     public bool EnableNode(MapNode node)
     {
-        if (node == null) return false;
+        if (node == null || exploreManager == null) return false;
 
-        return EnableNode(node.id);
+        return exploreManager.EnableNode(node.id, bCheat);
     }
 
-    public bool EnableNode(int id)
-    {
-        bool bEnable = false;
-
-        // 이전에 실패한 노드가 있으면 그 노드만 강제 선택
-        if (prevNodeId == mapNodeID)
-            bEnable = (id == prevNodeId);
-        // 정상적인 흐름 목록에 있는지 판별 
-        else
-            bEnable = mapReplacer.CanEnableNode(mapNodeID, id);
-
-        //Cheat 
-        if (bCheat)
-            bEnable = true;
-
-        return bEnable;
-    }
-
-    // 맵들 배치 
-    private void ReplaceLevel()
-    {
-        MapData loadMap = SaveManager.LoadMap();
-        if (loadMap != null)
-        {
-            mapReplacer.RestoreMap(loadMap.nodes);
-            mapNodeID = loadMap.currentStageId;
-        }
-        else
-        {
-            mapReplacer.Replace();
-            mapReplacer.ConnectToNode();
-        }
-
-
-        StageNodeData loadStage = SaveManager.LoadStageNode();
-        if (loadStage != null)
-        {
-            stageReplacer.RestoreStages(loadStage);
-        }
-        else
-        {
-            stageReplacer.AssignStages(mapReplacer.GetLevels());
-        }
-    }
-    // 스테이지를 만들어 둔 것을 어디에 저장하고 있어야 할 듯 
+    
     public StageInfo GetStageInfo(int stageID)
     {
         if (databaseManager == null) return null;
@@ -237,12 +188,18 @@ public class AppManager
 
     public StageInfo CreateRandomStageInfo()
     {
+        if (exploreManager == null) return null; 
+
+        int chapter = exploreManager.Chapter;
         var stageId = databaseManager.GetRandomStageID(chapter);
         return GetStageInfo(stageId);
     }
 
     public StageInfo CreateRandomBossStageInfo()
     {
+        if (exploreManager == null) return null;
+
+        int chapter = exploreManager.Chapter;
         var stageId = databaseManager.GetRandomBossStageID(chapter);
         return GetBossStageInfo(chapter, stageId);
     }
@@ -266,26 +223,50 @@ public class AppManager
 
     public void EnterStageByNode(MapNode node)
     {
-        if (node != null)
+        if (node != null && exploreManager != null)
         {
             Debug.Log($"Current Select Node ID : {node.id}");
-            prevNodeId = mapNodeID;
-            mapNodeID = node.id;
+            exploreManager.EnterStageByNode(node);
         }
+
         var stage = GetStageInfoMatchedMapNode(node);
         GameManager.Instance.EnterStage(stage);
     }
 
+    private void HandleExploreStart()
+    {
+       
+    }
+
+    private void HandleReturnToMain()
+    {
+        // 탐사 씬 메인으로 오는 경우에도 호출 
+        GenerateRecord(3);
+    }
+
+    private void HandleStageSelect(int  stageID)
+    {
+
+    }
+
+    private void HandleStageClear()
+    {
+
+    }
+
+    private void HanldeExploreFinish()
+    {
+
+    }
+
     private void FinishStageProcess()
     {
-        // 보상 지급
-        AcceptReward();
+        AcceptReward(); 
 
         // 마지막 챕터까지 클리어 했다면 탐사 진입 전 로비로 이동시킨다. 
-        if (bAllCleared)
+        if (exploreManager.AllStageClear)
         {
             SceneManager.LoadScene(0);
-            bAllCleared = false;
             ResetData();
 
             return;
@@ -296,37 +277,24 @@ public class AppManager
 
     public void SuccessStageProcess()
     {
-        // 스테이지 클리어 했다면 해당 노드가 끝인지 확인
-        bool bIsFinal = mapReplacer.IsFinalNode(mapNodeID);
-
-        // 마지막이라면 챕터를 올린다. 
-        if (bIsFinal)
+        if (exploreManager != null)
         {
-            if (++chapter < maxChapter)
-                bCreate = false;
-            else
-                bAllCleared = true;
+            exploreManager.ClearStage(true);
         }
     }
 
     public void FailedStageProcess()
     {
         Debug.Log($"Stage Challege Filed!..");
-        mapNodeID = prevNodeId;
+        exploreManager.ClearStage(false);
     }
 
-    public void EnterTheExplorationProcess()
-    {
-        ResetData();
-
-        SceneManager.LoadScene(1);
-    }
 
     public StageInfo GetStageInfoMatchedMapNode(MapNode mapNode)
     {
-        if (mapNode == null || stageReplacer == null) return null;
+        if (mapNode == null || exploreManager == null) return null;
 
-        return stageReplacer.GetReplacedStageInfo(mapNode.id);
+        return exploreManager.GetReplacedStageInfo(mapNode.id);
     }
 
     #endregion
@@ -531,6 +499,16 @@ public class AppManager
         recordManager?.GenerateOption(recordCount);
     }
 
+    public void RerollAllRecords()
+    {
+        recordManager?.RerollAllCurrentRecords();  
+    }
+
+    // TODO : 레코드 매니저에게 매개변수 없이 전달하면 내부에서 알아서 처리하게
+    // 레코드 등장 개수가 특정 이벤트에 의해서 적어지거나 하는 가변적일 수 있음 
+    // 레코드 매니저, 리워드 매니저 등 팝업을 띄우는 대상은 UI매니저의 인큐 함수를 
+    // 초기에 등록시켜서 하면 좋을 듯
+
     #endregion
 
     #region Save
@@ -554,25 +532,7 @@ public class AppManager
 
     public void SaveExploreMap()
     {
-        // Save Map 
-        {
-            MapData mapData = new();
-            foreach (var level in mapReplacer.GetLevels())
-                foreach (var node in level)
-                    mapData.nodes.Add(node);
-
-            mapData.currentStageId = mapNodeID;
-            SaveManager.SaveMap(mapData);
-        }
-
-        // Save Stage
-        {
-            StageNodeData stageNodeData = new();
-            foreach (var pair in stageReplacer.GetNodeToStageId())
-                stageNodeData.stages.Add(new MapToStage { mapNodeId = pair.Key, stageId = pair.Value });
-
-            SaveManager.SaveStageNode(stageNodeData);
-        }
+        exploreManager?.SaveExploreMap();
     }
     #endregion
 }

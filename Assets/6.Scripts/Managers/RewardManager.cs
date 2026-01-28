@@ -129,9 +129,12 @@ public class RewardManager
     {
         if (UIManager.Instance == null) 
             return;
-        
-        UIManager.Instance.OpenRewardPopUp(rewards);
-        ReceiveRewards();
+
+        UIManager.Instance.EnqueuePopup(() =>
+        {
+            UIManager.Instance.OpenRewardPopUp(rewards);
+            ReceiveRewards();
+        });
 
         bIsRewardPending = false;
     }

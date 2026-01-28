@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class StageManager : MonoBehaviour
 {
-    public enum StageStage
+    public enum StageState
     {
         Begin_Stage,
         Create_Map,
@@ -15,7 +15,7 @@ public class StageManager : MonoBehaviour
         Process_Wave,
         Finish_Stage,
     };
-    public StageStage stageState;
+    public StageState stageState;
 
     private int currentStageChapter;
     public int CurStageChapter { get => currentStageChapter; }
@@ -32,7 +32,7 @@ public class StageManager : MonoBehaviour
     private bool bEnableSpawn = false;
     private bool bStageClearSuccess = false;
 
-
+    public event Action OnPreProcess; 
     public event Action OnProcessBattle;
     public event Action OnFinishStage;
     public event Action OnSucccedStage;
@@ -72,16 +72,16 @@ public class StageManager : MonoBehaviour
         ObjectPooler.OnPoolInitialized -= OnStartStage;
     }
 
-    public void SetBeginStage() => ChangedState(StageStage.Begin_Stage);
-    public void SetCreateMap() => ChangedState(StageStage.Create_Map);
-    public void SetSpawnPlayer() => ChangedState(StageStage.Spawn_Player);
-    public void SetSpwawnEnemy() => ChangedState(StageStage.Spawn_Enemy);
-    public void SetProcessBattle() => ChangedState(StageStage.Process_Battle);
-    public void SetProcessWave() => ChangedState(StageStage.Process_Wave);
-    public void SetFinishStage() => ChangedState(StageStage.Finish_Stage);
+    public void SetBeginStage() => ChangedState(StageState.Begin_Stage);
+    public void SetCreateMap() => ChangedState(StageState.Create_Map);
+    public void SetSpawnPlayer() => ChangedState(StageState.Spawn_Player);
+    public void SetSpwawnEnemy() => ChangedState(StageState.Spawn_Enemy);
+    public void SetProcessBattle() => ChangedState(StageState.Process_Battle);
+    public void SetProcessWave() => ChangedState(StageState.Process_Wave);
+    public void SetFinishStage() => ChangedState(StageState.Finish_Stage);
 
 
-    private void ChangedState(StageStage state)
+    private void ChangedState(StageState state)
     {
         stageState = state;
         HandleState();
@@ -91,13 +91,13 @@ public class StageManager : MonoBehaviour
     {
         switch (stageState)
         {
-            case StageStage.Begin_Stage: BeginStage(); break;
-            case StageStage.Create_Map: CreateMap(); break;
-            case StageStage.Spawn_Player: SpawnPlayer(); break;
-            case StageStage.Spawn_Enemy: SpawnEnemy(); break;
-            case StageStage.Process_Battle: ProcessBattle(); break;
-            case StageStage.Process_Wave: ProcessWave(); break;
-            case StageStage.Finish_Stage: FinishStage(); break;
+            case StageState.Begin_Stage: BeginStage(); break;
+            case StageState.Create_Map: CreateMap(); break;
+            case StageState.Spawn_Player: SpawnPlayer(); break;
+            case StageState.Spawn_Enemy: SpawnEnemy(); break;
+            case StageState.Process_Battle: ProcessBattle(); break;
+            case StageState.Process_Wave: ProcessWave(); break;
+            case StageState.Finish_Stage: FinishStage(); break;
 
         }
     }

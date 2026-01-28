@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -36,13 +36,15 @@ public class UIManager : Singleton<UIManager>
 
     public UiBase soundUI;
 
-    public event Action OnJoinedLobby;
-    public event Action OnJoinedStage; 
-    public event Action OnReturnedStageSelectStage;
+    public event Action OnJoinedLobby;                  // 로비 
+    public event Action OnJoinedStage;                  // 스테이지 입장
+    public event Action OnReturnedStageSelectStage;     // 스테이지 선택 씬 
 
     private Dictionary<UIType, UiBase> uiTable = new Dictionary<UIType, UiBase>();
     private Stack<UiBase> openedUIs = new Stack<UiBase>();
     private Stack<UiBase> openPopUps = new();
+    private Queue<Action> popupQueue = new Queue<Action>();
+    private bool isPopupOpening = false; 
     private GameLocate currLocate;
     private GameObject currentUIGroup; 
 
@@ -226,6 +228,28 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
+    public void EnqueuePopup(Action popupAction)
+    {
+        popupQueue.Enqueue(popupAction);
+
+        if (!isPopupOpening)
+            ShowNextPopup();
+    }
+
+    private void ShowNextPopup()
+    {
+        if(popupQueue.Count > 0)
+        {
+            isPopupOpening = true; 
+            var nextPopup = popupQueue.Dequeue();
+            nextPopup?.Invoke();    
+        }
+        else
+        {
+            isPopupOpening = false; 
+        }
+    }
+
     private GameObject OpenPopUp(GameObject popUpObj)
     {
         if (popUpObj == null) return null;
@@ -250,7 +274,8 @@ public class UIManager : Singleton<UIManager>
             var top = openPopUps.Pop();
             if (top != null)
             {
-                Destroy(top.gameObject);
+                //Destroy(top.gameObject);
+                Invoke(nameof(ShowNextPopup), 0.1f); 
             }
         }
     }

@@ -34,11 +34,21 @@ public class GameManager
         Awake_BattleManager();
     }
 
+    private void OnDisable()
+    {
+        if (stageManager == null) return;
+        stageManager.OnProcessBattle -= ProcessBattle;
+        stageManager.OnFinishStage -= FinishStage;
+        stageManager.OnSucccedStage -= SuccedStage;
+        stageManager.OnFailedStage -= FailedStage;
+    }
+
     #region AWAKE_FUNC
     private void Awake_StageManager()
     {
         stageManager = GetComponent<StageManager>();
         if (stageManager == null) return;
+
         stageManager.OnProcessBattle += ProcessBattle;
         stageManager.OnFinishStage += FinishStage;
         stageManager.OnSucccedStage += SuccedStage;
@@ -54,10 +64,6 @@ public class GameManager
     }
     #endregion
 
-    protected override void Start()
-    {
-        // SetBeginStage(); 
-    }
 
     protected void Update()
     {
@@ -106,7 +112,7 @@ public class GameManager
                 break;
         }
     }
-
+    
     private void ProcessBattle() => SetProcessBattle();
     public void FinishStage() => SetFinishStage();
 

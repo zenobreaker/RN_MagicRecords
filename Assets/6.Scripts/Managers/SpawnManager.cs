@@ -79,9 +79,16 @@ public class SpawnManager : MonoBehaviour
 
                 // Setting Passive Status 
                 AppManager.Instance?.OnApplyStaticEffct(jobID, playerGO);
+                AppManager.Instance?.OnApplyStaticEffct(Constants.GLOBAL_RECORD_JOB_ID, playerGO); 
 
                 // Setting Equipment 
                 player.SetEquipments();
+                
+                // Recalculate Status 
+                if(player.TryGetComponent<StatusComponent>(out var status))
+                {
+                    status.RefreshAllStatus();
+                }
 
                 // Add to List
                 spawnedPlayers.Add(player);

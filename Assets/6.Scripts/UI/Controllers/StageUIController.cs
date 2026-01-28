@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -38,7 +39,15 @@ public class StageUIController
 
     protected void Start()
     {
+        // 데이터가 로드 안되어 있다면 강제로 Init 
+        var em = AppManager.Instance.GetExploreManager();
+        em?.EnsureInitialized();
+
         InitUIMapReplace();
+
+        // 배치가 끝났다면 탐사 상태로 변경 
+        if(em.CurrentState != ExploreState.ON_EXPLORE)
+            em?.ChangeState(ExploreState.ON_EXPLORE); 
     }
 
     protected void OnDisable()
@@ -54,12 +63,10 @@ public class StageUIController
     {
         if (uiMapReplacer == null) return;
 
-        AppManager.Instance.InitLevel();
-
         List<UIMapNode> uiMapNodes = new List<UIMapNode>();
         // Set Map Node 
         {
-            uiMapReplacer.ReplaceUINode(AppManager.Instance.MapReplacer);
+            uiMapReplacer.ReplaceUINode(AppManager.Instance.GetMapReplacer());
             uiMapReplacer.GetUIMapNodes(ref uiMapNodes);
         }
 

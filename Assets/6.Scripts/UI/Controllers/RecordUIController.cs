@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 public class RecordUIController : MonoBehaviour
@@ -8,36 +8,37 @@ public class RecordUIController : MonoBehaviour
 
     private List<RecordCard> cardPool = new();
 
-    private void Start()
+    private void Awake()
     {
+        if (AppManager.Instance != null)
+        {
+            AppManager.Instance.OnShowRecordUI += ShowUI;
+        }
 
-        ManagerWaiter.RegisterManagerEvent<AppManager>(this,
-            onRegister: manager =>
-            {
-                manager.OnShowRecordUI += ShowUI;
-            },
-            onUnregister: manager =>
-            {
-                manager.OnShowRecordUI -= ShowUI;
-            });
         visualRoot.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        if (AppManager.Instance != null)
+            AppManager.Instance.OnShowRecordUI -= ShowUI;
     }
 
     private void ShowUI(List<RecordData> options)
     {
         visualRoot.SetActive(true);
 
-        // 1. ¸ğµç Ä«µå¸¦ ÀÏ´Ü ºñÈ°¼ºÈ­ 
+        // 1. ëª¨ë“  ì¹´ë“œë¥¼ ì¼ë‹¨ ë¹„í™œì„±í™” 
         foreach (var card in cardPool)
             card.gameObject.SetActive(false);
 
-        //2. Àü´Ş¹ŞÀº µ¥ÀÌÅÍ ¼ö¸¸Å­ Ä«µå ¹èÄ¡ 
+        //2. ì „ë‹¬ë°›ì€ ë°ì´í„° ìˆ˜ë§Œí¼ ì¹´ë“œ ë°°ì¹˜ 
         for (int i = 0; i < options.Count; i++)
         {
             RecordCard card = GetOrCreateCard(i);
             card.gameObject.SetActive(true);
 
-            // µ¥ÀÌÅÍ ¼³Á¤ ¹× Å¬¸¯ ÀÌº¥Æ® ¿¬°á
+            // ë°ì´í„° ì„¤ì • ë° í´ë¦­ ì´ë²¤íŠ¸ ì—°ê²°
             RecordData data = options[i];
             card.Setup(data, () => OnCardClicked(data));
         }
@@ -46,7 +47,7 @@ public class RecordUIController : MonoBehaviour
 
     private RecordCard GetOrCreateCard(int index)
     {
-        // Ç®¿¡ ÀÖÀ¸¸é Àç»ç¿ë, ¾øÀ¸¸é »õ·Î »ı¼º 
+        // í’€ì— ìˆìœ¼ë©´ ì¬ì‚¬ìš©, ì—†ìœ¼ë©´ ìƒˆë¡œ ìƒì„± 
         if (index < cardPool.Count)
         {
             return cardPool[index];
@@ -63,5 +64,10 @@ public class RecordUIController : MonoBehaviour
     {
         visualRoot.SetActive(false);
         AppManager.Instance?.OnRecordSelected(selectedData);
+    }
+
+    public void Reroll()
+    {
+        AppManager.Instance?.RerollAllRecords();    
     }
 }
