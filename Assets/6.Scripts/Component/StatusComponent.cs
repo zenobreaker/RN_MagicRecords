@@ -225,6 +225,13 @@ public class StatusComponent : MonoBehaviour
         OnSetHealth?.Invoke(data.GetStatusValue(StatusType.HEALTH));
     }
 
+    public void RefreshAllStatus()
+    {
+        foreach( StatusType type in System.Enum.GetValues(typeof(StatusType)))
+        {
+            var val = GetStatusValue(type); 
+        }
+    }
 
     //-------------------------------------------------------------------------
     // 직업군 관련
