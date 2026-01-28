@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -110,7 +111,7 @@ public class RecordDataBase : DataBase
         return recordDatas.TryGetValue(recordID, out RecordData recordData) ? recordData : null;
     }
 
-    public List<RecordData> GetAllRecordData() => recordDataList;
+    public List<RecordData> GetAllRecordData() => recordDataList.ToList();
 
     private TargetFilterType GetTargetFilterType(string targetFilter)
     {
