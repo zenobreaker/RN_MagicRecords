@@ -1,17 +1,15 @@
 ﻿using NUnit.Framework.Constraints;
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static UnityEngine.UI.GridLayoutGroup;
 
 public class AppManager
     : Singleton<AppManager>
 {
     public Action OnAwaked;
     public event Action<List<RecordData>> OnShowRecordUI;
+    public event Action OnSelectedRecordCard;
     public event Action<RecordData> OnRecordSelectedComplete;
 
     private DataBaseManager databaseManager;
@@ -23,7 +21,7 @@ public class AppManager
 
     [SerializeField] private bool bCheat;
 
-
+    private bool isProcessingReward = false; // 중복 실행 방지 플래그
     // 패시브 스킬을 처리하는 시스템 클래스 
     private PassiveSystem passiveSystem = new();
 
@@ -31,11 +29,14 @@ public class AppManager
     {
         base.Awake();
 
+        if (Instance != this)
+            return;
+
         databaseManager = GetComponent<DataBaseManager>();
         skillManager = GetComponent<SkillManager>();
         skillTree = SkillTreeManager.Instance;
         rewardManager = GetComponent<RewardManager>();
-        recordManager= GetComponent<RecordManager>();
+        recordManager = GetComponent<RecordManager>();
         exploreManager = GetComponent<ExploreManager>();
 
         if (IsInitialized == false)
@@ -44,6 +45,7 @@ public class AppManager
             InventoryManager.Instance?.OnInit();
             PlayerManager.Instance?.OnInit();
             CurrencyManager.Instance?.OnInit((CurrencyInventory)InventoryManager.Instance.GetInvetory(ItemCategory.CURRENCY));
+            recordManager.OnInit();
             SceneManager.sceneUnloaded += OnUnloadScene;
         }
 
@@ -95,7 +97,7 @@ public class AppManager
             databaseManager = Instance.databaseManager;
             recordManager = Instance.recordManager;
             exploreManager = Instance.exploreManager;
-                    
+
             bCheat = Instance.bCheat;
 
             OnAwaked = Instance.OnAwaked;
@@ -104,6 +106,8 @@ public class AppManager
 
     private void OnDisable()
     {
+        if (Instance != null) return;
+
         if (GameManager.Instance == null) return;
 
         GameManager.Instance.OnBeginStage -= OnBeginStage;
@@ -113,7 +117,7 @@ public class AppManager
         GameManager.Instance.OnSuccedStage -= SuccessStageProcess;
         GameManager.Instance.OnFailedStage -= FailedStageProcess;
 
-        if(exploreManager != null)
+        if (exploreManager != null)
         {
             exploreManager.OnExploreStart -= HandleExploreStart;
             exploreManager.OnReturnToMain -= HandleReturnToMain;
@@ -125,7 +129,7 @@ public class AppManager
 
     #region Explore 
 
-    public ExploreManager GetExploreManager() { return exploreManager; }    
+    public ExploreManager GetExploreManager() { return exploreManager; }
 
     public MapReplacer GetMapReplacer()
     {
@@ -138,11 +142,15 @@ public class AppManager
 
     private void AcceptReward()
     {
+        if (isProcessingReward) return;
+        isProcessingReward = true;
+
         // 전부 클리어 했다면 최종 보상을 지급한다. 
         if (exploreManager.AllStageClear)
         {
             int chapter = exploreManager.Chapter;
             SetChapterClearReward(chapter);
+            isProcessingReward = false;
             return;
         }
 
@@ -151,10 +159,12 @@ public class AppManager
         if (stage == null)
         {
             Debug.LogWarning($"보상을 받을 스테이지 ID를 찾을 수 없습니다.");
+            isProcessingReward = false;
             return;
         }
 
         rewardManager?.GiveStageReward(stage);
+        isProcessingReward = false;
     }
 
 
@@ -173,7 +183,7 @@ public class AppManager
         return exploreManager.EnableNode(node.id, bCheat);
     }
 
-    
+
     public StageInfo GetStageInfo(int stageID)
     {
         if (databaseManager == null) return null;
@@ -188,7 +198,7 @@ public class AppManager
 
     public StageInfo CreateRandomStageInfo()
     {
-        if (exploreManager == null) return null; 
+        if (exploreManager == null) return null;
 
         int chapter = exploreManager.Chapter;
         var stageId = databaseManager.GetRandomStageID(chapter);
@@ -235,7 +245,7 @@ public class AppManager
 
     private void HandleExploreStart()
     {
-       
+
     }
 
     private void HandleReturnToMain()
@@ -244,7 +254,7 @@ public class AppManager
         GenerateRecord(3);
     }
 
-    private void HandleStageSelect(int  stageID)
+    private void HandleStageSelect(int stageID)
     {
 
     }
@@ -261,7 +271,7 @@ public class AppManager
 
     private void FinishStageProcess()
     {
-        AcceptReward(); 
+        AcceptReward();
 
         // 마지막 챕터까지 클리어 했다면 탐사 진입 전 로비로 이동시킨다. 
         if (exploreManager.AllStageClear)
@@ -448,9 +458,12 @@ public class AppManager
     }
 
     public List<RecordData> GetAllRecordData()
-    { 
-        return databaseManager?.GetAllRecordData(); 
+    {
+        return databaseManager?.GetAllRecordData();
     }
+
+    public RecordData GetEmptyRecord()
+    { return databaseManager?.GetEmptyRecord(); }
 
     #endregion
 
@@ -486,12 +499,29 @@ public class AppManager
 
     public void OnRecordSelected(RecordData selected)
     {
-        // 선택된 레코드를 패시브 시스템에 등록
-        var rp = recordManager?.GetRecordPassive(selected.id);
-        AddPassiveSkill(9999, rp);
+        // 선택된 레코드 알림 
+        recordManager?.SelectedRecord(selected);
+        OnSelectedRecordCard?.Invoke();
+    }
+
+    public bool OnCompleteSelctRecords()
+    {
+        List<RecordData> selectedRecords = recordManager?.SelectedRecords;
+        if (selectedRecords.Count <= 0)
+            return false;
         
-        OnRecordSelectedComplete?.Invoke(selected); 
-        Time.timeScale = 1f; 
+        foreach (RecordData data in selectedRecords)
+        {
+            // 선택된 레코드를 패시브 시스템에 등록
+            var rp = recordManager?.GetRecordPassive(data.id);
+            // 선택된 레코드를 소지품에 추가 
+            recordManager?.AddRecord(data);
+            AddPassiveSkill(9999, rp);
+            OnRecordSelectedComplete?.Invoke(data);
+        }
+
+        Time.timeScale = 1f;
+        return true;
     }
 
     public void GenerateRecord(int recordCount)
@@ -501,8 +531,20 @@ public class AppManager
 
     public void RerollAllRecords()
     {
-        recordManager?.RerollAllCurrentRecords();  
+        recordManager?.RerollAllCurrentRecords();
     }
+
+    public int GetRerollCount()
+    {
+        return recordManager.RerollCount;
+    }
+
+    public bool IsSelectRecordData(RecordData selectedData)
+    {
+        return recordManager == null ? false : recordManager.IsSelectedRecord(selectedData);
+    }
+
+    public RecordManager GetRecordManager() { return recordManager; }
 
     // TODO : 레코드 매니저에게 매개변수 없이 전달하면 내부에서 알아서 처리하게
     // 레코드 등장 개수가 특정 이벤트에 의해서 적어지거나 하는 가변적일 수 있음 
@@ -528,6 +570,8 @@ public class AppManager
         skillTree?.SaveIfDirty();
         InventoryManager.Instance?.SaveIfDirty();
         PlayerManager.Instance?.SaveIfDirty();
+        exploreManager?.SaveExploreMap();
+        recordManager?.SaveIfDirty();
     }
 
     public void SaveExploreMap()

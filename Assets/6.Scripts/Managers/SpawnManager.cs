@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 public class SpawnObject
@@ -138,6 +139,11 @@ public class SpawnManager : MonoBehaviour
 
                     // Dead Event
                     enemy.OnDead += OnEnemyDead;
+
+                    // Set Navigate 
+                    var agent = enemy.GetComponent<NavMeshAgent>();
+                    if (agent != null)
+                        agent.enabled = true;
 
                     // Return Object Pool
                     ObjectPooler.FinishSpawn(npc);

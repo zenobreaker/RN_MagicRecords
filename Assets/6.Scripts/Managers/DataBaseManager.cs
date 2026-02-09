@@ -179,4 +179,9 @@ public class DataBaseManager : MonoBehaviour
     {
         return recordDataBase?.GetAllRecordData(); 
     }
+
+    public RecordData GetEmptyRecord()
+    {
+        return recordDataBase?.GetEmptyRecord();
+    }
 }

@@ -22,7 +22,8 @@ public static class SaveDataEditor
         }
     }
 
-    [MenuItem(MenuPath + "--- Separator ---", false, 10)] private static void Separator() { }
+    [MenuItem(MenuPath + "--- Separator ---", false, 10)] 
+    private static void Separator() { }
 
     // 2. 맵 & 스테이지 데이터 삭제
     [MenuItem(MenuPath + "Delete Map & Stage Data", false, 11)]
@@ -55,6 +56,15 @@ public static class SaveDataEditor
     {
         DeleteFile("learnskill.json");
         Debug.Log("스킬 트리 데이터가 삭제되었습니다.");
+    }
+
+
+    // 6. 레코드 데이터 삭제 
+    [MenuItem(MenuPath + "Delete Record Data", false, 15)]
+    public static void DeleteRecord()
+    {
+        DeleteFile("record.json");
+        Debug.Log("레코드 데이터가 삭제되었습니다.");
     }
 
     [MenuItem(MenuPath + "--- Separator ---", false, 30)] private static void Separator2() { }

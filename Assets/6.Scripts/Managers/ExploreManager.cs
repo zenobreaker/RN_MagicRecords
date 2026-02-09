@@ -102,12 +102,12 @@ public class ExploreManager : MonoBehaviour
 
     public StageInfo GetReplacedStageInfo()
     {
-        return stageReplacer.GetReplacedStageInfo(MapNodeID);
+        return stageReplacer?.GetReplacedStageInfo(MapNodeID);
     }
 
     public List<int> GetCanEnableNodeIds()
     {
-        return mapReplacer.GetCanEnableNodeIds(MapNodeID);
+        return mapReplacer?.GetCanEnableNodeIds(MapNodeID);
     }
 
     public bool EnableNode(MapNode node, bool bCheat = false)
@@ -232,6 +232,7 @@ public class ExploreManager : MonoBehaviour
     public void SaveExploreMap()
     {
         // Save Map 
+        if(mapReplacer != null) 
         {
             MapData mapData = new();
             foreach (var level in mapReplacer.GetLevels())
@@ -243,6 +244,7 @@ public class ExploreManager : MonoBehaviour
         }
 
         // Save Stage
+        if(stageReplacer != null) 
         {
             StageNodeData stageNodeData = new();
             foreach (var pair in stageReplacer.GetNodeToStageId())

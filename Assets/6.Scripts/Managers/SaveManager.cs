@@ -83,6 +83,13 @@ public class CharacterSkillData
     public List<SkillSaveData> skillSaveDatas = new();
 }
 
+[System.Serializable]
+public class RecordSaveData
+{
+    public List<int> recordIDs = new();
+    public bool isReceived = false;
+}
+
 public static class SaveManager
 {
     private static string mapDataPath = Path.Combine(Application.persistentDataPath, "mapdata.json");
@@ -90,6 +97,8 @@ public static class SaveManager
     private static string charInfoDatPah = Path.Combine(Application.persistentDataPath, "charinfo.json");
     private static string inventoryPath = Path.Combine(Application.persistentDataPath, "invetory.json");
     private static string skillPath = Path.Combine(Application.persistentDataPath, "learnskill.json");
+    private static string recordPath = Path.Combine(Application.persistentDataPath, "record.json");
+
 
     #region MapData
     public static void SaveMap(MapData mapData)
@@ -203,6 +212,28 @@ public static class SaveManager
 
         string json = File.ReadAllText(@skillPath);
         CharacterSkillData data = JsonUtility.FromJson<CharacterSkillData>(json);
+        return data; 
+    }
+    #endregion
+
+    #region Record 
+    public static void SaveRecordData(RecordSaveData recordData)
+    {
+        string json = JsonUtility.ToJson(recordData, true);
+        File.WriteAllText(recordPath, json);
+        Debug.Log($"Record Data Svae at : {recordPath}");
+    }
+
+    public static RecordSaveData LoadRecordData()
+    {
+        if (!File.Exists(recordPath))
+        {
+            Debug.LogWarning($"No save Record data found.");
+            return null;
+        }
+
+        string json = File.ReadAllText(@recordPath);
+        RecordSaveData data = JsonUtility.FromJson<RecordSaveData>(json);
         return data; 
     }
     #endregion

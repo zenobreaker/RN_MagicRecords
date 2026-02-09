@@ -30,8 +30,10 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
         else if (instance != this)
         {
+            // 데이터 동기화가 필요한 것이 아니라면 파괴 후 아무 것도 안함
             SyncDataFromSingleton();
             Destroy(gameObject);
+            return; 
         }
     }
 

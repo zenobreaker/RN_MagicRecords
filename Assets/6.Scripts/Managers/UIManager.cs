@@ -14,6 +14,7 @@ public enum UIType
     SKILL,
     STAGE_INTO, 
     EXPLORE_MAIN,
+    RECORD_SELECT,
 }
 
 public enum GameLocate
@@ -274,7 +275,7 @@ public class UIManager : Singleton<UIManager>
             var top = openPopUps.Pop();
             if (top != null)
             {
-                //Destroy(top.gameObject);
+                Destroy(top.gameObject);
                 Invoke(nameof(ShowNextPopup), 0.1f); 
             }
         }
