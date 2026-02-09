@@ -17,11 +17,30 @@ public class RecordData
     public float effectValue;
 
     public string triggerEvent;
-    public string className; 
+    public string className;
+
+    public bool isLocked = false; 
 
     public bool IsTarget(int job)
     {
         return targetFilter == (TargetFilterType)job;
+    }
+
+    public RecordData GetData()
+    {
+        var temp = new RecordData();
+        temp.id = id;
+        temp.recordName = recordName;
+        temp.description = description;
+        temp.icon = icon;
+        temp.targetFilter = targetFilter;
+        temp.type = type;
+        temp.rarity = rarity;   
+        temp.status = status;
+        temp.valueType = valueType;
+        temp.effectValue = effectValue;
+        temp.triggerEvent = triggerEvent;
+        return temp;
     }
 }
 

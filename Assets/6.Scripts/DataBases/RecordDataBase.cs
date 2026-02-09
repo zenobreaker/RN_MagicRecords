@@ -45,6 +45,7 @@ public class RecordDataBase : DataBase
     [SerializeField] private TextAsset recordDataJsonAsset;
     [SerializeField] private Dictionary<int, RecordData> recordDatas = new();
     private List<RecordData> recordDataList;
+    private RecordData emptyRecordTemplate;
     public override void Initialize()
     {
         if (jsonAsset == null) return;
@@ -104,11 +105,32 @@ public class RecordDataBase : DataBase
                 }
             );
 
+        CreateEmptyRecordTemplate();
+    }
+
+    private void CreateEmptyRecordTemplate()
+    {
+        emptyRecordTemplate = new RecordData
+        {
+            id = -1,
+            recordName = "name_emptymemory",
+            description = "desc_emptyememory",
+            rarity = RecordRarity.NORMAL,
+            targetFilter = TargetFilterType.ALL,
+            effectValue = 0,
+            triggerEvent = "",
+            className = string.Empty,
+        };
+    }
+
+    public RecordData GetEmptyRecord()
+    {
+        return emptyRecordTemplate.GetData();
     }
 
     public RecordData GetRecordData(int recordID)
     {
-        return recordDatas.TryGetValue(recordID, out RecordData recordData) ? recordData : null;
+        return recordDatas.TryGetValue(recordID, out RecordData recordData) ? recordData.GetData() : null;
     }
 
     public List<RecordData> GetAllRecordData() => recordDataList.ToList();
