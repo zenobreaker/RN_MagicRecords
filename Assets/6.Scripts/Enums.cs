@@ -216,5 +216,9 @@ public enum TargetFilterType
 
 public enum RecordRarity
 {
-
+    NORMAL,
+    RARE,
+    UNIQUE, 
+    LEGENDARY, 
+    MYTH,
 }
