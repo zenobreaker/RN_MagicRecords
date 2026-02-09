@@ -62,11 +62,7 @@ public partial class ObjectPooler : MonoBehaviour
         }
         GameObject newObj = Instantiate(prefab);
         newObj.name = tag;
-        var agent = newObj.GetComponent<NavMeshAgent>();
-        if (agent != null)
-            agent.enabled = false;
-
-
+        
         Transform parent = parentTransform != null ? parentTransform : GetOrCreateParent(tag);
         newObj.transform.SetParent(parent);
         
