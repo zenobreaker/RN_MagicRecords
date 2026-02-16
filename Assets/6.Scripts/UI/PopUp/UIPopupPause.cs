@@ -36,7 +36,9 @@ public class UIPopUpPause : UIPopUpBase
     protected override void OnEnable()
     {
         base.OnEnable();
-        Time.timeScale = 0; 
+        Time.timeScale = 0;
+        if (AppManager.Instance != null)
+            inventory?.SetRecordManager(AppManager.Instance.GetRecordManager());
     }
 
     protected override void OnDisable()

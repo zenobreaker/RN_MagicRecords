@@ -21,6 +21,8 @@ public class RecordManager : MonoBehaviour
 
     private bool isDirty = false;
 
+    public void SetReceiveRecordFlag() => isReceived = true;
+
     public void OnInit()
     {
         foreach (var record in records)
