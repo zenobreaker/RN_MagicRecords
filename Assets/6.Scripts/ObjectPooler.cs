@@ -25,7 +25,7 @@ public class ObjectPoolerEditor : Editor
 public partial class ObjectPooler : MonoBehaviour
 {
     public static ObjectPooler Instance;
-    void Awake() => Instance = this;
+ 
 
     [Serializable]
     public class Pool
@@ -50,6 +50,83 @@ public partial class ObjectPooler : MonoBehaviour
     // 부모 관리용 딕셔너리 추가
     private Dictionary<string, Transform> parentDictionary = new Dictionary<string, Transform>();
     public static event Action OnPoolInitialized;
+    private bool bComplete = false;
+
+    private struct SpawnCommand
+    {
+        public string tag;
+        public Vector3 pos;
+        public Quaternion rot;
+        public Action<GameObject> callback; 
+    }
+
+    private Queue<SpawnCommand> commandQueue = new Queue<SpawnCommand>();
+
+    private void Awake()
+    {
+        Instance = this;
+
+        spawnObjects = new List<GameObject>();
+        poolDictionary = new Dictionary<string, Queue<GameObject>>();
+        parentDictionary = new Dictionary<string, Transform>(); // 이 부분도 초기화 필요
+        commandQueue.Clear(); 
+    }
+
+    private IEnumerator Start()
+    {
+        bComplete = false;
+        
+        if (npcObjectSo != null)
+            CreatePoolsFromScriptableObject(npcObjectSo, false);
+
+
+        yield return StartCoroutine(Start_CreatePoolHierachy());
+
+        bComplete = true;
+        OnPoolInitialized?.Invoke(); // 초기화 완료 알림
+
+        // 쌓여있던 명령들 처리
+        while (commandQueue.Count > 0)
+        {
+            var cmd = commandQueue.Dequeue();
+            // 예약된 건 Defered 여부를 선택하게 하거나, 기본적으로 로직 수행
+            GameObject obj = _DeferedSpawnFromPool(cmd.tag, cmd.pos, cmd.rot);
+            cmd.callback?.Invoke(obj);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
+
+    public static void SpawnFormPoolWithCallback(string tag, Transform tr, 
+        Action<GameObject> callback)
+    {
+        Instance._SpawnWithCallback(tag, tr.position, tr.rotation, callback, false);
+    }
+
+    public static void DeferedSpawnWithCallback(string tag, Transform tr, Action<GameObject> callback)
+    {
+        Instance._SpawnWithCallback(tag, tr.position, tr.rotation, callback, true);
+    }
+
+    // 내부 실제 로직
+    private void _SpawnWithCallback(string tag, Vector3 pos, Quaternion rot, Action<GameObject> callback, bool isDefered)
+    {
+        if (!bComplete)
+        {
+            // 준비 안됐으면 큐에 정보와 콜백을 저장
+            commandQueue.Enqueue(new SpawnCommand { tag = tag, pos = pos, rot = rot, callback = callback });
+            Debug.LogWarning($"[Pooler] {tag} 예약됨. 초기화 후 콜백 실행 예정.");
+            return;
+        }
+
+        // 준비 됐으면 즉시 실행
+        GameObject obj = isDefered ? _DeferedSpawnFromPool(tag, pos, rot) : _SpawnFromPool(tag, pos, rot);
+        callback?.Invoke(obj);
+    }
 
     #region SpawnFromPool
     public static GameObject SpawnFromPool(string tag, Transform trasnform) =>
@@ -189,50 +266,61 @@ public partial class ObjectPooler : MonoBehaviour
 
     private GameObject _SpawnFromPool(string tag, Vector3 position, Quaternion rotation)
     {
-        if (!poolDictionary.ContainsKey(tag))
-            throw new Exception($"Pool with tag {tag} doesn't exist.");
+    
+        // 1. 유효한 객체 확보 (공통 로직 호출)
+        GameObject objectToSpawn = GetOrCreateValidObject(tag);
 
-        // 큐에 없으면 새로 추가
-        Queue<GameObject> poolQueue = poolDictionary[tag];
-        if (poolQueue.Count <= 0)
-        {
-            Pool pool = pools.Find(x => x.tag == tag);
-            //var obj = CreateNewObject(pool.tag, pool.prefab);
-            GameObject obj = CreateNewObjectSetParent(pool.tag, pool.prefab);
-            ArrangePool(tag, obj);
-        }
+        // 2. Queue에서 제거 (Dequeue)
+        poolDictionary[tag].Dequeue();
 
-        // 큐에서 꺼내서 사용
-        GameObject objectToSpawn = poolQueue.Dequeue();
-        objectToSpawn.transform.position = position;
-        objectToSpawn.transform.rotation = rotation;
+        // 3. 상태 설정 및 활성화
+        objectToSpawn.transform.SetPositionAndRotation(position, rotation);
         objectToSpawn.SetActive(true);
 
         return objectToSpawn;
     }
 
-    // Defered Spawn 
     private GameObject _DeferedSpawnFromPool(string tag, Vector3 position, Quaternion rotation)
+    {
+
+        // 1. 유효한 객체 확보 (공통 로직 호출)
+        GameObject objectToSpawn = GetOrCreateValidObject(tag);
+
+        // 2. 위치/회전만 설정 (Peek 상태 유지)
+        objectToSpawn.transform.SetPositionAndRotation(position, rotation);
+
+        return objectToSpawn;
+    }
+
+    /// <summary>
+    /// Pool에서 유효한 객체를 찾아 반환하거나, 없으면 새로 생성하는 공통 로직
+    /// </summary>
+    private GameObject GetOrCreateValidObject(string tag)
     {
         if (!poolDictionary.ContainsKey(tag))
             throw new Exception($"Pool with tag {tag} doesn't exist.");
 
-        // 큐에 없으면 새로 추가
         Queue<GameObject> poolQueue = poolDictionary[tag];
+
+        // 1. 큐 내부의 Null(파괴된 객체) 정리
+        while (poolQueue.Count > 0 && poolQueue.Peek() == null)
+        {
+            poolQueue.Dequeue();
+        }
+
+        // 2. 사용할 수 있는 객체가 없다면 생성
         if (poolQueue.Count <= 0)
         {
             Pool pool = pools.Find(x => x.tag == tag);
-            //var obj = CreateNewObject(pool.tag, pool.prefab);
-            GameObject obj = CreateNewObjectSetParent(pool.tag, pool.prefab);
-            ArrangePool(tag, obj);
+            if (pool == null) throw new Exception($"Pool settings for {tag} not found.");
+
+            GameObject newObj = CreateNewObjectSetParent(pool.tag, pool.prefab);
+            ArrangePool(tag, newObj);
+            // CreateNewObject 혹은 ArrangePool 내부에서 Enqueue가 일어난다고 가정합니다.
+            // 만약 수동으로 넣어야 한다면 여기서 poolQueue.Enqueue(newObj); 를 추가하세요.
         }
 
-        // 큐에서 꺼내서 사용
-        GameObject objectToSpawn = poolQueue.Peek();
-        objectToSpawn.transform.position = position;
-        objectToSpawn.transform.rotation = rotation;
-
-        return objectToSpawn;
+        return poolQueue.Peek();
     }
 
     public static void FinishSpawn(GameObject obj)
@@ -250,20 +338,6 @@ public partial class ObjectPooler : MonoBehaviour
         objectToSpawn.SetActive(true);
     }
 
-
-    private IEnumerator Start()
-    {
-        spawnObjects = new List<GameObject>();
-        poolDictionary = new Dictionary<string, Queue<GameObject>>();
-
-        if (npcObjectSo != null)
-            CreatePoolsFromScriptableObject(npcObjectSo, false);
-
-        //Start_CreatePool_Origin();
-
-        yield return StartCoroutine(Start_CreatePoolHierachy());
-        OnPoolInitialized?.Invoke(); // 초기화 완료 알림
-    }
 
     private void CreatePoolsFromScriptableObject(SO_CharacterObjects objectSo, bool bIsPlayer = false)
     {

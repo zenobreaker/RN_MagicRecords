@@ -7,7 +7,9 @@ using UnityEngine;
 public class MapData
 {
     public List<MapNode> nodes = new();
-    public int currentStageId;
+    public int prevNodeId; 
+    public int currentNodeId;
+    public bool bClear = false;
 }
 
 [System.Serializable]

@@ -11,6 +11,8 @@ public class MovableSlower : MonoBehaviour
     {
         if (instance == null)
             instance = this;
+        else
+            Destroy(this);
 
         DontDestroyOnLoad(gameObject);
 

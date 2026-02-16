@@ -43,25 +43,35 @@ public class StageManager : MonoBehaviour
         if (TryGetComponent<SpawnManager>(out var spawnManager))
         {
             this.spawnManager = spawnManager;
+
+            spawnManager.OnCompleteSpawnedPlayer -= OnCompleteSpawnedPlayer;
+            spawnManager.OnCompleteSpawnedEnemy -= OnCompleteSpawnedEnemy;
+            spawnManager.OnAllPlayersDead -= OnAllPlayersDead;
+            spawnManager.OnAllEnemiesDead -= OnAllEnemiesDead;
+
             spawnManager.OnCompleteSpawnedPlayer += OnCompleteSpawnedPlayer;
             spawnManager.OnCompleteSpawnedEnemy += OnCompleteSpawnedEnemy;
             spawnManager.OnAllPlayersDead += OnAllPlayersDead;
             spawnManager.OnAllEnemiesDead += OnAllEnemiesDead;
         }
 
+        ManagerWaiter.WaitForManager<GameManager>((gameManager) =>
+        {
+            gameManager.OnBeginStage -= Instance_OnBattleStage;
+            gameManager.OnBeginStage += Instance_OnBattleStage;
+        });
+
         roomManager = GetComponent<RoomManager>();
 
+    }
+    private void Instance_OnBattleStage()
+    {
+        SetBeginStage();
     }
 
     private void OnEnable()
     {
-        GameManager.Instance.OnBeginStage += Instance_OnBattleStage;
         ObjectPooler.OnPoolInitialized += OnStartStage;
-    }
-
-    private void Instance_OnBattleStage()
-    {
-        SetBeginStage();
     }
 
     private void OnDisable()
@@ -70,6 +80,28 @@ public class StageManager : MonoBehaviour
             GameManager.Instance.OnBeginStage -= Instance_OnBattleStage;
 
         ObjectPooler.OnPoolInitialized -= OnStartStage;
+    }
+
+
+    // 씬에 들어왔을 때 이전 데이터가 남지 않도록 강제 초기화
+    public void ResetStageData()
+    {
+        if (this == null) return;
+        
+        StopAllCoroutines();
+        bEnableSpawn = false;
+        currentWave = 1;
+        bStageClearSuccess = false;
+        mainSpawnPoints = new List<Transform>();
+        spawnPoints = new List<Transform>();
+        stageState = StageState.Begin_Stage;
+    }
+
+    private void OnPoolReady()
+    {
+        Debug.Log("[StageManager] Pool Ready! 스테이지 생성을 시작합니다.");
+        bEnableSpawn = true;
+        // AwaitStage 코루틴이 이 플래그를 보고 루프를 탈출함
     }
 
     public void SetBeginStage() => ChangedState(StageState.Begin_Stage);
@@ -84,11 +116,6 @@ public class StageManager : MonoBehaviour
     private void ChangedState(StageState state)
     {
         stageState = state;
-        HandleState();
-    }
-
-    private void HandleState()
-    {
         switch (stageState)
         {
             case StageState.Begin_Stage: BeginStage(); break;
@@ -118,29 +145,26 @@ public class StageManager : MonoBehaviour
     #region Stage Flow 
     public void BeginStage()
     {
+        // 나 자신이 살아있는지 확인
+        if (this == null || !gameObject.activeInHierarchy) return;
+
 #if UNITY_EDITOR
         Debug.Log("Stage Manager Begin Stage");
 #endif
         // 사전 데이터 준비 State
-        mainSpawnPoints = new();
-        spawnPoints = new();
-
-        StopAllCoroutines();
+        ResetStageData();
         StartCoroutine(AwaitStage());
     }
 
     private IEnumerator AwaitStage()
     {
-        while (true)
+        // ObjectPooler가 OnPoolInitialized를 날릴 때까지 안전하게 대기
+        // 만약 이미 초기화가 끝난 상태라면 즉시 통과하게 로직 보완 가능
+        while (!bEnableSpawn)
         {
-            if (bEnableSpawn)
-            {
-                SetCreateMap();
-                yield break;
-            }
-
             yield return null;
         }
+        SetCreateMap();
     }
 
     private void CreateMap()

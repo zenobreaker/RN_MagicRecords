@@ -8,6 +8,7 @@ public class StageUIController
 {
     [SerializeField] private UIMapReplacer uiMapReplacer;
     [SerializeField] private UIStageInfo uiStageInfo;
+    [SerializeField] private UIRecordInventory uiRecordInventory;
 
     protected override void OnEnable()
     {
@@ -90,5 +91,13 @@ public class StageUIController
         AppManager.Instance.SaveExploreMap();
 
         SceneManager.LoadScene(0);
+    }
+
+    public void OnRecordInvenButton()
+    {
+        if (uiRecordInventory == null)
+            return; 
+
+        UIManager.Instance?.OpenUI(uiRecordInventory);
     }
 }

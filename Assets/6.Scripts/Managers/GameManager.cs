@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -25,6 +25,7 @@ public class GameManager
     public event Action<float> OnUpdated;
 
     private StageManager stageManager;
+    public StageManager StageManager => stageManager;
 
     protected override void Awake()
     {
@@ -32,8 +33,17 @@ public class GameManager
 
         Awake_StageManager();
         Awake_BattleManager();
+
+        if (Instance == this)
+            SceneManager.sceneLoaded += HandleSceneLoaded;
     }
 
+    protected override void SyncDataFromSingleton()
+    {
+        base.SyncDataFromSingleton();
+        SceneManager.sceneLoaded -= HandleSceneLoaded;
+        this.stageManager = Instance.StageManager;
+    }
     private void OnDisable()
     {
         if (stageManager == null) return;
@@ -43,11 +53,38 @@ public class GameManager
         stageManager.OnFailedStage -= FailedStage;
     }
 
+    protected void Update()
+    {
+        if (state == GameState.PROCESS_BATTLE)
+        {
+            OnUpdated?.Invoke(Time.deltaTime);
+        }
+    }
+    private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Stage" || scene.name == "UnitTest")
+        {
+            // 2. 씬 로드 직후 StageManager의 상태를 완전히 초기화
+            if (stageManager != null)
+            {
+                stageManager.ResetStageData();
+            }
+
+            // 3. 그 후 스테이지 시작 (이 안에서 Pooler를 대기함)
+            SetBeginStage();
+        }
+    }
+
     #region AWAKE_FUNC
     private void Awake_StageManager()
     {
         stageManager = GetComponent<StageManager>();
         if (stageManager == null) return;
+
+        stageManager.OnProcessBattle -= ProcessBattle;
+        stageManager.OnFinishStage -= FinishStage;
+        stageManager.OnSucccedStage -= SuccedStage;
+        stageManager.OnFailedStage -= FailedStage;
 
         stageManager.OnProcessBattle += ProcessBattle;
         stageManager.OnFinishStage += FinishStage;
@@ -63,16 +100,6 @@ public class GameManager
 
     }
     #endregion
-
-
-    protected void Update()
-    {
-        if (state == GameState.PROCESS_BATTLE)
-        {
-            OnUpdated?.Invoke(Time.deltaTime);
-        }
-    }
-
 
     #region SET_STATE
     public void SetBeginStage() => SetGameState(GameState.BEGIN_STAGE);
@@ -130,9 +157,8 @@ public class GameManager
     {
         if (info == null) return;
 
+        state = GameState.NONE;
         stageManager.SetEnteredStage(info);
-
-        SetBeginStage();
 
         SceneManager.LoadScene(2);
     }

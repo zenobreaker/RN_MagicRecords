@@ -33,7 +33,7 @@ public class UIRecordInventory : UiBase
 
     private void DrawInventory()
     {
-        List<RecordData> list = recordManager.GetPossesRecord();
+        List<RecordData> list = recordManager?.GetPossesRecord();
 
         UIListDrawer.DrawList<RecordCard, RecordData>(list, (slot, item, index) =>
         {

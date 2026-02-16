@@ -9,7 +9,7 @@ public class ExploreManager : MonoBehaviour
     // 탐사 단계별 이벤트
     public event Action OnExploreStart;     // 탐사 시작 시
     public event Action OnReturnToMain;     // 탐사 메인 
-    public Action<int> OnStageSelected;     // 특정 스테이지 선택 시
+    public event Action<int> OnInStage;     // 특정 스테이지 선택 시
     public event Action OnStageClear;       // 스테이지 클리어 시
     public event Action OnExploreFinish;    // 전체 탐사 완료 시
 
@@ -24,6 +24,7 @@ public class ExploreManager : MonoBehaviour
 
     private int maxChapter = 1;
     private int prevNodeId = -1;
+    private bool bClearCurrentNode = false;
 
     private bool bCreate = false;
     private bool bAllCleared = false;
@@ -41,7 +42,7 @@ public class ExploreManager : MonoBehaviour
         bCreate = false; bAllCleared = false;
         Chapter = 1;
         MapNodeID = 0;
-        prevNodeId = 1;
+        prevNodeId = 0;
     }
 
     public void StartExplore()
@@ -71,7 +72,9 @@ public class ExploreManager : MonoBehaviour
         if (loadMap != null)
         {
             mapReplacer.RestoreMap(loadMap.nodes);
-            MapNodeID = loadMap.currentStageId;
+            MapNodeID = loadMap.currentNodeId;
+            prevNodeId = loadMap.prevNodeId;
+            bClearCurrentNode = loadMap.bClear;
         }
         else
         {
@@ -121,12 +124,18 @@ public class ExploreManager : MonoBehaviour
     {
         bool bEnable = false;
 
-        // 이전에 실패한 노드가 있으면 그 노드만 강제 선택
-        if (prevNodeId == MapNodeID)
-            bEnable = (id == prevNodeId);
-        // 정상적인 흐름 목록에 있는지 판별 
-        else
-            bEnable = mapReplacer.CanEnableNode(MapNodeID, id);
+        // 현재 고른 노드가 있으나 클리어 여부가 충족되지 않은 상태라면 
+        // 해당 노드만 고름 
+        if(MapNodeID != 0 && bClearCurrentNode == false)
+        {
+            bEnable = MapNodeID == id; 
+        }
+        // 현재 노드가 -1 or 0 이고 이전 노드가 사전에 처리된 값이 되어 있다면 
+        // 이전 노드로부터 다음에 갈 수 있는 노드를 고른 것인지
+        else if((MapNodeID == 0 || MapNodeID == -1) && prevNodeId != -1)
+        { 
+            bEnable = mapReplacer.CanEnableNode(prevNodeId, id);
+        }
 
         //Cheat 
         if (bCheat)
@@ -137,8 +146,7 @@ public class ExploreManager : MonoBehaviour
 
     public void EnterStageByNode(MapNode node)
     {
-        prevNodeId = MapNodeID;
-        MapNodeID = node.id;
+        prevNodeId = MapNodeID = node.id; 
     }
 
     public void ClearStage(bool isWin)
@@ -147,6 +155,7 @@ public class ExploreManager : MonoBehaviour
         {
             // 스테이지 클리어 했다면 해당 노드가 끝인지 확인
             bool bIsFinal = MapReplacer.IsFinalNode(MapNodeID);
+            bClearCurrentNode = true; 
 
             // 마지막이라면 챕터를 올린다. 
             if (bIsFinal)
@@ -157,10 +166,12 @@ public class ExploreManager : MonoBehaviour
                     bAllCleared = true;
             }
 
+            MapNodeID = -1; 
             ChangeState(ExploreState.STAGE_CLEAR);
         }
         else
         {
+            bClearCurrentNode = false; 
             MapNodeID = prevNodeId;
         }
     }
@@ -210,7 +221,8 @@ public class ExploreManager : MonoBehaviour
     }
     private void HandleInStage(int stageID)
     {
-        OnStageSelected.Invoke(stageID);
+        bClearCurrentNode = false; 
+        OnInStage.Invoke(stageID);
     }
     private void HandleStageClear()
     {
@@ -238,8 +250,10 @@ public class ExploreManager : MonoBehaviour
             foreach (var level in mapReplacer.GetLevels())
                 foreach (var node in level)
                     mapData.nodes.Add(node);
-
-            mapData.currentStageId = MapNodeID;
+            
+            mapData.prevNodeId = prevNodeId; 
+            mapData.currentNodeId = MapNodeID;
+            mapData.bClear = bClearCurrentNode;
             SaveManager.SaveMap(mapData);
         }
 

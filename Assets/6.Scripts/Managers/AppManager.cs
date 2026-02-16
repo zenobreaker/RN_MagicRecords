@@ -73,7 +73,7 @@ public class AppManager
         {
             exploreManager.OnExploreStart += HandleExploreStart;
             exploreManager.OnReturnToMain += HandleReturnToMain;
-            exploreManager.OnStageSelected += HandleStageSelect;
+            exploreManager.OnInStage += HandleInStage;
             exploreManager.OnStageClear += HandleStageClear;
             exploreManager.OnExploreFinish += HanldeExploreFinish;
         }
@@ -121,7 +121,7 @@ public class AppManager
         {
             exploreManager.OnExploreStart -= HandleExploreStart;
             exploreManager.OnReturnToMain -= HandleReturnToMain;
-            exploreManager.OnStageSelected -= HandleStageSelect;
+            exploreManager.OnInStage -= HandleInStage;
             exploreManager.OnStageClear -= HandleStageClear;
             exploreManager.OnExploreFinish -= HanldeExploreFinish;
         }
@@ -254,14 +254,19 @@ public class AppManager
         GenerateRecord(3);
     }
 
-    private void HandleStageSelect(int stageID)
+    private void HandleInStage(int stageID)
     {
 
     }
 
     private void HandleStageClear()
     {
-
+        // 스테이지 마지막인지 검사해서 아니라면 
+        // 레코드를 얻을 수 있는 플래그 켜야함
+        if(exploreManager.AllStageClear == false)
+        {
+            recordManager.SetReceiveRecordFlag();
+        }
     }
 
     private void HanldeExploreFinish()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -33,6 +34,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject popupUIReward;
     [SerializeField] private GameObject popupUIShop;
     [SerializeField] private GameObject popupUIEquipment;
+    [SerializeField] private GameObject popupStagePause;
 
 
     public UiBase soundUI;
@@ -227,6 +229,13 @@ public class UIManager : Singleton<UIManager>
             if (ui != null && ui.TryGetComponent<UIPopUpItem>(out var target))
                 target.SetData(itemData);
         }
+    }
+
+    public void OpenPausePopUp()
+    {
+        var ui = OpenPopUp(popupStagePause); 
+        //if(ui != null && ui.TryGetComponent<UIPopUpPause>(out var target))  
+        //    target.
     }
 
     public void EnqueuePopup(Action popupAction)

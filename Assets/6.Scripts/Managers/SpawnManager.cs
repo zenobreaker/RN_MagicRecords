@@ -111,9 +111,13 @@ public class SpawnManager : MonoBehaviour
 #endif
             return;
         }
-
+        
         MonsterGroupData data = AppManager.Instance.GetGroupData(groupID);
         if (data == null) return;
+
+        // 1. 이번에 스폰할 총 몬스터 개수 확인
+        int totalToSpawn = data.monsterIDs.Count;
+        int currentSpawnedCount = 0;
 
         foreach (var id in data.monsterIDs)
         {
@@ -123,8 +127,10 @@ public class SpawnManager : MonoBehaviour
             int idx = Random.Range(0, spawnPoints.Count);
 
             string tag = $"NPC_{id}";
-            GameObject npc = ObjectPooler.DeferedSpawnFromPool(tag, spawnPoints[idx]);
 
+
+            ObjectPooler.DeferedSpawnWithCallback(tag, spawnPoints[idx], 
+                (npc) =>
             // Set Stat 
             {
                 var statData = AppManager.Instance.GetMonsterStatData(id);
@@ -148,10 +154,20 @@ public class SpawnManager : MonoBehaviour
                     // Return Object Pool
                     ObjectPooler.FinishSpawn(npc);
                 }
-            }
-        }//foreach(data)
 
-        OnCompleteSpawnedEnemy?.Invoke();
+                // 2. 콜백이 실행될 때 마다 카운트 증가 
+                currentSpawnedCount++; 
+
+                // 3. 마지막 몬스터까지 세팅이 완료되었다면 이벤트 발생 
+                if(currentSpawnedCount >= totalToSpawn)
+                {
+                    Debug.Log($"[SpawnManager] 모든 {totalToSpawn}마리의 몬스터 스폰 및 세팅 완료!");
+                    OnCompleteSpawnedEnemy?.Invoke();
+                }
+
+            }); // Defered
+
+        }//foreach(data)
     }
 
 
