@@ -1,0 +1,75 @@
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class UIResultPage : UiBase
+{
+    [Header("UI Components")]
+    [SerializeField] private TextMeshProUGUI resultText;
+    [SerializeField] private Image illust;
+    [SerializeField] private Image fadeImage; // 전체화면을 덮는 검은 반투명 이미지
+    [SerializeField] private GameObject contentGroup; // 텍스트, 일러스트, 버튼을 담은 부모 객체
+    [SerializeField] private Button confirmButton;
+
+    [Header("Resources")]
+    [SerializeField] private Sprite winSprite;
+    [SerializeField] private Sprite loseSprite;
+
+    private bool isSuccess;
+
+    private void Awake()
+    {
+        confirmButton.onClick.AddListener(OnConfirmClicked);
+
+        ManagerWaiter.RegisterManagerEvent<UIManager>(this,
+            onRegister: ui =>
+            {
+                ui.RegistUI(UIType.STAGE_RESULT, this);
+            },
+            onUnregister: ui =>
+            {
+                ui.UnregistUI(UIType.STAGE_RESULT);
+            });
+
+        if (fadeImage != null)
+            fadeImage.gameObject.SetActive(false);
+
+        if (contentGroup != null)
+            contentGroup.gameObject.SetActive(false);
+    }
+
+    public void Show(bool isWin)
+    {
+        isSuccess = isWin;
+
+        if (fadeImage != null)
+            fadeImage.gameObject.SetActive(true);
+
+        if (contentGroup != null)
+            contentGroup.gameObject.SetActive(true);
+
+
+        if (isWin)
+        {
+            if (resultText != null)
+                resultText.text = "STAGE CLEAR";
+        }
+        else
+        {
+            if (resultText != null)
+                resultText.text = "STAGE FAILED";
+        }
+    }
+
+    private void OnConfirmClicked()
+    {
+        if (AppManager.Instance == null) return;
+
+        AppManager.Instance.OnFinishStage();
+
+        UIManager.Instance?.CloseTopUI();
+    }
+}
+
+

@@ -277,7 +277,10 @@ public class AppManager
     private void FinishStageProcess()
     {
         AcceptReward();
+    }
 
+    public void OnFinishStage()
+    {
         // 마지막 챕터까지 클리어 했다면 탐사 진입 전 로비로 이동시킨다. 
         if (exploreManager.AllStageClear)
         {

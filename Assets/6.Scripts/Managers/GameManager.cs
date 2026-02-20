@@ -64,13 +64,7 @@ public class GameManager
     {
         if (scene.name == "Stage" || scene.name == "UnitTest")
         {
-            // 2. 씬 로드 직후 StageManager의 상태를 완전히 초기화
-            if (stageManager != null)
-            {
-                stageManager.ResetStageData();
-            }
-
-            // 3. 그 후 스테이지 시작 (이 안에서 Pooler를 대기함)
+            // 스테이지 시작 (이 안에서 Pooler를 대기함)
             SetBeginStage();
         }
     }

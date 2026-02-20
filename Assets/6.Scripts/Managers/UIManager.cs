@@ -16,6 +16,7 @@ public enum UIType
     STAGE_INTO, 
     EXPLORE_MAIN,
     RECORD_SELECT,
+    STAGE_RESULT, 
 }
 
 public enum GameLocate
@@ -99,6 +100,11 @@ public class UIManager : Singleton<UIManager>
         uiTable[type] = ui;
     }
 
+    public void UnregistUI(UIType type)
+    {
+        uiTable[type] = null;
+    }
+
     public void OpenUI(UiBase ui)
     {
         if (ui == null) return;
@@ -155,14 +161,21 @@ public class UIManager : Singleton<UIManager>
         OnJoinedLobby?.Invoke();
     }
 
-    #region GameOver
+    #region STAGE_RESULT
     //-------------------------------------------------------------------------
-    // Game Over 
+    // STAGE RESULT
     //-------------------------------------------------------------------------
 
-    public void ShowGameOverUI()
+    public void ShowStageResultUI(bool isSuccess)
     {
-
+        OpenUI(UIType.STAGE_RESULT);
+        if (uiTable.TryGetValue(UIType.STAGE_RESULT, out var ui))
+        {
+            if(ui.TryGetComponent<UIResultPage>(out var result))
+            {
+                result.Show(isSuccess);
+            }
+        }
     }
 
     public void HideGameOverUI()
@@ -234,8 +247,6 @@ public class UIManager : Singleton<UIManager>
     public void OpenPausePopUp()
     {
         var ui = OpenPopUp(popupStagePause); 
-        //if(ui != null && ui.TryGetComponent<UIPopUpPause>(out var target))  
-        //    target.
     }
 
     public void EnqueuePopup(Action popupAction)

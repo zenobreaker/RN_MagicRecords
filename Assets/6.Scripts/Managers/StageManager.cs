@@ -20,19 +20,20 @@ public class StageManager : MonoBehaviour
     private int currentStageChapter;
     public int CurStageChapter { get => currentStageChapter; }
 
-    private StageInfo currentStage; 
+    private StageInfo currentStage;
 
     private SpawnManager spawnManager;
     private RoomManager roomManager;
 
     private int currentWave = 1;
+    private bool isEntered = false; 
     private List<Transform> mainSpawnPoints;
     private List<Transform> spawnPoints;
 
     private bool bEnableSpawn = false;
     private bool bStageClearSuccess = false;
 
-    public event Action OnPreProcess; 
+    public event Action OnPreProcess;
     public event Action OnProcessBattle;
     public event Action OnFinishStage;
     public event Action OnSucccedStage;
@@ -87,11 +88,16 @@ public class StageManager : MonoBehaviour
     public void ResetStageData()
     {
         if (this == null) return;
-        
+
         StopAllCoroutines();
         bEnableSpawn = false;
         currentWave = 1;
         bStageClearSuccess = false;
+        
+        if(isEntered == false)
+            currentStage = null;
+        
+        isEntered = false; 
         mainSpawnPoints = new List<Transform>();
         spawnPoints = new List<Transform>();
         stageState = StageState.Begin_Stage;
@@ -134,6 +140,7 @@ public class StageManager : MonoBehaviour
         if (stage == null) return;
 
         currentStage = stage;
+        isEntered = true;
     }
 
     private void OnStartStage()
@@ -195,7 +202,7 @@ public class StageManager : MonoBehaviour
         if (currentStage == null || spawnPoints == null || spawnPoints.Count <= 0) return;
 
         var groupIds = currentStage.groupIds;
-        if(groupIds.Count == 0) 
+        if (groupIds.Count == 0)
             return;
 
         // Spawn Enemy
@@ -250,14 +257,10 @@ public class StageManager : MonoBehaviour
             OnFailedStage?.Invoke();
         }
 
+        UIManager.Instance?.ShowStageResultUI(bStageClearSuccess);
+
         // Reset Data 
-        bStageClearSuccess = false;
-        StopAllCoroutines();
-        bEnableSpawn = false;
-        mainSpawnPoints = null;
-        spawnPoints = null;
-        currentWave = 1;
-        currentStage = null;
+        ResetStageData();
 
         // 구독자에게 스테이지 클리어 했다는 정보 전달
         OnFinishStage?.Invoke();
