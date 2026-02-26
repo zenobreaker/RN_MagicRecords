@@ -17,7 +17,7 @@ public abstract class UIPopUp
 
     public override void CloseUI()
     {
-        UIManager.Instance?.ClosePopup();
+        UIManager.Instance?.CloseTopUI();
     }
 
     public virtual void OnPointerClick(PointerEventData eventData)
@@ -41,7 +41,7 @@ public abstract class UIPopUpBase : UIPopUp
         {
             panelButton.onClick.AddListener(() =>
             {
-                UIManager.Instance.ClosePopup();
+                UIManager.Instance.CloseTopUI();
             });
         }
     }

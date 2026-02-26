@@ -22,16 +22,6 @@ public class UIResultPage : UiBase
     {
         confirmButton.onClick.AddListener(OnConfirmClicked);
 
-        ManagerWaiter.RegisterManagerEvent<UIManager>(this,
-            onRegister: ui =>
-            {
-                ui.RegistUI(UIType.STAGE_RESULT, this);
-            },
-            onUnregister: ui =>
-            {
-                ui.UnregistUI(UIType.STAGE_RESULT);
-            });
-
         if (fadeImage != null)
             fadeImage.gameObject.SetActive(false);
 

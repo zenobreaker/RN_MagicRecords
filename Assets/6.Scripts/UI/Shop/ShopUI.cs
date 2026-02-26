@@ -55,6 +55,7 @@ public class ShopUI : UiBase
     {
         if(item is ShopItem shopItem == false)
             return;
+
         UIManager.Instance.OpenShopPopUp(item, shopItem.Price, (CurrencyType)shopItem.CurrencyType);
     }
 

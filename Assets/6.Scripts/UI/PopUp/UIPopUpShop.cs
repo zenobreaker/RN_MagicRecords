@@ -31,7 +31,7 @@ public class UIPopUpShop : UIPopUpBase
         {
             exitButton.onClick.AddListener(() =>
             {
-                UIManager.Instance.ClosePopup();
+                UIManager.Instance.CloseTopUI();
             });
         }
 
@@ -174,7 +174,7 @@ public class UIPopUpShop : UIPopUpBase
             InventoryManager.Instance?.AddItem(newItem ?? item);
 
             // 구매 후 팝업 닫기
-            UIManager.Instance.ClosePopup();
+            UIManager.Instance.CloseTopUI();
         }
     }
 }

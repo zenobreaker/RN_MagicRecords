@@ -15,7 +15,7 @@ public abstract class UiBase : MonoBehaviour
 
     protected virtual void OnEnable()
     {
-        UIOpend?.Invoke(); 
+        UIOpend?.Invoke();
     }
 
     protected virtual void OnDisable()
@@ -36,35 +36,38 @@ public abstract class UiBase : MonoBehaviour
     {
         if (content == null || childObject == null) return;
 
-        // 이미 자식들이 잇는지 검사 
-        if (content.transform.childCount > 0)
+        InitReplaceContentObjectByTarget(content, childObject, count); 
+    }
+
+    protected void InitReplaceContentObjectByTarget(GameObject target, GameObject childObj, int count = 0)
+    {
+        if (target == null || childObj == null) return;
+
+        // 이미 자식들이 있는지 검사 
+        if (target.transform.childCount > 0)
         {
-            for (int i = 0; i < content.transform.childCount; i++)
+            for (int i = 0; i < target.transform.childCount; i++)
             {
-                if (content.transform.GetChild(i) != null)
-                {
-                    content.transform.GetChild(i).gameObject.SetActive(false);
-                }
+                if (target.transform.GetChild(i) != null)
+                    target.transform.GetChild(i).gameObject.SetActive(false); 
             }
         }
 
         // 이미 원하는 자식들이 있다면 가지고 있는 자식을 쓰도록
-        if (content.transform.childCount >= count)
-        {
-            return;
-        }
-
-        AddContentObject(count); 
+        if (target.transform.childCount >= count)
+            return; 
+        
+        AddContentObject(target, childObj, count);
     }
 
     // 부모 오브젝트에 자식 추가하기 
-    public void AddContentObject(int count = 0)
+    protected void AddContentObject(GameObject parentObj, GameObject childObj, int count = 0)
     {
-        if (content == null || childObject == null) return;
+        if (parentObj == null || childObj == null) return;
 
         for (int i = 0; i < count; i++)
         {
-            Instantiate(childObject, content.transform);
+            Instantiate(childObj, parentObj.transform);
         }
     }
 

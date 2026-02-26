@@ -7,8 +7,6 @@ public class StageUIController
     : UIController
 {
     [SerializeField] private UIMapReplacer uiMapReplacer;
-    [SerializeField] private UIStageInfo uiStageInfo;
-    [SerializeField] private UIRecordInventory uiRecordInventory;
 
     protected override void OnEnable()
     {
@@ -27,7 +25,7 @@ public class StageUIController
                 {
                     Init(uiManager);
                 });
-                bIsAwaked = true; 
+                bIsAwaked = true;
             });
         }
     }
@@ -35,7 +33,6 @@ public class StageUIController
     private void Init(UIManager ui)
     {
         ui.OnReturnedStageSelectStage += UpdateCurrencies;
-        ui.RegistUI(UIType.STAGE_INTO, uiStageInfo);
     }
 
     protected void Start()
@@ -47,8 +44,8 @@ public class StageUIController
         InitUIMapReplace();
 
         // 배치가 끝났다면 탐사 상태로 변경 
-        if(em.CurrentState != ExploreState.ON_EXPLORE)
-            em?.ChangeState(ExploreState.ON_EXPLORE); 
+        if (em.CurrentState != ExploreState.ON_EXPLORE)
+            em?.ChangeState(ExploreState.ON_EXPLORE);
     }
 
     protected void OnDisable()
@@ -78,9 +75,7 @@ public class StageUIController
             {
                 sm.OnClicked += (stageInfo) =>
                 {
-                    uiStageInfo.SetStageData(node.Node, stageInfo);
-                    if (stageInfo != null && AppManager.Instance.EnableNode(node.Node) && stageInfo.bIsCleared == false)
-                        UIManager.Instance.OpenUI(UIType.STAGE_INTO);
+                    UIManager.Instance.OpenStageInfo(node.Node, stageInfo);
                 };
             }
         }
@@ -95,9 +90,6 @@ public class StageUIController
 
     public void OnRecordInvenButton()
     {
-        if (uiRecordInventory == null)
-            return; 
-
-        UIManager.Instance?.OpenUI(uiRecordInventory);
+        UIManager.Instance?.OpenRecordInvenPopUp();
     }
 }

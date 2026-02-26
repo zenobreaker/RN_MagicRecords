@@ -31,7 +31,8 @@ public class RecordCard : MonoBehaviour
         AppManager.Instance.OnSelectedRecordCard -= Refresh;
     }
 
-    public void Setup(RecordData data, System.Action onClickAction, 
+    public void Setup(RecordData data,
+        System.Action onClickAction = null, 
         System.Action onlockAction  = null)
     {
         myData = data; 

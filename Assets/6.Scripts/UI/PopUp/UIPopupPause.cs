@@ -27,7 +27,7 @@ public class UIPopUpPause : UIPopUpBase
         {
             stageContinueButton.onClick.AddListener(() =>
             {
-                UIManager.Instance.ClosePopup();
+                UIManager.Instance.CloseTopUI();
             });
         }
     }

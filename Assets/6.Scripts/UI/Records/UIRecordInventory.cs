@@ -6,8 +6,6 @@ public class UIRecordInventory : UiBase
 {
     private RecordManager recordManager;
 
-    public event Action<RecordData> OnClicked;
-
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -17,7 +15,6 @@ public class UIRecordInventory : UiBase
     protected override void OnDisable()
     {
         base.OnDisable();
-        OnClicked = null;
     }
 
     public override void RefreshUI()
@@ -60,7 +57,7 @@ public class UIRecordInventory : UiBase
 
     private void OnRecordData(RecordData data)
     {
-        OnClicked?.Invoke(data);
+        UIManager.Instance.OpenRecordInfoPopUp(data);
     }
 
 }

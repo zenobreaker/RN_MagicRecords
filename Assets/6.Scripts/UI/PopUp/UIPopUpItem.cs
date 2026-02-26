@@ -20,7 +20,7 @@ public class UIPopUpItem : UIPopUpBase
         {
             exitButton.onClick.AddListener(() =>
             {
-                UIManager.Instance.ClosePopup();
+                UIManager.Instance.CloseTopUI();
             });
         }
 
