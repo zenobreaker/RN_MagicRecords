@@ -4,6 +4,9 @@ using UnityEngine;
 public class PlayerManager :
     Singleton<PlayerManager>
 {
+    public SO_PlayerObjects playerObjects; 
+    public SO_JobData jobdata;
+
     private List<int> characterIds = new List<int>();
     // key : char id
     private Dictionary<int, CharStatusData> charStatusDatas = new();
@@ -13,6 +16,24 @@ public class PlayerManager :
 
     private bool isDirty = false;
     public bool IsDirty => isDirty;
+
+    private Dictionary<int, Player> currentPlayerDicts = new Dictionary<int, Player>();
+
+    public void SetCurrentPlayer(Player player)
+    {
+        currentPlayerDicts[player.CharID] = player;
+    }
+
+    //TODO : 가장 ID가 적은 녀석부터 처리
+    public Player GetCurrentPlayer(int charID = 0)
+    {
+        foreach (KeyValuePair<int, Player> p in currentPlayerDicts)
+        {
+            return p.Value;
+        }
+
+        return null;
+    }
 
     public void SetDirty()
     {
@@ -65,6 +86,9 @@ public class PlayerManager :
             }
         }
 
+        playerObjects?.Init(); 
+        jobdata?.Init(); 
+
         ManagerWaiter.WaitForManager<InventoryManager>((inventory) =>
         {
             inventory.OnDataChanged += SetDirty;
@@ -112,6 +136,20 @@ public class PlayerManager :
         }
 
         return newData;
+    }
+
+    public CharacterInfo GetCharacterInfo(int charID)
+    {
+        if(playerObjects == null) return null;
+
+        return playerObjects.GetPlayerInfo(charID);
+    }
+
+    public JobInfo GetJobInfo(int jobID)
+    {
+        if (jobdata == null) return null; 
+
+        return jobdata.GetJobInfo(jobID);
     }
 
     public void SaveIfDirty()

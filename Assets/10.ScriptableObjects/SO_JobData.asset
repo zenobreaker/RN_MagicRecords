@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73a30e36c80b676439e057bb5e712e59, type: 3}
+  m_Name: SO_JobData
+  m_EditorClassIdentifier: 
+  list:
+  - id: 1
+    jobSprite: {fileID: 21300000, guid: 6e7c911d3229fcf4b95c37bbe6c5a193, type: 3}
+    jobName: "\uB9C8\uD0C4\uC758 \uC0AC\uC218"
+  - id: 2
+    jobSprite: {fileID: 21300000, guid: dea09b6ae97db2944bfc4e6093f4f9e2, type: 3}
+    jobName: "\uB9C8\uAC80\uC0AC"
+  - id: 3
+    jobSprite: {fileID: 21300000, guid: 143ae1675f6a2094cb0408b416551239, type: 3}
+    jobName: "\uC18C\uD658\uC0AC"

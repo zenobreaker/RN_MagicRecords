@@ -5,11 +5,18 @@ public class SO_PlayerObjects : SO_CharacterObjects
 {
     public GameObject GetPlayerObject(int id)
     {
-        if (charTable.TryGetValue(id, out CharacterObject pc))
+        if (charTable.TryGetValue(id, out CharacterInfo pc))
         {
             return pc.obj;
         }
 
+        return null;
+    }
+
+    public CharacterInfo GetPlayerInfo(int id)
+    {
+        if (charTable.TryGetValue(id, out CharacterInfo pc))
+            return pc;
         return null;
     }
 }

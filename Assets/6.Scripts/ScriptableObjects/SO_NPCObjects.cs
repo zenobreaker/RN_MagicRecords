@@ -5,7 +5,7 @@ public class SO_NPCObjects : SO_CharacterObjects
 {
     public GameObject GetNpcObject(int id)
     {
-        if(charTable.TryGetValue(id, out CharacterObject npc))
+        if(charTable.TryGetValue(id, out CharacterInfo npc))
         {
             return npc.obj;
         }

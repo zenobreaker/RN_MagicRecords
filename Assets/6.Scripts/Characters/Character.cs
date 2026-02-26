@@ -32,6 +32,14 @@ public class Character
     public Action<Character> OnDead;
     #endregion
 
+
+    private int charID; 
+    public int CharID
+    {
+        get { return charID; }
+        set { charID = value; }
+    }
+
     protected virtual void Awake()
     {
         animator = GetComponent<Animator>();

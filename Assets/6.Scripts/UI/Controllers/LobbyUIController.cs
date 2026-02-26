@@ -5,32 +5,6 @@ using UnityEngine;
 public class LobbyUIController
     : UIController
 {
-    [System.Serializable]
-    public class UIUnit
-    {
-        public UIType type;
-        public UiBase ui; 
-    }
-
-    public List<UIUnit> units = new();
-
-    private void Awake()
-    {
-        ManagerWaiter.RegisterManagerEvent<UIManager>(this,
-            onRegister: ui =>
-            {
-                if (ui != null)
-               {
-                    foreach (var unit in units)
-                    {
-                        ui.RegistUI(unit.type, unit.ui);
-                    }
-                }
-
-            },
-            onUnregister: ui => { });
-    }
-
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -39,12 +13,12 @@ public class LobbyUIController
 
         AppManager.Instance.OnAwaked += () =>
         {
-            if (bIsAwaked) return; 
+            if (bIsAwaked) return;
             ManagerWaiter.WaitForManager<UIManager>(uiManager =>
             {
-                uiManager.OnJoinedLobby += UpdateCurrencies;    
+                uiManager.OnJoinedLobby += UpdateCurrencies;
             });
-            bIsAwaked = true; 
+            bIsAwaked = true;
         };
     }
 
@@ -56,31 +30,31 @@ public class LobbyUIController
 
     public void OnOpenShop()
     {
-        UIManager.Instance.OpenUI(UIType.SHOP);
+        UIManager.Instance.OpenUI<ShopUI>();
     }
 
     public void OnOpenCharInfo()
     {
-        UIManager.Instance.OpenUI(UIType.INFOMATION);
+        UIManager.Instance.OpenUI<CharacterInfoController>();
     }
 
     public void OnOpenSkillUI()
     {
-        UIManager.Instance.OpenUI(UIType.SKILL);
+        UIManager.Instance.OpenUI<SkillTreeController>();
     }
 
     public void OnOpenEnhanceUI()
     {
-        UIManager.Instance.OpenUI(UIType.ENHANCEMENT);
+        UIManager.Instance.OpenUI<EnhanceUI>();
     }
 
     public void OnOpenInventoryUI()
     {
-        UIManager.Instance.OpenUI(UIType.INVENTORY);
+        UIManager.Instance.OpenUI<InventoryUI>();
     }
 
     public void OnOpenExploreUI()
     {
-        UIManager.Instance.OpenUI(UIType.EXPLORE_MAIN);
+        UIManager.Instance.OpenUI<Exploration_Main_UI>();
     }
 }

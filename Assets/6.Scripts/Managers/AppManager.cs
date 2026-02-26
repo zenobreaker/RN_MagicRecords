@@ -284,12 +284,19 @@ public class AppManager
         // 마지막 챕터까지 클리어 했다면 탐사 진입 전 로비로 이동시킨다. 
         if (exploreManager.AllStageClear)
         {
-            SceneManager.LoadScene(0);
-            ResetData();
+            //SceneManager.LoadScene(0);
+            //ResetData();
 
+            //UIManager.Instance?.OpenExploreResultPopUp();
             return;
         }
 
+        //TODO: 죽거나 하는 등으로 클리어 조건을 불충족할 경우 
+        {
+            // return;
+        }
+
+        // 일반적인 스테이지 클리어로 인한 퇴장 
         SceneManager.LoadScene(1);
     }
 

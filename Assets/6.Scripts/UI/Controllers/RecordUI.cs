@@ -8,11 +8,12 @@ public class RecordUI : UiBase
     [SerializeField] private GameObject visualRoot;
     [SerializeField] private TextMeshProUGUI rerollText;
     [SerializeField] private Button completeButton;
-    [SerializeField] private UIRecordInventory inventory;
-    [SerializeField] private UIRecordInfo info; 
+
 
     private List<RecordCard> cardPool = new();
 
+    //TODO : 레코드 선택 UI는 탐사 진입할 때 호출되는 타이밍이 있으므로 다른 경로로 이벤트를 
+    // 연결해야한다.
 
     private void Awake()
     {
@@ -23,33 +24,7 @@ public class RecordUI : UiBase
 
         visualRoot.SetActive(false);
         if (completeButton != null)
-        {
             completeButton.onClick.AddListener(OnCompleteSelectRecord);
-
-        }
-
-        ManagerWaiter.WaitForManager<AppManager>(appManager =>
-            {
-                if (inventory != null)
-                {
-                    inventory.SetRecordManager(appManager.GetRecordManager());
-                }
-            });
-
-    }
-
-    protected override void OnEnable()
-    {
-        base.OnEnable();
-
-        if (inventory != null)
-        {
-            inventory.OnClicked += (data) =>
-            {
-                info.SetData(data);
-                UIManager.Instance.OpenUI(info);
-            };
-        }
     }
 
     protected override void OnDisable()

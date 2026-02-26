@@ -28,6 +28,14 @@ public class Player
     private Action<InputAction.CallbackContext> onDash;
     private Action<InputAction.CallbackContext>[] onSkillActions;
 
+
+    private int jobID; 
+    public int JobID
+    {
+        get { return jobID; }
+        set { jobID = value; }
+    }
+
     protected override void Awake()
     {
         base.Awake();

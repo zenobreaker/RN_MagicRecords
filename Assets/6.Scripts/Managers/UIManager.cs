@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.AppUI.UI;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 [System.Serializable]
 public enum UIType
 {
-    NONE, 
-    INVENTORY, 
+    NONE,
+    INVENTORY,
     ENHANCEMENT,
     SHOP,
     INFOMATION,
     SKILL,
-    STAGE_INTO, 
+    STAGE_INTO,
     EXPLORE_MAIN,
     RECORD_SELECT,
-    STAGE_RESULT, 
+    STAGE_RESULT,
+    EXPLORE_RESULT,
 }
 
 public enum GameLocate
@@ -29,28 +32,21 @@ public enum GameLocate
 
 public class UIManager : Singleton<UIManager>
 {
-    [SerializeField] private GameObject mobileUIGroup;
+    private Dictionary<Type, UiBase> uiInstances = new Dictionary<Type, UiBase>();
+
+    [SerializeField] private UIDatabase uiDB;
     [SerializeField] private GameObject pcUIGroup;
-    [SerializeField] private GameObject popupUI;
-    [SerializeField] private GameObject popupUIReward;
-    [SerializeField] private GameObject popupUIShop;
-    [SerializeField] private GameObject popupUIEquipment;
-    [SerializeField] private GameObject popupStagePause;
-
-
-    public UiBase soundUI;
+    [SerializeField] private GameObject mobileUIGroup;
 
     public event Action OnJoinedLobby;                  // 로비 
     public event Action OnJoinedStage;                  // 스테이지 입장
     public event Action OnReturnedStageSelectStage;     // 스테이지 선택 씬 
 
-    private Dictionary<UIType, UiBase> uiTable = new Dictionary<UIType, UiBase>();
     private Stack<UiBase> openedUIs = new Stack<UiBase>();
-    private Stack<UiBase> openPopUps = new();
     private Queue<Action> popupQueue = new Queue<Action>();
-    private bool isPopupOpening = false; 
+    private bool isPopupOpening = false;
     private GameLocate currLocate;
-    private GameObject currentUIGroup; 
+    private GameObject currentUIGroup;
 
     public bool IsLTitle() => currLocate == GameLocate.TITLE;
     public bool IsLobby() => currLocate == GameLocate.LOBBY;
@@ -69,10 +65,8 @@ public class UIManager : Singleton<UIManager>
         base.SyncDataFromSingleton();
         SceneManager.sceneLoaded -= HandleSceneLoaded;
 
-        mobileUIGroup = Instance.mobileUIGroup;
-        pcUIGroup = Instance.pcUIGroup;
-
-        soundUI = Instance.soundUI;
+        uiInstances = Instance.uiInstances;
+        uiDB = Instance.uiDB;
     }
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -85,25 +79,16 @@ public class UIManager : Singleton<UIManager>
         }
         else if (scene.name == "Lobby")
         {
-            currLocate =  GameLocate.LOBBY;
+            currLocate = GameLocate.LOBBY;
             SetLobbyProgress();
         }
-        else if(scene.name == "StageSelectScene")
+        else if (scene.name == "StageSelectScene")
         {
             currLocate = GameLocate.STAGE_SELCT;
             SetStageSelectScene();
         }
     }
 
-    public void RegistUI(UIType type, UiBase ui)
-    {
-        uiTable[type] = ui;
-    }
-
-    public void UnregistUI(UIType type)
-    {
-        uiTable[type] = null;
-    }
 
     public void OpenUI(UiBase ui)
     {
@@ -112,10 +97,38 @@ public class UIManager : Singleton<UIManager>
         openedUIs.Push(ui);
     }
 
-    public void OpenUI(UIType type)
+    public T OpenUI<T>() where T : UiBase
     {
-        if(uiTable.TryGetValue(type, out var ui))
-            OpenUI(ui);
+        Type uiType = typeof(T);
+
+        // 켜져 있는지 확인 
+        if (uiInstances.TryGetValue(uiType, out UiBase existingUI) && existingUI != null)
+        {
+            existingUI.gameObject.SetActive(true);
+            openedUIs.Push(existingUI);
+
+            return existingUI as T;
+        }
+
+        // DB에서 프리팹 찾기 
+        UiBase prefab = uiDB.GetPrefab<T>();
+        if (prefab != null)
+        {
+            IUIContainer container = UIRegistry.Get<IUIContainer>();
+            Transform parent = container?.PopUpParent ?? null;
+            if (parent == null)
+                return null;
+
+            T newUI = Instantiate(prefab.gameObject, parent).GetComponent<T>();
+            uiInstances[uiType] = newUI;
+            newUI.gameObject.SetActive(true);
+
+            openedUIs.Push(newUI);
+
+            return newUI;
+        }
+
+        return null;
     }
 
     public void CloseTopUI()
@@ -123,7 +136,9 @@ public class UIManager : Singleton<UIManager>
         if (openedUIs.Count > 0)
         {
             var top = openedUIs.Pop();
-            top.CloseUI();
+            top.gameObject.SetActive(false);
+
+            Invoke(nameof(ShowNextPopup), 0.1f);
         }
     }
 
@@ -133,6 +148,29 @@ public class UIManager : Singleton<UIManager>
         {
             var top = openedUIs.Pop();
             top.CloseUI();
+        }
+    }
+
+
+    public void EnqueuePopup(Action popupAction)
+    {
+        popupQueue.Enqueue(popupAction);
+
+        if (!isPopupOpening)
+            ShowNextPopup();
+    }
+
+    private void ShowNextPopup()
+    {
+        if (popupQueue.Count > 0)
+        {
+            isPopupOpening = true;
+            var nextPopup = popupQueue.Dequeue();
+            nextPopup?.Invoke();
+        }
+        else
+        {
+            isPopupOpening = false;
         }
     }
 
@@ -146,7 +184,7 @@ public class UIManager : Singleton<UIManager>
 
         currentUIGroup = currentObject;
         if (currentObject == null) return;
-        
+
         var go = Instantiate<GameObject>(currentObject);
         go?.SetActive(true);
     }
@@ -161,27 +199,20 @@ public class UIManager : Singleton<UIManager>
         OnJoinedLobby?.Invoke();
     }
 
-    #region STAGE_RESULT
+    #region RESULT
     //-------------------------------------------------------------------------
     // STAGE RESULT
     //-------------------------------------------------------------------------
 
     public void ShowStageResultUI(bool isSuccess)
     {
-        OpenUI(UIType.STAGE_RESULT);
-        if (uiTable.TryGetValue(UIType.STAGE_RESULT, out var ui))
+        var ui = OpenUI<UIResultPage>();
+        if (ui != null && ui.TryGetComponent<UIResultPage>(out var result))
         {
-            if(ui.TryGetComponent<UIResultPage>(out var result))
-            {
-                result.Show(isSuccess);
-            }
+            result.Show(isSuccess);
         }
     }
 
-    public void HideGameOverUI()
-    {
-
-    }
     #endregion
 
 
@@ -193,25 +224,32 @@ public class UIManager : Singleton<UIManager>
 
     public void ToggleSoundUI()
     {
-        bool? isActive = soundUI?.gameObject.activeSelf;
-        soundUI?.gameObject.SetActive(!isActive.Value);
+
     }
 
     public void ShowSoundControlUI()
     {
-        soundUI?.gameObject.SetActive(true);
+
     }
 
     public void HidSoundControlUI()
     {
-        soundUI?.gameObject.SetActive(false);
+
     }
 
 
     #endregion
+
+    public void OpenStageInfo(MapNode node, StageInfo stageInfo)
+    {
+        var ui = OpenUI<UIStageInfo>();
+        if (ui != null && ui.TryGetComponent<UIStageInfo>(out var target))
+            target.SetStageData(node, stageInfo);
+    }
+
     public void OpenRewardPopUp(ItemData[] itemDatas)
     {
-        var ui = OpenPopUp(popupUIReward);
+        var ui = OpenUI<UIPopUpRewards>();
         if (ui != null && ui.TryGetComponent<UIPopUpRewards>(out var target))
             target.SetData(itemDatas);
     }
@@ -223,7 +261,7 @@ public class UIManager : Singleton<UIManager>
 
     public void OpenShopPopUp(ItemData itemData, int price, CurrencyType currencyType)
     {
-        var ui = OpenPopUp(popupUIShop);
+        var ui = OpenUI<UIPopUpShop>();
         if (ui != null && ui.TryGetComponent<UIPopUpShop>(out var target))
             target.SetData(itemData, price, currencyType);
     }
@@ -232,13 +270,13 @@ public class UIManager : Singleton<UIManager>
     {
         if (itemData is EquipmentItem)
         {
-            var ui = OpenPopUp(popupUIEquipment);
+            var ui = OpenUI<UIPopUpEquipment>();
             if (ui != null && ui.TryGetComponent<UIPopUpEquipment>(out var target))
                 target.SetData(itemData);
         }
         else
         {
-            var ui = OpenPopUp(popupUI);
+            var ui = OpenUI<UIPopUpItem>();
             if (ui != null && ui.TryGetComponent<UIPopUpItem>(out var target))
                 target.SetData(itemData);
         }
@@ -246,69 +284,41 @@ public class UIManager : Singleton<UIManager>
 
     public void OpenPausePopUp()
     {
-        var ui = OpenPopUp(popupStagePause); 
+        var ui = OpenUI<UIPopUpPause>();
     }
 
-    public void EnqueuePopup(Action popupAction)
-    {
-        popupQueue.Enqueue(popupAction);
 
-        if (!isPopupOpening)
-            ShowNextPopup();
-    }
-
-    private void ShowNextPopup()
+    public void OpenRecordInvenPopUp()
     {
-        if(popupQueue.Count > 0)
+        var ui = OpenUI<UIRecordInventory>();
+        if (ui != null && ui.TryGetComponent<UIRecordInventory>(out var target))
         {
-            isPopupOpening = true; 
-            var nextPopup = popupQueue.Dequeue();
-            nextPopup?.Invoke();    
-        }
-        else
-        {
-            isPopupOpening = false; 
+            target.SetRecordManager(AppManager.Instance?.GetRecordManager());
+            target.RefreshUI();
         }
     }
 
-    private GameObject OpenPopUp(GameObject popUpObj)
+    public void OpenRecordInfoPopUp(RecordData data)
     {
-        if (popUpObj == null) return null;
-        IUIContainer container = UIRegistry.Get<IUIContainer>();
-        Transform parent = container?.PopUpParent ?? null;
-        if (parent == null) 
-            return null;
-
-        GameObject ui = Instantiate(popUpObj, parent);
-        if (ui != null && ui.TryGetComponent<UIPopUp>(out var target))
+        var ui = OpenUI<UIRecordInfo>(); 
+        if(ui != null && ui.TryGetComponent<UIRecordInfo>(out var target))
         {
-            openPopUps.Push(target);
-            return ui;
-        }
-        return null;
-    }
-
-    public void ClosePopup()
-    {
-        if (openPopUps.Count > 0)
-        {
-            var top = openPopUps.Pop();
-            if (top != null)
-            {
-                Destroy(top.gameObject);
-                Invoke(nameof(ShowNextPopup), 0.1f); 
-            }
+            target.SetData(data); 
         }
     }
 
+    //--------------------------------------------------------------------------
+    // Damage Text
+    //--------------------------------------------------------------------------
     public void DrawDamageText(Vector3 pos, float value, DamageEvent damageEvent)
     {
-        if(currentUIGroup == null) return;
+        if (currentUIGroup == null) return;
 
         Transform dtParent = currentUIGroup.transform.FindChildByName("DmgTxtParent");
-        if(dtParent == null) return;
+        if (dtParent == null) return;
 
         DamageText dt = ObjectPooler.SpawnFromPool<DamageText>("DamageText", dtParent);
         dt?.DrawDamage(pos, value, damageEvent);
     }
+
 }

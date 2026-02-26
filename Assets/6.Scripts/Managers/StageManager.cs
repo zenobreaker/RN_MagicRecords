@@ -188,6 +188,7 @@ public class StageManager : MonoBehaviour
     {
         if (currentStage == null || mainSpawnPoints == null || mainSpawnPoints.Count <= 0) return;
 
+        //TODO : 캐릭터 ID 선택 기능으로 선택한 ID 값으로 스폰하도록 수정
         // Spawn Character
         spawnManager?.SpawnCharacter(1, mainSpawnPoints);
     }

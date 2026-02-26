@@ -2,21 +2,23 @@
 using UnityEngine;
 
 [System.Serializable]
-public class CharacterObject
+public class CharacterInfo
 {
     public int id;
+    public Sprite charSprite;
+    public string name; 
     public GameObject obj;
 }
 
 
 public class SO_CharacterObjects : ScriptableObject
 {
-    public List<CharacterObject> list = new();
-    protected Dictionary<int, CharacterObject> charTable = new();
+    public List<CharacterInfo> list = new();
+    protected Dictionary<int, CharacterInfo> charTable = new();
 
     public void Init()
     {
-        foreach (CharacterObject co in list)
+        foreach (CharacterInfo co in list)
             charTable[co.id] = co;
     }
 }

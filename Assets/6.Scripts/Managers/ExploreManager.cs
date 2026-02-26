@@ -28,6 +28,8 @@ public class ExploreManager : MonoBehaviour
 
     private bool bCreate = false;
     private bool bAllCleared = false;
+    private bool bFinished = false; 
+    public bool IsFinish => bFinished;
 
     public void EnsureInitialized()
     {

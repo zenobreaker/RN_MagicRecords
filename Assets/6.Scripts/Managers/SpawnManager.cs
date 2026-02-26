@@ -67,8 +67,14 @@ public class SpawnManager : MonoBehaviour
 
             if(playerGO.TryGetComponent<Player>(out var player))
             {
+                // Char ID 
+                player.CharID = id; 
+                PlayerManager.Instance?.SetCurrentPlayer(player);
+
                 //TODO : class(=job) 기능이 생기면 그 아이디로 지정해야 한다.
                 int jobID = 1; 
+                player.JobID = jobID;
+
                 // Passive 등록한 이력 처리
                 AppManager.Instance?.OnAcquire(jobID, playerGO);
 
