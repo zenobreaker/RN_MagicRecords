@@ -153,6 +153,8 @@ public class ExploreManager : MonoBehaviour
 
     public void ClearStage(bool isWin)
     {
+        bFinished = false; 
+
         if (isWin)
         {
             // 스테이지 클리어 했다면 해당 노드가 끝인지 확인
@@ -168,6 +170,7 @@ public class ExploreManager : MonoBehaviour
                     bAllCleared = true;
             }
 
+            bFinished = true; 
             MapNodeID = -1; 
             ChangeState(ExploreState.STAGE_CLEAR);
         }
