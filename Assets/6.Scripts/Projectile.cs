@@ -96,6 +96,8 @@ public class Projectile : MonoBehaviour
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
             damage?.OnDamage(ownerObject, null, hitPoint, damageEvent);
         }
+
+        ignores.Clear();
     }
 
     public void SetDamageInfo(GameObject attacker, DamageData damageData,
