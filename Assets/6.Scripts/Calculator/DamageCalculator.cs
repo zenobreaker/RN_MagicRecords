@@ -23,7 +23,7 @@ public static class DamageCalculator
         float result = attack * data.Power;
         
         crit = bExtraCrit;
-        if (bExtraCrit == false)
+        if (bExtraCrit)
         {
             float v = Random.Range(0.0f, 1.0f);
             if (v <= critRatio)
