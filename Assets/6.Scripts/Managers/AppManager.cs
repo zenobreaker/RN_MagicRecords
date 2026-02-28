@@ -145,13 +145,11 @@ public class AppManager
         if (isProcessingReward) return;
         isProcessingReward = true;
 
-        // 전부 클리어 했다면 최종 보상을 지급한다. 
-        if (exploreManager.AllStageClear)
+        // 스테이지 클리어 상태가 아니라면 보상/챕터 보상 패스
+        if(exploreManager != null && exploreManager.CurrentState != ExploreState.STAGE_CLEAR)
         {
-            int chapter = exploreManager.Chapter;
-            SetChapterClearReward(chapter);
             isProcessingReward = false;
-            return;
+            return; 
         }
 
         // 특정 스테이지 클리어 보상
@@ -163,7 +161,18 @@ public class AppManager
             return;
         }
 
-        rewardManager?.GiveStageReward(stage);
+        // 전부 클리어 했다면 최종 보상을 지급한다. 
+        if (exploreManager.AllStageClear)
+        {
+            int chapter = exploreManager.Chapter;
+            SetChapterClearReward(chapter);
+            return;
+        }
+        else
+        {
+            rewardManager?.GiveStageReward(stage);
+        }
+
         isProcessingReward = false;
     }
 
@@ -277,30 +286,10 @@ public class AppManager
     private void FinishStageProcess()
     {
         AcceptReward();
+
+        SaveIfDirty();
     }
-
-    public void OnFinishStage()
-    {
-        // 마지막 챕터까지 클리어 했다면 탐사 진입 전 로비로 이동시킨다. 
-        if (exploreManager.AllStageClear)
-        {
-            //SceneManager.LoadScene(0);
-            //ResetData();
-
-            //UIManager.Instance?.OpenExploreResultPopUp();
-            return;
-        }
-
-        //TODO: 죽거나 하는 등으로 클리어 조건을 불충족할 경우 
-        {
-            // return;
-        }
-
-        // 일반적인 스테이지 클리어로 인한 퇴장 
-        SceneManager.LoadScene(1);
-    }
-
-    public void SuccessStageProcess()
+    private void SuccessStageProcess()
     {
         if (exploreManager != null)
         {
@@ -308,9 +297,9 @@ public class AppManager
         }
     }
 
-    public void FailedStageProcess()
+    private void FailedStageProcess()
     {
-        Debug.Log($"Stage Challege Filed!..");
+        Debug.Log($"Stage Challege Failed!..");
         exploreManager.ClearStage(false);
     }
 
@@ -566,6 +555,25 @@ public class AppManager
     // 레코드 매니저, 리워드 매니저 등 팝업을 띄우는 대상은 UI매니저의 인큐 함수를 
     // 초기에 등록시켜서 하면 좋을 듯
 
+    #endregion
+
+    #region Scene Navigation (UI Event)
+    // 일반 스테이지 결과창에서 [다음으로] 버튼 클릭 시
+    public void MoveToNextNodeScene()
+    {
+        // 탐사 맵 씬으로 이동
+        SceneManager.LoadScene(1);
+    }
+
+    // 총 결산창에서 [로비로 돌아가기] 버튼 클릭 시
+    public void ReturnToLobbyScene()
+    {
+        
+        // 탐사 데이터 완전 초기화
+        //ResetData();
+        // 로비 씬으로 이동
+        SceneManager.LoadScene(0);
+    }
     #endregion
 
     #region Save
