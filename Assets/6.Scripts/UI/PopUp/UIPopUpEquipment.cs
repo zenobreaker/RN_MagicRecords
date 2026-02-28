@@ -37,6 +37,7 @@ public class UIPopUpEquipment : UIPopUpItem
                 if (item == null) return;
                 var equipment = item as EquipmentItem;
                 if (equipment == null) return;
+
                 UIManager.Instance.CloseTopUI();
                 UIManager.Instance.OpenUI<EnhanceUI>();
             });

@@ -246,23 +246,38 @@ public class StageManager : MonoBehaviour
 
     private void FinishStage()
     {
-        // 성공 처리 
-        if (bStageClearSuccess)
-        {
-            currentStage.bIsCleared = true;
-            OnSucccedStage?.Invoke();
-        }
-        // 실패 
-        else
-        {
-            OnFailedStage?.Invoke();
-        }
-
-        UIManager.Instance?.ShowStageResultUI(bStageClearSuccess);
-
         // Reset Data 
         ResetStageData();
 
+        // 탐사 전체가 끝났는가? 
+        bool isRunCompletelyFinished = !bStageClearSuccess || AppManager.Instance.GetExploreManager().AllStageClear;
+
+        if (isRunCompletelyFinished)
+        {
+            // 탐사 완전 종료 - 로비로 가야하는 상황
+            if (bStageClearSuccess == false)
+            {
+                OnFailedStage?.Invoke();
+            }
+            else
+            {
+                currentStage.bIsCleared = true;
+                OnSucccedStage?.Invoke();
+            }
+
+            // 스테이지 팝업을 스킵하고 총 결산 팝업을 띄움 
+            UIManager.Instance.OpenExploreResultPopUp();
+        }
+        else
+        {
+            // 일반 스테이지 클리어 - 다음 노드로 가야할 때 
+            currentStage.bIsCleared = true;
+            OnSucccedStage?.Invoke();
+
+            UIManager.Instance?.ShowStageResultUI(bStageClearSuccess);
+        }
+
+        // 보상 처리 
         // 구독자에게 스테이지 클리어 했다는 정보 전달
         OnFinishStage?.Invoke();
     }
@@ -274,6 +289,7 @@ public class StageManager : MonoBehaviour
 
     private void OnAllPlayersDead()
     {
+        bStageClearSuccess = false;
         SetFinishStage();
     }
 

@@ -6,12 +6,6 @@ public class UIRecordInventory : UiBase
 {
     private RecordManager recordManager;
 
-    protected override void OnEnable()
-    {
-        base.OnEnable();
-        RefreshUI();
-    }
-
     protected override void OnDisable()
     {
         base.OnDisable();
