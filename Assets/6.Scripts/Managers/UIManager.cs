@@ -307,6 +307,11 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
+    public void OpenExploreResultPopUp()
+    {
+        var ui = OpenUI<UITotalResultPopUp>();
+    }
+
     //--------------------------------------------------------------------------
     // Damage Text
     //--------------------------------------------------------------------------
