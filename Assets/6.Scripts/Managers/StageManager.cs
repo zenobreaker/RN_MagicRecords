@@ -246,8 +246,6 @@ public class StageManager : MonoBehaviour
 
     private void FinishStage()
     {
-        // Reset Data 
-        ResetStageData();
 
         // 탐사 전체가 끝났는가? 
         bool isRunCompletelyFinished = !bStageClearSuccess || AppManager.Instance.GetExploreManager().AllStageClear;
@@ -276,6 +274,9 @@ public class StageManager : MonoBehaviour
 
             UIManager.Instance?.ShowStageResultUI(bStageClearSuccess);
         }
+
+        // Reset Data 
+        ResetStageData();
 
         // 보상 처리 
         // 구독자에게 스테이지 클리어 했다는 정보 전달
