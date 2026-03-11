@@ -78,20 +78,32 @@ public class MapReplacer
     private int maxNodesPreLevel = 3;
     private int finalNodeId = -1;
 
-    private float horizontalSpacing = 200f;
-    private float verticalSpacing = 150f;
+    private float horizontalSpacing = 350f;
+    private float verticalSpacing = 175f;
 
     private float widthMargin = 100;
 
+    private float maxNodePosX = 0.0f;
+    private float maxNodePosY = 0.0f;
+
+  
+    public float GetTotalHorizontalSpacing()
+    {
+        // 가장 멀리 있는 노드의 X좌표에 우측 여백(시작 여백과 동일하게)을 더해줍니다.
+        // 필요하다면 노드 자체의 절반 너비(NodeWidth/2)를 더 추가하셔도 좋습니다.
+        return maxNodePosX + widthMargin;
+    }
+    public float GetTotalVerticalSpacing()
+    {
+        // 세로 스크롤을 막으셨다면 당장 안 쓰이겠지만, 
+        // 공식의 완전성을 위해 위아래 여백을 줘서 반환합니다.
+        return (maxNodePosY * 2) + verticalSpacing;
+    }
 
     public bool IsFinalNode(int nodeId)
     {
         return nodeId == finalNodeId;
     }
-
-    public float GetTotalHorizontalSpacing() => horizontalSpacing * maxLevel;
-
-    public float GetTotalVerticalSpacing() => verticalSpacing * maxNodesPreLevel;
 
     public void Replace(float width = 0.0f, float height = 0.0f)
     {
@@ -124,8 +136,10 @@ public class MapReplacer
                 // 가운데 정렬되도록 y축 계산 
                 float totalHeight = (nodeCount - 1) * verticalSpacing;
                 float y = -(i * verticalSpacing - totalHeight / 2);
+                maxNodePosY = Mathf.Max(y, maxNodePosY); 
 
                 float x = widthMargin + level * horizontalSpacing;
+                maxNodePosX = Mathf.Max(x, maxNodePosX); 
 
                 node.position = new Vector2(x, y);
                 currentLevel.Add(node);
@@ -225,13 +239,21 @@ public class MapReplacer
         for(int i = 0; i < maxLevel; i++)
             levels.Add(new List<MapNode>());
 
+        // 초기화
+        maxNodePosX = 0.0f;
+        maxNodePosY = 0.0f;
+
         bool isConnected = false;
         foreach (var node in savedNodes)
         {
             levels[node.level].Add(node);
             if (node.nextNodeIds.Count > 0)
-                isConnected = true; 
+                isConnected = true;
+            maxNodePosX = Mathf.Max(maxNodePosX, node.position.x);
+            maxNodePosY = Mathf.Max(maxNodePosY, Mathf.Abs(node.position.y));
         }
+        
+        finalNodeId = savedNodes.Last().id;
 
         if (isConnected == false)
             ConnectToNode();
