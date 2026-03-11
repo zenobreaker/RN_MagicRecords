@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using System.Collections.Generic;
+using UnityEditor;
 
 [System.Serializable]
 public class StageInfo
@@ -46,6 +47,7 @@ public class StageReplacer
 {
     private Dictionary<int, StageInfo> nodeToStage = new(); // key : node id value : stage
     private Dictionary<int, int> nodeIdToStageId = new();
+
     public void AssignStages(List<List<MapNode>> levels)
     {
         nodeToStage.Clear();
@@ -54,7 +56,11 @@ public class StageReplacer
         for (int level = 0; level < levels.Count; level++)
         {
             if (level == 0)
+            {
+                nodeToStage[0] = new StageInfo();
+                nodeIdToStageId[0] = 0;
                 continue;
+            }
             bool isLastLevel = (level == levels.Count - 1);
 
             foreach(var node in levels[level])
