@@ -12,6 +12,9 @@ public class DataBaseManager : MonoBehaviour
     private ShopDataBase shopDataBase;
     private EnhanceDataBase enhanceDataBase;
     private RecordDataBase recordDataBase;
+    
+    [SerializeField] private SO_StageIconDatabase stageIconDb;
+
 
     private void Awake()
     {
@@ -183,5 +186,10 @@ public class DataBaseManager : MonoBehaviour
     public RecordData GetEmptyRecord()
     {
         return recordDataBase?.GetEmptyRecord();
+    }
+
+    public Sprite GetStageIcon(StageType type)
+    {
+        return stageIconDb?.GetIcon(type);
     }
 }
