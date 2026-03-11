@@ -245,7 +245,7 @@ public partial class ObjectPooler : MonoBehaviour
 
     public static void ReturnToPool(GameObject obj)
     {
-        if (!Instance.poolDictionary.ContainsKey(obj.name))
+        if (Instance == null || !Instance.poolDictionary.ContainsKey(obj.name))
         {
             //throw new Exception($"Pool with tag {obj.name} doesn't exist.");
             return;
