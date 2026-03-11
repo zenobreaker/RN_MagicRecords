@@ -602,4 +602,9 @@ public class AppManager
         exploreManager?.SaveExploreMap();
     }
     #endregion
+
+    public Sprite GetStageIcon(StageType type)
+    {
+        return databaseManager?.GetStageIcon(type);
+    }
 }
