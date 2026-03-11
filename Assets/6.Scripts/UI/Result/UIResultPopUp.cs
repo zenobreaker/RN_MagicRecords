@@ -73,6 +73,7 @@ public class UITotalResultPopUp : UIPopUp
         StopAllCoroutines();
 
         // 2. 결과창을 100% 켜진 상태(최종 상태)로 즉시 덮어씌움
+        ActiveUIElements();
         SetFinalState();
     }
 
@@ -166,6 +167,25 @@ public class UITotalResultPopUp : UIPopUp
         killCountText?.gameObject.SetActive(false);
         maxExploreText?.gameObject.SetActive(false);
     }
+
+    private void ActiveUIElements()
+    {
+        charInfoGroup?.gameObject.SetActive(true);
+        playTimeGroup?.gameObject.SetActive(true);
+        killCountGroup?.gameObject.SetActive(true);
+        exploreNodeGroup?.gameObject.SetActive(true);
+        recordListGroup?.gameObject.SetActive(true);
+        buttonGroup?.gameObject.SetActive(true);
+
+        portrait?.gameObject.SetActive(true);
+        characterNameText?.gameObject.SetActive(true);
+        jobIcon?.gameObject.SetActive(true);
+        jobNameText?.gameObject.SetActive(true);
+        playTimeText?.gameObject.SetActive(true);
+        killCountText?.gameObject.SetActive(true);
+        maxExploreText?.gameObject.SetActive(true);
+    }
+
 
     private void DrawCharInfo()
     {
