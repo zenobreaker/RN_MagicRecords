@@ -814,7 +814,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!1 &588181660
 GameObject:
@@ -1177,7 +1177,7 @@ MonoBehaviour:
   m_Content: {fileID: 1488604969}
   m_Horizontal: 1
   m_Vertical: 1
-  m_MovementType: 2
+  m_MovementType: 1
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
@@ -2587,7 +2587,6 @@ MonoBehaviour:
   type: 3
   currencyIcon: {fileID: 0}
   currencyText: {fileID: 0}
-  iconDatabase: {fileID: 11400000, guid: ac44dad9915d6a3429120aef0b05821d, type: 2}
 --- !u!114 &6245708194300124159
 MonoBehaviour:
   m_ObjectHideFlags: 0
