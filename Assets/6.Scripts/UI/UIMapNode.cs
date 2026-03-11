@@ -14,11 +14,6 @@ public class UIMapNode
     public MapNode Node { get { return mapNode; } }
  
 
-    private void Start()
-    {
-        
-    }
-
     public virtual void Init(MapNode mapNode)
     {
         this.mapNode = mapNode;

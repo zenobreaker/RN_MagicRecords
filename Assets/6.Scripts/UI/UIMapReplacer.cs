@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIMapReplacer : MonoBehaviour
 {
@@ -68,16 +69,29 @@ public class UIMapReplacer : MonoBehaviour
     {
         if (Content == null || mapReplacer == null) return;
 
+        // Content의 부모(일반적으로 ScrollRect의 Viewport)를 가져옵니다.
+        RectTransform viewport = Content.parent as RectTransform;
+
+        Canvas.ForceUpdateCanvases();
+
+        // 뷰포트를 찾지 못했다면 기본값 세팅
+        float viewportWidth = viewport != null ? viewport.rect.width : 800f;
+        float viewportHeight = viewport != null ? viewport.rect.height : 600f;
+
+        // 노드들이 차지하는 총 길이만 가져옵니다.
         float nodeHorizontal = mapReplacer.GetTotalHorizontalSpacing();
         float nodeVertical = mapReplacer.GetTotalVerticalSpacing();
 
-        float width = Screen.width;
-        float height = Screen.height;
+        // [가로] 뷰포트 너비보다 노드들의 너비가 길면, 노드 너비만큼 Content를 늘립니다.
+        float finalWidth = Mathf.Max(viewportWidth, nodeHorizontal);
 
-        width = Mathf.Max(width, nodeHorizontal);
-        height = Mathf.Max(height, nodeVertical);
+        // [세로] 세로 스크롤을 막기 위해 Content의 세로 길이를 부모(Viewport)의 길이에 딱 맞춥니다.
+        float finalHeight = Mathf.Max(viewportHeight, nodeVertical);
 
-        Content.sizeDelta = new Vector2(width, height);
+        // 크기 적용
+        // 주의: Content의 Anchor가 Left-Stretch (Min 0,0 / Max 0,1)라면 sizeDelta.y를 0으로 줘야 할 수도 있습니다.
+        // 현재 코드는 Anchor가 Center-Middle (Min 0.5,0.5 / Max 0.5,0.5) 이거나 Left-Top일 때 정상 작동합니다.
+        Content.sizeDelta = new Vector2(finalWidth, finalHeight);
     }
 
     private void DrawNodeLine()
