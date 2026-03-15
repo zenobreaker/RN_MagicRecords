@@ -164,6 +164,7 @@ GameObject:
   - component: {fileID: 6995460043810831650}
   - component: {fileID: 7418277009466354878}
   - component: {fileID: 3282444826817650643}
+  - component: {fileID: -6445737901130779709}
   m_Layer: 0
   m_Name: TurtleShell
   m_TagString: Untagged
@@ -452,6 +453,9 @@ MonoBehaviour:
   AIStateTypeName: State
   TargetName: Target
   AttackDistanceName: AttackDistance
+  PerceptionName: Perception
+  MovementName: Movement
+  MoveSpeedName: MoveSpeed
 --- !u!114 &2086270666175774005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -549,6 +553,19 @@ MonoBehaviour:
       ctype: 4
       value: 3
     skill: {fileID: 0}
+--- !u!114 &-6445737901130779709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833609562939488625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f03b902b8a829947b23e80de3c41212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SO_Movement: {fileID: 11400000, guid: 0f4fe110b41cda5459f4d00db63c2125, type: 2}
 --- !u!1 &1842488182837315352
 GameObject:
   m_ObjectHideFlags: 0

@@ -674,7 +674,6 @@ GameObject:
   - component: {fileID: 7643664155159037242}
   - component: {fileID: 905179345819799458}
   - component: {fileID: 4754572729880470116}
-  - component: {fileID: 940006591967493151}
   - component: {fileID: 8476947135198487752}
   - component: {fileID: 4756509315433545653}
   - component: {fileID: 3458649697022001091}
@@ -838,20 +837,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cafd96edbe1b257448f7fca491e72677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &940006591967493151
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2506087712966942240}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1361b1b244aa1a04792e0a8a2161df3a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tireObject: {fileID: 1984044418641577076}
-  torque: 200
 --- !u!114 &8476947135198487752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -895,9 +880,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bDebug: 0
   currComboObj: {fileID: 0}
-  comboInputUIPrefab: {fileID: 0}
-  comboInputBase: {fileID: 0}
-  bDebugDraw: 0
+  comboInputHandler: {fileID: 0}
 --- !u!114 &7892349361581766820
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -913,7 +896,6 @@ MonoBehaviour:
   originPrefabs:
   - {fileID: 3126351601299179236, guid: 8cfc0c45a1c83ff43a11659c75050798, type: 3}
   initType: 3
-  weaponController: {fileID: 0}
 --- !u!114 &5856322758750016862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2310,7 +2292,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aeb7b178e6ae8d4fa5610bff538693e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayAnimName: 
 --- !u!95 &5670327913022439158
 Animator:
   serializedVersion: 7

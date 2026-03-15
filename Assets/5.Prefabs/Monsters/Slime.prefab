@@ -187,6 +187,7 @@ GameObject:
   - component: {fileID: 5638930628743132484}
   - component: {fileID: 1094760917284290968}
   - component: {fileID: 5096374043729121142}
+  - component: {fileID: 980019055661084329}
   m_Layer: 0
   m_Name: Slime
   m_TagString: Untagged
@@ -540,6 +541,9 @@ MonoBehaviour:
   AIStateTypeName: State
   TargetName: Target
   AttackDistanceName: AttackDistance
+  PerceptionName: Perception
+  MovementName: Movement
+  MoveSpeedName: MoveSpeed
 --- !u!114 &5096374043729121142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -572,6 +576,19 @@ MonoBehaviour:
       ctype: 4
       value: 3
     skill: {fileID: 0}
+--- !u!114 &980019055661084329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661731564040365086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f03b902b8a829947b23e80de3c41212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SO_Movement: {fileID: 11400000, guid: 0f4fe110b41cda5459f4d00db63c2125, type: 2}
 --- !u!1 &3395227246003356282
 GameObject:
   m_ObjectHideFlags: 0
