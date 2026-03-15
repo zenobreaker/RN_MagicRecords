@@ -25,6 +25,8 @@ public partial class StrafeAction : Action
     private int prevIndex = -1;
     private int direction = -1; // 1 = 시계 방향, -1 = 반시계 방향
     private float cooldown = 0;
+
+    private MovementComponent movement; 
     
     protected override Status OnStart()
     {
@@ -40,6 +42,21 @@ public partial class StrafeAction : Action
 
         Vector3 center = Target.Value.transform.position;
         points = PositionHelpers.GenerateCirclePoints(center, Radius.Value);
+        movement = Self?.Value?.GetComponent<MovementComponent>();
+
+        // 💡 1. Movement가 있다면 물리적 이동은 우리가 직접 제어한다고 선언!
+        if (movement != null)
+        {
+            agent.updatePosition = false;
+            agent.updateRotation = false;
+        }
+
+        // 🚨 핵심 해결 1: 원을 그리는 정밀한 이동을 위해 도착 인정 거리(Stopping Distance)를 팍 줄여줍니다!
+        // 직전 추적 노드에서 설정된 넓은 범위를 무시하고, 포인트에 정확히 닿아야만 다음으로 넘어가게 합니다.
+        if (agent.isActiveAndEnabled)
+        {
+            agent.stoppingDistance = 0.1f;
+        }
 
         return SetNextStep();
     }
@@ -48,7 +65,13 @@ public partial class StrafeAction : Action
     {
         if (agent == null)
             return Status.Failure;
-        
+
+        // 💡 2. Movement가 이동시킨 내 실제 위치를 GPS(agent)에 실시간 동기화
+        if (movement != null)
+        {
+            agent.nextPosition = Self.Value.transform.position;
+        }
+
         // 적이 해당 자리를 많이 벗어난 경우 스트레이프 종료
         if (ChangedTargetPosition(Target.Value.transform.position))
             return Status.Success;
@@ -62,6 +85,23 @@ public partial class StrafeAction : Action
         if (agent.isActiveAndEnabled && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
             return SetNextStep();
+        }
+
+        // 💡 4. 아직 이동 중이라면? GPS의 방향을 읽어와서 다리(Movement)에게 지시
+        if (movement != null && !agent.pathPending)
+        {
+            Vector3 dir = agent.steeringTarget - Self.Value.transform.position;
+            dir.y = 0;
+
+            // 🚨 핵심 해결 2: 미세하게 남은 거리에서는 덜덜거리지 않도록 확실하게 브레이크!
+            if (dir.sqrMagnitude > 0.05f) // 떨림 방지를 위해 허용 오차를 조금 키웠습니다.
+            {
+                movement.SetDirection(new Vector2(dir.x, dir.z).normalized);
+            }
+            else
+            {
+                movement.SetDirection(Vector2.zero); // 다리 멈춰!
+            }
         }
 
         return Status.Running;
@@ -124,8 +164,26 @@ public partial class StrafeAction : Action
         closestPoint = points[nextIndex];
         prevIndex = nextIndex;
 
-        if(agent != null && agent.isActiveAndEnabled)
+
+        // 💡 5. Movement 존재 여부와 상관없이, GPS(agent)에게 목적지는 무조건 찍어줘야 합니다!
+        if (agent != null && agent.isActiveAndEnabled)
+        {
             agent.SetDestination(closestPoint);
+        }
+    }
+
+    // 💡 6. 노드가 끝날 때 멈춰주는 안전장치 추가!
+    protected override void OnEnd()
+    {
+        if (movement != null)
+        {
+            movement.SetDirection(Vector2.zero); // 다리 멈춰!
+        }
+
+        if (agent != null && agent.isActiveAndEnabled)
+        {
+            agent.ResetPath(); // GPS 초기화
+        }
     }
 }
 

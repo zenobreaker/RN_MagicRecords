@@ -7,10 +7,14 @@ using UnityEngine;
 public class AIBehaviourComponent : MonoBehaviour
 {
 
+    [SerializeField] private string AIControllerName = "AIController";
     [SerializeField] private string CanMoveName = "CanMove";
     [SerializeField] private string AIStateTypeName = "State";
     [SerializeField] private string TargetName = "Target";
     [SerializeField] private string AttackDistanceName = "AttackDistance";
+    [SerializeField] private string PerceptionName = "Perception";
+    [SerializeField] private string MovementName = "Movement";
+    [SerializeField] private string MoveSpeedName = "MoveSpeed";
 
     private BehaviorGraphAgent bgAgent;
     private StateComponent state;
@@ -26,6 +30,12 @@ public class AIBehaviourComponent : MonoBehaviour
         Debug.Assert(state != null);
 
         state.OnStateTypeChanged += OnStateTypeChanged;
+
+        if (bgAgent == null) return;
+
+        bgAgent.SetVariableValue<AIController>(AIControllerName, GetComponent<AIController>());
+        bgAgent.SetVariableValue<PerceptionComponent>(PerceptionName, GetComponent<PerceptionComponent>());
+        bgAgent.SetVariableValue<MovementComponent>(MovementName, GetComponent<MovementComponent>());
     }
 
     private void OnDestroy()

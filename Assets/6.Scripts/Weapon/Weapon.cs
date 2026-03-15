@@ -244,7 +244,7 @@ public class Weapon : MonoBehaviour
 
     protected StateComponent state;
     protected StatusComponent status;
-    protected PlayerMovingComponent moving;
+    protected MovementComponent moving;
 
     public event Action<GameObject> OnLastAttackExecuted; 
 
@@ -258,7 +258,7 @@ public class Weapon : MonoBehaviour
         state = rootObject.GetComponent<StateComponent>();
         status = rootObject.GetComponent<StatusComponent>();
         ownerCharacter = rootObject.GetComponent<Character>();
-        moving = rootObject.GetComponent<PlayerMovingComponent>();
+        moving = rootObject.GetComponent<MovementComponent>();
         dash = rootObject.GetComponent<DashComponent>();
 
         if (so_Action != null)

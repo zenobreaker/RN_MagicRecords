@@ -20,7 +20,7 @@ public class DashComponent : MonoBehaviour
     private Animator animator;
 
     #region COMPONENTS
-    private PlayerMovingComponent moving;
+    private MovementComponent moving;
     private StateComponent state;
     #endregion
 
@@ -34,7 +34,7 @@ public class DashComponent : MonoBehaviour
         PlayerInput input = GetComponent<PlayerInput>();
         Debug.Assert(input != null);
 
-        moving = GetComponent<PlayerMovingComponent>();
+        moving = GetComponent<MovementComponent>();
         state = GetComponent<StateComponent>();
         Debug.Assert(state != null);
         //state.OnStateTypeChanged += OnStateTypeChanged;
@@ -117,7 +117,7 @@ public class DashComponent : MonoBehaviour
         // 상태 변경
         state.SetEvadeMode(); 
 
-        Vector2 value = moving.InputMove;
+        Vector2 value = moving.TargetDirection;
 
         // 기본적으론 캐릭터가 보는 방향 이동
         DashDirection dd = DashDirection.Forward;
