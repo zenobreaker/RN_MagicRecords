@@ -13,33 +13,37 @@ MonoBehaviour:
   m_Name: SO_Gun_Action
   m_EditorClassIdentifier: 
   actionDatas:
-  - stateName: Action
+  - subStateName: Combo_1
+    stateName: Action
+    layerName: 
     actionSpeed: 1.5
-    subStateName: Combo_1
     weaponActionName: Action
     SoundName: Gun_Normal1
     impulseDirection: {x: 0, y: 0, z: 0}
     settings: {fileID: 0}
     bCanMove: 0
-  - stateName: Action
+  - subStateName: Combo_2
+    stateName: Action
+    layerName: 
     actionSpeed: 1.5
-    subStateName: Combo_2
     weaponActionName: Action
     SoundName: Gun_Normal1
     impulseDirection: {x: 0, y: 0, z: 0}
     settings: {fileID: 0}
     bCanMove: 0
-  - stateName: Action
+  - subStateName: Combo_3
+    stateName: Action
+    layerName: 
     actionSpeed: 1.5
-    subStateName: Combo_3
     weaponActionName: Action
     SoundName: Gun_Normal1
     impulseDirection: {x: 0, y: 0, z: 0}
     settings: {fileID: 0}
     bCanMove: 0
-  - stateName: Action
+  - subStateName: Combo_4
+    stateName: Action
+    layerName: 
     actionSpeed: 1
-    subStateName: Combo_4
     weaponActionName: Action_Final
     SoundName: Gun_Normal2
     impulseDirection: {x: 0, y: 0, z: 0}

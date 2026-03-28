@@ -25,16 +25,15 @@ public class DynamicPartRotator : MonoBehaviour
         // 1. 이번 프레임에 실제로 얼마나 이동했는지 거리(magnitude) 계산
         Vector3 deltaMove = transform.position - lastPosition;
 
-        // 2. 이동 거리를 시간으로 나누어 실제 '속도(Speed)'를 구함
-        float currentMoveSpeed = deltaMove.magnitude / Time.deltaTime;
+        // 💡 2. 수학의 마법 적용! (거리 / 시간 * 시간 = 거리)
+        // Time.deltaTime으로 나누는 위험한 짓을 빼고, 이동 거리(magnitude)에 바로 가중치를 곱합니다.
+        // 가만히 있어도 도는 baseSpeed에만 deltaTime을 곱해주면 완벽합니다!
+        float totalRotation = (baseSpeed * Time.deltaTime) + (deltaMove.magnitude * moveMultiplier);
 
-        // 3. 총 회전량 = (기본 속도 + 실제 이동 속도 * 가중치) * Time.deltaTime
-        float totalRotation = (baseSpeed + currentMoveSpeed * moveMultiplier) * Time.deltaTime;
-
-        // 4. 지정된 축을 기준으로 굴리기
+        // 3. 지정된 축을 기준으로 굴리기
         targetPart.Rotate(rotationAxis * totalRotation);
 
-        // 5. 다음 프레임 비교를 위해 현재 위치 업데이트
+        // 4. 다음 프레임 비교를 위해 현재 위치 업데이트
         lastPosition = transform.position;
     }
 }
