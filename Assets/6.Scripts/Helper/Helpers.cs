@@ -2,6 +2,19 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+public static class LayerMaskExtensions
+{
+    public static bool Contains(this LayerMask layerMask, int layer)
+    {
+        return (layerMask.value & (1 << layer)) != 0; 
+    }
+
+    public static bool Contains(this LayerMask layerMask, GameObject obj)
+    {
+        return (layerMask.value & (1 << obj.layer)) != 0;
+    }
+}
+
 public static class Extend_TransformHelpers
 {
     public static Transform FindChildByName(this Transform transform, string name)

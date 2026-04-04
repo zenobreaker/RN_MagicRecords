@@ -222,3 +222,14 @@ public enum RecordRarity
     LEGENDARY, 
     MYTH,
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//  Target Position Type 
+public enum TargetPositionType
+{
+    CasterForward,      // 시전자의 정면 일정 거리
+    FixedLocalOffset,   // 시전자 기준 특정 위치 (예: 내 오른쪽 2미터)
+    RandomAroundCaster, // (미래용) 시전자 주변 무작위 위치 (메테오 샤워용)
+    ReadFromBlackboard  // (미래용) 마우스 클릭 등 외부에서 이미 세팅한 값 유지
+}
