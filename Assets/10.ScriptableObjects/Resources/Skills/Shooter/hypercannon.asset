@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a45f9791fc77e874c9cfd4fd8604a80c, type: 3}
-  m_Name: plasmaray
+  m_Name: hypercannon
   m_EditorClassIdentifier: 
-  id: 2
-  skillName: name_plasmaray
-  skillDescription: desc_plasmaray
+  id: 3
+  skillName: name_hypercannon
+  skillDescription: desc_hypercannon
   learnableLevel: 5
   maxLevel: 10
   skillUpgradeCost: 
-  skillImage: {fileID: 21300000, guid: 69de06842bee5af439227c367e68c85b, type: 3}
+  skillImage: {fileID: 21300000, guid: eab3fc91fed754e49bde1a448ea1ceee, type: 3}
   leadingSkillList: 
   cost: 10
   cooldown: 12
@@ -26,12 +26,11 @@ MonoBehaviour:
   castingTime: -1
   phaseList:
   - phaseName: "\uC0AC\uACA9"
-    isInstant: 0
     modules:
-    - rid: 9058063302450741333
-    - rid: 9058063302450741332
-    - rid: 9058063302450741331
-    - rid: 9058063302450741399
+    - rid: 9058063329371095122
+    - rid: 9058063329371095123
+    - rid: 9058063329371095124
+    - rid: 9058063329371095125
     baseDamage: 0
     confficient: 1
     hitDelay: 1.5
@@ -55,7 +54,7 @@ MonoBehaviour:
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 1, y: 1, z: 1}
     bonusOptionList: 
-    skillObject: {fileID: 1208751775541016116, guid: f89766842e8e7024c93bd9105fa78104, type: 3}
+    skillObject: {fileID: 5904922040541714445, guid: 4d08b90daa2f6e646b2a16a1baee277c, type: 3}
     objectName: Beam
     actionData:
       subStateName: 
@@ -73,7 +72,18 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 9058063302450741331
+    - rid: 9058063329371095122
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        soundName: 
+    - rid: 9058063329371095123
+      type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        impulseDirection: {x: 0, y: 0, z: 0}
+        settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
+    - rid: 9058063329371095124
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
@@ -87,18 +97,7 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           settings: {fileID: 0}
           bCanMove: 0
-    - rid: 9058063302450741332
-      type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 5
-        impulseDirection: {x: 0, y: 0, z: 0}
-        settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
-    - rid: 9058063302450741333
-      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 4
-        soundName: Gun_Normal2
-    - rid: 9058063302450741399
+    - rid: 9058063329371095125
       type: {class: Module_SpawnEffect, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 2
@@ -121,6 +120,6 @@ MonoBehaviour:
             HitParticlePositionOffset: {x: 0, y: 0, z: 0}
             HitParticleScaleOffset: {x: 1, y: 1, z: 1}
         spawnPosition: {x: 0, y: 1, z: 1}
-        spawnRotation: {x: 0, y: 0, z: 0}
+        spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
         skillObject: {fileID: 0}
-        objectName: Beam
+        objectName: HyperCannon

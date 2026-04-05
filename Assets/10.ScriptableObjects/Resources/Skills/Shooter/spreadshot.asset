@@ -18,14 +18,16 @@ MonoBehaviour:
   learnableLevel: 15
   maxLevel: 10
   skillUpgradeCost: 
-  skillImage: {fileID: 0}
+  skillImage: {fileID: 21300000, guid: 927dede8c20b9d0419f79a6c40136695, type: 3}
   leadingSkillList: 
   cost: 10
   cooldown: 12
   limitCooldown: 2
   castingTime: -1
   phaseList:
-  - baseDamage: 0
+  - phaseName: 
+    modules: []
+    baseDamage: 0
     confficient: 1.2
     hitDelay: 0
     duration: 0
@@ -63,3 +65,6 @@ MonoBehaviour:
     soundName: 
     spawnPosition: {x: 0, y: 0, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
+  references:
+    version: 2
+    RefIds: []

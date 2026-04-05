@@ -10,26 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a45f9791fc77e874c9cfd4fd8604a80c, type: 3}
-  m_Name: test_genericskill 1
+  m_Name: starfall
   m_EditorClassIdentifier: 
-  id: 112
-  skillName: TestGS2
-  skillDescription: 
+  id: 11
+  skillName: name_starfall
+  skillDescription: desc_starfall
   learnableLevel: 0
   maxLevel: 0
   skillUpgradeCost: 
-  skillImage: {fileID: 21300000, guid: 4b90ae1275049444fad10361e889fffc, type: 3}
+  skillImage: {fileID: 21300000, guid: b3c69e5c82f677a4c8638b3bfb825549, type: 3}
   leadingSkillList: 
   cost: 0
   cooldown: 0
   limitCooldown: 0
   castingTime: 0
   phaseList:
-  - phaseName: "1\uBC88 \uD398\uC774\uC988"
+  - phaseName: "\uC804\uBC29 \uD0C0\uAC9F\uD305"
+    isInstant: 1
     modules:
-    - rid: 7308159180900401302
-    - rid: 7308159202074034583
-    - rid: 7308159180900401259
+    - rid: 9058063375093465164
     baseDamage: 1
     confficient: 0
     hitDelay: 0
@@ -68,19 +67,20 @@ MonoBehaviour:
     soundName: 
     spawnPosition: {x: 0, y: 0, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
-  - phaseName: "2\uBC88 \uD398\uC774\uC988"
+  - phaseName: "\uC0AC\uACA9"
+    isInstant: 0
     modules:
     - rid: 5085156208516268146
     - rid: 5085156208516268138
     - rid: 5085156208516268147
-    - rid: 9058063302450741394
-    baseDamage: 1
+    - rid: 9058063302450741393
+    baseDamage: 0
     confficient: 0
     hitDelay: 0
     duration: 0
     damageData:
       damageType: 0
-      Power: 5
+      Power: 0
       bDownable: 0
       bLauncher: 0
       SoundName: Hit
@@ -140,35 +140,7 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           settings: {fileID: 0}
           bCanMove: 0
-    - rid: 7308159180900401259
-      type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 0
-        signType: 1
-        duration: 1.5
-        isSetTargetPos: 0
-        spawnCount: 3
-        angleBetween: 30
-        startAngleOffset: 0
-        radius: 1
-        rectSize: {x: 0, y: 2}
-        maxRectSize: {x: 0.5, y: 2}
-        fanRadius: 2
-        fanAngle: 90
-    - rid: 7308159180900401302
-      type: {class: Module_SetTargetByPerception, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 0
-        isAutoTarget: 1
-        defaultDistance: 0
-    - rid: 7308159202074034583
-      type: {class: Module_LookAtTarget, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 0
-        useBlackboardPos: 1
-        lookAtOwnerTarget: 0
-        turnSpeed: 0
-    - rid: 9058063302450741394
+    - rid: 9058063302450741393
       type: {class: Module_SpawnEffect, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 2
@@ -190,7 +162,14 @@ MonoBehaviour:
             HitParticle: {fileID: 0}
             HitParticlePositionOffset: {x: 0, y: 0, z: 0}
             HitParticleScaleOffset: {x: 1, y: 1, z: 1}
-        spawnPosition: {x: 0, y: 0, z: 0}
+        spawnPosition: {x: 0, y: 20, z: 1}
         spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
         skillObject: {fileID: 0}
-        objectName: ReinForcedMagicBullet
+        objectName: StarFall
+    - rid: 9058063375093465164
+      type: {class: Module_CalcTargetPosition, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        targetingType: 0
+        forwardDistance: 5
+        blackboardKey: TargetPosition

@@ -73,7 +73,7 @@ MonoBehaviour:
     - rid: 5085156208516268146
     - rid: 5085156208516268138
     - rid: 5085156208516268147
-    - rid: 5085156208516268145
+    - rid: 9058063302450741393
     baseDamage: 1
     confficient: 0
     hitDelay: 0
@@ -121,32 +121,6 @@ MonoBehaviour:
         triggerTime: 5
         impulseDirection: {x: 0, y: 0, z: 0}
         settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
-    - rid: 5085156208516268145
-      type: {class: Module_SpawnProjectile, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 2
-        damageData:
-          damageType: 0
-          Power: 5
-          bDownable: 0
-          bLauncher: 0
-          SoundName: 
-          impulseDirection: {x: 0, y: 0, z: 0}
-          settings: {fileID: 0}
-          hitData:
-            DamageType: 0
-            Distance: 0
-            HeightValue: 0
-            StopFrame: 0
-            HitImpactIndex: 0
-            HitSoundName: 
-            HitParticle: {fileID: 0}
-            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
-        spawnPosition: {x: 0, y: 1, z: 1}
-        spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
-        skillObject: {fileID: 0}
-        objectName: ReinForcedMagicBullet
     - rid: 5085156208516268146
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
@@ -194,3 +168,29 @@ MonoBehaviour:
         useBlackboardPos: 1
         lookAtOwnerTarget: 0
         turnSpeed: 0
+    - rid: 9058063302450741393
+      type: {class: Module_SpawnEffect, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 2
+        damageData:
+          damageType: 0
+          Power: 1
+          bDownable: 0
+          bLauncher: 0
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          settings: {fileID: 0}
+          hitData:
+            DamageType: 0
+            Distance: 0
+            HeightValue: 0
+            StopFrame: 0
+            HitImpactIndex: 0
+            HitSoundName: 
+            HitParticle: {fileID: 0}
+            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+        spawnPosition: {x: 0, y: 1, z: 1}
+        spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+        skillObject: {fileID: 0}
+        objectName: ReinForcedMagicBullet
