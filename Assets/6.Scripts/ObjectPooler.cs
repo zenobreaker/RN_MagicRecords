@@ -89,8 +89,8 @@ public partial class ObjectPooler : MonoBehaviour
         while (commandQueue.Count > 0)
         {
             var cmd = commandQueue.Dequeue();
-            // 예약된 건 Defered 여부를 선택하게 하거나, 기본적으로 로직 수행
-            GameObject obj = _DeferedSpawnFromPool(cmd.tag, cmd.pos, cmd.rot);
+            // 예약된 건 Deferred 여부를 선택하게 하거나, 기본적으로 로직 수행
+            GameObject obj = _DeferredSpawnFromPool(cmd.tag, cmd.pos, cmd.rot);
             cmd.callback?.Invoke(obj);
         }
     }
@@ -107,13 +107,13 @@ public partial class ObjectPooler : MonoBehaviour
         Instance._SpawnWithCallback(tag, tr.position, tr.rotation, callback, false);
     }
 
-    public static void DeferedSpawnWithCallback(string tag, Transform tr, Action<GameObject> callback)
+    public static void DeferredSpawnWithCallback(string tag, Transform tr, Action<GameObject> callback)
     {
         Instance._SpawnWithCallback(tag, tr.position, tr.rotation, callback, true);
     }
 
     // 내부 실제 로직
-    private void _SpawnWithCallback(string tag, Vector3 pos, Quaternion rot, Action<GameObject> callback, bool isDefered)
+    private void _SpawnWithCallback(string tag, Vector3 pos, Quaternion rot, Action<GameObject> callback, bool isDeferred)
     {
         if (!bComplete)
         {
@@ -124,7 +124,7 @@ public partial class ObjectPooler : MonoBehaviour
         }
 
         // 준비 됐으면 즉시 실행
-        GameObject obj = isDefered ? _DeferedSpawnFromPool(tag, pos, rot) : _SpawnFromPool(tag, pos, rot);
+        GameObject obj = isDeferred ? _DeferredSpawnFromPool(tag, pos, rot) : _SpawnFromPool(tag, pos, rot);
         callback?.Invoke(obj);
     }
 
@@ -175,19 +175,19 @@ public partial class ObjectPooler : MonoBehaviour
     }
     #endregion
 
-    #region DeferedSpawn
-    public static GameObject DeferedSpawnFromPool(string tag, Transform trasnform) =>
-       Instance._DeferedSpawnFromPool(tag, trasnform.position, trasnform.rotation);
+    #region DeferredSpawn
+    public static GameObject DeferredSpawnFromPool(string tag, Transform trasnform) =>
+       Instance._DeferredSpawnFromPool(tag, trasnform.position, trasnform.rotation);
 
-    public static GameObject DeferedSpawnFromPool(string tag, Vector3 position) =>
-        Instance._DeferedSpawnFromPool(tag, position, Quaternion.identity);
+    public static GameObject DeferredSpawnFromPool(string tag, Vector3 position) =>
+        Instance._DeferredSpawnFromPool(tag, position, Quaternion.identity);
 
-    public static GameObject DeferedSpawnFromPool(string tag, Vector3 position, Quaternion rotation) =>
-        Instance._DeferedSpawnFromPool(tag, position, rotation);
+    public static GameObject DeferredSpawnFromPool(string tag, Vector3 position, Quaternion rotation) =>
+        Instance._DeferredSpawnFromPool(tag, position, rotation);
 
-    public static T DeferedSpawnFromPool<T>(string tag, Vector3 position) where T : Component
+    public static T DeferredSpawnFromPool<T>(string tag, Vector3 position) where T : Component
     {
-        GameObject obj = Instance._DeferedSpawnFromPool(tag, position, Quaternion.identity);
+        GameObject obj = Instance._DeferredSpawnFromPool(tag, position, Quaternion.identity);
         if (obj.TryGetComponent(out T component))
             return component;
         else
@@ -197,9 +197,9 @@ public partial class ObjectPooler : MonoBehaviour
         }
     }
 
-    public static T DeferedSpawnFromPool<T>(string tag, Vector3 position, Quaternion rotation) where T : Component
+    public static T DeferredSpawnFromPool<T>(string tag, Vector3 position, Quaternion rotation) where T : Component
     {
-        GameObject obj = Instance._DeferedSpawnFromPool(tag, position, rotation);
+        GameObject obj = Instance._DeferredSpawnFromPool(tag, position, rotation);
         if (obj.TryGetComponent(out T component))
             return component;
         else
@@ -209,9 +209,9 @@ public partial class ObjectPooler : MonoBehaviour
         }
     }
 
-    public static T DeferedSpawnFromPool<T>(string tag, Transform trasnform) where T : Component
+    public static T DeferredSpawnFromPool<T>(string tag, Transform trasnform) where T : Component
     {
-        GameObject obj = Instance._DeferedSpawnFromPool(tag, trasnform.position, trasnform.rotation);
+        GameObject obj = Instance._DeferredSpawnFromPool(tag, trasnform.position, trasnform.rotation);
         if (obj.TryGetComponent(out T component))
             return component;
         else
@@ -280,7 +280,7 @@ public partial class ObjectPooler : MonoBehaviour
         return objectToSpawn;
     }
 
-    private GameObject _DeferedSpawnFromPool(string tag, Vector3 position, Quaternion rotation)
+    private GameObject _DeferredSpawnFromPool(string tag, Vector3 position, Quaternion rotation)
     {
 
         // 1. 유효한 객체 확보 (공통 로직 호출)
@@ -316,8 +316,6 @@ public partial class ObjectPooler : MonoBehaviour
 
             GameObject newObj = CreateNewObjectSetParent(pool.tag, pool.prefab);
             ArrangePool(tag, newObj);
-            // CreateNewObject 혹은 ArrangePool 내부에서 Enqueue가 일어난다고 가정합니다.
-            // 만약 수동으로 넣어야 한다면 여기서 poolQueue.Enqueue(newObj); 를 추가하세요.
         }
 
         return poolQueue.Peek();
@@ -325,6 +323,8 @@ public partial class ObjectPooler : MonoBehaviour
 
     public static void FinishSpawn(GameObject obj)
     {
+        if (obj == null) return; 
+
         FinishSpawn(obj.name);
     }
 

@@ -13,7 +13,7 @@ public class SpawnObject
 
     public void Spawn()
     {
-        ObjectPooler.DeferedSpawnFromPool(spawnTag, spawnPos, spawnQuat);
+        ObjectPooler.DeferredSpawnFromPool(spawnTag, spawnPos, spawnQuat);
     }
 }
 
@@ -135,7 +135,7 @@ public class SpawnManager : MonoBehaviour
             string tag = $"NPC_{id}";
 
 
-            ObjectPooler.DeferedSpawnWithCallback(tag, spawnPoints[idx], 
+            ObjectPooler.DeferredSpawnWithCallback(tag, spawnPoints[idx], 
                 (npc) =>
             // Set Stat 
             {
