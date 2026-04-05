@@ -234,8 +234,11 @@ public class Player
             return;
         }
 
-        ApplyLaunch(attacker, causer, damageEvent.hitData);
-        damageHandle?.OnDamage(attacker, damageEvent);
+        if (damageEvent != null)
+        {
+            ApplyLaunch(attacker, causer, damageEvent.hitData);
+            damageHandle?.OnDamage(attacker, damageEvent);
+        }
 
         if (healthPoint.Dead == false)
         {

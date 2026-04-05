@@ -231,5 +231,13 @@ public enum TargetPositionType
     CasterForward,      // 시전자의 정면 일정 거리
     FixedLocalOffset,   // 시전자 기준 특정 위치 (예: 내 오른쪽 2미터)
     RandomAroundCaster, // (미래용) 시전자 주변 무작위 위치 (메테오 샤워용)
-    ReadFromBlackboard  // (미래용) 마우스 클릭 등 외부에서 이미 세팅한 값 유지
+    ReadFromBlackboard,  // (미래용) 마우스 클릭 등 외부에서 이미 세팅한 값 유지
+    NearestEnemy,        // 가장 가까운 적 하나
+    MultipleEnemies      // 범위 내 여러 명의 적
+}
+
+public enum FirePatternType
+{
+    RegularFan,   // 정해진 간격으로 쏘는 부채꼴 (기존 방식)
+    RandomSpread  // 집탄율 범위 내에서 무작위 난사
 }

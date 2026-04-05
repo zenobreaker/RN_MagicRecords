@@ -91,6 +91,19 @@ public static class Extend_Component
     {
         return c.gameObject.TryComponentInChildren<T>(out component, includeInactive);
     }
+
+    public static bool TryComponentInParent<T>(this GameObject go, out T component, bool includeInactive = false)
+    {
+        if(go.TryGetComponent<T>(out component)) return true;
+
+        component = go.GetComponentInParent<T>(includeInactive);
+        return component != null;   
+    }
+
+    public static bool TryComponentInParent<T>(this Component c, out T component, bool includeInactive = false)
+    {
+        return c.gameObject.TryComponentInParent<T>(out component, includeInactive);
+    }
 }
 
 public static class Extend_List
@@ -237,6 +250,26 @@ public static class PositionHelpers
         if (totalCount > 1)
             currentAngle += (index - (totalCount - 1) * 0.5f) * angleBetween;
         return owner.rotation * Quaternion.Euler(0, currentAngle, 0);
+    }
+
+    /// <summary>
+    /// 난사(Spray) 패턴을 위한 무작위 집탄율 방향을 반환합니다.
+    /// </summary>
+    /// <param name="baseRotation">발사 중심 방향</param>
+    /// <param name="maxSpreadAngle">최대 흩뿌림 각도 (예: 30도면 -15도 ~ +15도 사이로 튐)</param>
+    /// <returns>랜덤하게 틀어진 최종 회전값</returns>
+    public static Quaternion GetRandomSpread(Quaternion baseRotation, float maxSpreadAngle)
+    {
+        // 1. 탑다운 뷰이므로 Y축(좌우 방향) 기준으로 랜덤 각도를 뽑습니다.
+        // 최대 각도가 30도라면, 중심을 기준으로 좌로 15도, 우로 15도 내에서 튀어야 합니다.
+        float halfAngle = maxSpreadAngle * 0.5f;
+        float randomYaw = UnityEngine.Random.Range(-halfAngle, halfAngle);
+
+        // 2. 랜덤한 회전값을 생성
+        Quaternion spreadOffset = Quaternion.Euler(0, randomYaw, 0);
+
+        // 3. 원래 바라보던 방향(baseRotation)에 랜덤 회전값(spreadOffset)을 더해줍니다(곱셈).
+        return baseRotation * spreadOffset;
     }
 }
 
