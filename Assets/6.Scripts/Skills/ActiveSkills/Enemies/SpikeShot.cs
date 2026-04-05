@@ -25,7 +25,7 @@ public class SpikeShot
         pos.y = 0.01f; 
 
 
-        rectSign = ObjectPooler.DeferedSpawnFromPool<WarningSign_Rect>("WarningSign_Rect", pos, ownerObject.transform.rotation);
+        rectSign = ObjectPooler.DeferredSpawnFromPool<WarningSign_Rect>("WarningSign_Rect", pos, ownerObject.transform.rotation);
         rectSign.SetRectData(0.5f, 2, 0, 2, 2.0f);
         rectSign.OnEndSign += OnEndSign;
         ObjectPooler.FinishSpawn(rectSign.gameObject);
@@ -61,7 +61,7 @@ public class SpikeShot
         Quaternion rotation = ownerObject.transform.localRotation * phaseSkill.ValidSpawnQuaternion;
 
         GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
-        if (obj.TryGetComponent<Projectile>(out var projectile))
+        if (obj.TryGetComponent<ISkillEffect>(out var projectile))
         {
             projectile.SetDamageInfo(ownerObject, phaseSkill.damageData);
             projectile.AddIgnore(ownerObject);

@@ -1,14 +1,17 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent (typeof(Rigidbody))]
-public class Projectile : MonoBehaviour
+public class Projectile 
+    : MonoBehaviour
+    , ISkillEffect
 {
     [Header("Projectile Settings")]
     [SerializeField] private float force = 1000.0f;
     [SerializeField] private float life = 10.0f;
+    [SerializeField] private LayerMask ignoreLayer;
 
     [SerializeField] private string bombEffectName = "";
 
@@ -23,16 +26,13 @@ public class Projectile : MonoBehaviour
     public event Action<Collider> OnTriggerEnterAction;
     public event Action<Collider, Collider, Vector3> OnProjectileHit;
 
-    private List<GameObject> ignores = new List<GameObject>();
+    private HashSet<GameObject> ignores = new HashSet<GameObject>();
 
     private GameObject ownerObject; 
     private DamageEvent damageEvent;
 
     public void AddIgnore(GameObject ignore)
     {
-        if (ignores.Contains(ignore) == true)
-            return;
-
         ignores.Add(ignore);
     }
 
@@ -49,7 +49,7 @@ public class Projectile : MonoBehaviour
         if (rigidbody == null)
             return;
         
-        // #. Unity6 ±âÁØ ÇÁ·ÎÆÛÆ¼ ¸íÀÌ ´Þ¶óÁü
+        // #. Unity6 ê¸°ì¤€ í”„ë¡œí¼í‹° ëª…ì´ ë‹¬ë¼ì§
         rigidbody.linearVelocity = Vector3.zero;
         rigidbody.AddForce(transform.forward * force);
         curLife = life;
@@ -59,6 +59,7 @@ public class Projectile : MonoBehaviour
     protected virtual void OnDisable()
     {
         ObjectPooler.ReturnToPool(this.gameObject);
+        ignores.Clear();
     }
 
     protected virtual void Update()
@@ -73,8 +74,10 @@ public class Projectile : MonoBehaviour
 
     protected virtual void OnTriggerEnter(Collider other)
     {
-        var ignore = ignores.Find(x=>x.gameObject == other.gameObject);
-        if (ignore != null)
+        if (ignores.Contains(other.gameObject))
+            return;
+
+        if (ignoreLayer.Contains(other.gameObject))
             return; 
 
         OnTriggerEnterAction?.Invoke(other);
@@ -96,8 +99,6 @@ public class Projectile : MonoBehaviour
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
             damage?.OnDamage(ownerObject, null, hitPoint, damageEvent);
         }
-
-        ignores.Clear();
     }
 
     public void SetDamageInfo(GameObject attacker, DamageData damageData,

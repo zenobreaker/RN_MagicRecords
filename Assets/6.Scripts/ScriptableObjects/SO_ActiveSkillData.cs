@@ -6,6 +6,7 @@ using UnityEngine;
 public class PhaseSkill
 {
     public string phaseName;
+    public bool isInstant; // 💡 이 페이즈가 즉시 종료되는지 여부
 
     [Header("Module")]
     [SerializeReference]
