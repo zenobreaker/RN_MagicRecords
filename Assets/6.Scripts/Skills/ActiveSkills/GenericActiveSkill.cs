@@ -81,5 +81,8 @@ public class GenericActiveSkill : ActiveSkill
 
         // 타이밍으로 모든 서절된 모듈 실행 
         NotifyModules(this.phaseIndex, SkillTriggerTime.OnExecute);
+
+        if (phaseSkill.isInstant)
+            EndPhaseAndNext(); 
     }
 }

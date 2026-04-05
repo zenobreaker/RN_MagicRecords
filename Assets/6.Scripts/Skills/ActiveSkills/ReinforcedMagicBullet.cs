@@ -80,7 +80,7 @@ public class ReinforcedMagicBullet
         Quaternion rotation = ownerObject.transform.rotation * phaseSkill.ValidSpawnQuaternion;
 
         GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
-        if (obj.TryGetComponent<Projectile>(out var projectile))
+        if (obj.TryGetComponent<ISkillEffect>(out var projectile))
         {
             projectile.SetDamageInfo(ownerObject, phaseSkill.damageData, isCrit);
             projectile.AddIgnore(ownerObject);
