@@ -40,14 +40,21 @@ public class SelectImplementationDrawer : PropertyDrawer
         if (property.isExpanded && property.managedReferenceValue != null)
         {
             EditorGUI.indentLevel++;
+           
             float currentY = position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+            bool prevWideMode = EditorGUIUtility.wideMode;
+            float prevLabelWidth = EditorGUIUtility.labelWidth;
+
+            EditorGUIUtility.wideMode = true; // Vector3를 무조건 한 줄에 예쁘게 펴서 그리도록 강제
+            EditorGUIUtility.labelWidth = 110f; // 좌측 글자(Label)가 차지하는 최대 너비를 고정 (필요하면 숫자 조절)
 
             // [수정] 필드 목록을 가져올 때, 부모 클래스(SkillModule)의 필드부터 가져오도록 정렬하거나 
             // triggerTime을 수동으로 먼저 그립니다.
             Type type = property.managedReferenceValue.GetType();
 
             // BindingFlags를 수정하여 부모의 public 필드도 포함하도록 합니다.
-            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic);
 
             // triggerTime 필드를 먼저 찾아서 그립니다.
             var triggerField = fields.FirstOrDefault(f => f.Name == "triggerTime");
@@ -105,21 +112,58 @@ public class SelectImplementationDrawer : PropertyDrawer
                 SerializedProperty childProp = property.FindPropertyRelative(field.Name);
                 if (childProp == null) return;
 
+                bool shouldShow = true;
                 // 타입별 가시성 필터링 추가 
-                if(property.managedReferenceValue is Module_SpawnWarningSign signModule)
+                if (property.managedReferenceValue is Module_SpawnWarningSign signModule)
                 {
                     // 특정 프로퍼티 숨기기 
-                    bool shouldShow = true; 
-                    switch(field.Name)
+                    switch (field.Name)
                     {
-                        case "radius": shouldShow = signModule.signType == WarningSignType.Circle;break; 
-                        case "rectSize": shouldShow = signModule.signType == WarningSignType.Rectangle;break; 
-                        case "maxRectSize": shouldShow = signModule.signType == WarningSignType.Rectangle;break; 
-                        case "fanRadius": shouldShow = signModule.signType == WarningSignType.Fan;break; 
-                        case "fanAngle": shouldShow = signModule.signType == WarningSignType.Fan;break; 
+                        case "radius": shouldShow = signModule.signType == WarningSignType.Circle; break;
+                        case "rectSize": shouldShow = signModule.signType == WarningSignType.Rectangle; break;
+                        case "maxRectSize": shouldShow = signModule.signType == WarningSignType.Rectangle; break;
+                        case "fanRadius": shouldShow = signModule.signType == WarningSignType.Fan; break;
+                        case "fanAngle": shouldShow = signModule.signType == WarningSignType.Fan; break;
                     }
-                    if (!shouldShow) return;  // 해당 타입이 아니면 그리지 않음
                 }
+                else if (property.managedReferenceValue is Module_CalcTargetPosition calcModule)
+                {
+                    switch (field.Name)
+                    {
+                        case "scanRadius":
+                        case "enemyLayer":
+                            // 스캔 반경과 적 레이어는 적을 찾는 두 가지 타입에서만 보임
+                            shouldShow = calcModule.targetingType == TargetPositionType.NearestEnemy ||
+                                         calcModule.targetingType == TargetPositionType.MultipleEnemies;
+                            break;
+                        case "maxTargetCount":
+                            // 최대 타겟 수는 다중 타겟팅에서만 보임
+                            shouldShow = calcModule.targetingType == TargetPositionType.MultipleEnemies;
+                            break;
+                        case "forwardDistance":
+                            // 전방 거리는 CasterForward, RandomAround, 그리고 NearestEnemy(적 없을때 실패 대비용)에서 보임
+                            shouldShow = calcModule.targetingType == TargetPositionType.CasterForward ||
+                                         calcModule.targetingType == TargetPositionType.RandomAroundCaster ||
+                                         calcModule.targetingType == TargetPositionType.NearestEnemy;
+                            break;
+                        case "fixedLocalOffset":
+                            // 고정 오프셋은 FixedLocalOffset에서만 보임
+                            shouldShow = calcModule.targetingType == TargetPositionType.FixedLocalOffset;
+                            break;
+                    }
+                }
+                else if (property.managedReferenceValue is Module_SpawnEffect spawnEffect)
+                {
+                    switch (field.Name)
+                    {
+                        case "spawnCount":
+                        case "angleBetween":
+                            shouldShow = !spawnEffect.useBlackboardPattern;
+                            break;
+                    }
+                }
+
+                if (!shouldShow) return;  // 해당 타입이 아니면 그리지 않음
 
                 //////////////////////////////////////////////
 
@@ -144,6 +188,9 @@ public class SelectImplementationDrawer : PropertyDrawer
                 currentY += childHeight + EditorGUIUtility.standardVerticalSpacing;
             }// End DrawField 
 
+            // 💡 [UI FIX] 끝나는 부분: 다른 에디터 UI에 영향을 주지 않도록 원래 값으로 복구!
+            EditorGUIUtility.wideMode = prevWideMode;
+            EditorGUIUtility.labelWidth = prevLabelWidth;
             EditorGUI.indentLevel--;
 
            
@@ -158,18 +205,67 @@ public class SelectImplementationDrawer : PropertyDrawer
         if (!property.isExpanded || property.managedReferenceValue == null)
             return EditorGUIUtility.singleLineHeight;
 
+        // 💡 [UI FIX 1] OnGUI와 똑같이 wideMode를 강제해서 높이 계산 오차를 없앱니다.
+        bool prevWideMode = EditorGUIUtility.wideMode;
+        EditorGUIUtility.wideMode = true;
+
         float height = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-        var fields = property.managedReferenceValue.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance);
+
+        var fields = property.managedReferenceValue.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
         foreach (var field in fields)
         {
             SerializedProperty childProp = property.FindPropertyRelative(field.Name);
             if (childProp != null)
-                height += EditorGUI.GetPropertyHeight(childProp, true) + EditorGUIUtility.standardVerticalSpacing;
-        }
-        return height;
-    }
+            {
+                // WarningSign 조건 처리 
+                if (property.managedReferenceValue is Module_SpawnWarningSign signModule)
+                {
+                    bool shouldShow = true;
+                    switch (field.Name)
+                    {
+                        case "radius": shouldShow = signModule.signType == WarningSignType.Circle; break;
+                        case "rectSize": shouldShow = signModule.signType == WarningSignType.Rectangle; break;
+                        case "maxRectSize": shouldShow = signModule.signType == WarningSignType.Rectangle; break;
+                        case "fanRadius": shouldShow = signModule.signType == WarningSignType.Fan; break;
+                        case "fanAngle": shouldShow = signModule.signType == WarningSignType.Fan; break;
+                    }
+                    if (!shouldShow) continue;
+                }
 
+                height += EditorGUI.GetPropertyHeight(childProp, true) + EditorGUIUtility.standardVerticalSpacing;
+            }
+        }
+
+        // HelpBox 높이 추가 계산
+        if (property.managedReferenceValue is Module_SpawnWarningSign)
+        {
+            var moduleProp = property.serializedObject.FindProperty(GetParentPath(property.propertyPath));
+            if (moduleProp != null && moduleProp.isArray)
+            {
+                bool hasTargetModule = false;
+                for (int i = 0; i < moduleProp.arraySize; i++)
+                {
+                    var m = moduleProp.GetArrayElementAtIndex(i).managedReferenceValue;
+                    if (m is Module_SetTargetByPerception)
+                    {
+                        hasTargetModule = true;
+                        break;
+                    }
+                }
+                if (!hasTargetModule)
+                {
+                    height += 40f + EditorGUIUtility.standardVerticalSpacing;
+                }
+            }
+        }
+
+        // 💡 계산이 끝났으니 원래 상태로 복구
+        EditorGUIUtility.wideMode = prevWideMode;
+
+        // 💡 [UI FIX 2] 마지막에 하단 여백(Padding)을 10픽셀 정도 추가해서 + - 버튼이 들어갈 공간을 확보합니다!
+        return height + 10f;
+    }
     private void ShowTypeMenu(SerializedProperty property)
     {
         Type targetType = GetTargetType(property);
