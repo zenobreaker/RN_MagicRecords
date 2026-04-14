@@ -189,7 +189,7 @@ public class Module_SpawnEffect : SkillModule
             if (patternType == FirePatternType.RegularFan)
             {
                 // [기존 방식] 일정한 간격으로 예쁘게 퍼지는 부채꼴
-                finalRotation = PositionHelpers.GetDirection(owner.transform, i, spawnCount, finalAngleBetween, 0f)
+                finalRotation = PositionHelpers.GetDirection(owner.transform, i, finalSpawnCount, finalAngleBetween, 0f)
                                 * ValidSpawnQuaternion;
             }
             else // FirePatternType.RandomSpread

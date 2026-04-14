@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -51,6 +52,7 @@ public abstract class ActiveSkill
     protected float maxCooldown;
     protected float castingTime;
     protected float currentCastingTime;
+    protected bool isCasting = false; 
 
     public float CurrentCooldown { get => currentCooldown; }
     public float MaxCooldown { get => maxCooldown; }
@@ -119,7 +121,7 @@ public abstract class ActiveSkill
         if (IsOnCooldown)
             return;
 
-        //TODO: 스킬 캐스팅
+        isCasting = true;   
 
         NavMeshAgent agent = ownerObject?.GetComponent<NavMeshAgent>(); 
         if (agent != null)
@@ -144,10 +146,15 @@ public abstract class ActiveSkill
     protected abstract void ExecutePhase(int phaseIndex);
     protected abstract void ApplyEffects();     // 개별 효과 적용 
 
-    public virtual void Start_DoAction() { }
+    public virtual void Start_DoAction() 
+    {
+       
+    }
     public virtual void Begin_DoAction() { }
     public virtual void End_DoAction() 
     {
+        isCasting = false; 
+
         NavMeshAgent agent = ownerObject?.GetComponent<NavMeshAgent>();
         if (agent != null)
         {

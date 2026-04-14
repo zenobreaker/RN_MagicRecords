@@ -77,9 +77,11 @@ public class GenericActiveSkill : ActiveSkill
     }
     protected override void ExecutePhase(int phaseIndex)
     {
+        if (isCasting == false) return; 
+
         SetCurrentPhaseSkill(phaseIndex);
 
-        // 타이밍으로 모든 서절된 모듈 실행 
+        // 타이밍으로 모든 등록된 모듈 실행 
         NotifyModules(this.phaseIndex, SkillTriggerTime.OnExecute);
 
         if (phaseSkill.isInstant)
