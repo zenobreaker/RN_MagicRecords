@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StageManager : MonoBehaviour
+public sealed class StageManager : MonoBehaviour
 {
     public enum StageState
     {
@@ -156,7 +156,7 @@ public class StageManager : MonoBehaviour
         if (this == null || !gameObject.activeInHierarchy) return;
 
 #if UNITY_EDITOR
-        Debug.Log("Stage Manager Begin Stage");
+        Debug.Log($"Stage Manager Begin Stage Time : {Time.timeScale}");
 #endif
         // 사전 데이터 준비 State
         ResetStageData();

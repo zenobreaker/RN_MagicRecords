@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 
-public class AIBehaviourComponent : MonoBehaviour
+public sealed class AIBehaviourComponent : MonoBehaviour
 {
 
     [SerializeField] private string AIControllerName = "AIController";
