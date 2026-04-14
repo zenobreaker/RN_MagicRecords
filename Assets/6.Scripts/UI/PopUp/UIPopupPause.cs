@@ -36,7 +36,7 @@ public class UIPopUpPause : UIPopUpBase
     protected override void OnEnable()
     {
         base.OnEnable();
-        Time.timeScale = 0;
+        PauseManager.RequestPause();
         if (AppManager.Instance != null)
             inventory?.SetRecordManager(AppManager.Instance.GetRecordManager());
     }
@@ -44,7 +44,7 @@ public class UIPopUpPause : UIPopUpBase
     protected override void OnDisable()
     {
         base.OnDisable();
-        Time.timeScale = 1;
+        PauseManager.RequestResume();
     }
 
     protected override void DrawPopUp()
