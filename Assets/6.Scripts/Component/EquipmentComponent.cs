@@ -34,6 +34,8 @@ public class EquipmentComponent : MonoBehaviour
         {
             foreach (var slot in slots)
             {
+                if (slot == null) continue; 
+
                 slot.UnequipItem(status);
             }
         }
