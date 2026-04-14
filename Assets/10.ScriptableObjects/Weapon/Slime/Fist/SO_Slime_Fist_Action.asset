@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: SO_Slime_Fist_Action
   m_EditorClassIdentifier: 
   actionDatas:
-  - stateName: Action
+  - subStateName: Combo_1
+    stateName: Action
+    layerName: 
     actionSpeed: 1.5
-    animatorOv: {fileID: 0}
-    weaponAnimOv: {fileID: 0}
-    SoundName: Gun_Normal1
+    weaponActionName: 
+    SoundName: 
     impulseDirection: {x: 0, y: 0, z: 0}
     settings: {fileID: 0}
     bCanMove: 0

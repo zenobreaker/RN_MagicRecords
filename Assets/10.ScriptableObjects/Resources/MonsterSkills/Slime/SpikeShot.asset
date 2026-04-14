@@ -25,7 +25,10 @@ MonoBehaviour:
   limitCooldown: 5
   castingTime: 0.3
   phaseList:
-  - baseDamage: 0
+  - phaseName: 
+    isInstant: 0
+    modules: []
+    baseDamage: 0
     confficient: 0
     hitDelay: 0.015
     duration: 0
@@ -51,7 +54,7 @@ MonoBehaviour:
     skillObject: {fileID: 0}
     objectName: SpikeShot
     actionData:
-      subStateName: Attack01
+      subStateName: Skill01
       stateName: Skill
       layerName: 
       actionSpeed: 1
@@ -63,3 +66,6 @@ MonoBehaviour:
     soundName: 
     spawnPosition: {x: 0, y: 1, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+  references:
+    version: 2
+    RefIds: []
