@@ -1,7 +1,9 @@
-﻿using NUnit.Framework;
+﻿using Cysharp.Threading.Tasks;
+using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,6 +45,9 @@ public class UITotalResultPopUp : UIPopUp
     // 연출 진행 중인지 체크하는 플래그
     private bool isAnimating = false;
 
+    // UniTask 취소를 위한 토큰 소스 
+    private CancellationTokenSource cts; 
+
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -53,8 +58,20 @@ public class UITotalResultPopUp : UIPopUp
         FetchResultData();
         DrawPopUp();
 
-        // 3. 연출 코루틴 시작
-        StartCoroutine(ShowResultSequence());
+        // 💡 기존 취소 토큰이 있다면 정리하고 새로 생성
+        CancelAndDisposeCTS();
+        cts = new CancellationTokenSource();
+
+        // 수정 : UniTask 사용, 기존 Coroutine 제거 
+        // 💡 UniTask 실행 (Forget을 붙여 Fire and Forget 처리)
+        ShowResultSequence(cts.Token).Forget();
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        // 💡 UI가 꺼질 때 진행 중인 연출 강제 종료 (메모리 누수 방지)
+        CancelAndDisposeCTS();
     }
 
     private void Update()
@@ -76,6 +93,17 @@ public class UITotalResultPopUp : UIPopUp
         ActiveUIElements();
         SetFinalState();
     }
+
+    private void CancelAndDisposeCTS()
+    {
+        if (cts != null)
+        {
+            cts.Cancel();
+            cts.Dispose();
+            cts = null;
+        }
+    }
+
 
     // ==========================================
     // 최종 상태 강제 세팅 (스킵 시 호출)
@@ -251,63 +279,74 @@ public class UITotalResultPopUp : UIPopUp
             });
     }
 
-    private IEnumerator ShowResultSequence()
+
+    // 이 함수는 IEnumerator -> async UniTaskVoid로 변경
+    private async UniTaskVoid ShowResultSequence(CancellationToken token)
     {
-        isAnimating = true; // 연출 시작 플래그 ON
+        try
+        {
+            isAnimating = true;
 
-        if (scrollRect != null)
-            scrollRect.verticalNormalizedPosition = 1f;
+            if (scrollRect != null)
+                scrollRect.verticalNormalizedPosition = 1f;
 
-        // 1. 캐릭터 정보 페이드 인
-        charInfoGroup.gameObject.SetActive(true);
-        yield return StartCoroutine(FadeInGroup(charInfoGroup));
-        yield return StartCoroutine(ScrollToBottom());
-        yield return new WaitForSecondsRealtime(delayBetweenGroups);
+            // 1. 캐릭터 정보
+            charInfoGroup.gameObject.SetActive(true);
+            await FadeInGroup(charInfoGroup, token);
+            await ScrollToBottom(token);
+            await UniTask.Delay(TimeSpan.FromSeconds(delayBetweenGroups), ignoreTimeScale: true, cancellationToken: token);
 
-        // 2. 플레이 타임 페이드 인 & 숫자 카운팅
-        playTimeGroup.gameObject.SetActive(true);
-        yield return StartCoroutine(FadeInGroup(playTimeGroup));
-        yield return StartCoroutine(ScrollToBottom());
-        StartCoroutine(CountUpPlayTime(targetPlayTime));
-        yield return new WaitForSecondsRealtime(delayBetweenGroups);
+            // 2. 플레이 타임
+            playTimeGroup.gameObject.SetActive(true);
+            await FadeInGroup(playTimeGroup, token);
+            await ScrollToBottom(token);
+            CountUpPlayTime(targetPlayTime, token).Forget(); // 비동기 병렬 실행
+            await UniTask.Delay(TimeSpan.FromSeconds(delayBetweenGroups), ignoreTimeScale: true, cancellationToken: token);
 
-        // 3. 킬 카운트 페이드 인 & 숫자 카운팅
-        killCountGroup.gameObject.SetActive(true);
-        yield return StartCoroutine(FadeInGroup(killCountGroup));
-        yield return StartCoroutine(ScrollToBottom());
-        StartCoroutine(CountUpKillCount(targetKillCount));
-        yield return new WaitForSecondsRealtime(delayBetweenGroups);
+            // 3. 킬 카운트
+            killCountGroup.gameObject.SetActive(true);
+            await FadeInGroup(killCountGroup, token);
+            await ScrollToBottom(token);
+            CountUpKillCount(targetKillCount, token).Forget(); // 비동기 병렬 실행
+            await UniTask.Delay(TimeSpan.FromSeconds(delayBetweenGroups), ignoreTimeScale: true, cancellationToken: token);
 
-        // 4. 탐사 노드 정보 페이드 인
-        exploreNodeGroup.gameObject.SetActive(true);
-        yield return StartCoroutine(FadeInGroup(exploreNodeGroup));
-        yield return StartCoroutine(ScrollToBottom());
-        yield return new WaitForSecondsRealtime(delayBetweenGroups);
+            // 4. 탐사 노드
+            exploreNodeGroup.gameObject.SetActive(true);
+            await FadeInGroup(exploreNodeGroup, token);
+            await ScrollToBottom(token);
+            await UniTask.Delay(TimeSpan.FromSeconds(delayBetweenGroups), ignoreTimeScale: true, cancellationToken: token);
 
-        // 5. 획득 레코드 리스트 페이드 인
-        recordListGroup.gameObject.SetActive(true);
-        yield return StartCoroutine(FadeInGroup(recordListGroup));
-        yield return StartCoroutine(ScrollToBottom());
-        yield return new WaitForSecondsRealtime(delayBetweenGroups);
+            // 5. 획득 레코드 리스트
+            recordListGroup.gameObject.SetActive(true);
+            await FadeInGroup(recordListGroup, token);
+            await ScrollToBottom(token);
+            await UniTask.Delay(TimeSpan.FromSeconds(delayBetweenGroups), ignoreTimeScale: true, cancellationToken: token);
 
-        // 6. 마지막 확인 버튼 페이드 인 및 활성화
-        buttonGroup.gameObject.SetActive(true);
-        yield return StartCoroutine(FadeInGroup(buttonGroup));
-        yield return StartCoroutine(ScrollToBottom());
-        if (confirmButton != null) confirmButton.interactable = true;
+            // 6. 확인 버튼
+            buttonGroup.gameObject.SetActive(true);
+            await FadeInGroup(buttonGroup, token);
+            await ScrollToBottom(token);
 
-        // 모든 연출이 자연스럽게 끝났을 경우
-        SetFinalState(); // 확실하게 오차 보정을 위해 최종 상태 한번 더 호출
-        isAnimating = false; // 연출 종료 플래그 OFF
+            if (confirmButton != null) confirmButton.interactable = true;
+
+            // 모든 연출이 자연스럽게 끝났을 경우
+            SetFinalState();
+            isAnimating = false;
+        }
+        catch (OperationCanceledException)
+        {
+            // 💡 스킵(Skip)을 눌러서 강제로 취소되었을 때 발생하는 예외.
+            // 이미 SkipAnimation()에서 후처리를 했으므로 여기서는 아무것도 안 해도 됩니다!
+        }
     }
 
 
     // ==========================================
     // 부드러운 스크롤 이동 코루틴
     // ==========================================
-    private IEnumerator ScrollToBottom()
+    private async UniTask ScrollToBottom(CancellationToken token)
     {
-        if (scrollRect == null || contentRect == null) yield break;
+        if (scrollRect == null || contentRect == null) return;
 
         // [핵심] 방금 켜진 UI 때문에 늘어난 Content의 세로 길이를 즉시 계산하도록 강제 업데이트
         //LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
@@ -319,7 +358,7 @@ public class UITotalResultPopUp : UIPopUp
         float targetPos = 0f; // 0f = 맨 아래, 1f = 맨 위
 
         // 이미 맨 아래라면 스크롤 생략
-        if (Mathf.Approximately(startPos, targetPos)) yield break;
+        if (Mathf.Approximately(startPos, targetPos)) return;
 
         // 0.3초 동안 부드럽게 스크롤을 맨 아래로 내림
         while (time < 1f)
@@ -330,46 +369,48 @@ public class UITotalResultPopUp : UIPopUp
 
             float t = time * (2f - time); // Ease-out
             scrollRect.verticalNormalizedPosition = Mathf.Lerp(startPos, targetPos, t);
-            yield return null;
+            
+            // 💡 yield return null -> await UniTask.Yield()
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
         }
 
         scrollRect.verticalNormalizedPosition = targetPos; // 오차 보정
     }
 
     // CanvasGroup 페이드 인 유틸 함수
-    private IEnumerator FadeInGroup(CanvasGroup cg)
+    private async UniTask FadeInGroup(CanvasGroup cg, CancellationToken token)
     {
-        if (cg == null) yield break;
+        if (cg == null) return;
 
-        float t = 0; 
-        while(t < 1f)
+        float t = 0;
+        while (t < 1f)
         {
             t += Time.unscaledDeltaTime * 2f;
             cg.alpha = Mathf.Clamp01(t);
-            yield return null; 
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
         }
     }
 
     // 시간 숫자 롤링 연출
-    private IEnumerator CountUpPlayTime(float targetTime)
+    private async UniTaskVoid CountUpPlayTime(float targetTime, CancellationToken token)
     {
         float current = 0;
-        float t = 0; 
+        float t = 0;
         while (t < 1f)
         {
             t += Time.unscaledDeltaTime / countDuration;
-            current = Mathf.Lerp(0, targetTime, t); 
+            current = Mathf.Lerp(0, targetTime, t);
 
             int minutes = Mathf.FloorToInt(current / 60f);
             int seconds = Mathf.FloorToInt(current - minutes * 60);
             playTimeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
 
-            yield return null;
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
         }
     }
 
     // 킬 카운트 숫자 롤링 연출
-    private IEnumerator CountUpKillCount(int targetCount)
+    private async UniTaskVoid CountUpKillCount(int targetCount, CancellationToken token)
     {
         float current = 0;
         float t = 0;
@@ -379,9 +420,10 @@ public class UITotalResultPopUp : UIPopUp
             t += Time.unscaledDeltaTime / countDuration;
             current = Mathf.Lerp(0, targetCount, t);
             killCountText.text = Mathf.FloorToInt(current).ToString();
-            yield return null;
+
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
         }
-        killCountText.text = targetCount.ToString(); // 오차 보정
+        killCountText.text = targetCount.ToString();
     }
 
     public void OnClickedConfirmButton()

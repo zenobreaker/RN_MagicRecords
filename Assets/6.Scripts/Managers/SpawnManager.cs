@@ -18,7 +18,7 @@ public class SpawnObject
 }
 
 
-public class SpawnManager : MonoBehaviour
+public sealed class SpawnManager : MonoBehaviour
 {
     public SO_PlayerObjects soPlayerObject;
     public SO_NPCObjects soNpcObject;

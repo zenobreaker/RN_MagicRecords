@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-public class RecordManager : MonoBehaviour
+public sealed class RecordManager : MonoBehaviour
 {
     [SerializeField] private List<SO_RecordData> records = new List<SO_RecordData>();
 

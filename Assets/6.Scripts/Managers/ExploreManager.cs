@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ExploreManager : MonoBehaviour
+public sealed class ExploreManager : MonoBehaviour
 {
     public ExploreState CurrentState { get; private set; } = ExploreState.NONE;
 
