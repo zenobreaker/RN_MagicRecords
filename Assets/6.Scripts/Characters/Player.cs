@@ -299,7 +299,7 @@ public class Player
         AppManager.Instance.SetActiveSkills(1, skill);
     }
 
-    public void SetStatus()
+    public override void SetStatus()
     {
         if (PlayerManager.Instance != null)
         {

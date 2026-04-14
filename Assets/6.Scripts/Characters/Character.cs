@@ -135,6 +135,7 @@ public class Character
     }
     #endregion
 
+    public virtual void SetStatus() { }
 
     public virtual void PlayerAction(ActionData actionData)
     {
