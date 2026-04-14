@@ -80,6 +80,8 @@ public class AppManager
 
         OnAwaked?.Invoke();
         OnAwaked = null;
+
+        PauseManager.Reset();
     }
 
     private void OnApplicationQuit()
@@ -497,7 +499,7 @@ public class AppManager
     #region Record Data 
     public void TriggerRecordUI(List<RecordData> records)
     {
-        Time.timeScale = 0;
+        PauseManager.RequestPause();
         OnShowRecordUI?.Invoke(records);
     }
 
@@ -524,7 +526,7 @@ public class AppManager
             OnRecordSelectedComplete?.Invoke(data);
         }
 
-        Time.timeScale = 1f;
+        PauseManager.RequestResume();
         return true;
     }
 
