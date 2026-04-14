@@ -22,9 +22,21 @@ public class UIStageInfo
     {
         base.OnEnable();
 
+        transform.DOKill();
+
         rect.anchoredPosition = new Vector2(Screen.width + 300f, rect.anchoredPosition.y);
 
-        rect.DOAnchorPosX(0, 0.25f);
+
+        rect.DOAnchorPosX(0, 0.25f)
+            .SetUpdate(true)
+            .SetLink(gameObject);
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+
+        transform.DOKill();
     }
 
     public void SetStageData(MapNode node, StageInfo stageInfo)
