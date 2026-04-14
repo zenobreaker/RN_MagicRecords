@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -38,7 +39,10 @@ public class UIPopUpPause : UIPopUpBase
         base.OnEnable();
         PauseManager.RequestPause();
         if (AppManager.Instance != null)
+        {
             inventory?.SetRecordManager(AppManager.Instance.GetRecordManager());
+            inventory?.RefreshUI();
+        }
     }
 
     protected override void OnDisable()
@@ -49,6 +53,6 @@ public class UIPopUpPause : UIPopUpBase
 
     protected override void DrawPopUp()
     {
-        
+     
     }
 }
