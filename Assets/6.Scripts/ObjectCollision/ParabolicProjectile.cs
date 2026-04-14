@@ -61,7 +61,7 @@ public class ParabolicProjectile
         if (!isFired) return;
 
         // 1. 진행도 (t) 계산 : 0에서 시작해서 도착하면 1이됨.
-        progress += Time.deltaTime / flightTime; 
+        progress += Time.deltaTime / flightTime;    
 
         // 2. 바닥 기준 직선 이동 ( 시작점 -> 끝 점)
         Vector3 currentPos = Vector3.Lerp(startPos, targetPos, progress);

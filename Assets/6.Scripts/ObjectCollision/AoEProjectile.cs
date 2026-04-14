@@ -50,6 +50,7 @@ public class AoEProjectile
 
     private void OnDisable()
     {
+        ignores.Clear();
         ObjectPooler.ReturnToPool(this.gameObject);
     }
 
