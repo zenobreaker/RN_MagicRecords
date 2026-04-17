@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -11,6 +12,10 @@ public class Character
     , ISlowable
     , ITeamAgent
 {
+    [Header("Animation Settings")]
+    [Tooltip("체크 해제 시, 애니메이터가 있어도 가짜 타이머(UniTask)로 스킬을 진행합니다.")]
+    public bool useAnimationEvents = true;
+
     protected GenenricTeamId genericTeamId; 
 
     protected Animator animator;

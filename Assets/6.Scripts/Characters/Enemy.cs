@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Bson;
+﻿using Cysharp.Threading.Tasks;
+using Newtonsoft.Json.Bson;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -133,16 +135,10 @@ public class Enemy
 
         // Look Attacker 
         LookAttacker(attacker);
-        ApplyLaunch(attacker, causer, damageEvent.hitData);
-
-        StartCoroutine(Change_Color(changeColorTime));
+        ApplyLaunch(attacker, causer, damageEvent);
 
         if (healthPoint.Dead == false)
-        {
-            state?.SetDamagedMode();
-
             return;
-        }
 
         // Dead..
         state?.SetDeadMode();
@@ -151,10 +147,7 @@ public class Enemy
         rigidbody.isKinematic = true;
 
         animator?.SetTrigger("Dead");
-        //MovableStopper.Instance.Delete(this);
-        //MovableSlower.Instance.Delete(this);
-        //Destroy(gameObject, 5);
-        StartCoroutine(HandleDeath());
+        HandleDeath().Forget();
     }
 
 
@@ -183,9 +176,9 @@ public class Enemy
         currentAction?.EndDoAction();
     }
 
-    private IEnumerator HandleDeath()
+    private async UniTaskVoid HandleDeath()
     {
-        yield return new WaitForSeconds(2.0f);
+        await UniTask.Delay(TimeSpan.FromSeconds(2.0f));
         Dead(); 
     }
 
@@ -208,6 +201,11 @@ public class Enemy
         if (attacker == null) return;
 
         transform.LookAt(attacker.transform, Vector3.up);
+    }
+
+    public void ApplyLaunch(GameObject attacker, Weapon causer, DamageEvent devt)
+    {
+        ApplyLaunch(attacker, causer, devt?.hitData);
     }
 
     public void ApplyLaunch(GameObject attacker, Weapon causer, HitData hitData)

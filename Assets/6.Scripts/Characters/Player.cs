@@ -234,11 +234,8 @@ public class Player
             return;
         }
 
-        if (damageEvent != null)
-        {
-            ApplyLaunch(attacker, causer, damageEvent.hitData);
-            damageHandle?.OnDamage(attacker, damageEvent);
-        }
+        ApplyLaunch(attacker, causer, damageEvent);
+        damageHandle?.OnDamage(attacker, damageEvent);
 
         if (healthPoint.Dead == false)
         {
@@ -289,6 +286,11 @@ public class Player
             action.EndDoAction();
     }
 
+    public void ApplyLaunch(GameObject attacker, Weapon causer, DamageEvent devt)
+    {
+        ApplyLaunch(attacker, causer, devt?.hitData);
+    }
+
     public void ApplyLaunch(GameObject attacker, Weapon causer, HitData hitData)
     {
         launch?.ApplyLaunch(attacker, causer, hitData);
@@ -316,4 +318,6 @@ public class Player
             equipment?.SertEquipmentData(data);
         }
     }
+
+  
 }

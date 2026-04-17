@@ -57,6 +57,6 @@ public partial class ComboComponent: MonoBehaviour
         if (bDebug)
             Debug.Log($"Execute Combodata {index}");
 #endif
-        weapon.DoAction(index);
+        weapon.DoActionWithIndex(index);
     }
 }

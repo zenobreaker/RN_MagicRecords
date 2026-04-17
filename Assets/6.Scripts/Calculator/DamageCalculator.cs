@@ -40,7 +40,7 @@ public static class DamageCalculator
 
     public static float CalcDamage(StatusComponent status, DamageEvent damageEvent)
     {
-        if (status == null) 
+        if (status == null || damageEvent == null)  
             return 0.0f;
 
         float value = damageEvent.value;

@@ -103,6 +103,7 @@ public sealed class AIBehaviourComponent : MonoBehaviour
             case StateType.Stop: SetWaitMode(); bCanMove = false; break; 
         }
 
-        SetCanMove(bCanMove);
+        if (oldType != newType) 
+            SetCanMove(bCanMove);
     }
 }
