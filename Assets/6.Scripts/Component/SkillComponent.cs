@@ -163,9 +163,14 @@ public class SkillComponent
         if (!skillSlotTable.ContainsKey(currentSkillName)) return;
         base.DoAction();
 
-
         bIsSkillAction = true;
         skillSlotTable[currentSkillName]?.Cast();
+        // 애니메이터가 정상적으로 있다면 기존처럼 애니메이션 실행!
+        if (useAnimationEvents == false)
+        {
+            // UniTask로 가짜 타이머를 돌려서 이벤트를 직접 순서대로 강제 호출합니다!
+            ManualActionRoutine().Forget();
+        }
     }
 
     public override void StartAction()
