@@ -6,7 +6,8 @@ using UnityEngine;
 ///  스킬 모듈화 시 최종적으로 만들어지는 클래스 
 /// </summary>
 
-public class GenericActiveSkill : ActiveSkill
+public class GenericActiveSkill
+    : ActiveSkill
 {
     // [PhaseIndex][TriggerTime] -> List<Module>
     private Dictionary<int, Dictionary<SkillTriggerTime, List<SkillModule>>> phaseModuleCache; 
@@ -64,7 +65,19 @@ public class GenericActiveSkill : ActiveSkill
 
     public override void EndPhaseAndNext()
     {
-        ExecutePhase(phaseIndex + 1); 
+        if (isCasting == false) return; 
+
+        int nextPhase = phaseIndex + 1;
+
+        // 다음 페이즈가 정상적으로 남아있으면 실행
+        if (nextPhase < phaseList.Count)
+        {
+            ExecutePhase(nextPhase);
+        }
+        else
+        {
+            End_DoAction(); 
+        }
     }
 
     public override void Begin_JudgeAttack(AnimationEvent e) => NotifyModules(phaseIndex, SkillTriggerTime.OnJudgeAttack);

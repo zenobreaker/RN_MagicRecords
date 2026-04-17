@@ -124,7 +124,7 @@ public abstract class ActiveSkill
         isCasting = true;   
 
         NavMeshAgent agent = ownerObject?.GetComponent<NavMeshAgent>(); 
-        if (agent != null)
+        if (agent != null && agent.isActiveAndEnabled)
         {
             agent.updateRotation = false;
             agent.isStopped = true;
@@ -153,10 +153,17 @@ public abstract class ActiveSkill
     public virtual void Begin_DoAction() { }
     public virtual void End_DoAction() 
     {
+        // 장판 등이 진행 중이여서 다음 페이즈가 남아있다면,
+        // 애니메이션이 끝났다고 해서 취소하지 않은다. 
+        if(phaseIndex < phaseList.Count -1)
+        {
+            return; 
+        }
+
         isCasting = false; 
 
         NavMeshAgent agent = ownerObject?.GetComponent<NavMeshAgent>();
-        if (agent != null)
+        if (agent != null && agent.isActiveAndEnabled)
         {
             agent.updateRotation = true;
             agent.isStopped = false;
