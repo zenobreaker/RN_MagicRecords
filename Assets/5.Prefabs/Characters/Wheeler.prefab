@@ -393,6 +393,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44ac8307bd942804f8f0e192d7b440a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAnimationEvents: 1
   surfaceNames: []
   damageColor: {r: 0, g: 0, b: 0, a: 0}
   changeColorTime: 0.15
@@ -426,6 +427,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55e6c09eea2891b4bb6343b91672230e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAnimationEvents: 0
   damageMotions:
   - damageType: 0
     damageMotion: {fileID: 0}
@@ -527,6 +529,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9390b2db8381934eba058cebcb26d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAnimationEvents: 0
   originPrefabs:
   - {fileID: 3126351601299179236, guid: 8cfc0c45a1c83ff43a11659c75050798, type: 3}
   initType: 3
@@ -542,6 +545,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c50be100f9e522429eb662a7241f7f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAnimationEvents: 0
   skillEventHandler: {fileID: 0}
 --- !u!114 &7974018398220513934
 MonoBehaviour:

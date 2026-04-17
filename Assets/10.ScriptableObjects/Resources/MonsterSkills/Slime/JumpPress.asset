@@ -26,6 +26,7 @@ MonoBehaviour:
   castingTime: 0.3
   phaseList:
   - phaseName: 
+    isInstant: 0
     modules:
     - rid: 7308159156281147392
     baseDamage: 0
@@ -54,8 +55,8 @@ MonoBehaviour:
     skillObject: {fileID: 0}
     objectName: 
     actionData:
-      subStateName: Begin_Jump
-      stateName: Skill
+      subStateName: Charging_Start
+      stateName: Charging
       layerName: 
       actionSpeed: 1
       weaponActionName: 
@@ -67,6 +68,7 @@ MonoBehaviour:
     spawnPosition: {x: 0, y: 1, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
   - phaseName: 
+    isInstant: 0
     modules: []
     baseDamage: 0
     confficient: 0
@@ -107,6 +109,7 @@ MonoBehaviour:
     spawnPosition: {x: 0, y: 1, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
   - phaseName: 
+    isInstant: 0
     modules: []
     baseDamage: 20
     confficient: 0
@@ -134,8 +137,8 @@ MonoBehaviour:
     skillObject: {fileID: 0}
     objectName: 
     actionData:
-      subStateName: End_Jump
-      stateName: Skill
+      subStateName: Charging_End
+      stateName: Charging
       layerName: 
       actionSpeed: 1
       weaponActionName: 
@@ -153,10 +156,15 @@ MonoBehaviour:
       type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        useBlackboardPattern: 0
         signType: 0
-        warningSignName: 
         duration: 1
+        isSetTargetPos: 0
+        spawnCount: 1
+        angleBetween: 0
+        startAngleOffset: 0
         radius: 1
         rectSize: {x: 1, y: 1}
+        maxRectSize: {x: 1, y: 1}
         fanRadius: 2
         fanAngle: 90

@@ -566,16 +566,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1a6b0daebc84d94a85c987321f2ae8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  patternEntries:
-  - slotName: slot1
-    conditions:
-    - type: 0
-      ctype: 4
-      value: 5
-    - type: 3
-      ctype: 5
-      value: 15
-    skill: {fileID: 11400000, guid: f18986f394989954aba7f76f86268a6c, type: 2}
+  patternEntries: []
   defaultAttack:
     slotName: default
     conditions:
