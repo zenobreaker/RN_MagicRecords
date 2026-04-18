@@ -11,7 +11,7 @@ public enum SkillSlot
     SLOT1 = 0, SLOT2, SLOT3, SLOT4, MAX,
 }
 
-public class SkillComponent
+public sealed class SkillComponent
     : ActionComponent
 {
     private string currentSkillName = "";
@@ -122,15 +122,31 @@ public class SkillComponent
                 BeginJudgeAttack(null);
                 EndJudgeAttack(null);
 
-                // 애니메이션 후딜레이
-                await UniTask.Delay(TimeSpan.FromSeconds(0.3f), cancellationToken: token);
+                // ====================================================================
+                // 💡 [핵심 픽스] 이 페이즈가 스스로 끝내는 능력이 있는지(장판 등) 검사!
+                bool isSelfControlled = currentSkill != null && currentSkill.DoesPhaseControlItself(i);
 
-                // 💡 마지막 페이즈가 아닐 때만 스킬의 End_DoAction을 직접 호출해서
-                // 다음 페이즈(phaseIndex++)로 넘어가게 만듭니다.
-                if (i < phaseCount - 1)
+                if (isSelfControlled)
                 {
-                    currentSkill?.End_DoAction();
+                    // 장판이 터지면서 스스로 'EndPhaseAndNext()'를 부를 때까지 
+                    // 가짜 타이머는 여기서 시간만 죽이며 조용히 기다립니다.
+                    int cachedPhase = i;
+                    while (currentSkill.PhaseIndex == cachedPhase)
+                    {
+                        await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
+                    }
                 }
+                else
+                {
+                    // 일반 단타 공격이라면 상사(가짜 타이머)가 0.3초 뒤에 강제로 넘깁니다.
+                    await UniTask.Delay(TimeSpan.FromSeconds(0.3f), cancellationToken: token);
+
+                    if (i < phaseCount - 1)
+                    {
+                        currentSkill?.End_DoAction();
+                    }
+                }
+                // ====================================================================
             }
 
             // 3. 모든 페이즈가 끝났으므로 컴포넌트 전체의 행동을 진짜로 종료!

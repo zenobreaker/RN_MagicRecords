@@ -107,7 +107,7 @@ public class Status
 
     public void Set(StatusType type, float value)
     {
-        Get(type).Set(value); 
+        Get(type)?.Set(value); 
     }
 
     public void ApplyBuff(StatModifier modifier)

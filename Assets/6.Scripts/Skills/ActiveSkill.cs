@@ -64,6 +64,7 @@ public abstract class ActiveSkill
             return (phaseList != null && phaseList.Count > 0) ? phaseList.Count : 1;
         }
     }
+    public int PhaseIndex => phaseIndex;
 
 
     public ActiveSkill(SO_SkillData skillData)
@@ -154,6 +155,21 @@ public abstract class ActiveSkill
     public virtual void EndPhaseAndNext() { }   // 페이즈를 종료 후 넘기는 처리 
     protected abstract void ExecutePhase(int phaseIndex);
     protected abstract void ApplyEffects();     // 개별 효과 적용 
+    
+    //현재 페이즈가 장판처럼 "스스로 페이즈를 끝내는" 능력이 있는지 확인.
+    public bool DoesPhaseControlItself(int index)
+    {
+        if (index >= 0 && index < phaseList.Count)
+        {
+            foreach (var mod in phaseList[index].modules)
+            {
+                // 장판 모듈은 OnEndSign 델리게이트를 통해 스스로 EndPhaseAndNext를 부르므로 true!
+                if (mod is Module_SpawnWarningSign)
+                    return true;
+            }
+        }
+        return false;
+    }
 
     public virtual void Start_DoAction() 
     {
