@@ -26,7 +26,7 @@ public partial class SkillAction : Action
 
     protected override Status OnUpdate()
     {
-        if (SkillComponent.Value.IsSkillAction)
+        if (SkillComponent.Value.InAction)
             return Status.Running;
 
         return Status.Success;

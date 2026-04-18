@@ -117,7 +117,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Attack01
       takeName: Take 001
-      internalID: 0
+      internalID: 7400000
       firstFrame: 0
       lastFrame: 25
       wrapMode: 0
@@ -142,49 +142,25 @@ ModelImporter:
       - time: 0.409848
         functionName: Begin_JudgeAttack
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.56160456
+      - time: 0.5616045
         functionName: End_JudgeAttack
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.95988536
+      - time: 0.9598849
         functionName: End_DoAction
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      transformMask:
-      - path: 
-        weight: 1
-      - path: Body
-        weight: 1
-      - path: Body/Spine01
-        weight: 1
-      - path: Body/Spine01/Head
-        weight: 1
-      - path: Body/Spine01/Head/Crown
-        weight: 1
-      - path: Body/Spine01/Head/EyeCTRL
-        weight: 1
-      - path: Body/Spine01/Head/EyeCTRL/BottomEyeCover
-        weight: 1
-      - path: Body/Spine01/Head/EyeCTRL/EyeBall
-        weight: 1
-      - path: Body/Spine01/Head/EyeCTRL/UpperEyeCover
-        weight: 1
-      - path: Body/Spine01/Side_L
-        weight: 1
-      - path: Body/Spine01/Side_R
-        weight: 1
-      - path: Slime
-        weight: 1
+      transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0

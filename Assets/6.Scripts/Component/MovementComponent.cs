@@ -15,15 +15,15 @@ public class MovementComponent : MonoBehaviour
     private Vector2 targetDirection;
     public Vector2 TargetDirection => targetDirection;
 
-    private Animator animator;
+    private CharacterVisual visual;
     private StatusEffectComponent statusEffect;
     private static readonly int SPEED = Animator.StringToHash("SpeedY");
 
     private void Awake()
     {
         movement = SO_Movement.GetMovement();
-        animator = GetComponent<Animator>();
         statusEffect = GetComponent<StatusEffectComponent>();
+        visual = GetComponentInChildren<CharacterVisual>();
     }
 
     private void OnEnable()
@@ -51,7 +51,7 @@ public class MovementComponent : MonoBehaviour
         if (!bCanMove)
         {
             DeltaSpeed = 0f;
-            animator?.SetFloat(SPEED, DeltaSpeed);
+            visual?.SetMovementAnimation(DeltaSpeed);
             return;
         }
 
@@ -75,7 +75,7 @@ public class MovementComponent : MonoBehaviour
         DeltaSpeed = moveDir.magnitude / movement.WalkSpeed * movement.Ratio;
         // 4. 이동 및 애니메이터 동기화
         transform.Translate(moveDir * Time.deltaTime, Space.World);
-        animator?.SetFloat(SPEED, DeltaSpeed);
+        visual?.SetMovementAnimation(DeltaSpeed);
     }
 
     private void OnStatusEffectChanged(StatusEffectType prevType, StatusEffectType newType)

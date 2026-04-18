@@ -1,21 +1,19 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
+using System.Threading;
+using Unity.VisualScripting.Antlr3.Runtime.Collections;
 using UnityEngine;
 
 //TODO: 확장성을 위하여 enum이 아닌 string으로 처리해보기
 public enum SkillSlot
 {
-    Slot1 = 0, Slot2, Slot3, Slot4, MAX,
+    SLOT1 = 0, SLOT2, SLOT3, SLOT4, MAX,
 }
 
 public class SkillComponent
     : ActionComponent
 {
-    private WeaponComponent weapon;
-    private DamageHandleComponent damageHandle;
-
-    private bool bIsSkillAction = false;
-    public bool IsSkillAction { get { return bIsSkillAction; } }
     private string currentSkillName = "";
 
     // 장착 스킬 정보 
@@ -32,22 +30,7 @@ public class SkillComponent
     private void Awake()
     {
         rootObject = transform.root.gameObject;
-
-        weapon = GetComponent<WeaponComponent>();
-        Debug.Assert(weapon != null);
-
-        damageHandle = GetComponent<DamageHandleComponent>();
-        if (damageHandle != null)
-            damageHandle.OnDamaged += OnDamaged;
-
         Awake_SkillSlotTable();
-    }
-
-    private void OnDamaged()
-    {
-        // 스킬 사용 중일 때 피격 당한 경우 특별한 상태가 아니라면 종료 처리
-        if (IsSkillAction)
-            EndDoAction();
     }
 
     private void Awake_SkillSlotTable()
@@ -112,10 +95,57 @@ public class SkillComponent
         }
     }
 
+
+
+    protected override async UniTaskVoid ManualActionRoutine(CancellationToken token)
+    {
+        try
+        {
+            BeginDoAction();
+
+            // 1. 현재 사용 중인 스킬의 총 페이즈 횟수 가져오기
+            int phaseCount = 1;
+            ActiveSkill currentSkill = null;
+
+            if (!string.IsNullOrEmpty(currentSkillName) && skillSlotTable.TryGetValue(currentSkillName, out currentSkill))
+            {
+                if (currentSkill != null)
+                    phaseCount = currentSkill.MaxPhaseCount;
+            }
+
+            // 2. 페이즈 개수만큼 가짜 타이머 반복 실행!
+            for (int i = 0; i < phaseCount; i++)
+            {
+                // 애니메이션 선딜레이
+                await UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: token);
+
+                BeginJudgeAttack(null);
+                EndJudgeAttack(null);
+
+                // 애니메이션 후딜레이
+                await UniTask.Delay(TimeSpan.FromSeconds(0.3f), cancellationToken: token);
+
+                // 💡 마지막 페이즈가 아닐 때만 스킬의 End_DoAction을 직접 호출해서
+                // 다음 페이즈(phaseIndex++)로 넘어가게 만듭니다.
+                if (i < phaseCount - 1)
+                {
+                    currentSkill?.End_DoAction();
+                }
+            }
+
+            // 3. 모든 페이즈가 끝났으므로 컴포넌트 전체의 행동을 진짜로 종료!
+            EndDoAction();
+        }
+        catch (OperationCanceledException)
+        {
+            // 피격 시 캔슬
+        }
+    }
+
     public bool CanUseSkill(string skillName)
     {
         if (skillSlotTable.TryGetValue(skillName, out var skill))
-            return skill != null && skill.IsOnCooldown == false && bIsSkillAction == false;
+            return skill != null && skill.IsOnCooldown == false && InAction == false;
 
         return false;
     }
@@ -147,7 +177,7 @@ public class SkillComponent
 
     public void UseSkill(string skillName)
     {
-        if (bIsSkillAction || CanUseSkill(skillName) == false)
+        if (InAction || CanUseSkill(skillName) == false)
         {
             OnSkillUse?.Invoke(false);
             return;
@@ -155,22 +185,9 @@ public class SkillComponent
 
         currentSkillName = skillName;
         OnSkillUse?.Invoke(true);
-        DoAction();
-    }
 
-    public override void DoAction()
-    {
-        if (!skillSlotTable.ContainsKey(currentSkillName)) return;
         base.DoAction();
-
-        bIsSkillAction = true;
         skillSlotTable[currentSkillName]?.Cast();
-        // 애니메이터가 정상적으로 있다면 기존처럼 애니메이션 실행!
-        if (useAnimationEvents == false)
-        {
-            // UniTask로 가짜 타이머를 돌려서 이벤트를 직접 순서대로 강제 호출합니다!
-            ManualActionRoutine().Forget();
-        }
     }
 
     public override void StartAction()
@@ -197,11 +214,9 @@ public class SkillComponent
         if (string.IsNullOrEmpty(currentSkillName)) return;
         base.EndDoAction();
 
-        bIsSkillAction = false;
         skillSlotTable[currentSkillName]?.End_DoAction();
         currentSkillName = string.Empty;
 
-        Debug.Log($"Skill End DoAction");
         OnEndDoAction?.Invoke();
         skillEventHandler?.OnEnd_UseSkill();
     }

@@ -74,6 +74,7 @@ GameObject:
   - component: {fileID: 7690047470901094447}
   - component: {fileID: 6151095735872526538}
   - component: {fileID: 8234578885095630249}
+  - component: {fileID: 4144788309123815914}
   m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
@@ -111,6 +112,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   modelRoot: {fileID: 3767703913249706164}
+  useAnimationEvents: 1
+  DamageAnimStateName: Hit
+  baseController: {fileID: 0}
+  damageMotions: []
 --- !u!114 &8234578885095630249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,6 +132,28 @@ MonoBehaviour:
   rotationAxis: {x: 0, y: 0, z: 1}
   baseSpeed: 600
   moveMultiplier: 650
+--- !u!95 &4144788309123815914
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2486799676469729490}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 4f7baaac4df08c84faf39a97295ecb43, type: 3}
+  m_Controller: {fileID: 22100000, guid: fca9510ffc5a0d24d9e45a8064949353, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3767703913249706164
 GameObject:
   m_ObjectHideFlags: 0
@@ -232,7 +259,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2101722165591551468}
-  - component: {fileID: 8699227067847024694}
   - component: {fileID: 3788720551442562935}
   - component: {fileID: 3106435430321466965}
   - component: {fileID: 2311714070998538177}
@@ -275,28 +301,6 @@ Transform:
   - {fileID: 5709486081760336644}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &8699227067847024694
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6491759678581496317}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 4f7baaac4df08c84faf39a97295ecb43, type: 3}
-  m_Controller: {fileID: 22100000, guid: fca9510ffc5a0d24d9e45a8064949353, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &3788720551442562935
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -487,12 +491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55e6c09eea2891b4bb6343b91672230e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageMotions:
-  - damageType: 0
-    damageMotion: {fileID: 0}
   dmgFontOffsetY: 1.5
-  DamageAnimStateName: Hit
-  baseController: {fileID: 0}
 --- !u!114 &6225620928346037568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -507,10 +506,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   status:
     statusEntries:
-    - type: 0
+    - type: 1
       value:
         baseValue: 10
-    - type: 1
+    - type: 3
       value:
         baseValue: 1
     - type: 2
@@ -518,7 +517,7 @@ MonoBehaviour:
         baseValue: 1
     - type: 5
       value:
-        baseValue: 10
+        baseValue: 0
 --- !u!114 &3866027001297978204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -588,6 +587,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9390b2db8381934eba058cebcb26d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAnimationEvents: 1
   originPrefabs:
   - {fileID: 3126351601299179236, guid: 8cfc0c45a1c83ff43a11659c75050798, type: 3}
   initType: 3
@@ -603,6 +603,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c50be100f9e522429eb662a7241f7f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAnimationEvents: 1
   skillEventHandler: {fileID: 0}
 --- !u!114 &6559139935311341158
 MonoBehaviour:

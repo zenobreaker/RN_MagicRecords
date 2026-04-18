@@ -5,20 +5,21 @@ using System.Linq;
 
 public class AnimationEventEditor : EditorWindow
 {
-    private GameObject targetAsset; // 씬 객체가 아닌 프로젝트 에셋(Prefab/FBX)
+    private GameObject targetAsset;
     private AnimationClip targetClip;
     private List<AnimationClip> availableClips = new List<AnimationClip>();
 
     // 🎬 커스텀 3D 프리뷰 엔진 변수
     private PreviewRenderUtility previewUtility;
     private GameObject previewInstance;
-    private Vector2 previewRotation = new Vector2(150, -20); // 마우스 드래그 회전값
-    private float zoomMultiplier = 3f; // 카메라 줌(거리) 배율
-    private Vector3 targetCenter;      // 모델의 중심점 캐싱
-    private float targetMagnitude;     // 모델의 크기 캐싱
+    private Vector2 previewRotation = new Vector2(150, -20);
+    private float zoomMultiplier = 3f;
+    private Vector3 targetCenter;
+    private float targetMagnitude;
 
     private Vector2 mainScrollPos;
     private Vector2 clipListScrollPos;
+    private Vector2 assetListScrollPos;
 
     private string[] functionPresets = { "Start_DoAction", "Begin_DoAction", "End_DoAction", "Begin_JudgeAttack",
                                        "End_JudgeAttack","Play_Sound", "Play_CameraShake" ,"End_Damaged" };
@@ -28,14 +29,18 @@ public class AnimationEventEditor : EditorWindow
     private bool isPlaying = false;
     private double lastUpdateTime;
 
-    // 💡 이벤트 파라미터 입력용 변수
     private float eventFloat = 0f;
     private int eventInt = 0;
     private string eventString = "";
     private Object eventObject = null;
 
-    // 💡 선택 상태 추적용 변수 (새로 추가!)
-    private int selectedEventIndex = -1; // -1이면 '새 이벤트 추가', 0 이상이면 '기존 이벤트 수정'
+    private int selectedEventIndex = -1;
+
+    // 💡 에셋 검색 및 필터용 변수
+    public enum AssetFilterType { All, PrefabOnly, ModelOnly }
+    private AssetFilterType currentFilter = AssetFilterType.All;
+    private string searchQuery = "";
+    private List<GameObject> cachedAssets = new List<GameObject>();
 
     [MenuItem("Window/Project Magical Records/Asset Animation Editor")]
     public static void ShowWindow() => GetWindow<AnimationEventEditor>("Event Editor");
@@ -45,14 +50,15 @@ public class AnimationEventEditor : EditorWindow
         EditorApplication.update += OnEditorUpdate;
         lastUpdateTime = EditorApplication.timeSinceStartup;
 
-        // 창이 다시 열렸을 때 프리뷰 엔진 재가동
         if (targetAsset != null && previewUtility == null) InitPreview();
+
+        RefreshAssetList();
     }
 
     private void OnDisable()
     {
         EditorApplication.update -= OnEditorUpdate;
-        CleanupPreview(); // 메모리 릭 방지
+        CleanupPreview();
     }
 
     private void OnEditorUpdate()
@@ -63,65 +69,275 @@ public class AnimationEventEditor : EditorWindow
             targetTime += (float)deltaTime;
 
             if (targetTime >= targetClip.length) targetTime = 0;
-            Repaint(); // 씬 뷰가 아닌, 이 에디터 창만 새로고침!
+            Repaint();
         }
         lastUpdateTime = EditorApplication.timeSinceStartup;
     }
 
     private void OnGUI()
     {
+        EditorGUILayout.BeginHorizontal();
+
+        // ==========================================
+        // 💡 [왼쪽 패널]: 에셋, 클립, 프리뷰, 리스트 영역
+        // ==========================================
+        EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));
         mainScrollPos = EditorGUILayout.BeginScrollView(mainScrollPos);
+
         GUILayout.Label("Asset-Based Event Editor (Independent)", EditorStyles.boldLabel);
 
-        // 1. 프로젝트 에셋 선택 (allowSceneObjects = false 로 설정하여 씬 객체 차단)
         EditorGUI.BeginChangeCheck();
-        targetAsset = (GameObject)EditorGUILayout.ObjectField("Target Asset (Prefab/FBX)", targetAsset, typeof(GameObject), false);
+        targetAsset = (GameObject)EditorGUILayout.ObjectField("Target Asset", targetAsset, typeof(GameObject), false);
         if (EditorGUI.EndChangeCheck())
         {
             RefreshClipList();
             InitPreview();
         }
 
-        if (targetAsset == null)
+        if (targetAsset != null)
         {
-            EditorGUILayout.HelpBox("프로젝트(Project) 창에 있는 원본 Prefab이나 FBX 모델을 넣어주세요.", MessageType.Info);
-            EditorGUILayout.EndScrollView();
-            return;
-        }
+            DrawClipList();
 
-        DrawClipList();
-
-        if (targetClip != null)
-        {
-            EditorGUILayout.Space(10);
-            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(2));
-            GUILayout.Label($"Editing: {targetClip.name}", EditorStyles.boldLabel);
-
-            DrawPlaybackControls();
-
-            // 🎬 독립된 3D 프리뷰 그리기
-            DrawCustomPreview();
-
-            DrawTimelineGraph();
-
-            EditorGUI.BeginChangeCheck();
-            targetTime = EditorGUILayout.Slider("Timeline Scrubber", targetTime, 0f, targetClip.length);
-            if (EditorGUI.EndChangeCheck())
+            if (targetClip != null)
             {
-                isPlaying = false;
-                Repaint(); // 슬라이더 움직이면 프리뷰 즉시 갱신
-            }
+                EditorGUILayout.Space(10);
+                GUILayout.Label($"Editing: {targetClip.name}", EditorStyles.boldLabel);
 
-            EditorGUILayout.Space(10);
-            DrawEventControls();
+                DrawPlaybackControls();
+                DrawCustomPreview();
+                DrawTimelineGraph();
+
+                EditorGUI.BeginChangeCheck();
+                targetTime = EditorGUILayout.Slider("Timeline Scrubber", targetTime, 0f, targetClip.length);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    isPlaying = false;
+                    Repaint();
+                }
+
+                EditorGUILayout.Space(10);
+                DrawEventListPanel();
+            }
         }
+        else
+        {
+            EditorGUILayout.HelpBox("Project 창에 있는 원본 Prefab이나 FBX 모델을 넣거나, 아래 목록에서 선택하세요.", MessageType.Info);
+        }
+
+        DrawAssetSearchPanel();
 
         EditorGUILayout.EndScrollView();
+        EditorGUILayout.EndVertical();
+
+        // ==========================================
+        // 💡 [오른쪽 패널]: 이벤트 입력 폼 (고정)
+        // ==========================================
+        EditorGUILayout.BeginVertical("window", GUILayout.Width(300), GUILayout.ExpandHeight(true));
+        DrawEventInputsPanel();
+        EditorGUILayout.EndVertical();
+
+        EditorGUILayout.EndHorizontal();
     }
 
     // ==========================================
-    // 💡 100% 독립된 3D 프리뷰 렌더링 로직
+    // 💡 에셋 검색 패널 (진짜 3D 모델 프리뷰 적용!)
     // ==========================================
+    private void DrawAssetSearchPanel()
+    {
+        EditorGUILayout.Space(20);
+        GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(2));
+        GUILayout.Label("📂 Target Asset Browser", EditorStyles.boldLabel);
+
+        EditorGUILayout.BeginHorizontal();
+        EditorGUI.BeginChangeCheck();
+        currentFilter = (AssetFilterType)EditorGUILayout.EnumPopup(currentFilter, GUILayout.Width(100));
+
+        searchQuery = EditorGUILayout.TextField(searchQuery, EditorStyles.toolbarSearchField);
+        if (GUILayout.Button("Refresh", EditorStyles.miniButton, GUILayout.Width(60)))
+        {
+            RefreshAssetList();
+        }
+        if (EditorGUI.EndChangeCheck())
+        {
+            RefreshAssetList();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        assetListScrollPos = EditorGUILayout.BeginScrollView(assetListScrollPos, "helpbox", GUILayout.Height(250));
+
+        if (cachedAssets.Count == 0)
+        {
+            GUILayout.Label("조건에 맞는 에셋이 없습니다.", EditorStyles.centeredGreyMiniLabel);
+        }
+        else
+        {
+            // 💡 버튼 텍스트와 썸네일을 위한 스타일 세팅
+            GUIStyle itemStyle = new GUIStyle(GUI.skin.button);
+            itemStyle.alignment = TextAnchor.MiddleLeft;
+            itemStyle.imagePosition = ImagePosition.ImageLeft;
+
+            bool isAnyPreviewLoading = false;
+
+            foreach (var asset in cachedAssets)
+            {
+                // 💡 [핵심] 미니 아이콘이 아니라 진짜 3D 모델 프리뷰를 가져옵니다.
+                Texture2D previewIcon = AssetPreview.GetAssetPreview(asset);
+
+                // 유니티가 백그라운드에서 프리뷰를 렌더링 중일 때는 임시로 미니 아이콘을 보여줍니다.
+                if (previewIcon == null)
+                {
+                    previewIcon = AssetPreview.GetMiniThumbnail(asset);
+                    isAnyPreviewLoading = true;
+                }
+
+                GUIContent content = new GUIContent("  " + asset.name, previewIcon);
+
+                // 높이를 40픽셀로 큼직하게 줘서 모델의 형태가 잘 보이게 합니다.
+                if (GUILayout.Button(content, itemStyle, GUILayout.Height(40)))
+                {
+                    targetAsset = asset;
+                    RefreshClipList();
+                    InitPreview();
+                    GUI.FocusControl(null);
+                }
+            }
+
+            // 프리뷰 렌더링이 아직 안 끝난 에셋이 있다면, 완료될 때까지 에디터 창을 계속 새로고침합니다.
+            if (isAnyPreviewLoading)
+            {
+                Repaint();
+            }
+        }
+        EditorGUILayout.EndScrollView();
+    }
+
+    private void RefreshAssetList()
+    {
+        cachedAssets.Clear();
+        string[] guids = AssetDatabase.FindAssets("t:GameObject");
+
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (string.IsNullOrEmpty(path)) continue;
+
+            bool isPrefab = path.EndsWith(".prefab", System.StringComparison.OrdinalIgnoreCase);
+            bool isModel = path.EndsWith(".fbx", System.StringComparison.OrdinalIgnoreCase) || path.EndsWith(".obj", System.StringComparison.OrdinalIgnoreCase);
+
+            if (!isPrefab && !isModel) continue;
+            if (currentFilter == AssetFilterType.PrefabOnly && !isPrefab) continue;
+            if (currentFilter == AssetFilterType.ModelOnly && !isModel) continue;
+
+            GameObject obj = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (obj != null)
+            {
+                if (obj.GetComponentInChildren<Animator>() != null)
+                {
+                    if (string.IsNullOrEmpty(searchQuery) || obj.name.ToLower().Contains(searchQuery.ToLower()))
+                    {
+                        cachedAssets.Add(obj);
+                    }
+                }
+            }
+        }
+    }
+
+    private void DrawEventListPanel()
+    {
+        EditorGUILayout.BeginVertical("box");
+        GUILayout.Label("Event List", EditorStyles.boldLabel);
+        if (targetClip == null) { EditorGUILayout.EndVertical(); return; }
+
+        var events = AnimationUtility.GetAnimationEvents(targetClip);
+        for (int i = 0; i < events.Length; i++)
+        {
+            var ev = events[i];
+
+            var oldColor = GUI.backgroundColor;
+            if (i == selectedEventIndex) GUI.backgroundColor = Color.green;
+
+            EditorGUILayout.BeginHorizontal("helpbox");
+            GUI.backgroundColor = oldColor;
+
+            if (GUILayout.Button($"{ev.time:F2}s", GUILayout.Width(45))) SelectEventForEdit(i, ev);
+
+            string paramSummary = ev.functionName;
+            if (ev.floatParameter != 0) paramSummary += $" (F: {ev.floatParameter})";
+            if (ev.intParameter != 0) paramSummary += $" (I: {ev.intParameter})";
+            if (!string.IsNullOrEmpty(ev.stringParameter)) paramSummary += $" (S: {ev.stringParameter})";
+            if (ev.objectReferenceParameter != null) paramSummary += $" (O: {ev.objectReferenceParameter.name})";
+
+            if (GUILayout.Button(paramSummary, EditorStyles.miniLabel)) SelectEventForEdit(i, ev);
+
+            if (GUILayout.Button("X", GUILayout.Width(20)))
+            {
+                if (selectedEventIndex == i) selectedEventIndex = -1;
+                RemoveEvent(ev);
+                GUIUtility.ExitGUI();
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+        EditorGUILayout.EndVertical();
+    }
+
+    private void DrawEventInputsPanel()
+    {
+        EditorGUILayout.BeginVertical();
+
+        if (targetClip == null)
+        {
+            GUILayout.Label("에셋과 클립을 먼저 선택해주세요.", EditorStyles.centeredGreyMiniLabel);
+            EditorGUILayout.EndVertical();
+            return;
+        }
+
+        if (selectedEventIndex == -1)
+            GUILayout.Label("✨ Add New Event", EditorStyles.boldLabel);
+        else
+            GUILayout.Label($"✏️ Edit Event (Selected)", EditorStyles.boldLabel);
+
+        EditorGUILayout.Space(5);
+
+        selectedPresetIndex = EditorGUILayout.Popup("Function", selectedPresetIndex, functionPresets);
+        eventFloat = EditorGUILayout.FloatField("Float", eventFloat);
+        eventInt = EditorGUILayout.IntField("Int", eventInt);
+        eventString = EditorGUILayout.TextField("String", eventString);
+        eventObject = EditorGUILayout.ObjectField("Object", eventObject, typeof(Object), false);
+
+        GUILayout.Space(15);
+
+        if (selectedEventIndex == -1)
+        {
+            if (GUILayout.Button("Add Event", GUILayout.Height(35)))
+            { AddEvent(); GUIUtility.ExitGUI(); }
+        }
+        else
+        {
+            if (GUILayout.Button("Apply Changes", GUILayout.Height(35)))
+            { ApplyEventChanges(); GUIUtility.ExitGUI(); }
+
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("Clear Params", GUILayout.Height(25)))
+            {
+                eventFloat = 0f;
+                eventInt = 0;
+                eventString = "";
+                eventObject = null;
+                GUI.FocusControl(null);
+                ApplyEventChanges();
+                GUIUtility.ExitGUI();
+            }
+
+            if (GUILayout.Button("Cancel", GUILayout.Height(25)))
+            { selectedEventIndex = -1; GUIUtility.ExitGUI(); }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        EditorGUILayout.EndVertical();
+    }
+
     private void InitPreview()
     {
         CleanupPreview();
@@ -135,14 +351,13 @@ public class AnimationEventEditor : EditorWindow
 
         previewUtility.AddSingleGO(previewInstance);
 
-        // 모델 크기 측정 후 클래스 변수에 저장
         Bounds bounds = new Bounds(previewInstance.transform.position, Vector3.zero);
         foreach (Renderer r in previewInstance.GetComponentsInChildren<Renderer>()) bounds.Encapsulate(r.bounds);
         if (bounds.extents == Vector3.zero) bounds.extents = new Vector3(1, 1, 1);
 
         targetCenter = bounds.center;
         targetMagnitude = bounds.extents.magnitude;
-        zoomMultiplier = 3f; // 새 모델을 넣을 때마다 기본 줌으로 초기화
+        zoomMultiplier = 3f;
 
         previewUtility.camera.clearFlags = CameraClearFlags.Color;
         previewUtility.camera.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1f);
@@ -160,25 +375,22 @@ public class AnimationEventEditor : EditorWindow
         Event evt = Event.current;
         if (previewRect.Contains(evt.mousePosition))
         {
-            // 드래그 (회전)
             if (evt.type == EventType.MouseDrag)
             {
                 previewRotation.x -= evt.delta.x * 2f;
                 previewRotation.y -= evt.delta.y * 2f;
                 evt.Use();
             }
-            // 💡 마우스 휠 (줌 인/아웃) 추가!
             else if (evt.type == EventType.ScrollWheel)
             {
-                zoomMultiplier += evt.delta.y * 0.05f; // 스크롤 감도
-                zoomMultiplier = Mathf.Clamp(zoomMultiplier, 0.5f, 10f); // 너무 가깝거나 멀어지지 않게 제한
+                zoomMultiplier += evt.delta.y * 0.05f;
+                zoomMultiplier = Mathf.Clamp(zoomMultiplier, 0.5f, 10f);
                 evt.Use();
             }
         }
 
         previewUtility.BeginPreview(previewRect, EditorStyles.helpBox);
 
-        // 실시간 카메라 줌 적용
         previewUtility.camera.transform.position = targetCenter + new Vector3(0, targetMagnitude * 0.5f, -targetMagnitude * zoomMultiplier);
         previewUtility.camera.transform.LookAt(targetCenter);
 
@@ -204,9 +416,6 @@ public class AnimationEventEditor : EditorWindow
         }
     }
 
-    // ==========================================
-    // 나머지 UI 및 로직 (기존과 동일)
-    // ==========================================
     private void DrawClipList()
     {
         GUILayout.Label("Available Animations", EditorStyles.miniBoldLabel);
@@ -282,100 +491,21 @@ public class AnimationEventEditor : EditorWindow
             var ev = events[i];
             float eventX = rect.x + (ev.time / targetClip.length) * rect.width;
 
-            // 💡 선택된 이벤트 마커는 초록색으로 강조
             var oldColor = GUI.backgroundColor;
             if (i == selectedEventIndex) GUI.backgroundColor = Color.green;
 
             if (GUI.Button(new Rect(eventX - 5, rect.y + 5, 10, 15), "", EditorStyles.radioButton))
             {
-                SelectEventForEdit(i, ev); // 마커 클릭 시 수정 모드 진입!
+                SelectEventForEdit(i, ev);
             }
-
-            GUI.backgroundColor = oldColor; // 색상 원상복구
-        }
-    }
-
-    private void DrawEventControls()
-    {
-        EditorGUILayout.BeginVertical("box");
-
-        // 💡 상태에 따라 타이틀 변경
-        if (selectedEventIndex == -1)
-            GUILayout.Label("Add New Event", EditorStyles.boldLabel);
-        else
-            GUILayout.Label($"Edit Event (Selected)", EditorStyles.boldLabel);
-
-        selectedPresetIndex = EditorGUILayout.Popup("Function", selectedPresetIndex, functionPresets);
-        eventFloat = EditorGUILayout.FloatField("Float", eventFloat);
-        eventInt = EditorGUILayout.IntField("Int", eventInt);
-        eventString = EditorGUILayout.TextField("String", eventString);
-        eventObject = EditorGUILayout.ObjectField("Object", eventObject, typeof(Object), false);
-
-        GUILayout.Space(5);
-        EditorGUILayout.BeginHorizontal();
-
-        // 💡 선택 상태에 따라 버튼 체인지
-        if (selectedEventIndex == -1)
-        {
-            if (GUILayout.Button("Add Event", GUILayout.Height(30)))
-            { AddEvent(); GUIUtility.ExitGUI(); }
-        }
-        else
-        {
-            if (GUILayout.Button("Apply Changes", GUILayout.Height(30)))
-            { ApplyEventChanges(); GUIUtility.ExitGUI(); }
-
-            if (GUILayout.Button("Cancel", GUILayout.Width(80), GUILayout.Height(30)))
-            { selectedEventIndex = -1; GUIUtility.ExitGUI(); }
-        }
-        EditorGUILayout.EndHorizontal();
-        EditorGUILayout.EndVertical();
-
-        EditorGUILayout.Space();
-
-        // --- 기존 이벤트 리스트 박스 ---
-        EditorGUILayout.BeginVertical("box");
-        GUILayout.Label("Event List", EditorStyles.boldLabel);
-        if (targetClip == null) { EditorGUILayout.EndVertical(); return; }
-
-        var events = AnimationUtility.GetAnimationEvents(targetClip);
-        for (int i = 0; i < events.Length; i++)
-        {
-            var ev = events[i];
-
-            var oldColor = GUI.backgroundColor;
-            if (i == selectedEventIndex) GUI.backgroundColor = Color.green; // 리스트도 초록색 강조
-
-            EditorGUILayout.BeginHorizontal("helpbox");
             GUI.backgroundColor = oldColor;
-
-            // 💡 시간이나 파라미터 라벨을 누르면 해당 이벤트 수정 모드로 진입
-            if (GUILayout.Button($"{ev.time:F2}s", GUILayout.Width(45))) SelectEventForEdit(i, ev);
-
-            string paramSummary = ev.functionName;
-            if (ev.floatParameter != 0) paramSummary += $" (F: {ev.floatParameter})";
-            if (ev.intParameter != 0) paramSummary += $" (I: {ev.intParameter})";
-            if (!string.IsNullOrEmpty(ev.stringParameter)) paramSummary += $" (S: {ev.stringParameter})";
-            if (ev.objectReferenceParameter != null) paramSummary += $" (O: {ev.objectReferenceParameter.name})";
-
-            if (GUILayout.Button(paramSummary, EditorStyles.miniLabel)) SelectEventForEdit(i, ev);
-
-            if (GUILayout.Button("X", GUILayout.Width(20)))
-            {
-                if (selectedEventIndex == i) selectedEventIndex = -1; // 삭제하면 수정 모드 해제
-                RemoveEvent(ev);
-                GUIUtility.ExitGUI();
-            }
-            EditorGUILayout.EndHorizontal();
         }
-        EditorGUILayout.EndVertical();
     }
 
     private void AddEvent()
     {
         if (targetClip == null) return;
 
-        // 💡 새 이벤트 객체를 만들 때, 적어둔 파라미터 값들도 싹 다 집어넣습니다.
         var newEvent = new AnimationEvent
         {
             functionName = functionPresets[selectedPresetIndex],
@@ -402,26 +532,18 @@ public class AnimationEventEditor : EditorWindow
         SaveEventsToClip(events.ToArray());
     }
 
-    // 💡 마법의 핵심: FBX 원본인지 검사하고 맞게 저장해 주는 만능 저장소
     private void SaveEventsToClip(AnimationEvent[] newEvents)
     {
         string assetPath = AssetDatabase.GetAssetPath(targetClip);
         ModelImporter importer = AssetImporter.GetAtPath(assetPath) as ModelImporter;
         string clipName = targetClip.name;
-
         float clipLength = targetClip.length > 0 ? targetClip.length : 1f;
 
         if (importer != null)
         {
-            // 🚨 핵심 수정: 이미 다른 클립에 저장해둔 정보가 날아가지 않도록, 
-            // '순정 상태(default)'가 아니라 '현재 수정된 상태(clipAnimations)'를 먼저 가져옵니다!
             ModelImporterClipAnimation[] clipAnimations = importer.clipAnimations;
-
-            // 만약 FBX를 유니티에 넣은 후 한 번도 수정한 적이 없다면 순정 상태를 가져옵니다.
             if (clipAnimations == null || clipAnimations.Length == 0)
-            {
                 clipAnimations = importer.defaultClipAnimations;
-            }
 
             bool isModified = false;
 
@@ -452,7 +574,7 @@ public class AnimationEventEditor : EditorWindow
 
             if (isModified)
             {
-                importer.clipAnimations = clipAnimations; // 다른 클립 정보도 안전하게 같이 저장됨!
+                importer.clipAnimations = clipAnimations;
 
                 EditorApplication.delayCall += () =>
                 {
@@ -473,28 +595,23 @@ public class AnimationEventEditor : EditorWindow
         }
     }
 
-    // 💡 리스트나 마커를 클릭했을 때 에디터를 '수정 모드'로 세팅하는 함수
     private void SelectEventForEdit(int index, AnimationEvent ev)
     {
         selectedEventIndex = index;
         targetTime = ev.time;
         isPlaying = false;
 
-        // 함수 이름 프리셋 인덱스 찾기
         selectedPresetIndex = System.Array.IndexOf(functionPresets, ev.functionName);
         if (selectedPresetIndex < 0) selectedPresetIndex = 0;
 
-        // 파라미터 값들 불러오기
         eventFloat = ev.floatParameter;
         eventInt = ev.intParameter;
         eventString = ev.stringParameter;
         eventObject = ev.objectReferenceParameter;
 
-        //UpdatePose();
         Repaint();
     }
 
-    // 💡 'Apply Changes(적용)' 버튼을 눌렀을 때 덮어씌워 저장하는 함수
     private void ApplyEventChanges()
     {
         if (targetClip == null || selectedEventIndex < 0) return;
@@ -505,7 +622,7 @@ public class AnimationEventEditor : EditorWindow
             events[selectedEventIndex] = new AnimationEvent
             {
                 functionName = functionPresets[selectedPresetIndex],
-                time = targetTime, // 수정된 시간(위치) 반영
+                time = targetTime,
                 floatParameter = eventFloat,
                 intParameter = eventInt,
                 stringParameter = eventString,
@@ -513,7 +630,7 @@ public class AnimationEventEditor : EditorWindow
             };
 
             SaveEventsToClip(events.OrderBy(e => e.time).ToArray());
-            selectedEventIndex = -1; // 저장 후 수정 모드 종료
+            selectedEventIndex = -1;
         }
     }
 }

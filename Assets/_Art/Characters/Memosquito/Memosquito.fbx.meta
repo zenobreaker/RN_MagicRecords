@@ -63,28 +63,28 @@ ModelImporter:
       - time: 0.025799992
         functionName: Start_DoAction
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
       - time: 0.5376
         functionName: Begin_JudgeAttack
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
       - time: 0.58319986
         functionName: End_JudgeAttack
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.92819977
+      - time: 0.9281994
         functionName: End_DoAction
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
@@ -233,10 +233,10 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.96847045
+      - time: 0.96847034
         functionName: End_Damaged
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0

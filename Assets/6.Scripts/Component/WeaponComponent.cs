@@ -62,12 +62,11 @@ public class WeaponComponent
         if (state.IdleMode == false)
             return;
 
-        //TODO: Animator Unarmed 
-
         if (weaponTable[type] != null)
             weaponTable[type]?.Unequip();
 
         ChangeType(WeaponType.Unarmed);
+        visual?.SetWeaponEquipAnimation((int)WeaponType.Unarmed);
     }
 
     private void SetMode(WeaponType type)
@@ -90,43 +89,28 @@ public class WeaponComponent
             return;
         }
 
-        animator.SetBool("isEquipping", true);
-        animator.SetInteger("WeaponType", (int)type);
+        visual?.SetWeaponEquipAnimation((int)type);
 
         weaponTable[type].Equip();
-
         ChangeType(type);
     }
     #endregion
 
+    private CharacterVisual visual;
     private StateComponent state;
-    private StatusEffectComponent statusEffect;
-    private DashComponent dash; 
-
-    private Animator animator;
-
-    private bool bUseSkill = false;
-
     private Dictionary<WeaponType, Weapon> weaponTable;
-    private readonly int IsAction = Animator.StringToHash("IsAction");
-
-    
+ 
     public event Action<WeaponType, WeaponType> OnWeaponTypeChanged;
     public event Action<SO_Combo> OnWeaponTypeChanged_Combo;
 
     private void Awake()
     {
         weaponTable = new Dictionary<WeaponType, Weapon>();
-        animator = GetComponent<Animator>();
 
+        visual = GetComponentInChildren<CharacterVisual>();
         state = GetComponent<StateComponent>();
-        statusEffect = GetComponent<StatusEffectComponent>();
 
         Awake_InitWeapon();
-
-        dash = GetComponent<DashComponent>(); 
-        if( dash != null) 
-            dash.OnEndDash += EndDoAction;
     } 
 
     private void Awake_InitWeapon()
@@ -149,18 +133,6 @@ public class WeaponComponent
             }
             weaponTable[weapon.Type] = weapon;
         }
-    }
-
-    private void OnEnable()
-    {
-        if (statusEffect != null)
-            statusEffect.OnStatusEffectChanged += OnStatusEffectChanged;
-    }
-
-    private void OnDisable()
-    {
-        if (statusEffect != null)
-            statusEffect.OnStatusEffectChanged -= OnStatusEffectChanged;
     }
 
     private void Start()
@@ -205,36 +177,11 @@ public class WeaponComponent
 
     public void DoActionWithIndex(int index = 0)
     {
-        if (animator == null)
-            return;
-        if (InAction == true)
+        if (InAction == true || state.ActionMode) 
             return; 
-        if (bUseSkill)
-            return;
 
-        DoAction();
-        weaponTable[type]?.DoAction(index);
-    }
-
-    public override void DoAction()
-    {
         base.DoAction();
-        // 애니메이터가 정상적으로 있다면 기존처럼 애니메이션 실행!
-        if (animator == null || useAnimationEvents == false)
-        {
-            // UniTask로 가짜 타이머를 돌려서 이벤트를 직접 순서대로 강제 호출합니다!
-            ManualActionRoutine().Forget();
-        }
-    }
-
-    public void OnBeginSkillAction()
-    {
-        bUseSkill = true; 
-    }
-
-    public void OnEndSkillAction()
-    {
-        bUseSkill = false;
+        weaponTable[type]?.DoAction(index);
     }
 
     public override void BeginDoAction()
@@ -276,18 +223,5 @@ public class WeaponComponent
     {
         base.PlayCameraShake();
         weaponTable[type]?.Play_CameraShake();
-    }
-
-    private void OnStatusEffectChanged(StatusEffectType prevType, StatusEffectType newType)
-    {
-        bool bNotActionable = (prevType & newType) != 0;
-
-        if (bNotActionable)
-        {
-            bInAction = false;
-            return; 
-        }
-
-        bInAction = true;
     }
 }

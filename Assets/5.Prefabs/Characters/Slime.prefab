@@ -169,7 +169,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2873790238913950351}
-  - component: {fileID: 7446417127466838732}
   - component: {fileID: 2108918872696786087}
   - component: {fileID: 6581079232751873245}
   - component: {fileID: 904757579869695419}
@@ -211,28 +210,6 @@ Transform:
   - {fileID: 6820498375489791743}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &7446417127466838732
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1661731564040365086}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 6520c6d7889f4c72b416f07f34edd515, type: 3}
-  m_Controller: {fileID: 22100000, guid: 02eb36db28a84cd44b3560598fcaf32a, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!136 &2108918872696786087
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -383,12 +360,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55e6c09eea2891b4bb6343b91672230e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageMotions:
-  - damageType: 0
-    damageMotion: {fileID: 0}
   dmgFontOffsetY: 1.5
-  DamageAnimStateName: Hit
-  baseController: {fileID: 0}
 --- !u!114 &7620526232049562524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -403,9 +375,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   status:
     statusEntries:
-    - type: 0
-      value:
-        baseValue: 10
     - type: 1
       value:
         baseValue: 1
@@ -415,6 +384,9 @@ MonoBehaviour:
     - type: 5
       value:
         baseValue: 10
+    - type: 3
+      value:
+        baseValue: 1
 --- !u!114 &6130251295880587831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -484,6 +456,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9390b2db8381934eba058cebcb26d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAnimationEvents: 1
   originPrefabs:
   - {fileID: 3178941285683598763, guid: 81aab8d4e1ae1924b9e793a2af89abfd, type: 3}
   initType: 1
@@ -499,6 +472,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c50be100f9e522429eb662a7241f7f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAnimationEvents: 1
   skillEventHandler: {fileID: 0}
 --- !u!114 &8973307234924077948
 MonoBehaviour:
@@ -823,6 +797,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6820498375489791743}
+  - component: {fileID: 3256181521486748255}
+  - component: {fileID: 3774095844702477087}
   m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
@@ -846,6 +822,45 @@ Transform:
   - {fileID: 7906291486489480225}
   m_Father: {fileID: 2873790238913950351}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &3256181521486748255
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7147300291858016384}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 6520c6d7889f4c72b416f07f34edd515, type: 3}
+  m_Controller: {fileID: 22100000, guid: 02eb36db28a84cd44b3560598fcaf32a, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3774095844702477087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7147300291858016384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50017fa3a3611b44398a234567980e14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modelRoot: {fileID: 0}
+  useAnimationEvents: 1
+  DamageAnimStateName: Hit
+  baseController: {fileID: 0}
+  damageMotions: []
 --- !u!1 &7749674620273589976
 GameObject:
   m_ObjectHideFlags: 0

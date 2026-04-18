@@ -1,6 +1,8 @@
+﻿using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -19,12 +21,10 @@ public class Player
     private EquipmentComponent equipment;
 
     private WeaponController weaponController;
-    private ActionComponent currentAction;
     private List<ActionComponent> actionComponents = new();
 
-    private bool bIsUsedSkill = false;
-
     private Action<InputAction.CallbackContext> onAction;
+    private Action<InputAction.CallbackContext> onMove;
     private Action<InputAction.CallbackContext> onDash;
     private Action<InputAction.CallbackContext>[] onSkillActions;
 
@@ -44,20 +44,14 @@ public class Player
         comboComponent = GetComponent<ComboComponent>();
         weapon = GetComponent<WeaponComponent>();
         Debug.Assert(weapon != null);
-        weapon.OnDoAction += OnDoAction;
         actionComponents.Add(weapon);
 
         skill = GetComponent<SkillComponent>();
         Debug.Assert(skill != null);
-        Awake_SkillEventHandle(skill, weapon);
-        skill.OnDoAction += OnDoAction;
         actionComponents.Add(skill);
 
         damageHandle = GetComponent<DamageHandleComponent>();
         launch = GetComponent<LaunchComponent>();
-
-        if (state != null)
-            state.OnStateTypeChanged += ChangeType;
 
         equipment = GetComponent<EquipmentComponent>();
 
@@ -69,9 +63,6 @@ public class Player
 
         onAction = (context) =>
         {
-            if (bIsUsedSkill) return;
-
-            currentAction = weapon;
             comboComponent?.InputQueue(InputCommandType.ACTION);
         };
 
@@ -81,20 +72,19 @@ public class Player
         };
 
 
+        onMove = (context) =>
+        {
+            comboComponent?.BreakCombo();
+        };
+
         Awake_SkillAcitonInput(actionMap);
 
         actionMap.FindAction("Action").started += onAction;
         actionMap.FindAction("Dash").started += onDash;
+        actionMap.FindAction("Move").started += onMove; 
     }
 
-    private void Awake_SkillEventHandle(SkillComponent skill, WeaponComponent weapon)
-    {
-        if (skill == null || weapon == null) return;
 
-        skill.OnSkillUse += OnSkillUse;
-        skill.skillEventHandler.OnBeginUseSkill += weapon.OnBeginSkillAction;
-        skill.skillEventHandler.OnEndUseSkill += weapon.OnEndSkillAction;
-    }
     private void Awake_SkillAcitonInput(InputActionMap actionMap)
     {
         if (actionMap == null || skill == null)
@@ -122,21 +112,15 @@ public class Player
     }
     protected void OnEnable()
     {
+        if (state != null)
+            state.OnStateTypeChanged += ChangeType;
+
         BattleManager.Instance?.RegistPlayer(this);
     }
 
-    protected void OnDisable()
+    protected override void OnDisable()
     {
-        if(weapon != null)
-        weapon.OnDoAction -= OnDoAction;
-
-        if (skill != null)
-        {
-            skill.OnDoAction -= OnDoAction;
-            skill.OnSkillUse -= OnSkillUse;
-            skill.skillEventHandler.OnBeginUseSkill -= weapon.OnBeginSkillAction;
-            skill.skillEventHandler.OnEndUseSkill -= weapon.OnEndSkillAction;
-        }
+        base.OnDisable();
 
         if (state != null)
             state.OnStateTypeChanged -= ChangeType;
@@ -159,108 +143,94 @@ public class Player
         BattleManager.Instance?.UnreistPlayer(this);
     }
 
-    public void OnDoAction() => bInAction = true;
-
-    public void OnSkillUse(bool bIsUse)
-    {
-        bIsUsedSkill = bIsUse;
-
-        if (bIsUsedSkill)
-        {
-            currentAction = skill;
-        }
-    }
-
     public override void Begin_DoAction()
     {
         base.Begin_DoAction();
 
         OnBeginDoAction?.Invoke();
-        currentAction?.BeginDoAction();
+        foreach (var ac in actionComponents)
+            if (ac.InAction) ac.BeginDoAction(); 
     }
 
     public override void End_DoAction()
     {
-        if (bIsUsedSkill)
-            bIsUsedSkill = false;
-
         bInAction = false;
         Debug.Log("Player End DoAction");
+        foreach (var ac in actionComponents)
+            if (ac.InAction) ac.EndDoAction();
+        
         OnEndDoAction?.Invoke();
-        currentAction?.EndDoAction();
-        foreach(var  ac in actionComponents)
-        {
-            if (ac != currentAction)
-                ac.EndDoAction(); 
-        }
     }
 
     public override void Begin_JudgeAttack(AnimationEvent e)
     {
         base.Begin_JudgeAttack(e);
-        currentAction?.BeginJudgeAttack(e);
+        foreach (var ac in actionComponents)
+            if (ac.InAction) ac.BeginJudgeAttack(e);
     }
 
     public override void End_JudgeAttack(AnimationEvent e)
     {
         base.End_JudgeAttack(e);
-        currentAction?.EndJudgeAttack(e);
+        foreach (var ac in actionComponents)
+            if (ac.InAction) ac.EndJudgeAttack(e);
     }
 
     public override void Play_Sound()
     {
         base.Play_Sound();
-        currentAction?.PlaySound();
+        foreach (var ac in actionComponents)
+            if (ac.InAction) ac.PlaySound();
     }
 
     public override void Play_CameraShake()
     {
         base.Play_CameraShake();
-        currentAction?.PlayCameraShake();
+        foreach(var ac in actionComponents)
+            if (ac.InAction) ac.PlayCameraShake();
     }
 
     public WeaponController GetWeaponController() => weaponController;
 
-    public void OnDamage(GameObject attacker, Weapon causer,
-        Vector3 hitPoint, DamageEvent damageEvent)
+    public void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, DamageEvent damageEvent)
     {
-        //if (isInvicible)
-        //    return;
-
+        // 회피 상태일 때의 처리
         if (state.Type == StateType.Evade)
         {
-            //OnEvadeState?.Invoke();
             MovableSlower.Instance.Start_Slow(this);
             return;
         }
 
+        // 1. 에어본/넉백 적용
         ApplyLaunch(attacker, causer, damageEvent);
+
+        // 2. 데미지 계산 및 적용 
+        // 💡 주의: 이 함수 내부에서 이미 HP를 깎고 state.SetDamagedMode()를 호출합니다!
         damageHandle?.OnDamage(attacker, damageEvent);
 
+        // 3. 살았는지 죽었는지 판단
         if (healthPoint.Dead == false)
         {
-            state.SetDamagedMode();
-
-            return;
+            return; // 💡 이미 DamageHandle에서 상태를 Damaged로 바꿨으므로 여기서 또 할 필요 없음!
         }
 
-        // Dead
+        // --- 여기서부터는 죽었을 때의 처리 ---
         state.SetDeadMode();
 
         Collider collider = GetComponent<Collider>();
-        collider.enabled = false;
+        if (collider != null) collider.enabled = false;
 
-        animator.SetTrigger("Dead");
-        //MovableStopper.Instance.Delete(this);
-        //MovableSlower.Instance.Delete(this);
-        //Destroy(gameObject, 5);
-        StartCoroutine(HandleDeath());
+        // 💡 코루틴 대신 UniTask 호출
+        HandleDeath().Forget();
+        visual?.PlayDeadAnimation();
     }
 
-    private IEnumerator HandleDeath()
+    // 💡 IEnumerator -> async UniTaskVoid 로 변경
+    private async UniTaskVoid HandleDeath()
     {
-        yield return new WaitForSeconds(1.0f);
-        Dead(); 
+        // 1초 대기 (토큰이 없으므로 씬 전환 시 에러 안 나게 주의)
+        await UniTask.Delay(TimeSpan.FromSeconds(1.0f));
+        Dead();
     }
 
     protected override void Dead()
@@ -274,6 +244,18 @@ public class Player
         if (newType == StateType.Dead)
         {
             OnDead?.Invoke(this);
+        }
+
+        if (newType == StateType.Damaged || newType == StateType.Stop || newType == StateType.Dead)
+        {
+            // 현재 행동 중(InAction)인 모든 컴포넌트들을 강제로 캔슬시킵니다!
+            foreach (var ac in actionComponents)
+            {
+                if (ac.InAction)
+                {
+                    ac.EndDoAction(); // (가짜 타이머도 여기서 알아서 다 꺼집니다)
+                }
+            }
         }
     }
 

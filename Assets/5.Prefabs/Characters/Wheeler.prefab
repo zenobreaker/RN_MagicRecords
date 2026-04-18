@@ -182,7 +182,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6746276920753908412}
-  - component: {fileID: 1890258274882156024}
   - component: {fileID: 1239581195011125100}
   - component: {fileID: 159238280600315504}
   - component: {fileID: 1098723213137776559}
@@ -225,28 +224,6 @@ Transform:
   - {fileID: 7093597470290403353}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &1890258274882156024
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2648386498377329606}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: c427e47516b89934daa889aa7f52f4a9, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &1239581195011125100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -393,7 +370,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44ac8307bd942804f8f0e192d7b440a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useAnimationEvents: 1
   surfaceNames: []
   damageColor: {r: 0, g: 0, b: 0, a: 0}
   changeColorTime: 0.15
@@ -427,13 +403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55e6c09eea2891b4bb6343b91672230e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useAnimationEvents: 0
-  damageMotions:
-  - damageType: 0
-    damageMotion: {fileID: 0}
   dmgFontOffsetY: 1.5
-  DamageAnimStateName: Hit
-  baseController: {fileID: 0}
 --- !u!114 &5173831324886581360
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,9 +418,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   status:
     statusEntries:
-    - type: 0
+    - type: 3
       value:
-        baseValue: 10
+        baseValue: 1
     - type: 1
       value:
         baseValue: 1
@@ -459,7 +429,7 @@ MonoBehaviour:
         baseValue: 1
     - type: 5
       value:
-        baseValue: 10
+        baseValue: 0
 --- !u!114 &5936593163244931350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1029,6 +999,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6989227029233427883}
+  - component: {fileID: 5038863865449029296}
+  - component: {fileID: 2624826540421047969}
   m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
@@ -1053,6 +1025,45 @@ Transform:
   - {fileID: 6359005552110316944}
   m_Father: {fileID: 6746276920753908412}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &5038863865449029296
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9029470821540162083}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c427e47516b89934daa889aa7f52f4a9, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2624826540421047969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9029470821540162083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50017fa3a3611b44398a234567980e14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modelRoot: {fileID: 0}
+  useAnimationEvents: 0
+  DamageAnimStateName: Hit
+  baseController: {fileID: 0}
+  damageMotions: []
 --- !u!1 &9043882908220211855
 GameObject:
   m_ObjectHideFlags: 0

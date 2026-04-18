@@ -35,5 +35,9 @@ public class UIStageMapNode
             stageIcon.sprite = icon;
             stageIcon.gameObject.SetActive(true);
         }
+        else
+        {
+            stageIcon.gameObject.SetActive(false);
+        }
     }
 }

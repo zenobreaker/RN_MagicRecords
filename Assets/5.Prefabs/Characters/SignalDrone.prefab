@@ -566,7 +566,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5186238222513534126}
-  - component: {fileID: 310255486908794801}
   - component: {fileID: 4100220714198607666}
   - component: {fileID: 8595096959173789555}
   - component: {fileID: 5384449237848096351}
@@ -609,28 +608,6 @@ Transform:
   - {fileID: 7562670550132963759}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &310255486908794801
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5302455516386833428}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 6029ba905f4b8b746a75fc0c6dc48d79, type: 3}
-  m_Controller: {fileID: 22100000, guid: 10dbd2713b90d8d44a07da4e7de14430, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 1
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &4100220714198607666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -821,12 +798,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55e6c09eea2891b4bb6343b91672230e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageMotions:
-  - damageType: 0
-    damageMotion: {fileID: 0}
   dmgFontOffsetY: 1.5
-  DamageAnimStateName: Hit
-  baseController: {fileID: 0}
 --- !u!114 &2197120102190488730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -849,7 +821,10 @@ MonoBehaviour:
         baseValue: 1
     - type: 5
       value:
-        baseValue: 10
+        baseValue: 0
+    - type: 3
+      value:
+        baseValue: 1
 --- !u!114 &8593958820643679635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -919,6 +894,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9390b2db8381934eba058cebcb26d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAnimationEvents: 1
   originPrefabs:
   - {fileID: 3126351601299179236, guid: 8cfc0c45a1c83ff43a11659c75050798, type: 3}
   initType: 3
@@ -934,6 +910,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c50be100f9e522429eb662a7241f7f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAnimationEvents: 1
   skillEventHandler: {fileID: 0}
 --- !u!114 &952576437337466804
 MonoBehaviour:
@@ -1645,6 +1622,7 @@ GameObject:
   - component: {fileID: 5052893727051413652}
   - component: {fileID: 632896993447111788}
   - component: {fileID: 7246842280956970742}
+  - component: {fileID: 1552395241329474577}
   m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
@@ -1682,6 +1660,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   modelRoot: {fileID: 2280015815982523404}
+  useAnimationEvents: 1
+  DamageAnimStateName: Hit
+  baseController: {fileID: 0}
+  damageMotions: []
 --- !u!114 &632896993447111788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1714,6 +1696,28 @@ MonoBehaviour:
   rotationAxis: {x: 0, y: 0, z: 1}
   baseSpeed: 600
   moveMultiplier: 650
+--- !u!95 &1552395241329474577
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8938072586816651242}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 6029ba905f4b8b746a75fc0c6dc48d79, type: 3}
+  m_Controller: {fileID: 22100000, guid: 10dbd2713b90d8d44a07da4e7de14430, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 1
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &9171093661943264148
 GameObject:
   m_ObjectHideFlags: 0

@@ -56,7 +56,16 @@ public abstract class ActiveSkill
 
     public float CurrentCooldown { get => currentCooldown; }
     public float MaxCooldown { get => maxCooldown; }
-    public Dictionary<string, object> Blackboard; 
+    public Dictionary<string, object> Blackboard;
+    public int MaxPhaseCount
+    {
+        get
+        {
+            return (phaseList != null && phaseList.Count > 0) ? phaseList.Count : 1;
+        }
+    }
+
+
     public ActiveSkill(SO_SkillData skillData)
         : base(skillData)
     {
@@ -157,10 +166,14 @@ public abstract class ActiveSkill
         // 애니메이션이 끝났다고 해서 취소하지 않은다. 
         if(phaseIndex < phaseList.Count -1)
         {
+            phaseIndex++;
             return; 
         }
 
-        isCasting = false; 
+        isCasting = false;
+        
+        // 다음 번 스킬을 위해 초기화
+        phaseIndex = 0; 
 
         NavMeshAgent agent = ownerObject?.GetComponent<NavMeshAgent>();
         if (agent != null && agent.isActiveAndEnabled)

@@ -92,6 +92,8 @@ public class Status
 
     public StatusValue Get(StatusType type)
     {
+        if (statusValueTable == null) return null; 
+
         if (isInitialized == false) Init();
 
         if(statusValueTable.TryGetValue(type, out var val) == false)
@@ -193,7 +195,9 @@ public class StatusComponent : MonoBehaviour
     {
         if (status == null) return 0;
 
-        return status.Get(type).FinalValue;
+        var value = status.Get(type);
+
+        return value == null ? 0.0f : value.FinalValue;
     }
 
     public float GetMaxHP()

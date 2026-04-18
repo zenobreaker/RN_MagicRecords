@@ -2,13 +2,14 @@
 using Newtonsoft.Json.Bson;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class Enemy
     : Character
     , IDamagable
     , ILaunchable
-    , IActionable
 {
     [Header("Material Settings")]
     [SerializeField] private string[] surfaceNames;
@@ -23,7 +24,8 @@ public class Enemy
 
     private DamageHandleComponent damageHandle;
     private LaunchComponent launch;
-    protected ActionComponent currentAction;
+
+    private List<ActionComponent> actionComponents = new();
     protected SkillComponent skill;
     protected WeaponComponent weapon;
 
@@ -51,23 +53,13 @@ public class Enemy
             index++;
         }
 
-        currentAction = GetComponent<ActionComponent>();
         damageHandle = GetComponent<DamageHandleComponent>();
         launch = GetComponent<LaunchComponent>();
-
         skill = GetComponent<SkillComponent>();
-        weapon = GetComponent<WeaponComponent>(); 
+        weapon = GetComponent<WeaponComponent>();
 
-        Awake_SkillEventHandle(skill, weapon); 
-    }
-
-    private void Awake_SkillEventHandle(SkillComponent skill, WeaponComponent weapon)
-    {
-        if (skill == null || weapon == null) return;
-
-        skill.OnSkillUse += OnSkillUse;
-        skill.OnBeginDoAction += weapon.OnBeginSkillAction;
-        skill.OnEndDoAction += weapon.OnEndSkillAction;
+        if (weapon != null) actionComponents.Add(weapon);
+        if (skill != null) actionComponents.Add(skill);
     }
 
     protected override void Start()
@@ -84,8 +76,10 @@ public class Enemy
         BattleManager.Instance?.ResistEnemy(this);
     }
 
-    protected virtual void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
+
         if (state != null)
             state.OnStateTypeChanged -= ChangeType; 
 
@@ -94,35 +88,35 @@ public class Enemy
         ObjectPooler.ReturnToPool(gameObject);
     }
 
-    public void OnSkillUse(bool bIsUse)
-    {
-        if (bIsUse)
-        {
-            SetActionComponent(skill); 
-        }
-    }
-
     public override void Start_DoAction()
     {
         base.Start_DoAction();
-        currentAction?.StartAction();
+        foreach (var ac in actionComponents)
+            if (ac.InAction) ac.StartAction();
     }
 
     public override void End_DoAction()
     {
-        currentAction?.EndDoAction();
+        base.End_DoAction();
+        bInAction = false;
+        foreach (var ac in actionComponents)
+            if (ac.InAction) ac.EndDoAction();
+        
+        OnEndDoAction?.Invoke();
     }
 
     public override void Begin_JudgeAttack(AnimationEvent e)
     {
         base.Begin_JudgeAttack(e);
-        currentAction?.BeginJudgeAttack(e);
+        foreach (var ac in actionComponents)
+            if (ac.InAction) ac.BeginJudgeAttack(e);
     }
 
     public override void End_JudgeAttack(AnimationEvent e)
     {
         base.End_JudgeAttack(e);
-        currentAction?.EndJudgeAttack(e);
+        foreach (var ac in actionComponents)
+            if (ac.InAction) ac.EndJudgeAttack(e);
     }
 
     public void OnDamage(GameObject attacker,
@@ -146,25 +140,39 @@ public class Enemy
         collider.isTrigger = true;
         rigidbody.isKinematic = true;
 
-        animator?.SetTrigger("Dead");
+        visual?.PlayDeadAnimation();
         HandleDeath().Forget();
     }
 
 
-    private IEnumerator Change_Color(float time)
+    // 💡 IEnumerator -> async UniTaskVoid 로 변경
+    private async UniTaskVoid Change_Color(float time, CancellationToken token)
     {
-        foreach (Material mat in skinMaterials)
+        try
         {
-            mat.color = damageColor;
+            foreach (Material mat in skinMaterials)
+            {
+                if (mat != null) mat.color = damageColor;
+            }
+
+            await UniTask.Delay(TimeSpan.FromSeconds(time), cancellationToken: token);
+
+            int index = 0;
+            foreach (Material mat in skinMaterials)
+            {
+                if (mat != null) mat.color = originColors[index];
+                index++;
+            }
         }
-
-        yield return new WaitForSeconds(time);
-
-        int index = 0;
-        foreach (Material mat in skinMaterials)
+        catch (OperationCanceledException)
         {
-            mat.color = originColors[index];
-            index++;
+            // 💡 몹이 죽거나 파괴되어 취소되었을 때 색깔 원상복구
+            int index = 0;
+            foreach (Material mat in skinMaterials)
+            {
+                if (mat != null) mat.color = originColors[index];
+                index++;
+            }
         }
     }
 
@@ -173,7 +181,8 @@ public class Enemy
         base.End_Damaged();
 
         state?.SetIdleMode();
-        currentAction?.EndDoAction();
+        foreach (var ac in actionComponents)
+            ac.EndDoAction();
     }
 
     private async UniTaskVoid HandleDeath()
@@ -238,15 +247,5 @@ public class Enemy
 
         if (healthPoint != null)
             healthPoint.SetMaxHP = statData.hp;
-    }
-
-    public void SetActionComponent(ActionComponent action)
-    {
-        currentAction = action; 
-    }
-
-    public ActionComponent GetCurrentAction()
-    {
-        return currentAction; 
     }
 }

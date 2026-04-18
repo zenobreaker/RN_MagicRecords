@@ -84,10 +84,10 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.8281903
+      - time: 0.8281902
         functionName: End_Damaged
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
@@ -178,31 +178,31 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.19827586
-        functionName: Play_Sound
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.21551724
+      - time: 0.21551721
         functionName: Begin_JudgeAttack
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.8189363
+      - time: 0.5442467
+        functionName: Play_Sound
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.81893605
         functionName: Begin_DoAction
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.94827586
+      - time: 0.94827527
         functionName: End_DoAction
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
@@ -235,31 +235,31 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.92241377
-        functionName: End_DoAction
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.20402299
-        functionName: Begin_JudgeAttack
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
       - time: 0.17816092
         functionName: Play_Sound
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.2356322
+      - time: 0.20402296
+        functionName: Begin_JudgeAttack
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.23563205
         functionName: Play_CameraShake
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.92241323
+        functionName: End_DoAction
+        data: 
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0

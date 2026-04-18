@@ -1,12 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.Serialization.Formatters;
 using Unity.Behavior;
 using UnityEngine;
 
-
-/// <summary>
-/// AI 기능을 수행하게 만드는 Controller 
-/// </summary>
 [RequireComponent(typeof(PerceptionComponent))]
 [RequireComponent(typeof(AIBehaviourComponent))]
 public class AIController : MonoBehaviour
@@ -15,7 +10,9 @@ public class AIController : MonoBehaviour
     [SerializeField] protected PatternEntry defaultAttack;
 
     protected AIContext context;
-    protected IActionable actor;  // 조종할 대상이 액션컴포넌트를 이용하는 자인가?
+
+    // 💡 삭제: 이제 조종할 대상의 액션을 강제로 갈아끼울 필요가 없으므로 IActionable 삭제!
+    // protected IActionable actor;  
 
     protected BehaviorGraphAgent bgAgent;
     protected PerceptionComponent perception;
@@ -24,7 +21,7 @@ public class AIController : MonoBehaviour
     protected SkillComponent skill;
     protected WeaponComponent weapon;
 
-    private PatternEntry currentPattern; 
+    private PatternEntry currentPattern;
 
     public StateComponent State => state;
 
@@ -35,10 +32,7 @@ public class AIController : MonoBehaviour
         aiBehaivour = GetComponent<AIBehaviourComponent>();
         state = GetComponent<StateComponent>();
         skill = GetComponent<SkillComponent>();
-
         weapon = GetComponent<WeaponComponent>();
-   
-        actor = GetComponent<IActionable>();
 
         context = new AIContext(this.gameObject);
     }
@@ -49,11 +43,9 @@ public class AIController : MonoBehaviour
             AddPattern(entry);
 
         defaultAttack?.InitiaizePattern();
-        // 초기에 액션을 무기로 지정
-        if (actor != null)
-            actor.SetActionComponent(weapon);
 
-        if(skill != null)
+        // 💡 훌륭한 이벤트 연결! (그대로 유지)
+        if (skill != null)
         {
             skill.OnEndDoAction += () =>
             {
@@ -74,13 +66,11 @@ public class AIController : MonoBehaviour
     {
         UpdateContext();
 
-        // 패턴 조건 검사
         foreach (var pattern in patternEntries)
         {
-            // 패턴 내부의 Cooldown 등 시간 업데이트
             pattern.Update(Time.deltaTime, context);
         }
-        defaultAttack.Update(Time.deltaTime, context);
+        defaultAttack?.Update(Time.deltaTime, context);
 
         if (perception == null || aiBehaivour == null) return;
 
@@ -94,45 +84,48 @@ public class AIController : MonoBehaviour
         }
     }
 
-    // 패턴 수행
     private void ExecutePattern(PatternEntry patternEntry)
     {
         if (patternEntry == null) return;
 
-        // 스킬컴포넌트의 경우 가지고 있는 스킬들을 살피며 사용할 수 있는지 검사 후에 공격
-        // 스킬이 수행하지 않으면 웨폰을 수행
-        currentPattern = patternEntry; 
+        currentPattern = patternEntry;
+
+        // 💡 여기가 바로 새 아키텍처의 꽃입니다!
+        // 갈아끼울 필요 없이 그냥 찌르기만 하면 끝납니다.
         if (patternEntry.slotName != "default")
         {
-            actor?.SetActionComponent(skill);
             skill.UseSkill(patternEntry.slotName.ToUpper());
         }
         else
         {
-            actor?.SetActionComponent(weapon);
-            weapon.DoAction();
+            weapon.DoActionWithIndex();
         }
     }
 
     public void DoAction()
     {
+        // 💡 1. 상태가 Idle이 아니면 실행 불가 (기절, 피격 등 방어)
         if (state != null && state.IdleMode == false) return;
 
+        // 💡 2. [핵심 방어선] 
+        // 이미 평타를 치고 있거나 스킬을 쓰는 중(InAction)이라면,
+        // 새로운 패턴을 찾거나 덮어쓰지 않고 즉시 리턴합니다!
+        if ((weapon != null && weapon.InAction) || (skill != null && skill.InAction))
+            return;
+
         bool skillExecuted = false;
-        // 패턴 조건 검사
+
         foreach (var pattern in patternEntries)
         {
-            // 조건 충족 확인
             if (pattern.CheckUsePattern(context))
             {
                 ExecutePattern(pattern);
                 skillExecuted = true;
-                break; // 우선순위가 높은 것 하나만 실행하고 탈출
+                break;
             }
         }
 
-        // 실행된 스킬이 없고 평타 조건이 맞으면 평타 실행 
-        if (!skillExecuted && defaultAttack.CheckUsePattern(context))
+        if (!skillExecuted && defaultAttack != null && defaultAttack.CheckUsePattern(context))
         {
             ExecutePattern(defaultAttack);
         }
@@ -142,11 +135,8 @@ public class AIController : MonoBehaviour
     {
         if (context == null)
         {
-            // 컨텍스트가 사라졌다면 다시 만든다. 
             context = new AIContext(this.gameObject);
         }
-
-        // 타겟 정보 입력 
         context.Target = perception.GetTarget();
     }
 
@@ -156,7 +146,6 @@ public class AIController : MonoBehaviour
         if (entry == null) return;
 
         entry.InitiaizePattern();
-
         skill.SetActiveSkill(entry.slotName.ToUpper(), entry.GetActiveSkill());
     }
 }

@@ -26,6 +26,7 @@ MonoBehaviour:
   castingTime: 0
   phaseList:
   - phaseName: "1\uBC88 \uD398\uC774\uC988"
+    isInstant: 0
     modules:
     - rid: 7308159180900401302
     - rid: 7308159202074034583
@@ -69,6 +70,7 @@ MonoBehaviour:
     spawnPosition: {x: 0, y: 0, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
   - phaseName: "2\uBC88 \uD398\uC774\uC988"
+    isInstant: 0
     modules:
     - rid: 5085156208516268146
     - rid: 5085156208516268138
@@ -144,6 +146,7 @@ MonoBehaviour:
       type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        useBlackboardPattern: 0
         signType: 1
         duration: 1.5
         isSetTargetPos: 0
@@ -190,7 +193,11 @@ MonoBehaviour:
             HitParticle: {fileID: 0}
             HitParticlePositionOffset: {x: 0, y: 0, z: 0}
             HitParticleScaleOffset: {x: 1, y: 1, z: 1}
-        spawnPosition: {x: 0, y: 0, z: 0}
-        spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+        spawnPosition: {x: 0, y: 1, z: 1}
+        spawnRotation: {x: 0, y: 0, z: 0}
+        patternType: 0
         skillObject: {fileID: 0}
         objectName: ReinForcedMagicBullet
+        useBlackboardPattern: 1
+        spawnCount: 1
+        angleBetween: 0

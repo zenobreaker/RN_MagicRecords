@@ -237,7 +237,7 @@ ModelImporter:
     - serializedVersion: 16
       name: GetHit
       takeName: Take 001
-      internalID: 0
+      internalID: 7400000
       firstFrame: 0
       lastFrame: 25
       wrapMode: 0
@@ -259,92 +259,28 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.9259259
-        functionName: End_DoAction
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
       - time: 0.14529915
         functionName: Begin_JudgeAttack
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.25925925
+      - time: 0.2592592
         functionName: End_JudgeAttack
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 2d39b74f47bfe5c42a2f8d81d4eb3906, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      transformMask:
-      - path: 
-        weight: 1
-      - path: Body
-        weight: 1
-      - path: Body/Spine01
-        weight: 1
-      - path: Body/Spine01/Shell
-        weight: 1
-      - path: Body/Spine01/Shell/HornL01
-        weight: 1
-      - path: Body/Spine01/Shell/HornL01/HornLTip01
-        weight: 1
-      - path: Body/Spine01/Shell/HornL02
-        weight: 1
-      - path: Body/Spine01/Shell/HornL02/HornLTip02
-        weight: 1
-      - path: Body/Spine01/Shell/HornL03
-        weight: 1
-      - path: Body/Spine01/Shell/HornL03/HornLTip03
-        weight: 1
-      - path: Body/Spine01/Shell/HornL04
-        weight: 1
-      - path: Body/Spine01/Shell/HornL04/HornLTip04
-        weight: 1
-      - path: Body/Spine01/Shell/HornMid01
-        weight: 1
-      - path: Body/Spine01/Shell/HornMid01/HornMidTip01
-        weight: 1
-      - path: Body/Spine01/Shell/HornMid02
-        weight: 1
-      - path: Body/Spine01/Shell/HornMid02/HornMidTip02
-        weight: 1
-      - path: Body/Spine01/Shell/HornMid03
-        weight: 1
-      - path: Body/Spine01/Shell/HornMid03/HornMidTip03
-        weight: 1
-      - path: Body/Spine01/Shell/HornR01
-        weight: 1
-      - path: Body/Spine01/Shell/HornR01/HornRTip01
-        weight: 1
-      - path: Body/Spine01/Shell/HornR02
-        weight: 1
-      - path: Body/Spine01/Shell/HornR02/HornRTip02
-        weight: 1
-      - path: Body/Spine01/Shell/HornR03
-        weight: 1
-      - path: Body/Spine01/Shell/HornR03/HornRTip03
-        weight: 1
-      - path: Body/Spine01/Shell/HornR04
-        weight: 1
-      - path: Body/Spine01/Shell/HornR04/HornRTip04
-        weight: 1
-      - path: Body/Spine01/Spine02
-        weight: 1
-      - path: Body/Spine01/Spine02/Head
-        weight: 1
-      - path: Body/Spine01/Spine02/Head/BottomCover
-        weight: 1
-      - path: Body/Spine01/Spine02/Head/Eyeball
-        weight: 1
-      - path: Body/Spine01/Spine02/Head/UpperCover
-        weight: 1
-      - path: TurtleShell
-        weight: 1
+      - time: 0.9259257
+        functionName: End_DoAction
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0

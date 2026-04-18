@@ -6,7 +6,7 @@ public class SkillTestWindow : EditorWindow
 {
     private SO_SkillData selectedSkill;
 
-    private SkillSlot selectedSlot = SkillSlot.Slot1;
+    private SkillSlot selectedSlot = SkillSlot.SLOT1;
     private string[] slotNames;
     private int testSkilLevel = 1; 
 

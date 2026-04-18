@@ -20,7 +20,7 @@ public class DamageMotionNameData
 
 
 [RequireComponent(typeof(Animator))]
-public class CharacterVisual : MonoBehaviour
+public sealed class CharacterVisual : MonoBehaviour
 {
     [Header("Model Settings")]
     [SerializeField] private GameObject modelRoot;
@@ -31,6 +31,14 @@ public class CharacterVisual : MonoBehaviour
     public string DamageAnimStateName = "Hit";
     public RuntimeAnimatorController baseController;
     public List<DamageMotionData> damageMotions = new List<DamageMotionData>();
+
+    [Header("Movement Animation")]
+    private static readonly int SPEED_HASH = Animator.StringToHash("SpeedY");
+    private static readonly int WEAPONTYPE_HASH = Animator.StringToHash("WeaponType");
+
+    [Header("Dash Animation Settings")]
+    private static readonly int EVADE_HASH = Animator.StringToHash("Evade");
+    private static readonly int DASH_HASH = Animator.StringToHash("Dash");
 
     // --- Components & State ---
     public Animator Animator { get; private set; }
@@ -170,12 +178,51 @@ public class CharacterVisual : MonoBehaviour
         Animator.SetTrigger(DamageAnimStateName);
     }
 
+
+    public void PlayDeadAnimation()
+    {
+        Animator.SetTrigger("Dead");
+    }
+
     // 💡 3. 애니메이션 배속 설정 (Slow 적용 시 호출)
     public void SetAnimationSpeedMultiplier(float multiplier)
     {
         if (Animator != null)
             Animator.speed = originAnimSpeed * multiplier;
     }
+
+    public void SetMovementAnimation(float speedValue)
+    {
+        if (Animator != null)
+        {
+            Animator.SetFloat(SPEED_HASH, speedValue);
+        }
+    }
+
+    public void SetWeaponEquipAnimation(int weaponType)
+    {
+        if(Animator!= null)
+        {
+            Animator.SetBool("isEquipping", true); 
+            Animator.SetInteger(WEAPONTYPE_HASH, weaponType);
+        }
+    }
+
+    public void PlayDashAnimation(bool isBackwardEvade)
+    {
+        if (Animator != null)
+        {
+            if (isBackwardEvade)
+            {
+                Animator.SetTrigger(EVADE_HASH);
+            }
+            else
+            {
+                Animator.SetTrigger(DASH_HASH);
+            }
+        }
+    }
+
     #endregion
 
     #region Fade Async Task (UniTask)
@@ -222,12 +269,12 @@ public class CharacterVisual : MonoBehaviour
     #endregion
 
     #region Memory Management
-    protected virtual void OnDisable()
+    private  void OnDisable()
     {
         CleanupTask();
     }
 
-    protected virtual void OnDestroy()
+    private void OnDestroy()
     {
         CleanupTask();
     }
@@ -241,5 +288,15 @@ public class CharacterVisual : MonoBehaviour
             fadeCts = null;
         }
     }
+    #endregion
+
+    #region Animation Event Bridge
+    public void Start_DoAction() => character?.Start_DoAction();
+    public void Begin_DoAction() => character?.Begin_DoAction();
+    public void End_DoAction() => character?.End_DoAction();
+    public void Begin_JudgeAttack(AnimationEvent e = null) => character?.Begin_JudgeAttack(e);
+    public void End_JudgeAttack(AnimationEvent e = null) => character?.End_JudgeAttack(e);
+    public void Play_Sound() => character?.Play_Sound();
+    public void Play_CameraShake() => character?.Play_CameraShake();
     #endregion
 }
