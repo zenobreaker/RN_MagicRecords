@@ -146,6 +146,65 @@ public sealed class ExploreManager : MonoBehaviour
         return bEnable;
     }
 
+    // 💡 UI 노드들이 자신을 그릴 때 매니저에게 "저 무슨 상태예요?" 하고 물어보는 함수입니다.
+    public MapNodeState GetNodeState(int targetNodeId)
+    {
+        // 1. 현재 진행 중인 노드인가? (가장 우선)
+        if (MapNodeID == targetNodeId)
+        {
+            // 노드에 입장했지만 아직 클리어 못했으면 Current, 보상까지 다 먹고 끝났으면 Cleared
+            return bClearCurrentNode ? MapNodeState.Cleared : MapNodeState.Current;
+        }
+
+        // 2. 이미 지나온 과거의 노드인가?
+        // 현재 위치(MapNodeID가 -1이면 방금 깬 노드인 prevNodeId 기준)의 레벨을 가져옵니다.
+        int currentRefId = (MapNodeID == -1 || MapNodeID == 0) ? prevNodeId : MapNodeID;
+        int currentLevel = mapReplacer.GetNodeLevel(currentRefId);
+        int targetLevel = mapReplacer.GetNodeLevel(targetNodeId);
+
+        // 내 현재 층수보다 아래에 있는 노드라면 무조건 지나온 길(Cleared) 처리
+        if (currentLevel != -1 && targetLevel < currentLevel)
+        {
+            return MapNodeState.Cleared;
+        }
+
+        // 3. 당장 다음으로 선택해서 넘어갈 수 있는 노드인가?
+        // 개발자님이 이미 만들어두신 철통 방어 로직 EnableNode()를 그대로 사용!
+        if (EnableNode(targetNodeId))
+        {
+            return MapNodeState.Selectable;
+        }
+
+        // 4. 그 외의 모든 노드 (같은 층의 다른 갈래길, 아직 닿을 수 없는 높은 층)
+        return MapNodeState.Locked;
+    }
+
+    // =======================================================
+    // 💡 2. 화면에 떠있는 UI 노드들에게 "상태에 맞춰서 색깔 바꿔!" 라고 명령하는 함수
+    // =======================================================
+    public void UpdateMapUIState(UIMapReplacer uiMapReplacer)
+    {
+        if (uiMapReplacer == null) return;
+
+        // UIMapReplacer가 들고 있는 UI 노드 리스트를 가져옵니다.
+        List<UIMapNode> spawnedNodes = new List<UIMapNode>();
+        uiMapReplacer.GetUIMapNodes(ref spawnedNodes);
+
+        // 모든 UI 노드를 순회하면서 알맞은 옷(상태)을 입혀줍니다.
+        foreach (var uiNode in spawnedNodes)
+        {
+            if (uiNode is UIStageMapNode stageNode)
+            {
+                // 두뇌(GetNodeState)에게 물어봐서 상태를 얻어온 뒤
+                MapNodeState state = GetNodeState(stageNode.Node.id);
+
+                // UI에게 적용!
+                stageNode.SetState(state);
+            }
+        }
+    }
+
+
     public void EnterStageByNode(MapNode node)
     {
         prevNodeId = MapNodeID = node.id; 

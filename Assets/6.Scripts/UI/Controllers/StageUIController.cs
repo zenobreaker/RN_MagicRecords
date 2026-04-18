@@ -66,6 +66,7 @@ public class StageUIController
         {
             uiMapReplacer.ReplaceUINode(AppManager.Instance.GetMapReplacer());
             uiMapReplacer.GetUIMapNodes(ref uiMapNodes);
+            AppManager.Instance.GetExploreManager().UpdateMapUIState(uiMapReplacer);
         }
 
         // Set Node Event
@@ -81,6 +82,7 @@ public class StageUIController
         }
     }
 
+    #region Button Events
     public void OnBackButton()
     {
         AppManager.Instance.SaveExploreMap();
@@ -92,4 +94,5 @@ public class StageUIController
     {
         UIManager.Instance?.OpenRecordInvenPopUp();
     }
+    #endregion
 }

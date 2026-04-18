@@ -258,4 +258,17 @@ public class MapReplacer
         if (isConnected == false)
             ConnectToNode();
     }
+
+    public int GetNodeLevel(int nodeId)
+    {
+        for (int level = 0; level < maxLevel; level++)
+        {
+            for (int node = 0; node < levels[level].Count; node++)
+            {
+                if (levels[level][node].id == nodeId)
+                    return level;
+            }
+        }
+        return -1; // 못 찾았을 경우
+    }
 }
