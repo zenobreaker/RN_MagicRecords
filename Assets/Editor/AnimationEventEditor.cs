@@ -364,6 +364,18 @@ public class AnimationEventEditor : EditorWindow
 
         previewUtility.lights[0].transform.rotation = Quaternion.Euler(30, -30, 0);
         previewUtility.lights[1].transform.rotation = Quaternion.Euler(30, 150, 0);
+
+        // 💡 꼼수: 바닥 역할을 할 Plane을 생성해서 프리뷰 씬에 던져 넣습니다.
+        GameObject gridPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        gridPlane.hideFlags = HideFlags.HideAndDontSave;
+        gridPlane.transform.position = Vector3.zero; // 발밑에 위치
+
+        // 투명도 있는 회색 재질 입히기 (선택 사항)
+        Material gridMat = new Material(Shader.Find("Hidden/Internal-Colored"));
+        gridMat.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+        gridPlane.GetComponent<MeshRenderer>().sharedMaterial = gridMat;
+
+        previewUtility.AddSingleGO(gridPlane); // 모델과 함께 렌더링!
     }
 
     private void DrawCustomPreview()
@@ -391,10 +403,27 @@ public class AnimationEventEditor : EditorWindow
 
         previewUtility.BeginPreview(previewRect, EditorStyles.helpBox);
 
-        previewUtility.camera.transform.position = targetCenter + new Vector3(0, targetMagnitude * 0.5f, -targetMagnitude * zoomMultiplier);
-        previewUtility.camera.transform.LookAt(targetCenter);
+        // ==========================================================
+        // 💡 [수정된 부분] 모델 대신 카메라를 회전시킵니다 (Orbit Camera)
+        // ==========================================================
+        // 1. 카메라가 바라볼 타겟 지점 (모델의 가슴 쯤)
+        Vector3 lookAtPoint = targetCenter + new Vector3(0, targetMagnitude * 0.2f, 0);
 
-        previewInstance.transform.rotation = Quaternion.Euler(previewRotation.y, previewRotation.x, 0);
+        // 2. 마우스 드래그로 계산된 회전값
+        Quaternion camRotation = Quaternion.Euler(previewRotation.y, previewRotation.x, 0);
+
+        // 3. 카메라가 타겟으로부터 떨어져 있을 거리 (줌 반영)
+        Vector3 distanceOffset = new Vector3(0, 0, -targetMagnitude * zoomMultiplier);
+
+        // 4. 최종 카메라 위치 = 타겟 지점 + (회전값 * 거리)
+        previewUtility.camera.transform.position = lookAtPoint + (camRotation * distanceOffset);
+
+        // 5. 카메라는 항상 타겟을 바라봄
+        previewUtility.camera.transform.LookAt(lookAtPoint);
+
+        // 🚨 기존에 있던 previewInstance.transform.rotation = ... 줄은 완전히 삭제합니다!
+        // 모델은 항상 (0,0,0)을 보게 두고, 카메라가 주변을 빙글빙글 돕니다.
+        // ==========================================================
 
         if (targetClip != null)
             targetClip.SampleAnimation(previewInstance, targetTime);
