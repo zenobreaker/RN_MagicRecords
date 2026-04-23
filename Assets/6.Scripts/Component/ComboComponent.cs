@@ -182,27 +182,33 @@ public class ComboComponent : MonoBehaviour
         weapon?.DoActionWithIndex(index);
     }
 
-    // 💡 [버그 픽스 3]: 애니메이션이 끝났을 때 큐(Queue)를 검사해서 선입력을 터뜨려줍니다!
+    // ComboComponent.cs 수정
     public void OnEndDoAction()
     {
         CancelComboTimer();
 
-        // 1. 만약 유저가 미리 눌러둔 평타(선입력)가 있다면 즉시 다음 콤보로 이어나감!
-        if (inputQueue.Count > 0 && bCanComboInput)
-        {
-            var nextInput = inputQueue.Dequeue();
-            if (nextInput.InputType == InputCommandType.ACTION)
-            {
-                ExecuteAttack(comboIndex);
-                comboIndex++;
-                return; // 다음 공격을 시작했으므로 타이머를 돌리지 않고 종료
-            }
-        }
+        // 💡 [수정] 방금 끝난 동작이 마지막 콤보 타수였다면?
+        bool isLastCombo = (currComboObj != null && comboIndex >= currComboObj.MaxComboIndex());
 
-        // 2. 예약된 공격이 없다면 기존처럼 마지막 타수 체크 및 유예 시간 타이머 시작
-        if (currComboObj != null && comboIndex >= currComboObj.MaxComboIndex())
+        if (isLastCombo)
         {
+            // 마지막 공격이 끝났으니, 사용자가 타다닥 눌러놨던 선입력을 무시(삭제)합니다.
+            inputQueue.Clear();
             bCanComboInput = false;
+        }
+        else
+        {
+            // 1. 유저가 미리 눌러둔 평타(선입력)가 있다면 즉시 다음 콤보로 이어나감!
+            if (inputQueue.Count > 0 && bCanComboInput)
+            {
+                var nextInput = inputQueue.Dequeue();
+                if (nextInput.InputType == InputCommandType.ACTION)
+                {
+                    ExecuteAttack(comboIndex);
+                    comboIndex++;
+                    return; // 다음 공격을 시작했으므로 타이머를 돌리지 않고 종료
+                }
+            }
         }
 
         comboCts = new CancellationTokenSource();
