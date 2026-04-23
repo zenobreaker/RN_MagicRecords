@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a45f9791fc77e874c9cfd4fd8604a80c, type: 3}
   m_Name: starfall
   m_EditorClassIdentifier: 
-  id: 11
+  id: 111
   skillName: name_starfall
   skillDescription: desc_starfall
   learnableLevel: 0
@@ -162,14 +162,24 @@ MonoBehaviour:
             HitParticle: {fileID: 0}
             HitParticlePositionOffset: {x: 0, y: 0, z: 0}
             HitParticleScaleOffset: {x: 1, y: 1, z: 1}
-        spawnPosition: {x: 0, y: 20, z: 1}
-        spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+        spawnPosition: {x: 0, y: 20, z: 20}
+        spawnRotation: {x: 30, y: 0, z: 0}
+        patternType: 0
         skillObject: {fileID: 0}
         objectName: StarFall
+        useBlackboardPattern: 1
+        spawnCount: 1
+        angleBetween: 0
     - rid: 9058063375093465164
       type: {class: Module_CalcTargetPosition, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
         targetingType: 0
+        scanRadius: 10
+        enemyLayer:
+          serializedVersion: 2
+          m_Bits: 0
+        maxTargetCount: 1
         forwardDistance: 5
         blackboardKey: TargetPosition
+        fixedLocalOffset: {x: 0, y: 0, z: 0}
