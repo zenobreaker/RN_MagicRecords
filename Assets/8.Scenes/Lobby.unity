@@ -1606,6 +1606,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: Manager_Instance
       objectReference: {fileID: 0}
+    - target: {fileID: 7243516713511518165, guid: 20afbde1f66de93428549206b79b6d9f, type: 3}
+      propertyPath: roomInfos.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7243516713511518165, guid: 20afbde1f66de93428549206b79b6d9f, type: 3}
+      propertyPath: roomInfos.Array.data[1].id
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7243516713511518165, guid: 20afbde1f66de93428549206b79b6d9f, type: 3}
+      propertyPath: roomInfos.Array.data[2].id
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7243516713511518165, guid: 20afbde1f66de93428549206b79b6d9f, type: 3}
+      propertyPath: roomInfos.Array.data[1].mapObject
+      value: 
+      objectReference: {fileID: 8494203123428702012, guid: 30d50f7f72ebf2d449e08776770399e1, type: 3}
+    - target: {fileID: 7243516713511518165, guid: 20afbde1f66de93428549206b79b6d9f, type: 3}
+      propertyPath: roomInfos.Array.data[2].mapObject
+      value: 
+      objectReference: {fileID: 539247956527484442, guid: 8df53b45d722c6746b4c0e01b8a2e1f4, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
