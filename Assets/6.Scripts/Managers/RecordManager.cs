@@ -48,6 +48,26 @@ public sealed class RecordManager : MonoBehaviour
     
     public List<RecordData> GetPossesRecord() => possesRecords;
 
+
+    private List<RecordData> GetAllEnrichedRecordData()
+    {
+        List<RecordData> rawRecords = AppManager.Instance?.GetAllRecordData();
+        List<RecordData> enrichedRecords = new List<RecordData>();
+
+        if (rawRecords != null)
+        {
+            foreach (var raw in rawRecords)
+            {
+                // DB에서 가져온 ID를 기반으로, SO가 가진 아이콘/정보를 씌운 객체를 생성
+                if (recordsDict.TryGetValue(raw.id, out SO_RecordData soData))
+                {
+                    enrichedRecords.Add(soData.GetRecordData());
+                }
+            }
+        }
+        return enrichedRecords;
+    }
+
     // 이벤트 노드에서 호출할 때 사용 
     public void GenerateEventRecord()
     {
@@ -62,7 +82,7 @@ public sealed class RecordManager : MonoBehaviour
         SelectedRecords = new List<RecordData>();
 
         // 1. 전체 데이터에서 랜덤 추출 
-        List<RecordData> allRecord = AppManager.Instance?.GetAllRecordData();
+        List<RecordData> allRecord = GetAllEnrichedRecordData();
 
         // 2. 현재 가지고 있는 레코드들이 있다면 제외 
         if (possesRecords.Count > 0)
@@ -153,7 +173,7 @@ public sealed class RecordManager : MonoBehaviour
         // 1. 후보군 생성 (전체 - 이미 영구 보유 중인 것들)
         // 현재 떠 있는 것(CurrentOptions)은 제외하지 않습니다. 
         // 그래야 리롤 시점에 다시 나올 기회를 얻어 '빈 레코드'가 성급하게 뜨지 않습니다.
-        var allRecord = AppManager.Instance?.GetAllRecordData();
+        var allRecord = GetAllEnrichedRecordData();
         var candidates = allRecord
             .Where(data => !possesRecords.Exists(p => p.id == data.id))
             .ToList();
@@ -222,7 +242,6 @@ public sealed class RecordManager : MonoBehaviour
 
         save.isReceived = isReceived;
         SaveManager.SaveRecordData(save);
-        isDirty = true;
-
+        isDirty = false;
     }
 }

@@ -40,7 +40,7 @@ public class RecordCard : MonoBehaviour
         // 1. UI 텍스트 업데이트
         nameText.text = data.recordName;
         descText.text = data.description;
-        // iconImage.sprite = Resources.Load<Sprite>(data.iconPath); // 예시
+        iconImage.sprite = data.icon;
 
         // 2. 버튼 리스너 초기화 및 재할당
         selectButton.onClick.RemoveAllListeners();
