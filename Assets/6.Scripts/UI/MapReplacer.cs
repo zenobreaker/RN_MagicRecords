@@ -38,9 +38,9 @@ public class StageMapNode : MapNode
 
     public StageMapNode() { }
 
-    public int GetMapID()
+    public int GetMapIndex()
     {
-        return stageInfo != null ? stageInfo.mapID : -1;
+        return stageInfo != null ? stageInfo.mapIndex : -1;
     }
 
     public int GetStageId()

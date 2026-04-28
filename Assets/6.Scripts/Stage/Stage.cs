@@ -8,6 +8,7 @@ public class StageInfo
     public int id;
     public int chapter;
     public StageType type;
+    public string biome; 
 
     // 등장할 적 
     public List<int> groupIds = new List<int>();
@@ -17,7 +18,7 @@ public class StageInfo
 
     public int wave = 0;
 
-    public int mapID;
+    public int mapIndex;
 
     public bool bIsCleared = false;
     public bool bIsOpened = false;

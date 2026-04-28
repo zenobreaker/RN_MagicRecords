@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10b945e14b7e652458e03825cdc085cc, type: 3}
+  m_Name: TestBiome
+  m_EditorClassIdentifier: 
+  biomeName: Test
+  baseTex: {fileID: 2800000, guid: d9e72becef04d644caa5b498db1a32af, type: 3}
+  layer1Tex: {fileID: 0}
+  layer2Tex: {fileID: 0}
+  splatMap: {fileID: 0}
+  textureTiling: 4
+  maskTiling: 0.05
+  possibleRoomPrefabs:
+  - {fileID: 4315248260856988482, guid: de42a6e5e97b2e04b9692cbae715b06c, type: 3}

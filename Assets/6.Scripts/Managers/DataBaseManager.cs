@@ -47,6 +47,14 @@ public class DataBaseManager : MonoBehaviour
         }
     }
 
+
+    public string GetRandomBiome(int chapter)
+    {
+        if (stageDataBase == null) return "";
+
+        return stageDataBase.GetRandomBiome(chapter);
+    }
+
     public int GetRandomStageID(int chapter)
     {
         if (stageDataBase == null) return -1;

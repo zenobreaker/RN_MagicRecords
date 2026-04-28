@@ -18,8 +18,15 @@ public sealed class ExploreManager : MonoBehaviour
     public MapReplacer MapReplacer { get { return mapReplacer; } }
     private StageReplacer stageReplacer;
 
+    private string chapterBiomeName;
+
     public int Chapter { get; private set; }
     public int MapNodeID { get; private set; }
+    public string BiomeName
+    {
+        get { return chapterBiomeName; }
+        set { chapterBiomeName = value; }
+    }
     public bool AllStageClear => bAllCleared;
 
     private int maxChapter = 1;
@@ -28,7 +35,7 @@ public sealed class ExploreManager : MonoBehaviour
 
     private bool bCreate = false;
     private bool bAllCleared = false;
-    private bool bFinished = false; 
+    private bool bFinished = false;
     public bool IsFinish => bFinished;
 
     public void EnsureInitialized()
@@ -86,6 +93,7 @@ public sealed class ExploreManager : MonoBehaviour
 
 
         StageNodeData loadStage = SaveManager.LoadStageNode();
+        stageReplacer.StartChapter(Chapter);
         if (loadStage != null)
         {
             stageReplacer.RestoreStages(loadStage);
@@ -128,14 +136,14 @@ public sealed class ExploreManager : MonoBehaviour
 
         // 현재 고른 노드가 있으나 클리어 여부가 충족되지 않은 상태라면 
         // 해당 노드만 고름 
-        if(MapNodeID != 0 && bClearCurrentNode == false)
+        if (MapNodeID != 0 && bClearCurrentNode == false)
         {
-            bEnable = MapNodeID == id; 
+            bEnable = MapNodeID == id;
         }
         // 현재 노드가 -1 or 0 이고 이전 노드가 사전에 처리된 값이 되어 있다면 
         // 이전 노드로부터 다음에 갈 수 있는 노드를 고른 것인지
-        else if((MapNodeID == 0 || MapNodeID == -1) && prevNodeId != -1)
-        { 
+        else if ((MapNodeID == 0 || MapNodeID == -1) && prevNodeId != -1)
+        {
             bEnable = mapReplacer.CanEnableNode(prevNodeId, id);
         }
 
@@ -207,18 +215,18 @@ public sealed class ExploreManager : MonoBehaviour
 
     public void EnterStageByNode(MapNode node)
     {
-        prevNodeId = MapNodeID = node.id; 
+        prevNodeId = MapNodeID = node.id;
     }
 
     public void ClearStage(bool isWin)
     {
-        bFinished = false; 
+        bFinished = false;
 
         if (isWin)
         {
             // 스테이지 클리어 했다면 해당 노드가 끝인지 확인
             bool bIsFinal = MapReplacer.IsFinalNode(MapNodeID);
-            bClearCurrentNode = true; 
+            bClearCurrentNode = true;
 
             // 마지막이라면 챕터를 올린다. 
             if (bIsFinal)
@@ -229,13 +237,13 @@ public sealed class ExploreManager : MonoBehaviour
                     bAllCleared = true;
             }
 
-            bFinished = true; 
-            MapNodeID = -1; 
+            bFinished = true;
+            MapNodeID = -1;
             ChangeState(ExploreState.STAGE_CLEAR);
         }
         else
         {
-            bClearCurrentNode = false; 
+            bClearCurrentNode = false;
             MapNodeID = prevNodeId;
         }
     }
@@ -247,7 +255,7 @@ public sealed class ExploreManager : MonoBehaviour
 
     public void ChangeState(ExploreState newState, int stageID = -1)
     {
-        if (CurrentState == newState) return; 
+        if (CurrentState == newState) return;
 
         CurrentState = newState;
 
@@ -260,7 +268,7 @@ public sealed class ExploreManager : MonoBehaviour
                 HandleReturnToMain();
                 break;
             case ExploreState.IN_STAGE:
-                HandleInStage(stageID); 
+                HandleInStage(stageID);
                 break;
             case ExploreState.STAGE_CLEAR:
                 HandleStageClear();
@@ -285,7 +293,7 @@ public sealed class ExploreManager : MonoBehaviour
     }
     private void HandleInStage(int stageID)
     {
-        bClearCurrentNode = false; 
+        bClearCurrentNode = false;
         OnInStage.Invoke(stageID);
     }
     private void HandleStageClear()
@@ -308,25 +316,39 @@ public sealed class ExploreManager : MonoBehaviour
     public void SaveExploreMap()
     {
         // Save Map 
-        if(mapReplacer != null) 
+        if (mapReplacer != null)
         {
             MapData mapData = new();
             foreach (var level in mapReplacer.GetLevels())
                 foreach (var node in level)
                     mapData.nodes.Add(node);
-            
-            mapData.prevNodeId = prevNodeId; 
+
+            mapData.prevNodeId = prevNodeId;
             mapData.currentNodeId = MapNodeID;
             mapData.bClear = bClearCurrentNode;
+
+            mapData.biomeName = BiomeName;
+
             SaveManager.SaveMap(mapData);
         }
 
         // Save Stage
-        if(stageReplacer != null) 
+        if (stageReplacer != null)
         {
             StageNodeData stageNodeData = new();
-            foreach (var pair in stageReplacer.GetNodeToStageId())
-                stageNodeData.stages.Add(new MapToStage { mapNodeId = pair.Key, stageId = pair.Value });
+            foreach (var pair in stageReplacer.GetNodeToStage())
+            {
+                int nodeId = pair.Key;
+                StageInfo stageInfo = pair.Value;
+
+                stageNodeData.stages.Add(new MapToStage
+                {
+                    mapNodeId = nodeId,
+                    stageId = stageInfo.id,
+                    biomeName = stageInfo.biome,
+                    mapIndex = stageInfo.mapIndex
+                });
+            }
 
             SaveManager.SaveStageNode(stageNodeData);
         }

@@ -194,6 +194,20 @@ public class AppManager
         return exploreManager.EnableNode(node.id, bCheat);
     }
 
+    public string GetRandomBiome(int chapter)
+    {
+        if (databaseManager == null) return ""; 
+        string biomeName =  databaseManager.GetRandomBiome(chapter);
+
+        exploreManager.BiomeName = biomeName;
+
+        return biomeName;
+    }
+
+    public SO_Biome GetBiomeData(string biomeName)
+    {
+        return BiomeManager.Instance.GetBiomeData(biomeName);
+    }
 
     public StageInfo GetStageInfo(int stageID)
     {

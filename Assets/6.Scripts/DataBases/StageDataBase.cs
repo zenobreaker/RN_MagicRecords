@@ -1,6 +1,41 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public sealed class ChapterInfoJson : InfoJson
+{
+    public string possibleBiomes;
+    public float difficultScalar;
+}
+
+public sealed class ChapterInfo
+{
+    public int id;
+    public List<int> possibleBiomes;
+}
+
+[System.Serializable]
+public sealed class ChapterInfoAllData
+{
+    public List<ChapterInfoJson> chapterInfoJson;
+}
+
+[System.Serializable]
+public sealed class BiomesInfoJson : InfoJson
+{
+    public string environmentData;
+}
+
+public sealed class BiomesInfo : InfoBase
+{
+    public string environmentData;
+}
+
+[System.Serializable]
+public sealed class BiomesInfoAllData
+{
+    public List<BiomesInfoJson> biomeInfoJson;
+}
 
 [System.Serializable]
 public class StageInfoJson
@@ -8,22 +43,34 @@ public class StageInfoJson
     public int id;
     public int stageType;
     public int chapter;
+    public string biome; 
     public string groupIds;
     public int clearRewardId;
     public int wave;
 }
 
 [System.Serializable]
-public class StageInfoJsonAllData
+public sealed class StageInfoJsonAllData
 {
     public List<StageInfoJson> stageInfoJson;
 }
 
 
-public class StageDataBase : DataBase
+public sealed class StageDataBase : DataBase
 {
+    [Header("Chpater Data Json")]
+    [SerializeField] private TextAsset chapterJson;
+
+    [Header("Biomes Data Json")]
+    [SerializeField] private TextAsset biomeJson;
+
+
     [Header("Stage Data Json")]
     [SerializeField] private TextAsset stageJson;
+
+    private Dictionary<int, ChapterInfo> chapterInfoTable = new();
+    private Dictionary<int, BiomesInfo> biomeInfoTable = new();
+
     // 스테이지 정보 테이블 - key : id,  value : stage info 
     private Dictionary<int, StageInfo> stageInfoTable = new();
     // 스테이지 챕터별 테이블 - key : chapter,  value : 해당 챕터에 등장하는 stage id  
@@ -33,10 +80,80 @@ public class StageDataBase : DataBase
 
     public override void Initialize()
     {
+        InitializeChapterData();
+
+        InitializeBiomeData();
+
         InitializeStageData();
     }
 
-    public void InitializeStageData()
+    private void InitializeChapterData()
+    {
+        if (chapterJson == null) return;
+
+        Debug.Log("Chapter Database Init");
+
+
+        JsonLoader.LoadJsonList<ChapterInfoAllData, ChapterInfoJson, ChapterInfo>
+            (
+                chapterJson,
+                root => root.chapterInfoJson,
+                json =>
+                {
+                    var chapter = new ChapterInfo
+                    {
+                        id = json.id,
+                        possibleBiomes = JsonLoader.ParseIntList(json.possibleBiomes),
+                    };
+                    return chapter;
+                },
+
+                chapter =>
+                {
+                    chapterInfoTable.TryAdd(chapter.id, chapter);
+                }
+            );
+
+        // Complete Message 
+        Debug.Log("===================================================");
+        Debug.Log($"Complete Message => chapterInfoTable : {chapterInfoTable.Count}, " +
+            $"chapterInfoTable : {chapterInfoTable.Count}");
+    }
+
+    private void InitializeBiomeData()
+    {
+        if (biomeJson == null) return;
+
+        Debug.Log("Biome Database Init");
+
+
+        JsonLoader.LoadJsonList<BiomesInfoAllData, BiomesInfoJson, BiomesInfo>
+            (
+                biomeJson,
+                root => root.biomeInfoJson,
+                json =>
+                {
+                    var biome = new BiomesInfo
+                    {
+                        id = json.id,
+                        environmentData = json.environmentData,
+                    };
+                    return biome;
+                },
+
+                biome =>
+                {
+                    biomeInfoTable.TryAdd(biome.id, biome);
+                }
+            );
+
+        // Complete Message 
+        Debug.Log("===================================================");
+        Debug.Log($"Complete Message => biomeInfoTable: {biomeInfoTable.Count}, " +
+            $"biomeInfoTable : {biomeInfoTable.Count}");
+    }
+
+    private void InitializeStageData()
     {
         if (stageJson == null) return;
 
@@ -54,6 +171,7 @@ public class StageDataBase : DataBase
                       id = json.id,
                       type = (StageType)json.stageType,
                       groupIds = JsonLoader.ParseIntList(json.groupIds),
+                      biome = json.biome,
                       clearRewardId = json.clearRewardId,
                       chapter = json.chapter,
                       wave = json.wave
@@ -96,6 +214,31 @@ public class StageDataBase : DataBase
             $"stageChapterTable : {stageChapterTable.Count}, " +
             $"bossChapterTable : {bossChapterTable.Count}");
     }
+
+    public string GetRandomBiome(int chapter)
+    {
+        if (chapterInfoTable != null && 
+            chapterInfoTable.TryGetValue(chapter, out var info))
+        {
+            if (info.possibleBiomes != null)
+            {
+                int maxCount = info.possibleBiomes.Count;
+                int biomeResultIdx = Random.Range(0, maxCount);
+
+                int biomeId = info.possibleBiomes[biomeResultIdx];
+
+                if (biomeInfoTable != null && 
+                    biomeInfoTable.TryGetValue(biomeId, out var biome))
+                    return biome.environmentData;
+
+                return "Test"; 
+            }
+        }
+
+        return "Test";
+    }
+
+    public string GetTestBiome() { return "Test"; }
 
     public List<int> GetIdsByChapter(int chapter)
     {

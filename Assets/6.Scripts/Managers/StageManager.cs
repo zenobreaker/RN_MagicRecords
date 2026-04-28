@@ -179,7 +179,7 @@ public sealed class StageManager : MonoBehaviour
         if (currentStage == null) return;
 
         // Load Map 
-        roomManager?.LoadRoom(currentStage.mapID, ref mainSpawnPoints, ref spawnPoints);
+        roomManager?.LoadRoom(currentStage, ref mainSpawnPoints, ref spawnPoints);
 
         SetSpawnPlayer();
     }

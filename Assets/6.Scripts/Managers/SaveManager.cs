@@ -10,6 +10,8 @@ public class MapData
     public int prevNodeId; 
     public int currentNodeId;
     public bool bClear = false;
+    
+    public string biomeName; 
 }
 
 [System.Serializable]
@@ -17,6 +19,9 @@ public class MapToStage
 {
     public int mapNodeId;
     public int stageId;
+
+    public string biomeName;
+    public int mapIndex;
 }
 
 [System.Serializable]

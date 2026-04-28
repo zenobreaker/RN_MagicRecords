@@ -1,14 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 public class StageReplacer
 {
     private Dictionary<int, StageInfo> nodeToStage = new(); // key : node id value : stage
     private Dictionary<int, int> nodeIdToStageId = new();
 
+    public string currentChapterBiome;
+
+    public void StartChapter(int chapter)
+    {
+        // 1챕터에 진입하면 '숲'인지 '습지'인지 전체 테마를 하나 뽑아둡니다.
+        currentChapterBiome = AppManager.Instance.GetRandomBiome(chapter);
+
+        // 이후 노드(맵)들을 생성하고 StageReplacer.AssignStages()를 호출!
+    }
+
     public void AssignStages(List<List<MapNode>> levels)
     {
         nodeToStage.Clear();
         nodeIdToStageId.Clear();
+
+
+        SO_Biome biomeData = AppManager.Instance.GetBiomeData(currentChapterBiome);
+
+        int maxMapCount = biomeData.possibleRoomPrefabs.Count;
 
         for (int level = 0; level < levels.Count; level++)
         {
@@ -32,6 +48,15 @@ public class StageReplacer
                 else
                     stageInfo = AppManager.Instance.CreateRandomStageInfo();
 
+                stageInfo.biome = currentChapterBiome;
+
+                if(maxMapCount > 0)
+                {
+                    // 보스방은 보스 전용 맵을 써야 한다면 분기 처리가 필요하지만, 
+                    // 일반 노드라면 여기서 프리팹 인덱스를 결정해 줍니다.
+                    stageInfo.mapIndex = UnityEngine.Random.Range(0, maxMapCount); 
+                }
+
                 nodeToStage[node.id] = stageInfo;
                 nodeIdToStageId[node.id] = stageInfo.id;
             }
@@ -51,13 +76,19 @@ public class StageReplacer
         {
             if (stage.stageId == 0)
                 continue; 
+
             var stageInfo = AppManager.Instance.GetStageInfo(stage.stageId);
+
+            stageInfo.biome = stage.biomeName;
+            stageInfo.mapIndex = stage.mapIndex;
+
             nodeToStage[stage.mapNodeId] = stageInfo;
             nodeIdToStageId[stage.mapNodeId] = stage.stageId;
         }
     }
 
     public Dictionary<int, int> GetNodeToStageId() => nodeIdToStageId;
+    public Dictionary<int, StageInfo> GetNodeToStage() => nodeToStage;
 
     public int GetStageIdByNodeId(int nodeId) => nodeToStage.TryGetValue(nodeId, out var stageInfo) ? stageInfo.id : -1;
     public StageInfo GetReplacedStageInfo(int nodeId)
