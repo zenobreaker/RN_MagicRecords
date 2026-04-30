@@ -3,7 +3,22 @@ guid: 751d160591e6d1f429cc2ebe1783d470
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: EyeTexture
+    second: {fileID: 2100000, guid: 7bbaa1d3e7685d54bb454ab9535c85f1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TireTexture
+    second: {fileID: 2100000, guid: 67442c096eda6c946a83cca81f8f448b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TurtleBodyTexture.001
+    second: {fileID: 2100000, guid: 4e1e4cf513efe8940b6406a54bc307e1, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -770,6 +785,13 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
+      - time: 0.014769231
+        functionName: Start_DoAction
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       - time: 0.92676914
         functionName: End_Damaged
         data: 
