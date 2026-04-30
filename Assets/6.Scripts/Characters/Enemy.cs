@@ -194,7 +194,7 @@ public class Enemy
     protected override void Dead()
     {
         base.Dead();
-        gameObject.SetActive(false);
+        gameObject?.SetActive(false);
     }
 
     private void ChangeType(StateType prevType, StateType newType)
