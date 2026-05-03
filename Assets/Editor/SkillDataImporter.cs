@@ -75,10 +75,10 @@ namespace UserEditor
         }
 
         private string GetSkillNameKeycode(string skillKeycode)
-            => "name_" + skillKeycode;
+            => "skill_name_" + skillKeycode;
 
         private string GetSkillDecKeycode(string skillKeycode)
-            => "desc_" + skillKeycode;
+            => "skill_desc_" + skillKeycode;
 
         private string GetSkillImageKeycode(string skillKeycode)
             => "img_" + skillKeycode;
@@ -304,11 +304,11 @@ namespace UserEditor
                     foreach (PhaseSkillData phaseSkill in phaseList)
                     {
                         PhaseSkill phase = new PhaseSkill();
-                        phase.baseDamage = phaseSkill.baseDamage;
-                        phase.confficient = phaseSkill.coefficient;
                         phase.SetDamageData(phaseSkill.baseDamage, phaseSkill.coefficient);
-                        phase.hitDelay = phaseSkill.hitDelay;
-                        phase.duration = phaseSkill.duration;
+                        //phase.baseDamage = phaseSkill.baseDamage;
+                        //phase.confficient = phaseSkill.coefficient;
+                        //phase.hitDelay = phaseSkill.hitDelay;
+                        //phase.duration = phaseSkill.duration;
 
                         // Skill Object
                         phase.objectName = phaseSkill.objectName;

@@ -18,6 +18,7 @@ public static class SaveDataEditor
             DeleteFile("charinfo.json");
             DeleteFile("invetory.json");
             DeleteFile("learnskill.json");
+            DeleteFile("record.json");
             Debug.Log("<color=red><b>모든 세이브 데이터가 삭제되었습니다.</b></color>");
         }
     }
