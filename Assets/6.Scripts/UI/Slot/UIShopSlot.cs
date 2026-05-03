@@ -6,14 +6,14 @@ public class UIShopSlot : UIItemSlot
 {
     [SerializeField] private Image bgImage;
     [SerializeField] private TextMeshProUGUI itemNameTxt;
-    [SerializeField] private TextMeshProUGUI itemPriceTxt; 
+    [SerializeField] private UICurrency itemPrice; 
 
     private void Awake()
     {
         bgImage = GetComponent<Image>();    
         itemImage = transform.FindChildByName("Icon").GetComponent<Image>();
         itemNameTxt = transform.FindChildByName("Name").GetComponentInChildren<TextMeshProUGUI>();
-        itemPriceTxt = transform.FindChildByName("Price").GetComponentInChildren<TextMeshProUGUI>();
+        itemPrice = transform.FindChildByName("Price").GetComponentInChildren<UICurrency>();
     }
 
     public override void DrawSlot()
@@ -22,12 +22,13 @@ public class UIShopSlot : UIItemSlot
 
         if(itemNameTxt != null ) 
         {
-            itemNameTxt.text = itemData.name;
+            Debug.Assert(LocalizationManager.Instance != null); 
+            itemNameTxt.text = LocalizationManager.Instance?.GetText(itemData.name);
         }
 
-        if(itemPriceTxt != null && itemData is ShopItem shopItem)
+        if(itemPrice != null && itemData is ShopItem shopItem)
         {
-            itemPriceTxt.text = shopItem.Price.ToString();
+            itemPrice.SetValue(shopItem.Price);
         }
     }
 }

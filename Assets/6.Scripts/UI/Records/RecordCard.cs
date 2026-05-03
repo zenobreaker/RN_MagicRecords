@@ -35,11 +35,13 @@ public class RecordCard : MonoBehaviour
         System.Action onClickAction = null, 
         System.Action onlockAction  = null)
     {
-        myData = data; 
+        myData = data;
+
+        Debug.Assert(LocalizationManager.Instance != null);
 
         // 1. UI 텍스트 업데이트
-        nameText.text = data.recordName;
-        descText.text = data.description;
+        nameText.text = LocalizationManager.Instance.GetText( data.recordName);
+        descText.text = LocalizationManager.Instance.GetText(data.description);
         iconImage.sprite = data.icon;
 
         // 2. 버튼 리스너 초기화 및 재할당

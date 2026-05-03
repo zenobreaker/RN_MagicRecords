@@ -50,19 +50,26 @@ public sealed class SkillComponent
             return;
 
         // 쿨다운 업데이트 
-        int slot = 0;
         foreach (KeyValuePair<string, ActiveSkill> pair in skillSlotTable)
         {
+            // 1. 스킬이 비어있으면 쿨타임도 돌 필요 없음
             if (pair.Value == null) continue;
 
-            pair.Value.Update(Time.deltaTime);
+            // 2. 💡 [핵심] Dictionary의 Key("SLOT1" 등)를 SkillSlot Enum으로 안전하게 변환
+            if (!Enum.TryParse(pair.Key, out SkillSlot currentSlot))
+            {
+                continue; // 파싱 실패 시 스킵 (확장성 대비)
+            }
 
-            skillEventHandler?.OnInCoolDown((SkillSlot)slot, pair.Value.IsOnCooldown);
+            // 3. 스킬 로직 업데이트
+            pair.Value.Update(Time.deltaTime);
+            skillEventHandler?.OnInCoolDown(currentSlot, pair.Value.IsOnCooldown);
+
             if (pair.Value.IsOnCooldown == false) continue;
 
+            // 4. 쿨타임 UI 이벤트 발송
             pair.Value.Update_Cooldown(Time.deltaTime);
-            skillEventHandler?.OnCooldown((SkillSlot)slot, pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
-            slot = slot + 1 % 4;
+            skillEventHandler?.OnCooldown(currentSlot, pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
         }
     }
 

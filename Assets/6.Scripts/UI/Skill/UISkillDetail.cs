@@ -56,15 +56,17 @@ public class UISkillDetail : UiBase
     private void DrawSkillDesc(SkillRuntimeData data)
     {
         if (data == null || skillDescText == null) return;
+        Debug.Assert(LocalizationManager.Instance != null);
 
-        skillDescText.text = data?.GetSkillDesc();
+        skillDescText.text = LocalizationManager.Instance.GetText(data?.GetSkillDesc());
     }
 
     private void DrawSkillName(SkillRuntimeData data)
     {
         if (data == null || skillNameText == null) return;
+        Debug.Assert(LocalizationManager.Instance != null); 
 
-        skillNameText.text = data?.GetSkillName();
+        skillNameText.text = LocalizationManager.Instance.GetText(data?.GetSkillName());
     }
 
     public void OnMinimizeSkill()

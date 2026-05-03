@@ -298,5 +298,6 @@ public sealed class CharacterVisual : MonoBehaviour
     public void End_JudgeAttack(AnimationEvent e = null) => character?.End_JudgeAttack(e);
     public void Play_Sound() => character?.Play_Sound();
     public void Play_CameraShake() => character?.Play_CameraShake();
+    public void End_Damaged() => character?.End_Damaged();
     #endregion
 }

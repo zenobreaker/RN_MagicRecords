@@ -60,6 +60,8 @@ public class Enemy
 
         if (weapon != null) actionComponents.Add(weapon);
         if (skill != null) actionComponents.Add(skill);
+        Debug.Assert(damageHandle != null);
+        damageHandle.OnDamagedEvent += HandleHitReaction;
     }
 
     protected override void Start()
@@ -127,9 +129,28 @@ public class Enemy
         
         damageHandle?.OnDamage(attacker, damageEvent);
 
-        // Look Attacker 
-        LookAttacker(attacker);
-        ApplyLaunch(attacker, causer, damageEvent);
+        // 💡 3. [보스 vs 잡몹 구분] 피격 애니메이션(경직) 처리
+        if (isBoss)
+        {
+            // 보스는 슈퍼아머! 
+            // 체력이 일정 이하로 깎이는 등 특수 조건(그로기)이 아니라면 피격 모션을 생략합니다.
+            // ex) if (IsGroggyConditionMet()) { state?.SetDamagedMode(); visual?.PlayDamagedAnimation(); }
+        }
+        else
+        {
+            // 일반 몬스터는 때릴 때마다 확실한 경직을 줍니다.
+            // 현재 액션을 강제로 끊고 피격 모션으로 전환합니다.
+            // 만약 공격 중이었다면 캔슬!
+            if (bInAction)
+            {
+                End_DoAction();
+            }
+
+            // Look Attacker 
+            LookAttacker(attacker);
+            ApplyLaunch(attacker, causer, damageEvent);
+        }
+
 
         if (healthPoint.Dead == false)
             return;
@@ -193,6 +214,9 @@ public class Enemy
 
     protected override void Dead()
     {
+        // 이미 파괴 절차에 들어간 객체라면 무시! (Missing 에러 방어)
+        if (this == null || gameObject == null || !gameObject.activeInHierarchy)
+            return;
         base.Dead();
         gameObject?.SetActive(false);
     }
@@ -247,5 +271,19 @@ public class Enemy
 
         if (healthPoint != null)
             healthPoint.SetMaxHP = statData.hp;
+    }
+
+    private void HandleHitReaction(DamageEvent damgeEvent)
+    {
+        if (damgeEvent.IsDOTEffect()) return; 
+
+        if(isBoss)
+        {
+
+        }
+        else
+        {
+            state?.SetDamagedMode();
+        }
     }
 }

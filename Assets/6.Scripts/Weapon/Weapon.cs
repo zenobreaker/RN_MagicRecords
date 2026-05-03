@@ -35,8 +35,12 @@ public class DamageData
 {
     [Header("Power Settings")]
     public DamageType damageType;
-    public float Power = 1.0f;
+    
+    [Tooltip("스킬 고유의 기본 데미지 (깡뎀)")]
+    public float baseDamage = 10.0f;
 
+    [Tooltip("캐릭터 스탯 반영 비율 (1.0 = 공격력의 100%)")]
+    public float statCoefficient = 0.0f;
 
     [Header("Launch & Down Settings")]
     public bool bDownable = false;

@@ -135,11 +135,24 @@ public interface ITargetableEffect
 {
     void SetTargetPosition(Vector3 targetPosition);
 }
+public enum DamageApplyType
+{
+    Inherit,    // 부모 데이터 그대로 사용
+    Multiply,   // 부모 데이터 기반으로 배율(%) 적용
+    Override    // 완전히 덮어쓰기
+}
 
 [Serializable]
 public class Module_SpawnEffect : SkillModule
 {
-    [Header("Damage Data")]
+    [Header("Damage Settings")]
+    public DamageApplyType damageApplyType = DamageApplyType.Inherit;
+
+    [Tooltip("Multiply 모드 시 부모 데미지에 곱해질 비율 (0.5 = 50%)")]
+    public float damageMultiplier = 1.0f;
+
+    // Override 모드일때만 사용 
+    [Tooltip("Override 모드일 때만 사용되는 전용 데미지 데이터")]
     public DamageData damageData;
 
     [Header("Spawn Data")]
@@ -180,6 +193,9 @@ public class Module_SpawnEffect : SkillModule
             ? skill.Blackboard.GetValue<float>(Constants.PatternAngle, 0f)
             : this.angleBetween;
 
+        // 3. 부모 페이즈 스킬과 나의 세팅을 비교해서 '최종 데미지' 데이터를 확정
+        DamageData finalDamageData = GetEffectiveDamageData(phaseSkill);
+
         // 3. 다중 발사 루프 
         for (int i = 0; i < finalSpawnCount; i++)
         {
@@ -204,7 +220,7 @@ public class Module_SpawnEffect : SkillModule
             {
                 // Helper : 확장 메서드로 값이 없더라도 에러가 없도록 
                 bool isCrit = (bool)skill?.Blackboard.GetValue<bool>("isCrit", false);
-                projectile.SetDamageInfo(owner, damageData, isCrit);
+                projectile.SetDamageInfo(owner, finalDamageData, isCrit);
                 projectile.AddIgnore(owner);
             }
 
@@ -216,6 +232,50 @@ public class Module_SpawnEffect : SkillModule
             
             ObjectPooler.FinishSpawn(obj); 
         }
+    }
+
+    // ====================================================================
+    // 💡 데미지 계산 도우미 함수
+    // ====================================================================
+    private DamageData GetEffectiveDamageData(PhaseSkill parentPhase)
+    {
+        switch (damageApplyType)
+        {
+            case DamageApplyType.Override:
+                return damageData; // 모듈 인스펙터에 적힌 값 강제 사용
+
+            case DamageApplyType.Multiply:
+                if (parentPhase != null && parentPhase.damageData != null)
+                {
+                    // 부모의 데이터를 복사하되, 데미지(Power)와 계수만 배율에 맞게 깎아서 줍니다.
+                    // (클래스 참조가 꼬이지 않도록 새로운 객체를 하나 만들어서 넘겨줍니다)
+                    return new DamageData
+                    {
+                        damageType = parentPhase.damageData.damageType,
+                        baseDamage = parentPhase.damageData.baseDamage * damageMultiplier,
+                        statCoefficient = parentPhase.damageData.statCoefficient * damageMultiplier,
+
+                        // 나머지 데이터는 부모의 것을 그대로 씁니다.
+                        bDownable = parentPhase.damageData.bDownable,
+                        bLauncher = parentPhase.damageData.bLauncher,
+                        SoundName = parentPhase.damageData.SoundName,
+                        impulseDirection = parentPhase.damageData.impulseDirection,
+                        settings = parentPhase.damageData.settings,
+                        hitData = parentPhase.damageData.hitData
+                    };
+                }
+                break;
+
+            case DamageApplyType.Inherit:
+            default:
+                if (parentPhase != null && parentPhase.damageData != null)
+                {
+                    return parentPhase.damageData; // 100% 부모 데미지
+                }
+                break;
+        }
+
+        return new DamageData(); // 예외 상황 (에러 방지)
     }
 }
 

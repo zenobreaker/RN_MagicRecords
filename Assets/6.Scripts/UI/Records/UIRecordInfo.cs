@@ -28,7 +28,9 @@ public class UIRecordInfo : UiBase
 
     private void DrawUI()
     {
-        if (recordData == null) return; 
+        if (recordData == null) return;
+
+        Debug.Assert(LocalizationManager.Instance != null);
 
         if (recordIcon != null)
         {
@@ -37,12 +39,12 @@ public class UIRecordInfo : UiBase
 
         if (nameText != null)
         {
-            nameText.text = recordData.recordName;
+            nameText.text = LocalizationManager.Instance.GetText(recordData.recordName);
         }
 
         if (descText != null)
         {
-            descText.text = recordData.description;
+            descText.text = LocalizationManager.Instance.GetText(recordData.description);
         }
     }
 }

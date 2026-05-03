@@ -13,12 +13,6 @@ public class PhaseSkill
     [SelectImplementationAttribute]
     public List<SkillModule> modules; 
 
-    [Header("Phase Data")]
-    public float baseDamage;
-    public float confficient = 1.0f; // 스킬 레벨 별 계수치
-    public float hitDelay = -1.0f;
-    public float duration = -1.0f;
-
     [Header("Damage Data")]
     public DamageData damageData; 
 
@@ -53,7 +47,8 @@ public class PhaseSkill
     public void SetDamageData(float baseDamage, float coefficient = 1.0f, int level = 1)
     {
         damageData = new DamageData();
-        damageData.Power = baseDamage * coefficient;
+        damageData.baseDamage = baseDamage;
+        damageData.statCoefficient = coefficient;
     }
 }
 

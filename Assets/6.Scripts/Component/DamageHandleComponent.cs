@@ -9,14 +9,14 @@ public class DamageHandleComponent : MonoBehaviour
     private Character character; 
     private HealthPointComponent health;
     private StatusComponent status;
-    private StateComponent state; 
+
+    public Action<DamageEvent> OnDamagedEvent;
 
     private void Awake()
     {
         character = GetComponent<Character>();
         health = GetComponent<HealthPointComponent>();
         status = GetComponent<StatusComponent>();
-        state = GetComponent<StateComponent>(); 
     }
 
     public void OnDamage(GameObject attacker, DamageEvent damageEvent)
@@ -46,10 +46,7 @@ public class DamageHandleComponent : MonoBehaviour
             return; 
         }
 
-        // 💡 오직 상태(State)만 변경합니다. 애니메이션 재생은 StateComponent 내부에서 
-        // character.Visual.PlayDamageAnimation(hitData)를 호출하도록 만드세요!
-        //state?.SetDamagedMode(damageEvent.hitData); 
-        state?.SetDamagedMode();
+        OnDamagedEvent?.Invoke(damageEvent);
     }
 
     private void ShowDamageText(float value, DamageEvent damageEvent)

@@ -10,7 +10,7 @@ public class SkillSlotUI : MonoBehaviour
     [SerializeField] private Image img_Skill;
     [SerializeField] private Image img_Cooldown;
     [SerializeField] private TextMeshProUGUI txt_Cooldown;
-    [SerializeField] private Sprite emptySloSpt;
+    [SerializeField] private Sprite emptySlot;
 
     private SO_SkillEventHandler handler;
     private float currCooldown;
@@ -41,7 +41,7 @@ public class SkillSlotUI : MonoBehaviour
         if (mySlot == slot && activeSkill != null)
             img_Skill.sprite = activeSkill.Icon;
         else if (mySlot == slot && activeSkill == null)
-            img_Skill.sprite = emptySloSpt;
+            img_Skill.sprite = emptySlot;
 
         OnIsCooldown(slot, activeSkill != null && activeSkill.IsOnCooldown);
     }

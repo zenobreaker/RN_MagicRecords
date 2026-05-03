@@ -43,7 +43,7 @@ public class UIPopUpShop : UIPopUpBase
             });
         }
 
-        if(plusButton != null)
+        if (plusButton != null)
         {
             plusButton.onClick.AddListener(() =>
             {
@@ -52,7 +52,7 @@ public class UIPopUpShop : UIPopUpBase
             });
         }
 
-        if(minusButton != null)
+        if (minusButton != null)
         {
             minusButton.onClick.AddListener(() =>
             {
@@ -76,14 +76,16 @@ public class UIPopUpShop : UIPopUpBase
     {
         if (item == null) return;
 
+        Debug.Assert(LocalizationManager.Instance != null, $"LocalizationManager가 필요");
+
         if (itemIconImage != null)
             itemIconImage.sprite = item.icon;
 
         if (itemNameText != null)
-            itemNameText.text = item.name;
+            itemNameText.text = LocalizationManager.Instance.GetText(item.name);
 
         if (itemMainDescText != null)
-            itemMainDescText.text = item.description;
+            itemMainDescText.text = LocalizationManager.Instance.GetText(item.description);
 
         if (priceText != null)
             priceText.text = $"{price}";
@@ -119,16 +121,16 @@ public class UIPopUpShop : UIPopUpBase
 
     private void DrawAmount()
     {
-        if(amountField == null) return;
+        if (amountField == null) return;
 
         amountField.text = amount.ToString();
     }
 
     private void CalcPrice()
     {
-        if(item == null) return;    
+        if (item == null) return;
 
-        if(item is ShopItem shopItem)
+        if (item is ShopItem shopItem)
         {
             price = shopItem.Price * amount;
             DrawPopUp();

@@ -20,7 +20,7 @@ public static class DamageCalculator
         float critDmg = status.GetStatusValue(StatusType.CRIT_DMG);
         bool crit = false;
 
-        float result = attack * data.Power;
+        float result = data.baseDamage + (attack * data.statCoefficient);
         
         crit = bExtraCrit;
         if (bExtraCrit)

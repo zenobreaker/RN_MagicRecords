@@ -3,9 +3,9 @@ using UnityEngine.UI;
 
 public class SkillTreeController : UiBase
 {
-    private UISkillTree uiSkillTree;
-    private UISkillDetail uiSkillDetail;
-    private UISkillReplaceDetail uiSkillReplace;
+    [SerializeField] private UISkillTree uiSkillTree;
+    [SerializeField] private UISkillDetail uiSkillDetail;
+    [SerializeField] private UISkillReplaceDetail uiSkillReplace;
     private SkillTreeManager skillTreeManager;
 
     public enum Skill_Category
@@ -20,11 +20,8 @@ public class SkillTreeController : UiBase
 
     private void Awake()
     {
-        uiSkillTree = FindAnyObjectByType<UISkillTree>();
-        uiSkillDetail = FindAnyObjectByType<UISkillDetail>();
-        uiSkillReplace = FindAnyObjectByType<UISkillReplaceDetail>();
-
-        skillTreeManager = FindAnyObjectByType<SkillTreeManager>();
+        Debug.Assert(SkillTreeManager.Instance != null);
+        skillTreeManager = SkillTreeManager.Instance;
 
         if (uiSkillDetail != null)
         {
