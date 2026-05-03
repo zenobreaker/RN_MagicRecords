@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: plasmaray
   m_EditorClassIdentifier: 
   id: 2
-  skillName: name_plasmaray
-  skillDescription: desc_plasmaray
+  skillName: skill_name_plasmaray
+  skillDescription: skill_desc_plasmaray
   learnableLevel: 5
   maxLevel: 10
   skillUpgradeCost: 
@@ -32,13 +32,10 @@ MonoBehaviour:
     - rid: 9058063302450741332
     - rid: 9058063302450741331
     - rid: 9058063302450741399
-    baseDamage: 0
-    confficient: 1
-    hitDelay: 1.5
-    duration: 3
     damageData:
       damageType: 0
-      Power: 1
+      baseDamage: 20
+      statCoefficient: 1.2
       bDownable: 0
       bLauncher: 0
       SoundName: 
@@ -102,9 +99,12 @@ MonoBehaviour:
       type: {class: Module_SpawnEffect, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 2
+        damageApplyType: 0
+        damageMultiplier: 1
         damageData:
           damageType: 0
-          Power: 1
+          baseDamage: 10
+          statCoefficient: 1
           bDownable: 0
           bLauncher: 0
           SoundName: 
@@ -122,5 +122,9 @@ MonoBehaviour:
             HitParticleScaleOffset: {x: 1, y: 1, z: 1}
         spawnPosition: {x: 0, y: 1, z: 1}
         spawnRotation: {x: 0, y: 0, z: 0}
+        patternType: 0
         skillObject: {fileID: 0}
         objectName: Beam
+        useBlackboardPattern: 1
+        spawnCount: 1
+        angleBetween: 0

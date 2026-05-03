@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: spiralshot
   m_EditorClassIdentifier: 
   id: 6
-  skillName: name_spiralshot
-  skillDescription: desc_spiralshot
+  skillName: skill_name_spiralshot
+  skillDescription: skill_desc_spiralshot
   learnableLevel: 30
   maxLevel: 10
   skillUpgradeCost: 
@@ -25,7 +25,10 @@ MonoBehaviour:
   limitCooldown: 2
   castingTime: -1
   phaseList:
-  - baseDamage: 0
+  - phaseName: 
+    isInstant: 0
+    modules: []
+    baseDamage: 0
     confficient: 1.4
     hitDelay: 0.25
     duration: 3
@@ -63,3 +66,6 @@ MonoBehaviour:
     soundName: 
     spawnPosition: {x: 0, y: 0, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
+  references:
+    version: 2
+    RefIds: []

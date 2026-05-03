@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: spreadshot
   m_EditorClassIdentifier: 
   id: 4
-  skillName: name_spreadshot
-  skillDescription: desc_spreadshot
+  skillName: skill_name_spreadshot
+  skillDescription: skill_desc_spreadshot
   learnableLevel: 15
   maxLevel: 10
   skillUpgradeCost: 
@@ -26,6 +26,7 @@ MonoBehaviour:
   castingTime: -1
   phaseList:
   - phaseName: 
+    isInstant: 0
     modules: []
     baseDamage: 0
     confficient: 1.2

@@ -14,13 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageDatas:
   - damageType: 0
-    Power: 1
+    baseDamage: 10
+    statCoefficient: 1
     bDownable: 0
     bLauncher: 0
     SoundName: 
     impulseDirection: {x: 0, y: 0, z: 0}
     settings: {fileID: 0}
     hitData:
+      DamageType: 0
       Distance: 1
       HeightValue: 0
       StopFrame: 0
@@ -28,15 +30,17 @@ MonoBehaviour:
       HitSoundName: 
       HitParticle: {fileID: 0}
       HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
+      HitParticleScaleOffset: {x: 1, y: 1, z: 1}
   - damageType: 0
-    Power: 1
+    baseDamage: 10
+    statCoefficient: 1
     bDownable: 0
     bLauncher: 0
     SoundName: 
     impulseDirection: {x: 0, y: 0, z: 0}
     settings: {fileID: 0}
     hitData:
+      DamageType: 0
       Distance: 1
       HeightValue: 0
       StopFrame: 0
@@ -44,15 +48,17 @@ MonoBehaviour:
       HitSoundName: 
       HitParticle: {fileID: 0}
       HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
+      HitParticleScaleOffset: {x: 1, y: 1, z: 1}
   - damageType: 0
-    Power: 1
+    baseDamage: 10
+    statCoefficient: 1
     bDownable: 0
     bLauncher: 0
     SoundName: 
     impulseDirection: {x: 0, y: 0, z: 0}
     settings: {fileID: 0}
     hitData:
+      DamageType: 0
       Distance: 1
       HeightValue: 0
       StopFrame: 0
@@ -60,15 +66,17 @@ MonoBehaviour:
       HitSoundName: 
       HitParticle: {fileID: 0}
       HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
+      HitParticleScaleOffset: {x: 1, y: 1, z: 1}
   - damageType: 0
-    Power: 1.2
+    baseDamage: 12
+    statCoefficient: 1
     bDownable: 0
     bLauncher: 0
     SoundName: 
     impulseDirection: {x: 0, y: 0, z: 0}
     settings: {fileID: 0}
     hitData:
+      DamageType: 0
       Distance: 3
       HeightValue: 0
       StopFrame: 0
@@ -76,4 +84,4 @@ MonoBehaviour:
       HitSoundName: 
       HitParticle: {fileID: 0}
       HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-      HitParticleSacleOffset: {x: 1, y: 1, z: 1}
+      HitParticleScaleOffset: {x: 1, y: 1, z: 1}

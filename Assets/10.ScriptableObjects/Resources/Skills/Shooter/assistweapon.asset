@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: assistweapon
   m_EditorClassIdentifier: 
   id: 10
-  skillName: name_assistweapon
-  skillDescription: desc_assistweapon
+  skillName: skill_name_assistweapon
+  skillDescription: skill_desc_assistweapon
   learnableLevel: 15
   maxLevel: 10
   skillUpgradeCost: 
@@ -25,7 +25,10 @@ MonoBehaviour:
   limitCooldown: 2
   castingTime: 2
   phaseList:
-  - baseDamage: 0
+  - phaseName: 
+    isInstant: 0
+    modules: []
+    baseDamage: 0
     confficient: 1
     hitDelay: 0
     duration: 10
@@ -63,3 +66,6 @@ MonoBehaviour:
     soundName: 
     spawnPosition: {x: 0, y: 0, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
+  references:
+    version: 2
+    RefIds: []

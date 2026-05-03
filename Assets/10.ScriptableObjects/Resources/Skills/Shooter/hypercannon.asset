@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: hypercannon
   m_EditorClassIdentifier: 
   id: 3
-  skillName: name_hypercannon
-  skillDescription: desc_hypercannon
+  skillName: skill_name_hyperbeam
+  skillDescription: skill_desc_hyperbeam
   learnableLevel: 5
   maxLevel: 10
   skillUpgradeCost: 
@@ -26,6 +26,7 @@ MonoBehaviour:
   castingTime: -1
   phaseList:
   - phaseName: "\uC0AC\uACA9"
+    isInstant: 0
     modules:
     - rid: 9058063329371095122
     - rid: 9058063329371095123
@@ -120,6 +121,10 @@ MonoBehaviour:
             HitParticlePositionOffset: {x: 0, y: 0, z: 0}
             HitParticleScaleOffset: {x: 1, y: 1, z: 1}
         spawnPosition: {x: 0, y: 1, z: 1}
-        spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+        spawnRotation: {x: 0, y: 0, z: 0}
+        patternType: 0
         skillObject: {fileID: 0}
         objectName: HyperCannon
+        useBlackboardPattern: 1
+        spawnCount: 1
+        angleBetween: 0

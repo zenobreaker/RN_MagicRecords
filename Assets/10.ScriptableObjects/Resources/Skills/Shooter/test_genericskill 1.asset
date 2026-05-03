@@ -31,13 +31,10 @@ MonoBehaviour:
     - rid: 7308159180900401302
     - rid: 7308159202074034583
     - rid: 7308159180900401259
-    baseDamage: 1
-    confficient: 0
-    hitDelay: 0
-    duration: 0
     damageData:
       damageType: 0
-      Power: 5
+      baseDamage: 10
+      statCoefficient: 0
       bDownable: 0
       bLauncher: 0
       SoundName: Hit
@@ -76,13 +73,10 @@ MonoBehaviour:
     - rid: 5085156208516268138
     - rid: 5085156208516268147
     - rid: 9058063302450741394
-    baseDamage: 1
-    confficient: 0
-    hitDelay: 0
-    duration: 0
     damageData:
       damageType: 0
-      Power: 5
+      baseDamage: 25
+      statCoefficient: 1
       bDownable: 0
       bLauncher: 0
       SoundName: Hit
@@ -175,9 +169,12 @@ MonoBehaviour:
       type: {class: Module_SpawnEffect, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 2
+        damageApplyType: 0
+        damageMultiplier: 1
         damageData:
           damageType: 0
-          Power: 1
+          baseDamage: 10
+          statCoefficient: 0
           bDownable: 0
           bLauncher: 0
           SoundName: 

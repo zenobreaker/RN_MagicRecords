@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: consecutiveshot
   m_EditorClassIdentifier: 
   id: 5
-  skillName: name_consecutiveshot
-  skillDescription: desc_consecutiveshot
-  skillLevel: 1
+  skillName: skill_name_consecutiveshot
+  skillDescription: skill_desc_consecutiveshot
+  learnableLevel: 0
   maxLevel: 10
   skillUpgradeCost: 
   skillImage: {fileID: 0}
@@ -25,58 +25,211 @@ MonoBehaviour:
   limitCooldown: 2
   castingTime: -1
   phaseList:
-  - basePower: 1.25
+  - phaseName: 
+    isInstant: 0
+    modules: []
+    baseDamage: 0
     confficient: 1.5
     hitDelay: 0
     duration: 0
+    damageData:
+      damageType: 0
+      Power: 1
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 1, y: 1, z: 1}
     bonusOptionList: 
     skillObject: {fileID: 0}
     objectName: Consecutive
-    skillActionPrefix: Skills
-    skillActionAnimation: 
+    actionData:
+      subStateName: 
+      stateName: 
+      layerName: 
+      actionSpeed: 1
+      weaponActionName: 
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      bCanMove: 0
+    soundName: 
     spawnPosition: {x: 0, y: 0, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
-  - basePower: 2.25
+  - phaseName: 
+    isInstant: 0
+    modules: []
+    baseDamage: 0
     confficient: 2.5
     hitDelay: 0
     duration: 0
+    damageData:
+      damageType: 0
+      Power: 1
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 1, y: 1, z: 1}
     bonusOptionList: 
     skillObject: {fileID: 0}
     objectName: Consecutive
-    skillActionPrefix: Skills
-    skillActionAnimation: 
+    actionData:
+      subStateName: 
+      stateName: 
+      layerName: 
+      actionSpeed: 1
+      weaponActionName: 
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      bCanMove: 0
+    soundName: 
     spawnPosition: {x: 0, y: 0, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
-  - basePower: 3.25
+  - phaseName: 
+    isInstant: 0
+    modules: []
+    baseDamage: 0
     confficient: 3.5
     hitDelay: 0
     duration: 0
+    damageData:
+      damageType: 0
+      Power: 1
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 1, y: 1, z: 1}
     bonusOptionList: 
     skillObject: {fileID: 0}
     objectName: Consecutive
-    skillActionPrefix: Skills
-    skillActionAnimation: 
+    actionData:
+      subStateName: 
+      stateName: 
+      layerName: 
+      actionSpeed: 1
+      weaponActionName: 
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      bCanMove: 0
+    soundName: 
     spawnPosition: {x: 0, y: 0, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
-  - basePower: 4.25
+  - phaseName: 
+    isInstant: 0
+    modules: []
+    baseDamage: 0
     confficient: 4.5
     hitDelay: 0
     duration: 0
+    damageData:
+      damageType: 0
+      Power: 1
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 1, y: 1, z: 1}
     bonusOptionList: 
     skillObject: {fileID: 0}
     objectName: Consecutive
-    skillActionPrefix: Skills
-    skillActionAnimation: 
+    actionData:
+      subStateName: 
+      stateName: 
+      layerName: 
+      actionSpeed: 1
+      weaponActionName: 
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      bCanMove: 0
+    soundName: 
     spawnPosition: {x: 0, y: 0, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
-  - basePower: 5.25
+  - phaseName: 
+    isInstant: 0
+    modules: []
+    baseDamage: 0
     confficient: 5.5
     hitDelay: 0
     duration: 0
+    damageData:
+      damageType: 0
+      Power: 1
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 1, y: 1, z: 1}
     bonusOptionList: 
     skillObject: {fileID: 0}
     objectName: Consecutive
-    skillActionPrefix: Skills
-    skillActionAnimation: 
+    actionData:
+      subStateName: 
+      stateName: 
+      layerName: 
+      actionSpeed: 1
+      weaponActionName: 
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      bCanMove: 0
+    soundName: 
     spawnPosition: {x: 0, y: 0, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
+  references:
+    version: 2
+    RefIds: []
