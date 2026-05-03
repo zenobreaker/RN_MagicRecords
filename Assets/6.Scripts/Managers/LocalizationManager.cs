@@ -2,6 +2,20 @@
 using UnityEngine;
 
 
+[System.Serializable]
+public class StringDataJson
+{
+    public string key;
+    public string kr;
+    public string en;
+}
+
+[System.Serializable]
+public class StringDataAllData
+{
+    public System.Collections.Generic.List<StringDataJson> stringData;
+}
+
 
 public class LocalizationManager : Singleton<LocalizationManager>
 {
@@ -25,9 +39,9 @@ public class LocalizationManager : Singleton<LocalizationManager>
 
         // 💡 개발자님이 쓰시던 JsonLoader 스타일 (또는 직관적인 파싱)
         var rootData = JsonUtility.FromJson<StringDataAllData>(stringJson.text);
-        if (rootData == null || rootData.stringDataJson == null) return;
+        if (rootData == null || rootData.stringData == null) return;
 
-        foreach (var data in rootData.stringDataJson)
+        foreach (var data in rootData.stringData)
         {
             string value = currentLanguage == LanguageType.KR ? data.kr : data.en;
 

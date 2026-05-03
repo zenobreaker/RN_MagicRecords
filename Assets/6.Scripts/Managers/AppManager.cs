@@ -44,7 +44,7 @@ public class AppManager
             skillManager.OnDataChanaged += () => { PlayerManager.Instance.SetDirty(); };
             InventoryManager.Instance?.OnInit();
             PlayerManager.Instance?.OnInit();
-            CurrencyManager.Instance?.OnInit((CurrencyInventory)InventoryManager.Instance.GetInvetory(ItemCategory.CURRENCY));
+            CurrencyManager.Instance?.OnInit((CurrencyInventory)InventoryManager.Instance?.GetInvetory(ItemCategory.CURRENCY));
             recordManager.OnInit();
             SceneManager.sceneUnloaded += OnUnloadScene;
         }

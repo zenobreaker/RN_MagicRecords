@@ -52,6 +52,8 @@ public sealed class ExploreManager : MonoBehaviour
         Chapter = 1;
         MapNodeID = 0;
         prevNodeId = 0;
+
+        bClearCurrentNode = false;
     }
 
     public void StartExplore()
@@ -89,6 +91,10 @@ public sealed class ExploreManager : MonoBehaviour
         {
             mapReplacer.Replace();
             mapReplacer.ConnectToNode();
+
+            MapNodeID = 0;
+            prevNodeId = 0;
+            bClearCurrentNode = true;
         }
 
 
@@ -132,61 +138,52 @@ public sealed class ExploreManager : MonoBehaviour
 
     public bool EnableNode(int id, bool bCheat = false)
     {
-        bool bEnable = false;
+        if (bCheat) return true;
 
-        // 현재 고른 노드가 있으나 클리어 여부가 충족되지 않은 상태라면 
-        // 해당 노드만 고름 
-        if (MapNodeID != 0 && bClearCurrentNode == false)
+        if (MapNodeID == 0)
         {
-            bEnable = MapNodeID == id;
-        }
-        // 현재 노드가 -1 or 0 이고 이전 노드가 사전에 처리된 값이 되어 있다면 
-        // 이전 노드로부터 다음에 갈 수 있는 노드를 고른 것인지
-        else if ((MapNodeID == 0 || MapNodeID == -1) && prevNodeId != -1)
-        {
-            bEnable = mapReplacer.CanEnableNode(prevNodeId, id);
+            return mapReplacer.CanEnableNode(0, id);
         }
 
-        //Cheat 
-        if (bCheat)
-            bEnable = true;
+        // 1. 현재 노드를 아직 못 깼다면? 
+        // 오직 "지금 그 노드"만 다시 들어갈 수 있음 (이어하기/재도전)
+        if (bClearCurrentNode == false)
+        {
+            return MapNodeID == id;
+        }
 
-        return bEnable;
+        // 2. 현재 노드를 깼다면?
+        // "현재 노드"와 연결된 "다음 노드들"만 클릭 가능
+        return mapReplacer.CanEnableNode(MapNodeID, id);
     }
 
     // 💡 UI 노드들이 자신을 그릴 때 매니저에게 "저 무슨 상태예요?" 하고 물어보는 함수입니다.
     public MapNodeState GetNodeState(int targetNodeId)
     {
-        // 1. 현재 진행 중인 노드인가? (가장 우선)
+        // 1. 플레이어가 서 있는 바로 그곳
         if (MapNodeID == targetNodeId)
         {
-            // 노드에 입장했지만 아직 클리어 못했으면 Current, 보상까지 다 먹고 끝났으면 Cleared
             return bClearCurrentNode ? MapNodeState.Cleared : MapNodeState.Current;
         }
 
-        // 2. 이미 지나온 과거의 노드인가?
-        // 현재 위치(MapNodeID가 -1이면 방금 깬 노드인 prevNodeId 기준)의 레벨을 가져옵니다.
-        int currentRefId = (MapNodeID == -1 || MapNodeID == 0) ? prevNodeId : MapNodeID;
-        int currentLevel = mapReplacer.GetNodeLevel(currentRefId);
+        // 2. 이미 지나온 과거 (레벨 비교)
+        int currentLevel = mapReplacer.GetNodeLevel(MapNodeID);
         int targetLevel = mapReplacer.GetNodeLevel(targetNodeId);
 
-        // 내 현재 층수보다 아래에 있는 노드라면 무조건 지나온 길(Cleared) 처리
         if (currentLevel != -1 && targetLevel < currentLevel)
         {
             return MapNodeState.Cleared;
         }
 
-        // 3. 당장 다음으로 선택해서 넘어갈 수 있는 노드인가?
-        // 개발자님이 이미 만들어두신 철통 방어 로직 EnableNode()를 그대로 사용!
+        // 3. 갈 수 있는 곳 (EnableNode 로직 활용)
         if (EnableNode(targetNodeId))
         {
             return MapNodeState.Selectable;
         }
 
-        // 4. 그 외의 모든 노드 (같은 층의 다른 갈래길, 아직 닿을 수 없는 높은 층)
+        // 4. 아직 못 가는 먼 곳
         return MapNodeState.Locked;
     }
-
     // =======================================================
     // 💡 2. 화면에 떠있는 UI 노드들에게 "상태에 맞춰서 색깔 바꿔!" 라고 명령하는 함수
     // =======================================================
@@ -215,7 +212,8 @@ public sealed class ExploreManager : MonoBehaviour
 
     public void EnterStageByNode(MapNode node)
     {
-        prevNodeId = MapNodeID = node.id;
+        MapNodeID = node.id;
+        bClearCurrentNode = false;
     }
 
     public void ClearStage(bool isWin)
@@ -228,6 +226,8 @@ public sealed class ExploreManager : MonoBehaviour
             bool bIsFinal = MapReplacer.IsFinalNode(MapNodeID);
             bClearCurrentNode = true;
 
+            prevNodeId = MapNodeID;
+
             // 마지막이라면 챕터를 올린다. 
             if (bIsFinal)
             {
@@ -238,13 +238,11 @@ public sealed class ExploreManager : MonoBehaviour
             }
 
             bFinished = true;
-            MapNodeID = -1;
             ChangeState(ExploreState.STAGE_CLEAR);
         }
         else
         {
             bClearCurrentNode = false;
-            MapNodeID = prevNodeId;
         }
     }
 

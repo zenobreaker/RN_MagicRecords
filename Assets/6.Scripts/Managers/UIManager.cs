@@ -303,7 +303,8 @@ public class UIManager : Singleton<UIManager>
         var ui = OpenUI<UIRecordInfo>(); 
         if(ui != null && ui.TryGetComponent<UIRecordInfo>(out var target))
         {
-            target.SetData(data); 
+            target.SetData(data);
+            target.RefreshUI();
         }
     }
 
