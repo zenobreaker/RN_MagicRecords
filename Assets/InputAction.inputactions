@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "InputAction",
     "maps": [
         {
@@ -188,6 +189,34 @@
                     "processors": "",
                     "groups": "",
                     "action": "SkillAction4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "QuickUX",
+            "id": "674c662d-e52e-4de0-8777-5970798be2d0",
+            "actions": [
+                {
+                    "name": "Escape",
+                    "type": "Button",
+                    "id": "0bc3fe17-fb84-4309-8409-007a7d914c97",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "d0611023-caba-4c6c-bada-72977bb9189b",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";PC",
+                    "action": "Escape",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
