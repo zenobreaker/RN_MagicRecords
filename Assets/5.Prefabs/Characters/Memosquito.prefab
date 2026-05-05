@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5709486081760336644}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Weapon_Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1768415815176886139}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Model_Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -75,7 +75,7 @@ GameObject:
   - component: {fileID: 6151095735872526538}
   - component: {fileID: 8234578885095630249}
   - component: {fileID: 4144788309123815914}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -163,7 +163,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8240029862249998223}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Model_Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -196,7 +196,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3190798286391746916}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Needle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -228,7 +228,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 826403787287480076}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Gun_Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -277,7 +277,7 @@ GameObject:
   - component: {fileID: 1614007944389920322}
   - component: {fileID: 6959598650685161723}
   - component: {fileID: 5727818965257582011}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Memosquito
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -382,8 +382,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6491759678581496317}
   serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
+  m_Mass: 100
+  m_Drag: 10
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -397,7 +397,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
@@ -695,7 +695,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4591076407799229939}
   - component: {fileID: 3222797994855010739}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -784,7 +784,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1853307152194998875}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Needle_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -815,7 +815,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2849269364225495493}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Armature
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -847,7 +847,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7464723756313800187}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -882,7 +882,7 @@ GameObject:
   - component: {fileID: 5173808614397905389}
   - component: {fileID: 5034406661565665564}
   - component: {fileID: 4784452354851010513}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Prop
   m_TagString: Untagged
   m_Icon: {fileID: 0}

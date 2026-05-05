@@ -18,7 +18,7 @@ public class RewardManager
 
         AppManager.Instance.OnAwaked += () =>
         {
-            if (IsInitialized) return; 
+            if (IsInitialized) return;
 
             ManagerWaiter.WaitForManager<UIManager>((uiManager) =>
             {
@@ -47,7 +47,7 @@ public class RewardManager
         {
             var clearRewardId = stage.clearRewardId;
             var clearRewardData = AppManager.Instance?.GetStageClearRewardData(clearRewardId);
-            if(clearRewardData != null)
+            if (clearRewardData != null)
             {
                 foreach (var rewardid in clearRewardData.rewardIds)
                 {
@@ -60,13 +60,13 @@ public class RewardManager
 
     public void AddReward(RewardData reward)
     {
-        if (reward == null) return; 
+        if (reward == null) return;
 
         int chance = UnityEngine.Random.Range(0, 101);
 
         if (chance <= reward.weight)
         {
-            int rangeValue = reward.range == 0 ? 0 : UnityEngine.Random.Range(reward.amount, reward.range+1);
+            int rangeValue = reward.range == 0 ? 0 : UnityEngine.Random.Range(reward.amount, reward.range + 1);
 
             var target = rewards.Find(x => x.id == reward.itemId);
             if (target == null)
@@ -89,7 +89,7 @@ public class RewardManager
             }
 
             // 보상을 처리하지 않은 상태에서 이 구분으로 온다면 보상 처리한다.
-             bIsRewardPending = true;
+            bIsRewardPending = true;
         }
     }
 
@@ -109,7 +109,7 @@ public class RewardManager
     public void GiveChapterReward(int clearedChapter)
     {
         if (AppManager.Instance == null) return;
-       
+
         ClearRewardData clear = AppManager.Instance.GetChapterClearRewardData(clearedChapter);
         if (clear == null) return;
 
@@ -127,14 +127,11 @@ public class RewardManager
     // 팝업을 로비에만 띄우는게 맞나 탐사포인트 스테이지 선택창에서도 띄우게 해야할거같은데
     private void OpenRewardPopUp()
     {
-        if (UIManager.Instance == null) 
+        if (UIManager.Instance == null)
             return;
 
-        UIManager.Instance.EnqueuePopup(() =>
-        {
-            UIManager.Instance.OpenRewardPopUp(rewards);
-            ReceiveRewards();
-        });
+        UIManager.Instance.OpenRewardPopUp(rewards);
+        ReceiveRewards();
 
         bIsRewardPending = false;
     }
@@ -150,7 +147,7 @@ public class RewardManager
 
     public void OnReturnedStageSelectScene()
     {
-        if (bIsRewardPending == false) return; 
+        if (bIsRewardPending == false) return;
 
         OpenRewardPopUp();
     }

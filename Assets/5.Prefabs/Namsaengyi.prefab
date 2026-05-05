@@ -507,7 +507,6 @@ GameObject:
   - component: {fileID: 539201137491130758}
   - component: {fileID: 7590112948273742374}
   - component: {fileID: 8763096052454413957}
-  - component: {fileID: 704691316153073704}
   - component: {fileID: 2896751346478917629}
   - component: {fileID: 3816881467583088079}
   - component: {fileID: 4310217945004993034}
@@ -589,7 +588,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 1, z: 2}
+  m_Size: {x: 1.4, y: 1, z: 1.6}
   m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!114 &8368930230702370149
 MonoBehaviour:
@@ -688,20 +687,6 @@ MonoBehaviour:
   bDebug: 0
   currComboObj: {fileID: 0}
   comboInputHandler: {fileID: 11400000, guid: 24bb56b9cb07f2949a5146bb006c9215, type: 2}
---- !u!114 &704691316153073704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2169032415967224289}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4451e3dac1fa6214daf673d8135d8151, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dashSpeed: 25
-  dashDistance: 5
 --- !u!114 &2896751346478917629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -865,6 +850,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SO_Movement: {fileID: 11400000, guid: 1b8f1862259947d418a5a05e101953da, type: 2}
+  dashSpeed: 25
+  dashDistance: 5
 --- !u!1 &2324507759493812046
 GameObject:
   m_ObjectHideFlags: 0

@@ -150,14 +150,9 @@ public class StatusComponent : MonoBehaviour
         //TODO : 임시적으로 특정 필터로 적용 
         filterType = TargetFilterType.Shooter;
 
-        FilterType = filterType; 
-    }
-
-    private void Start()
-    {
+        FilterType = filterType;
         status?.Init();
     }
-
 
     //-------------------------------------------------------------------------
     // EffectSystem에서 호출하는 API

@@ -252,8 +252,6 @@ public class Weapon : MonoBehaviour
 
     public event Action<GameObject> OnLastAttackExecuted; 
 
-    private DashComponent dash;
-
     protected virtual void Awake()
     {
         rootObject = transform.root.gameObject;
@@ -263,7 +261,6 @@ public class Weapon : MonoBehaviour
         status = rootObject.GetComponent<StatusComponent>();
         ownerCharacter = rootObject.GetComponent<Character>();
         moving = rootObject.GetComponent<MovementComponent>();
-        dash = rootObject.GetComponent<DashComponent>();
 
         if (so_Action != null)
             actionDatas = so_Action.actionDatas;

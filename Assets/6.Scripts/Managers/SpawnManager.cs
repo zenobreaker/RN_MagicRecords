@@ -108,7 +108,7 @@ public sealed class SpawnManager : MonoBehaviour
         OnCompleteSpawnedPlayer?.Invoke();
     }
 
-    public void SpawnNPC(int groupID, List<Transform> spawnPoints)
+    public void SpawnNPC(int groupID, List<Transform> spawnPoints, bool isEnemy = false )
     {
         if (spawnPoints == null || spawnPoints.Count <= 0)
         {
@@ -139,6 +139,19 @@ public sealed class SpawnManager : MonoBehaviour
                 (npc) =>
             // Set Stat 
             {
+
+                // 💡 [핵심 추가] 스폰되는 오브젝트의 레이어를 "Enemy"로 강제 설정합니다.
+                int enemyLayer = LayerMask.NameToLayer("Enemy");
+                if (enemyLayer != -1 && isEnemy) // 레이어가 정상적으로 존재하는지 확인 (안전장치)
+                {
+                    //npc.layer = enemyLayer;
+                    SetLayerRecursively(npc, enemyLayer);
+                }
+                else
+                {
+                    Debug.LogWarning("Enemy 레이어가 Project Settings에 존재하지 않습니다! 만들어주세요.");
+                }
+
                 var statData = AppManager.Instance.GetMonsterStatData(id);
                 if (npc.TryGetComponent<Enemy>(out Enemy enemy))
                 {
@@ -193,5 +206,15 @@ public sealed class SpawnManager : MonoBehaviour
 
         if (spawnedEnemies.Count == 0)
             OnAllEnemiesDead?.Invoke(); 
+    }
+
+    // 자식 오브젝트들까지 모조리 레이어를 바꿔주는 마법의 헬퍼 함수
+    private void SetLayerRecursively(GameObject obj, int newLayer)
+    {
+        obj.layer = newLayer;
+        foreach (Transform child in obj.transform)
+        {
+            SetLayerRecursively(child.gameObject, newLayer);
+        }
     }
 }
