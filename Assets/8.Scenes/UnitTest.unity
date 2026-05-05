@@ -4482,8 +4482,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 3.1194139, y: 1, z: 1}
+  m_Center: {x: 1.0597061, y: 0, z: 0}
 --- !u!1 &1275712796695333070
 GameObject:
   m_ObjectHideFlags: 0
@@ -4551,6 +4551,10 @@ PrefabInstance:
     - target: {fileID: 58291482447164253, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 625348172007067594, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2169032415967224289, guid: 8bbfeea9340a98743b9edc6947af5955, type: 3}
       propertyPath: m_Name
@@ -4806,8 +4810,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 4, y: 1, z: 1}
+  m_Center: {x: -1.493029, y: 0, z: 0}
 --- !u!65 &4539920289910022947
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4827,8 +4831,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 3.039284, y: 1, z: 1}
+  m_Center: {x: -1.019643, y: 0, z: -2.4185438e-18}
 --- !u!4 &4616271518612304630
 Transform:
   m_ObjectHideFlags: 0
@@ -4984,8 +4988,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 3.972908, y: 1, z: 1}
+  m_Center: {x: 1.4864552, y: 0, z: 3.1171982e-16}
 --- !u!64 &6800675313680278777
 MeshCollider:
   m_ObjectHideFlags: 0

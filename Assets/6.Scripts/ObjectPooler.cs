@@ -308,16 +308,41 @@ public partial class ObjectPooler : MonoBehaviour
             poolQueue.Dequeue();
         }
 
-        // 2. 사용할 수 있는 객체가 없다면 생성
-        if (poolQueue.Count <= 0)
+        // 💡 2. [핵심] '비활성화(사용 가능)' 객체가 큐 맨 앞에 올 때까지 큐를 회전시킵니다.
+        int searchCount = poolQueue.Count;
+        bool foundInactive = false;
+
+        for (int i = 0; i < searchCount; i++)
+        {
+            // 맨 앞 녀석이 꺼져있다면(안 날아가고 있다면) 당첨!
+            if (poolQueue.Peek().activeInHierarchy == false)
+            {
+                foundInactive = true;
+                break;
+            }
+
+            // 날아가고 있는 녀석이라면? 빼서 큐의 맨 뒤로 돌려보냅니다. (스틸 방지)
+            poolQueue.Enqueue(poolQueue.Dequeue());
+        }
+
+        // 💡 3. [Auto-Expand] 큐를 다 뒤졌는데도 전부 날아가고 있거나 비어있다면 새로 만듭니다!
+        if (!foundInactive || poolQueue.Count <= 0)
         {
             Pool pool = pools.Find(x => x.tag == tag);
             if (pool == null) throw new Exception($"Pool settings for {tag} not found.");
 
             GameObject newObj = CreateNewObjectSetParent(pool.tag, pool.prefab);
+            newObj.SetActive(false); // 혹시 켜져서 나올까 봐 확실히 꺼둠
             ArrangePool(tag, newObj);
+
+            // ArrangePool이 새 객체를 큐 맨 뒤에 넣었을 테니, 맨 앞으로 가져옵니다.
+            while (poolQueue.Peek() != newObj)
+            {
+                poolQueue.Enqueue(poolQueue.Dequeue());
+            }
         }
 
+        // 이제 Peek()에는 무조건 '비활성화된(안전한)' 객체만 잡힙니다!
         return poolQueue.Peek();
     }
 

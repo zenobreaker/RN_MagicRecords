@@ -44,26 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04c124fbbb4614a4fbd6e841df109135, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabList:
-  - type: 1
-    prefab: {fileID: 4683261744787040136, guid: 022ed461f1801c54a82a438ccbc8f367, type: 3}
-  - type: 2
-    prefab: {fileID: 5873143987604521931, guid: 451c0f03d73b0aa4db0fee2a7be155c0, type: 3}
-  - type: 3
-    prefab: {fileID: 2295707802260662218, guid: 3d5d7a52c21045f4b95562f5eb2cebba, type: 3}
-  - type: 5
-    prefab: {fileID: 8957414127096102482, guid: f0160e926cae20b4ca4104d7afd1857e, type: 3}
-  - type: 7
-    prefab: {fileID: 3165745290251129549, guid: 7d4d300a98e00fa4eaf6ffeabd5fc6b8, type: 3}
-  - type: 4
-    prefab: {fileID: 2394853121966726908, guid: e2a6d668f393fff469798556f4afed3d, type: 3}
   uiDB: {fileID: 11400000, guid: 15e2bf17f5fa0a241a397b81253822ed, type: 2}
-  mobileUIGroup: {fileID: 1932776284738236466, guid: c1d31a37f6bfd784d9e5b5db65d3e081, type: 3}
   pcUIGroup: {fileID: 1932776284738236466, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-  popupUI: {fileID: 8459599399322665365, guid: e01d7861eab0bdd418a83ccf8fdf3311, type: 3}
-  popupUIReward: {fileID: 2134219137220241582, guid: b0fc785b59e71cb43aa67e10484ca231, type: 3}
-  popupUIShop: {fileID: 1623537971543743616, guid: ee58a3da2a56b1d4980176a497514b8a, type: 3}
-  popupUIEquipment: {fileID: 932111732265891008, guid: 1b14d7f134880a246a93b0ad6a292f04, type: 3}
-  popupStagePause: {fileID: 6265308866120347105, guid: b67f341c22b34b448bea40bee04cb226, type: 3}
-  popupExploreResult: {fileID: 0}
-  soundUI: {fileID: 0}
+  mobileUIGroup: {fileID: 1932776284738236466, guid: c1d31a37f6bfd784d9e5b5db65d3e081, type: 3}
+  cancelAction: {fileID: -6254029203239366390, guid: 5bcbec2b236cf5747b5f2e5807ccf9b6, type: 3}

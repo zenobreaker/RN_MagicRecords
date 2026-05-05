@@ -27,7 +27,6 @@ public class LaunchComponent : MonoBehaviour
             agent.ResetPath();
             agent.enabled = false;
         }
-        rigid.isKinematic = false;
         rigid.AddForce(dir * lauch, ForceMode.Impulse);
 
         StartCoroutine(Change_IsKinematics(ChangeFrame));
@@ -42,6 +41,5 @@ public class LaunchComponent : MonoBehaviour
 
         if (agent != null)
             agent.enabled = true;
-        rigid.isKinematic = true;
     }
 }

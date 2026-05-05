@@ -28,7 +28,6 @@ public class ComboComponent : MonoBehaviour
 
     private WeaponComponent weapon;
     private SkillComponent skill;
-    private DashComponent dash;
     private MovementComponent movement; 
     private Character ownerCharacter;
     
@@ -38,6 +37,7 @@ public class ComboComponent : MonoBehaviour
     private void Awake()
     {
         ownerCharacter = GetComponent<Character>();
+        Debug.Assert(ownerCharacter != null); 
         if (ownerCharacter != null)
         {
             ownerCharacter.OnEndDoAction += OnEndDoAction;
@@ -47,7 +47,6 @@ public class ComboComponent : MonoBehaviour
                 weapon.OnWeaponTypeChanged_Combo += OnWeaponTypeChanged_Combo;
 
             skill = ownerCharacter.GetComponent<SkillComponent>();
-            dash = ownerCharacter.GetComponent<DashComponent>();
             movement = ownerCharacter.GetComponent<MovementComponent>(); 
         }
 
@@ -115,7 +114,7 @@ public class ComboComponent : MonoBehaviour
 
     private void TryProcess_Move(InputCommand newInput) { }
     private void TryProcess_Skill(InputCommand newInput) { skill?.UseSkill($"SLOT{newInput.SkillSlotIndex + 1}"); }
-    private void TryProcess_Dash(InputCommand newInput) { dash?.TryDash(); }
+    private void TryProcess_Dash(InputCommand newInput) { movement?.TryDash(); }
 
     private void TryProcess_Action(InputCommand newInput)
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.AppUI.UI;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
@@ -37,14 +38,14 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private UIDatabase uiDB;
     [SerializeField] private GameObject pcUIGroup;
     [SerializeField] private GameObject mobileUIGroup;
+    [SerializeField] private InputActionReference cancelAction;
 
     public event Action OnJoinedLobby;                  // 로비 
     public event Action OnJoinedStage;                  // 스테이지 입장
     public event Action OnReturnedStageSelectStage;     // 스테이지 선택 씬 
 
+    // 💡 [수정] 팝업 큐를 삭제하고 오직 하나의 스택(openedUIs)으로 모든 UI와 팝업을 관리합니다.
     private Stack<UiBase> openedUIs = new Stack<UiBase>();
-    private Queue<Action> popupQueue = new Queue<Action>();
-    private bool isPopupOpening = false;
     private GameLocate currLocate;
     private GameObject currentUIGroup;
 
@@ -60,6 +61,20 @@ public class UIManager : Singleton<UIManager>
             SceneManager.sceneLoaded += HandleSceneLoaded;
     }
 
+    private void OnEnable()
+    {
+        Debug.Assert(cancelAction != null);
+        cancelAction.action.performed += OnCancelPressed;
+        cancelAction.action.Enable();
+    }
+
+    private void OnDisable()
+    {
+        Debug.Assert(cancelAction != null);
+        cancelAction.action.performed -= OnCancelPressed;
+        cancelAction.action.Disable();
+    }
+
     protected override void SyncDataFromSingleton()
     {
         base.SyncDataFromSingleton();
@@ -67,6 +82,20 @@ public class UIManager : Singleton<UIManager>
 
         uiInstances = Instance.uiInstances;
         uiDB = Instance.uiDB;
+    }
+
+    // 💡 [수정] ESC 처리 로직 통합: 스택 맨 위에 있는 것(팝업이든 UI든)을 하나씩 무조건 닫습니다.
+    private void OnCancelPressed(InputAction.CallbackContext context)
+    {
+        if (openedUIs.Count > 0)
+        {
+            CloseTopUI();
+        }
+        else
+        {
+            // 스택이 비어있고 인게임이라면 일시정지 팝업 오픈
+            if (IsInGame()) OpenPausePopUp();
+        }
     }
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -89,16 +118,30 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
-
-    public void OpenUI(UiBase ui)
+    // 💡 [수정] 매개변수에 isPopup 플래그 추가 (기본값 false)
+    public void OpenUI(UiBase ui, bool isPopup = false)
     {
         if (ui == null) return;
+
+        // 💡 팝업이 아닌 일반 UI가 새로 열릴 경우, 기존에 열려있던 모든 UI/팝업을 닫습니다.
+        if (!isPopup)
+        {
+            CloseAllOpenedUI();
+        }
+
         ui.gameObject.SetActive(true);
         openedUIs.Push(ui);
     }
 
-    public T OpenUI<T>() where T : UiBase
+    // 💡 [수정] 매개변수에 isPopup 플래그 추가 (기본값 false)
+    public T OpenUI<T>(bool isPopup = false) where T : UiBase
     {
+        // 💡 팝업이 아닌 일반 UI가 새로 열릴 경우, 스택을 모두 비워줍니다.
+        if (!isPopup)
+        {
+            CloseAllOpenedUI();
+        }
+
         Type uiType = typeof(T);
 
         // 켜져 있는지 확인 
@@ -136,9 +179,7 @@ public class UIManager : Singleton<UIManager>
         if (openedUIs.Count > 0)
         {
             var top = openedUIs.Pop();
-            top.gameObject.SetActive(false);
-
-            Invoke(nameof(ShowNextPopup), 0.1f);
+            top.gameObject.SetActive(false); // 또는 top.CloseUI(); (UiBase 내부 구현에 맞게 사용)
         }
     }
 
@@ -147,30 +188,7 @@ public class UIManager : Singleton<UIManager>
         while (openedUIs.Count > 0)
         {
             var top = openedUIs.Pop();
-            top.CloseUI();
-        }
-    }
-
-
-    public void EnqueuePopup(Action popupAction)
-    {
-        popupQueue.Enqueue(popupAction);
-
-        if (!isPopupOpening)
-            ShowNextPopup();
-    }
-
-    private void ShowNextPopup()
-    {
-        if (popupQueue.Count > 0)
-        {
-            isPopupOpening = true;
-            var nextPopup = popupQueue.Dequeue();
-            nextPopup?.Invoke();
-        }
-        else
-        {
-            isPopupOpening = false;
+            top.gameObject.SetActive(false); // 또는 top.CloseUI(); 
         }
     }
 
@@ -200,56 +218,34 @@ public class UIManager : Singleton<UIManager>
     }
 
     #region RESULT
-    //-------------------------------------------------------------------------
-    // STAGE RESULT
-    //-------------------------------------------------------------------------
-
     public void ShowStageResultUI(bool isSuccess)
     {
-        var ui = OpenUI<UIResultPage>();
+        // 💡 결과창은 팝업 형태이므로 true (또는 메인 UI라면 false로)
+        var ui = OpenUI<UIResultPage>(true);
         if (ui != null && ui.TryGetComponent<UIResultPage>(out var result))
         {
             result.Show(isSuccess);
         }
     }
-
     #endregion
-
 
     #region Sound 
-    //-------------------------------------------------------------------------
-    // Sound 
-    //-------------------------------------------------------------------------
-
-
-    public void ToggleSoundUI()
-    {
-
-    }
-
-    public void ShowSoundControlUI()
-    {
-
-    }
-
-    public void HidSoundControlUI()
-    {
-
-    }
-
-
+    public void ToggleSoundUI() { }
+    public void ShowSoundControlUI() { }
+    public void HidSoundControlUI() { }
     #endregion
 
+    // 💡 여기서부터 팝업들은 명시적으로 isPopup = true 를 전달합니다.
     public void OpenStageInfo(MapNode node, StageInfo stageInfo)
     {
-        var ui = OpenUI<UIStageInfo>();
+        var ui = OpenUI<UIStageInfo>(false); // 스테이지 인포는 메인 UI라면 false
         if (ui != null && ui.TryGetComponent<UIStageInfo>(out var target))
             target.SetStageData(node, stageInfo);
     }
 
     public void OpenRewardPopUp(ItemData[] itemDatas)
     {
-        var ui = OpenUI<UIPopUpRewards>();
+        var ui = OpenUI<UIPopUpRewards>(true); // 팝업이므로 true
         if (ui != null && ui.TryGetComponent<UIPopUpRewards>(out var target))
             target.SetData(itemDatas);
     }
@@ -261,7 +257,7 @@ public class UIManager : Singleton<UIManager>
 
     public void OpenShopPopUp(ItemData itemData, int price, CurrencyType currencyType)
     {
-        var ui = OpenUI<UIPopUpShop>();
+        var ui = OpenUI<UIPopUpShop>(true); // 팝업이므로 true
         if (ui != null && ui.TryGetComponent<UIPopUpShop>(out var target))
             target.SetData(itemData, price, currencyType);
     }
@@ -270,13 +266,13 @@ public class UIManager : Singleton<UIManager>
     {
         if (itemData is EquipmentItem)
         {
-            var ui = OpenUI<UIPopUpEquipment>();
+            var ui = OpenUI<UIPopUpEquipment>(true); // 팝업이므로 true
             if (ui != null && ui.TryGetComponent<UIPopUpEquipment>(out var target))
                 target.SetData(itemData);
         }
         else
         {
-            var ui = OpenUI<UIPopUpItem>();
+            var ui = OpenUI<UIPopUpItem>(true); // 팝업이므로 true
             if (ui != null && ui.TryGetComponent<UIPopUpItem>(out var target))
                 target.SetData(itemData);
         }
@@ -284,13 +280,15 @@ public class UIManager : Singleton<UIManager>
 
     public void OpenPausePopUp()
     {
-        var ui = OpenUI<UIPopUpPause>();
+        if (IsInGame())
+        {
+            var ui = OpenUI<UIPopUpPause>(true); // 일시정지도 팝업
+        }
     }
-
 
     public void OpenRecordInvenPopUp()
     {
-        var ui = OpenUI<UIRecordInventory>();
+        var ui = OpenUI<UIRecordInventory>(true); // 팝업
         if (ui != null && ui.TryGetComponent<UIRecordInventory>(out var target))
         {
             target.SetRecordManager(AppManager.Instance?.GetRecordManager());
@@ -300,8 +298,8 @@ public class UIManager : Singleton<UIManager>
 
     public void OpenRecordInfoPopUp(RecordData data)
     {
-        var ui = OpenUI<UIRecordInfo>(); 
-        if(ui != null && ui.TryGetComponent<UIRecordInfo>(out var target))
+        var ui = OpenUI<UIRecordInfo>(true); // 팝업
+        if (ui != null && ui.TryGetComponent<UIRecordInfo>(out var target))
         {
             target.SetData(data);
             target.RefreshUI();
@@ -310,7 +308,7 @@ public class UIManager : Singleton<UIManager>
 
     public void OpenExploreResultPopUp()
     {
-        var ui = OpenUI<UITotalResultPopUp>();
+        var ui = OpenUI<UITotalResultPopUp>(true); // 팝업
     }
 
     //--------------------------------------------------------------------------
@@ -326,5 +324,4 @@ public class UIManager : Singleton<UIManager>
         DamageText dt = ObjectPooler.SpawnFromPool<DamageText>("DamageText", dtParent);
         dt?.DrawDamage(pos, value, damageEvent);
     }
-
 }

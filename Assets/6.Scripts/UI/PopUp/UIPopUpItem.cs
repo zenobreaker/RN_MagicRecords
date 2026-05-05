@@ -5,18 +5,18 @@ using UnityEngine.UI;
 public class UIPopUpItem : UIPopUpBase
 {
     [SerializeField] protected ItemData item;
-    [SerializeField] protected Image itemIconImage; 
-    [SerializeField] protected TextMeshProUGUI itemNameText; 
-    [SerializeField] protected TextMeshProUGUI itemMainOptionText; 
+    [SerializeField] protected Image itemIconImage;
+    [SerializeField] protected TextMeshProUGUI itemNameText;
+    [SerializeField] protected TextMeshProUGUI itemMainOptionText;
     [SerializeField] protected TextMeshProUGUI itemMainDescText;
-    [SerializeField] protected Button useButton; 
-    [SerializeField] protected Button exitButton; 
+    [SerializeField] protected Button useButton;
+    [SerializeField] protected Button exitButton;
 
     protected override void Awake()
     {
         base.Awake();
 
-        if( exitButton != null)
+        if (exitButton != null)
         {
             exitButton.onClick.AddListener(() =>
             {
@@ -39,28 +39,32 @@ public class UIPopUpItem : UIPopUpBase
         if (itemIconImage != null)
             itemIconImage.sprite = item.icon;
 
+        Debug.Assert(LocalizationManager.Instance != null);
         if (itemNameText != null)
-            itemNameText.text = item.name;
+            itemNameText.text = LocalizationManager.Instance.GetText(item.name);
 
-        if(itemMainDescText!=null)
-            itemMainDescText.text = item.description;
+        if (itemMainDescText != null)
+            itemMainDescText.text = LocalizationManager.Instance.GetText(item.description);
 
         DrawItemOption();
         if (item is not EquipmentItem)
         {
-          //  equipButton.gameObject.SetActive(false);
+            //  equipButton.gameObject.SetActive(false);
             useButton.gameObject.SetActive(true);
         }
     }
 
     protected void DrawItemOption()
     {
-        if(item == null) return;
+        if (item == null) return;
         if (itemMainOptionText == null) return;
+
+        Debug.Assert(LocalizationManager.Instance != null); 
 
         if (item is EquipmentItem equipment)
         {
-            itemMainOptionText.text = equipment.modifier.GetFullValue(); 
+            string key = equipment.modifier.GetLocalKey();
+            itemMainOptionText.text = LocalizationManager.Instance.GetText(key) + " "+ equipment.modifier.GetValueAndValueType(); 
         }
     }
 

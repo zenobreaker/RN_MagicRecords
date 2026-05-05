@@ -60,6 +60,12 @@ public class Projectile
     {
         ObjectPooler.ReturnToPool(this.gameObject);
         ignores.Clear();
+
+        if (rigidbody == null)
+            return;
+
+        rigidbody.linearVelocity = Vector3.zero;
+        rigidbody.angularVelocity = Vector3.zero;
     }
 
     protected virtual void Update()

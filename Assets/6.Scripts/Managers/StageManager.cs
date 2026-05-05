@@ -207,7 +207,7 @@ public sealed class StageManager : MonoBehaviour
             return;
 
         // Spawn Enemy
-        spawnManager?.SpawnNPC(groupIds[currentWave - 1], spawnPoints);
+        spawnManager?.SpawnNPC(groupIds[currentWave - 1], spawnPoints, true);
     }
 
 
