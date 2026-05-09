@@ -5,10 +5,10 @@ using UnityEngine;
 public abstract class ItemData
 {
     public int id;
-    public string uniqueID; 
+    public string uniqueID;
     public Sprite icon;
     public ItemCategory category;
-    public ItemRank rank; 
+    public ItemRank rank;
 
     public string name;
     public string description;
@@ -23,7 +23,7 @@ public abstract class ItemData
         rank = ItemRank.NONE;
     }
 
-    public ItemData (ItemData other)
+    public ItemData(ItemData other)
     {
         id = other.id;
         uniqueID = other.uniqueID;
@@ -32,7 +32,7 @@ public abstract class ItemData
         name = other.name;
         description = other.description;
         itemCount = other.itemCount;
-        rank = other.rank;  
+        rank = other.rank;
     }
 
     public int GetCount() => itemCount;
@@ -55,13 +55,35 @@ public abstract class ItemData
     }
 
     public abstract ItemData Copy();
+
+    public string LocalizedName
+    {
+        get
+        {
+            if (LocalizationManager.Instance != null)
+                return LocalizationManager.Instance.GetText(name);
+            else
+                return name;
+        }
+    }
+    public string LocalizedDescription
+    {
+        get
+        {
+            if(LocalizationManager.Instance != null) 
+                return LocalizationManager.Instance.GetText(description);
+            return description; 
+        }
+    }
 }
 
 public class EquipmentItem : ItemData
 {
     public EquipParts parts;
     public StatModifier modifier;
-    
+    // 강화해도 변하지 않는 원본 스탯 
+    public float baseModifierValue { get; private set; }
+
     public int owner = 0; 
     public bool Eqeuipped = false;
 
@@ -82,6 +104,8 @@ public class EquipmentItem : ItemData
         itemCount = 1;
         enhance = 0;
         this.rank = rank;
+
+        baseModifierValue = mainValue;
     }
 
     public override ItemData Copy()
@@ -96,6 +120,8 @@ public class EquipmentItem : ItemData
         copy.uniqueID = uniqueID;
         copy.Eqeuipped = Eqeuipped;
         copy.itemCount = itemCount;
+
+        copy.EnhanceItem(this.Enhance, true);
 
         return copy;
     }

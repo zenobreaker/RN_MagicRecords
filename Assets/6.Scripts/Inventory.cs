@@ -197,8 +197,11 @@ public class CurrencyInventory : Inventory
     public bool SpendCurrency(CurrencyType type, int amount, Action updatedCurrency = null)
     {
         var currencyItem = items.Find(i => (i as CurrencyItem)?.Type == type) as CurrencyItem;
-        if (currencyItem == null)
+        
+        if (currencyItem == null || currencyItem.GetCount() < amount)
+        {
             return false;
+        }
 
         bool success = RemoveItem(currencyItem.id, amount);
 

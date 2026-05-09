@@ -35,7 +35,12 @@ public class StatModifier :ICloneable
 
     public string GetFullValue()
     {
-        return type.ToString() + " " + GetValueAndValueType(); 
+        if (LocalizationManager.Instance == null) 
+            return type.ToString() + " " + GetValueAndValueType(); 
+        
+        string key = GetLocalKey();
+        string value = LocalizationManager.Instance.GetText(key);
+        return value + " " + GetValueAndValueType(); 
     }
 
     public object Clone()

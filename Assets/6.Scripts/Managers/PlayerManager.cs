@@ -159,10 +159,14 @@ public class PlayerManager :
         CharInfoListData listData = new();
         foreach (var info in characterIds)
         {
+            int level = 1;
+            if (charStatusDatas.TryGetValue(info, out var data))
+                level = data.level;
+
             CharacterSaveData newData = new()
             {
                 charId = info,
-                charLevel = charStatusDatas[info].level,
+                charLevel = level,
                 classID = charClass.TryGetValue(info, out var value) ? value : 1,
                 equippedItemIds = charEquipments[info].GetEquippedItemIDs(),
                 equippedSkillIds = AppManager.Instance.GetEquippedActiveSkillIDListByCharID(info)

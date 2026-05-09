@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unity.AppUI.UI;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
+using UnityEngine.UI;
 
 [System.Serializable]
 public enum UIType
@@ -39,6 +37,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject pcUIGroup;
     [SerializeField] private GameObject mobileUIGroup;
     [SerializeField] private InputActionReference cancelAction;
+    [SerializeField] private InputActionReference submitAction;
 
     public event Action OnJoinedLobby;                  // 로비 
     public event Action OnJoinedStage;                  // 스테이지 입장
@@ -48,6 +47,13 @@ public class UIManager : Singleton<UIManager>
     private Stack<UiBase> openedUIs = new Stack<UiBase>();
     private GameLocate currLocate;
     private GameObject currentUIGroup;
+
+    [Header("Toast Settings")]
+    [SerializeField] private UIToast toastPrefab;
+    [SerializeField] private int maxToastCount = 3; // 화면에 띄울 최대 토스트 개수 
+
+    private UIToast[] toastPool;
+    private int currentToastIndex = 0; 
 
     public bool IsLTitle() => currLocate == GameLocate.TITLE;
     public bool IsLobby() => currLocate == GameLocate.LOBBY;
@@ -59,6 +65,8 @@ public class UIManager : Singleton<UIManager>
 
         if (Instance == this)
             SceneManager.sceneLoaded += HandleSceneLoaded;
+
+        InitToastPool();
     }
 
     private void OnEnable()
@@ -66,6 +74,10 @@ public class UIManager : Singleton<UIManager>
         Debug.Assert(cancelAction != null);
         cancelAction.action.performed += OnCancelPressed;
         cancelAction.action.Enable();
+
+        Debug.Assert(submitAction != null);
+        submitAction.action.performed += OnSubmitPressed;
+        submitAction.action.Enable(); 
     }
 
     private void OnDisable()
@@ -73,6 +85,10 @@ public class UIManager : Singleton<UIManager>
         Debug.Assert(cancelAction != null);
         cancelAction.action.performed -= OnCancelPressed;
         cancelAction.action.Disable();
+
+        Debug.Assert(submitAction != null);
+        submitAction.action.performed -= OnSubmitPressed;
+        submitAction.action.Disable();
     }
 
     protected override void SyncDataFromSingleton()
@@ -82,6 +98,55 @@ public class UIManager : Singleton<UIManager>
 
         uiInstances = Instance.uiInstances;
         uiDB = Instance.uiDB;
+    }
+
+    private void InitToastPool()
+    {
+        if (toastPrefab == null) return;
+
+        toastPool = new UIToast[maxToastCount];
+
+        // 💡 1. 토스트 전용 '최상단 캔버스'를 코드로 직접 생성합니다.
+        GameObject toastCanvasObj = new GameObject("GlobalToastCanvas");
+
+        // UIManager가 DontDestroyOnLoad라면, 토스트 캔버스도 씬 전환 시 파괴되지 않게 묶어줍니다.
+        // (만약 UIManager의 자식으로 넣는다면 UIManager.transform을 부모로 설정해도 되지만, 
+        // 캔버스는 보통 Root에 두는 것이 렌더링에 안전합니다.)
+        DontDestroyOnLoad(toastCanvasObj);
+
+        // 💡 2. 캔버스 컴포넌트 세팅 (무조건 맨 위에 보이게 9999 설정!)
+        Canvas canvas = toastCanvasObj.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 9999;
+
+        // 해상도 대응을 위한 CanvasScaler 추가
+        CanvasScaler scaler = toastCanvasObj.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920, 1080); // 프로젝트 해상도에 맞게 수정하세요
+
+        // UI 터치/클릭을 막지 않도록 GraphicRaycaster는 굳이 추가하지 않거나,
+        // 필요하다면 toastCanvasObj.AddComponent<GraphicRaycaster>(); 를 넣어줍니다.
+
+        Transform toastParent = toastCanvasObj.transform;
+
+        for (int i = 0; i < maxToastCount; i++)
+        {
+            toastPool[i] = Instantiate(toastPrefab, toastParent);
+            toastPool[i].gameObject.SetActive(false);
+        }
+    }
+
+    // 💡 어디서든 UIManager.Instance.ShowToast("돈이 부족합니다!"); 로 호출!
+    public void ShowToast(string message)
+    {
+        if (toastPool == null || toastPool.Length == 0) return;
+
+        // 현재 인덱스의 토스트를 꺼내서 메시지를 띄움
+        UIToast toast = toastPool[currentToastIndex];
+        toast.ShowMessage(message);
+
+        // 💡 [핵심] 인덱스를 다음으로 넘깁니다. 끝에 도달하면 다시 0으로 돌아옵니다! (원형 큐)
+        currentToastIndex = (currentToastIndex + 1) % maxToastCount;
     }
 
     // 💡 [수정] ESC 처리 로직 통합: 스택 맨 위에 있는 것(팝업이든 UI든)을 하나씩 무조건 닫습니다.
@@ -97,6 +162,20 @@ public class UIManager : Singleton<UIManager>
             if (IsInGame()) OpenPausePopUp();
         }
     }
+
+    // 💡 엔터/스페이스를 눌렀을 때
+    private void OnSubmitPressed(InputAction.CallbackContext context)
+    {
+        // 최상단에 열려있는 팝업이나 UI가 있다면
+        if (openedUIs.Count > 0)
+        {
+            var topUI = openedUIs.Peek(); // 닫지는 않고 맨 위 UI를 가져오기만 함
+
+            // 해당 UI의 OnSubmit 함수 실행!
+            topUI.OnSubmit();
+        }
+    }
+
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -195,7 +274,7 @@ public class UIManager : Singleton<UIManager>
     private void SetStageUserInterface()
     {
         GameObject currentObject = null;
-        if (Application.isMobilePlatform == false)
+        if (UnityEngine.Application.isMobilePlatform == false)
             currentObject = pcUIGroup;
         else
             currentObject = mobileUIGroup;
@@ -236,11 +315,11 @@ public class UIManager : Singleton<UIManager>
     #endregion
 
     // 💡 여기서부터 팝업들은 명시적으로 isPopup = true 를 전달합니다.
-    public void OpenStageInfo(MapNode node, StageInfo stageInfo)
+    public void OpenStageInfo(MapNode node, MapNodeInfo mapNodeInfo)
     {
         var ui = OpenUI<UIStageInfo>(false); // 스테이지 인포는 메인 UI라면 false
         if (ui != null && ui.TryGetComponent<UIStageInfo>(out var target))
-            target.SetStageData(node, stageInfo);
+            target.SetStageData(node, mapNodeInfo);
     }
 
     public void OpenRewardPopUp(ItemData[] itemDatas)

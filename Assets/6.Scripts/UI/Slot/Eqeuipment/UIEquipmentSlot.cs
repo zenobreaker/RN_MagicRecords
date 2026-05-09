@@ -18,6 +18,18 @@ public class UIEquipmentSlot : UIItemSlot
         if (itemData == null)
             return;
 
-        nameText.text = itemData.name;
+        string enhanceAndName = "";
+        string localName = itemData.LocalizedName; 
+        if (itemData is EquipmentItem equip)
+        {
+            if (equip.Enhance > 0)
+                enhanceAndName = "+" + equip.Enhance + " " + localName;
+            else
+                enhanceAndName = localName;
+        }
+        else
+            enhanceAndName = localName;
+        
+        nameText.text = enhanceAndName;
     }
 }

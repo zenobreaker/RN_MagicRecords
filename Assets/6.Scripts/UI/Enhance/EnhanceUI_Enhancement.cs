@@ -14,6 +14,8 @@ public class EnhanceUI_Enhancement : MonoBehaviour
         if (!EnhanceSystem.CanEnhance(equipment, out string reason))
         {
             Debug.LogWarning(reason);
+            if (UIManager.Instance != null)
+                UIManager.Instance.ShowToast(reason);
             return;
         }
 

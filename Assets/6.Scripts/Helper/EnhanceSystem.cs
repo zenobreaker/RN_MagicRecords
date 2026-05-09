@@ -13,7 +13,7 @@ public static class EnhanceSystem
 
         if(data == null)
         {
-            reason = "Max Enhance Level Reached";
+            reason = "ui_toast_not_enhance_max_level";
             return false; 
         }
 
@@ -24,7 +24,7 @@ public static class EnhanceSystem
             int requiredGold = EnhanceCalculator.CalculateEnhanceCost(equip, equip.Enhance + 1);
             if (gold < requiredGold)
             {
-                reason = "Not Enough Gold";
+                reason = "ui_toast_not_enhance_not_enough_currency";
                 return false; 
             }
         }
@@ -40,7 +40,7 @@ public static class EnhanceSystem
                 int ownedItemCount = InventoryManager.Instance.GetItemCount(requiredItemId);
                 if(ownedItemCount < requiredItemCount)
                 {
-                    reason = "Not Enough Materials";
+                    reason = "ui_toast_not_enhance_not_enough_materials";
                     return false; 
                 }
             }

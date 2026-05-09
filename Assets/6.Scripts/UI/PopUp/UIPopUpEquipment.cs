@@ -68,9 +68,9 @@ public class UIPopUpEquipment : UIPopUpItem
             TextMeshProUGUI tm = equipButton.GetComponentInChildren<TextMeshProUGUI>();
             if (tm == null) return;
             if (equipment.Eqeuipped)
-                tm.text = "Unequip";
+                tm.text = LocalizationManager.Instance.GetText("ui_inventory_unequip");
             else
-                tm.text = "Equip";
+                tm.text = LocalizationManager.Instance.GetText("ui_inventory_equip");
         }
     }
 }

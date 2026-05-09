@@ -103,4 +103,9 @@ public abstract class UiBase : MonoBehaviour
         }
     }
 
+    // 엔터/스페이스 등의 버튼을 눌렀을 때 실행할 함수 
+    public virtual void OnSubmit()
+    {
+
+    }
 }

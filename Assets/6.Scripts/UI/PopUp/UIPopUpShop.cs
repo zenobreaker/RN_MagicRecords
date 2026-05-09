@@ -140,6 +140,11 @@ public class UIPopUpShop : UIPopUpBase
         return;
     }
 
+    public override void OnSubmit()
+    {
+        TryBuyItem(); 
+    }
+
     private void TryBuyItem()
     {
         if (item == null) return;
@@ -164,7 +169,8 @@ public class UIPopUpShop : UIPopUpBase
             {
                 // 피드백: 통화 부족
                 Debug.Log($"Not enough currency: need {price} of {priceCurrency}");
-                // TODO: UX 피드백(토스트/애니메이션 등)
+                
+                UIManager.Instance.ShowToast("ui_toast_not_enough_cost_coin"); 
                 return;
             }
 
@@ -177,6 +183,8 @@ public class UIPopUpShop : UIPopUpBase
 
             // 구매 후 팝업 닫기
             UIManager.Instance.CloseTopUI();
+
+            UIManager.Instance.ShowToast("ui_toast_success_buy_item");
         }
     }
 }
