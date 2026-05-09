@@ -238,6 +238,44 @@ public enum RecordRarity
 
 
 ///////////////////////////////////////////////////////////////////////////////
+// 이벤트 
+public enum EventCostType
+{
+    NONE, 
+    GOLD,
+    EXPLORE_COIN, 
+    HP_PERCENT, 
+    RECORD_ANY, 
+    MANA_DEBUFF, 
+    COMBAT_ELITE
+}
+
+// 이벤트 보상
+public enum EventRewardType
+{
+    NONE, // 아무런 보상이 없는 등
+    HP_HEAL,
+    HP_HEAL_PERCENT,
+    HP_DAMAGE,  // 고정 데미지 
+    HP_DMG_PERCENT,
+    ITEM,
+    RECORD_ONE_OF_ALL,
+    RECORD_ONE_OF_NORMAL,
+    RECORD_ONE_OF_RARE,
+    RECORD_ONE_OF_UNIQUE,
+    RECORD_ONE_OF_LEGEND,
+    RECORD_ONE_OF_MYTH,
+    RECORD_DRAFT, // N개 중 택 1하는 이벤트 
+    RECORD_SKILL_UP, // 스킬 강화 이벤트 
+    MANA_REGEN_BUFF,
+    ARCHIVE_SAVE,
+    ARCHIVE_LOAD,
+
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
 //  Target Position Type 
 public enum TargetPositionType
 {

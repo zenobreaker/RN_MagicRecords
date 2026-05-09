@@ -15,19 +15,9 @@ public class MapData
 }
 
 [System.Serializable]
-public class MapToStage
-{
-    public int mapNodeId;
-    public int stageId;
-
-    public string biomeName;
-    public int mapIndex;
-}
-
-[System.Serializable]
 public class StageNodeData
 {
-    public List<MapToStage> stages = new();
+    public List<MapNodeInfo> nodeInfos = new();
 }
 
 

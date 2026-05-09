@@ -38,22 +38,15 @@ public class RewardManager
         rewards = Instance.rewards;
     }
 
-    public void GiveStageReward(StageInfo stage)
+    public void GiveStageReward(int rewardID)
     {
-        if (stage == null) return;
-
-        bool success = stage.bIsCleared;
-        if (success)
+        var clearRewardData = AppManager.Instance?.GetStageClearRewardData(rewardID);
+        if (clearRewardData != null)
         {
-            var clearRewardId = stage.clearRewardId;
-            var clearRewardData = AppManager.Instance?.GetStageClearRewardData(clearRewardId);
-            if (clearRewardData != null)
+            foreach (var rewardid in clearRewardData.rewardIds)
             {
-                foreach (var rewardid in clearRewardData.rewardIds)
-                {
-                    var reward = AppManager.Instance.GetRewardData(rewardid);
-                    AddReward(reward);
-                }
+                var reward = AppManager.Instance.GetRewardData(rewardid);
+                AddReward(reward);
             }
         }
     }

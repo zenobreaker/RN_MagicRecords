@@ -1,112 +1,106 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
 
 public class StageReplacer
 {
-    private Dictionary<int, StageInfo> nodeToStage = new(); // key : node id value : stage
-    private Dictionary<int, int> nodeIdToStageId = new();
+    private Dictionary<int, MapNodeInfo> nodeToInfo = new(); // key : node id value : stage
 
     public string currentChapterBiome;
+    private int currentChapter; // 스테이지 ID를 뽑기 위한 챕터 기억용 
 
     public void StartChapter(int chapter)
     {
         // 1챕터에 진입하면 '숲'인지 '습지'인지 전체 테마를 하나 뽑아둡니다.
+        currentChapter = chapter;
         currentChapterBiome = AppManager.Instance.GetRandomBiome(chapter);
-
         // 이후 노드(맵)들을 생성하고 StageReplacer.AssignStages()를 호출!
     }
 
     public void AssignStages(List<List<MapNode>> levels)
     {
-        nodeToStage.Clear();
-        nodeIdToStageId.Clear();
-
+        nodeToInfo.Clear();
 
         SO_Biome biomeData = AppManager.Instance.GetBiomeData(currentChapterBiome);
-
         int maxMapCount = biomeData.possibleRoomPrefabs.Count;
+        // 💡 이벤트(물음표) 노드가 등장할 확률 (예: 25%)
+        float eventChance = 0.25f;
 
         for (int level = 0; level < levels.Count; level++)
         {
             if (level == 0)
             {
-                nodeToStage[0] = new StageInfo();
-                nodeIdToStageId[0] = 0;
+                nodeToInfo[0] = new MapNodeInfo
+                {
+                    nodeId = 0,
+                    type = StageType.None,
+                    contentId = 0,
+                    mapIndex = 0
+                }; // 시작 노드
                 continue;
             }
+
             bool isLastLevel = (level == levels.Count - 1);
 
             foreach (var node in levels[level])
             {
-                StageInfo stageInfo;
+                MapNodeInfo info = new MapNodeInfo();
+                info.nodeId = node.id;
+                info.biome = currentChapterBiome;
 
                 if (isLastLevel)
                 {
                     // 보스용 스테이지 풀에서 랜덤추출 
-                    stageInfo = AppManager.Instance.CreateRandomBossStageInfo();
+                    info.type = StageType.Boss_Combat;
+                    info.contentId = AppManager.Instance.GetRandomBossStageID(currentChapter);
+                    info.mapIndex = -1; // 보스 전용 맵
                 }
                 else
-                    stageInfo = AppManager.Instance.CreateRandomStageInfo();
-
-                stageInfo.biome = currentChapterBiome;
-
-                if(maxMapCount > 0)
                 {
-                    // 보스방은 보스 전용 맵을 써야 한다면 분기 처리가 필요하지만, 
-                    // 일반 노드라면 여기서 프리팹 인덱스를 결정해 줍니다.
-                    stageInfo.mapIndex = UnityEngine.Random.Range(0, maxMapCount); 
+                    // 이벤트 vs 전투 분기
+                    if(level > 1 && UnityEngine.Random.value < eventChance)
+                    {
+                        info.type = StageType.Event;
+                        //TODO : EventDB에서 랜덤 이벤트 ID를 연결
+                        info.contentId = 9999;
+                        info.mapIndex = -1;
+                    }
+                    else
+                    {
+                        info.type = StageType.Combat;
+                        info.contentId = AppManager.Instance.GetRandomBossStageID(currentChapter); 
+                        info.mapIndex = UnityEngine.Random.Range(0, maxMapCount);
+                    }
                 }
 
-                nodeToStage[node.id] = stageInfo;
-                nodeIdToStageId[node.id] = stageInfo.id;
+                nodeToInfo[node.id] = info;
             }
         }
     }
 
     public void RestoreStages(StageNodeData stageNodeData)
     {
-        nodeToStage.Clear();
-        nodeIdToStageId.Clear();
+        nodeToInfo.Clear();
+        nodeToInfo[0] = new MapNodeInfo { nodeId = 0, type = StageType.None, contentId = 0, mapIndex = 0 };
 
-        // 💡 저장 데이터를 불러올 때도 0번(시작점)은 무조건 기본 생성.
-        nodeToStage[0] = new StageInfo();
-        nodeIdToStageId[0] = 0;
-
-        foreach (var stage in stageNodeData.stages)
+        // 💡 [수정됨] 복잡한 분기 처리 없이 저장된 껍데기를 그대로 꺼내옵니다.
+        foreach (MapNodeInfo savedInfo in stageNodeData.nodeInfos)
         {
-            if (stage.stageId == 0)
-                continue; 
+            if (savedInfo.contentId == 0 && savedInfo.nodeId == 0) continue;
 
-            var stageInfo = AppManager.Instance.GetStageInfo(stage.stageId);
-
-            stageInfo.biome = stage.biomeName;
-            stageInfo.mapIndex = stage.mapIndex;
-
-            nodeToStage[stage.mapNodeId] = stageInfo;
-            nodeIdToStageId[stage.mapNodeId] = stage.stageId;
+            // 저장된 껍데기를 깊은 복사(Copy)해서 딕셔너리에 연결!
+            nodeToInfo[savedInfo.nodeId] = savedInfo.Copy();
         }
     }
 
-    public Dictionary<int, int> GetNodeToStageId() => nodeIdToStageId;
-    public Dictionary<int, StageInfo> GetNodeToStage() => nodeToStage;
+    public Dictionary<int, MapNodeInfo> GetNodeToInfo() => nodeToInfo;
 
-    public int GetStageIdByNodeId(int nodeId) => nodeToStage.TryGetValue(nodeId, out var stageInfo) ? stageInfo.id : -1;
-    public StageInfo GetReplacedStageInfo(int nodeId)
+    public MapNodeInfo GetReplacedNodeInfo(int nodeId)
     {
-        if (nodeToStage.TryGetValue(nodeId, out var stageInfo))
-            return stageInfo;
+        if (nodeToInfo.TryGetValue(nodeId, out var info))
+            return info;
         else
-        {
-            // 스테이지 정보가 없다면 default 스테이지 정보로 던진다.
-            StageInfo defaultInfo = new StageInfo();
-
-            if (nodeId == 0)
-            {
-                defaultInfo.type = StageType.None;
-            }
-
-            return defaultInfo;
-        }
+            return new MapNodeInfo { nodeId = nodeId, type = StageType.None };
     }
-
 }

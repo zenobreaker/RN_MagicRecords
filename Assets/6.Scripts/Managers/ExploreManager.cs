@@ -119,9 +119,14 @@ public sealed class ExploreManager : MonoBehaviour
 #endif
     }
 
-    public StageInfo GetReplacedStageInfo()
+    public MapNodeInfo GetReplacedNodeInfo()
     {
-        return stageReplacer?.GetReplacedStageInfo(MapNodeID);
+        return stageReplacer?.GetReplacedNodeInfo(MapNodeID);
+    }
+
+    public MapNodeInfo GetReplacedNodeInfo(int id)
+    {
+        return stageReplacer?.GetReplacedNodeInfo(id);
     }
 
     public List<int> GetCanEnableNodeIds()
@@ -222,13 +227,18 @@ public sealed class ExploreManager : MonoBehaviour
 
         if (isWin)
         {
-            // 스테이지 클리어 했다면 해당 노드가 끝인지 확인
+            // 💡 승리 시 현재 노드의 껍데기에 클리어 처리를 해줍니다.
+            MapNodeInfo currentNodeInfo = GetReplacedNodeInfo();
+            if (currentNodeInfo != null)
+            {
+                currentNodeInfo.isCleared = true;
+            }
+
             bool bIsFinal = MapReplacer.IsFinalNode(MapNodeID);
             bClearCurrentNode = true;
 
             prevNodeId = MapNodeID;
 
-            // 마지막이라면 챕터를 올린다. 
             if (bIsFinal)
             {
                 if (++Chapter < maxChapter)
@@ -244,11 +254,6 @@ public sealed class ExploreManager : MonoBehaviour
         {
             bClearCurrentNode = false;
         }
-    }
-
-    public StageInfo GetReplacedStageInfo(int id)
-    {
-        return stageReplacer.GetReplacedStageInfo(id);
     }
 
     public void ChangeState(ExploreState newState, int stageID = -1)
@@ -334,18 +339,12 @@ public sealed class ExploreManager : MonoBehaviour
         if (stageReplacer != null)
         {
             StageNodeData stageNodeData = new();
-            foreach (var pair in stageReplacer.GetNodeToStage())
-            {
-                int nodeId = pair.Key;
-                StageInfo stageInfo = pair.Value;
 
-                stageNodeData.stages.Add(new MapToStage
-                {
-                    mapNodeId = nodeId,
-                    stageId = stageInfo.id,
-                    biomeName = stageInfo.biome,
-                    mapIndex = stageInfo.mapIndex
-                });
+            // MapNodeInfo 자체가 직렬화(Serializable)를 지원하므로 
+            // 변환할 필요 없이 리스트에 쏙쏙 담아주기만 하면 끝납니다!
+            foreach (var pair in stageReplacer.GetNodeToInfo())
+            {
+                stageNodeData.nodeInfos.Add(pair.Value);
             }
 
             SaveManager.SaveStageNode(stageNodeData);

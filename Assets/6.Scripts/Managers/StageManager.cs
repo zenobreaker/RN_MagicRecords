@@ -246,7 +246,6 @@ public sealed class StageManager : MonoBehaviour
 
     private void FinishStage()
     {
-
         // 탐사 전체가 끝났는가? 
         bool isRunCompletelyFinished = !bStageClearSuccess || AppManager.Instance.GetExploreManager().AllStageClear;
 
@@ -259,7 +258,7 @@ public sealed class StageManager : MonoBehaviour
             }
             else
             {
-                currentStage.bIsCleared = true;
+                // ❌ 삭제: currentStage.bIsCleared = true; (DB 원본 훼손 방지)
                 OnSucccedStage?.Invoke();
             }
 
@@ -269,7 +268,8 @@ public sealed class StageManager : MonoBehaviour
         else
         {
             // 일반 스테이지 클리어 - 다음 노드로 가야할 때 
-            currentStage.bIsCleared = true;
+
+            // ❌ 삭제: currentStage.bIsCleared = true; (DB 원본 훼손 방지)
             OnSucccedStage?.Invoke();
 
             UIManager.Instance?.ShowStageResultUI(bStageClearSuccess);

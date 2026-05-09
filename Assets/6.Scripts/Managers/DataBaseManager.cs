@@ -12,6 +12,7 @@ public class DataBaseManager : MonoBehaviour
     private ShopDataBase shopDataBase;
     private EnhanceDataBase enhanceDataBase;
     private RecordDataBase recordDataBase;
+    private EventDataBase eventDataBase;
     
     [SerializeField] private SO_StageIconDatabase stageIconDb;
 
@@ -44,6 +45,11 @@ public class DataBaseManager : MonoBehaviour
         if (gameObject.TryComponentInChildren<EnhanceDataBase>(out enhanceDataBase))
         {
             enhanceDataBase.Initialize();
+        }
+
+        if (gameObject.TryComponentInChildren<EventDataBase>(out eventDataBase))
+        {
+            eventDataBase.Initialize();
         }
     }
 
@@ -199,5 +205,10 @@ public class DataBaseManager : MonoBehaviour
     public Sprite GetStageIcon(StageType type)
     {
         return stageIconDb?.GetIcon(type);
+    }
+
+    public EventInfo GetEventInfo(int eventID)
+    {
+        return eventDataBase?.GetEventInfo(eventID);
     }
 }

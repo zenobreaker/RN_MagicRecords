@@ -264,7 +264,7 @@ public sealed class StageDataBase : DataBase
     public StageInfo GetStageInfo(int stageID)
     {
         if (stageInfoTable.TryGetValue(stageID, out StageInfo stageInfo))
-            return new StageInfo(stageInfo);
+            return stageInfo.Copy();
         else
             return null;
     }

@@ -41,20 +41,25 @@ public static class EnhanceCalculator
 
         float enhancedValue = 0.0f;
         var valueType = item.modifier.valueType;
-        float baseValue = item.modifier.value;
+        
+        float baseValue = item.baseModifierValue;
+
         if (allStats == null)
             return baseValue;
 
         for (int level = 1; level <= item.Enhance; level++)
         {
             EnhanceStatData stat = allStats.Find(s => s.level == level);
-            if (valueType == ModifierValueType.FIXED)
+            if (stat != null)
             {
-                enhancedValue += stat.flat;
-            }
-            else if (valueType == ModifierValueType.PERCENT)
-            {
-                enhancedValue += stat.percent;
+                if (valueType == ModifierValueType.FIXED)
+                {
+                    enhancedValue += stat.flat;
+                }
+                else if (valueType == ModifierValueType.PERCENT)
+                {
+                    enhancedValue += stat.percent;
+                }
             }
         }
 

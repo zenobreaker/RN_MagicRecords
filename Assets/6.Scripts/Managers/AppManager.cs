@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.LightTransport;
 using UnityEngine.SceneManagement;
 
 public class AppManager
@@ -20,6 +21,7 @@ public class AppManager
     private ExploreManager exploreManager;
 
     [SerializeField] private bool bCheat;
+    public bool Cheat => bCheat;
 
     private bool isProcessingReward = false; // 중복 실행 방지 플래그
     // 패시브 스킬을 처리하는 시스템 클래스 
@@ -147,32 +149,35 @@ public class AppManager
         if (isProcessingReward) return;
         isProcessingReward = true;
 
-        // 스테이지 클리어 상태가 아니라면 보상/챕터 보상 패스
-        if(exploreManager != null && exploreManager.CurrentState != ExploreState.STAGE_CLEAR)
+        if (exploreManager != null && exploreManager.CurrentState != ExploreState.STAGE_CLEAR)
         {
-            isProcessingReward = false;
-            return; 
-        }
-
-        // 특정 스테이지 클리어 보상
-        StageInfo stage = exploreManager?.GetReplacedStageInfo();
-        if (stage == null)
-        {
-            Debug.LogWarning($"보상을 받을 스테이지 ID를 찾을 수 없습니다.");
             isProcessingReward = false;
             return;
         }
 
-        // 전부 클리어 했다면 최종 보상을 지급한다. 
         if (exploreManager.AllStageClear)
         {
             int chapter = exploreManager.Chapter;
             SetChapterClearReward(chapter);
+            isProcessingReward = false;
             return;
         }
-        else
+
+        // 💡 StageInfo 대신 MapNodeInfo를 가져옵니다.
+        MapNodeInfo nodeInfo = exploreManager?.GetReplacedNodeInfo();
+
+        if (nodeInfo == null)
         {
-            rewardManager?.GiveStageReward(stage);
+            Debug.LogWarning("보상을 받을 노드 정보를 찾을 수 없습니다.");
+            isProcessingReward = false;
+            return;
+        }
+
+        // 💡 껍데기에 적힌 보상 ID만 보고 바로 지급합니다!
+        // (RewardManager의 GiveStageReward 함수가 int rewardId를 받도록 수정해야 합니다)
+        if (nodeInfo.clearRewardId > 0)
+        {
+            rewardManager?.GiveStageReward(nodeInfo.clearRewardId);
         }
 
         isProcessingReward = false;
@@ -230,13 +235,12 @@ public class AppManager
         return GetStageInfo(stageId);
     }
 
-    public StageInfo CreateRandomBossStageInfo()
+    public int GetRandomBossStageID(int chapter)
     {
-        if (exploreManager == null) return null;
+        if (exploreManager == null) return 0;
 
-        int chapter = exploreManager.Chapter;
-        var stageId = databaseManager.GetRandomBossStageID(chapter);
-        return GetBossStageInfo(chapter, stageId);
+        int stageId = databaseManager.GetRandomBossStageID(chapter);
+        return stageId;
     }
 
     public MonsterData GetMonsterData(int monsterID)
@@ -264,8 +268,8 @@ public class AppManager
             exploreManager.EnterStageByNode(node);
         }
 
-        var stage = GetStageInfoMatchedMapNode(node);
-        GameManager.Instance.EnterStage(stage);
+        var nodeInfo = GetNodeInfoMatchedMapNode(node);
+        NodeRouter.EnterNode(nodeInfo);
     }
 
     private void HandleExploreStart()
@@ -320,11 +324,11 @@ public class AppManager
     }
 
 
-    public StageInfo GetStageInfoMatchedMapNode(MapNode mapNode)
+    public MapNodeInfo GetNodeInfoMatchedMapNode(MapNode mapNode)
     {
         if (mapNode == null || exploreManager == null) return null;
 
-        return exploreManager.GetReplacedStageInfo(mapNode.id);
+        return exploreManager.GetReplacedNodeInfo(mapNode.id);
     }
 
     #endregion
@@ -484,6 +488,11 @@ public class AppManager
 
     public RecordData GetEmptyRecord()
     { return databaseManager?.GetEmptyRecord(); }
+
+    public EventInfo GetEventInfo(int eventID)
+    {
+        return databaseManager?.GetEventInfo(eventID); 
+    }
 
     #endregion
 

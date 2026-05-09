@@ -206,6 +206,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Positive",
+                    "type": "Button",
+                    "id": "b800aae5-0bf8-4ef7-8318-daf88a46c4fa",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -217,6 +226,28 @@
                     "processors": "",
                     "groups": ";PC",
                     "action": "Escape",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4bc36be3-74cf-4508-b84e-ccc3108b0e2a",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Positive",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9a748ee2-6c4b-4e25-84bf-da824d778f09",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Positive",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

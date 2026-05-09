@@ -1,18 +1,19 @@
-using System;
-using UnityEditor;
+ï»¿using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public sealed class UIStageMapNode 
-    : UIMapNode
+public sealed class UIStageMapNode : UIMapNode
 {
-    [SerializeField] private StageInfo stageInfo;
+    // ğŸ’¡ 1. StageInfo -> MapNodeInfoë¡œ ê°€ë³ê²Œ êµì²´!
+    [SerializeField] private MapNodeInfo nodeInfo;
     [SerializeField] private Image stageIcon;
 
-    // ¼±ÅÃ ½Ã È°¼ºÈ­ µÇ´Â UI 
+    // ì„ íƒ ì‹œ í™œì„±í™” ë˜ëŠ” UI 
     // [SerializeField] private Image outlineImage;
 
-    public event Action<StageInfo> OnClicked;
+    // ğŸ’¡ 2. í´ë¦­ ì´ë²¤íŠ¸ë„ ê»ë°ê¸°(MapNodeInfo)ë¥¼ ë˜ì§€ë„ë¡ ìˆ˜ì •
+    public event Action<MapNodeInfo> OnClicked;
+
     private MapNodeState currentState = MapNodeState.Locked;
     public MapNodeState CurrentState => currentState;
 
@@ -20,12 +21,14 @@ public sealed class UIStageMapNode
     {
         base.Init(mapNode);
 
-        stageInfo = AppManager.Instance.GetStageInfoMatchedMapNode(mapNode);
+        // ğŸ’¡ 3. AppManagerì—ì„œ MapNodeInfoë¥¼ ë°›ì•„ì˜¤ë„ë¡ ì—°ê²°
+        // (ì´ì „ ë‹¨ê³„ì—ì„œ AppManagerì˜ ì´ í•¨ìˆ˜ ë°˜í™˜í˜•ì„ MapNodeInfoë¡œ ìˆ˜ì •í•˜ì…¨ì„ ê²ë‹ˆë‹¤!)
+        nodeInfo = AppManager.Instance.GetNodeInfoMatchedMapNode(mapNode);
 
         DrawStageIcon();
     }
 
-    // ¸Å´ÏÀú°¡ ÀÌ ³ëµåÀÇ »óÅÂ¸¦ °áÁ¤ÇØ¼­ ´øÁ®ÁÜ 
+    // ë§¤ë‹ˆì €ê°€ ì´ ë…¸ë“œì˜ ìƒíƒœë¥¼ ê²°ì •í•´ì„œ ë˜ì ¸ì¤Œ 
     public void SetState(MapNodeState state)
     {
         currentState = state;
@@ -35,16 +38,16 @@ public sealed class UIStageMapNode
         switch (state)
         {
             case MapNodeState.Locked:
-                stageIcon.color = new Color(0.3f, 0.3f, 0.3f, 1f); // ¾îµÎ¿î È¸»ö (Àá±è)
+                stageIcon.color = new Color(0.3f, 0.3f, 0.3f, 1f); // ì–´ë‘ìš´ íšŒìƒ‰ (ì ê¹€)
                 break;
             case MapNodeState.Selectable:
-                stageIcon.color = Color.white; // ¿ø·¡ »ö»ó (¼±ÅÃ °¡´É!)
+                stageIcon.color = Color.white; // ì›ë˜ ìƒ‰ìƒ (ì„ íƒ ê°€ëŠ¥!)
                 break;
             case MapNodeState.Current:
-                stageIcon.color = Color.green; // ÇöÀç À§Ä¡ (ÃÊ·Ï»ö µîÀ¸·Î °­Á¶)
+                stageIcon.color = Color.green; // í˜„ì¬ ìœ„ì¹˜ (ì´ˆë¡ìƒ‰ ë“±ìœ¼ë¡œ ê°•ì¡°)
                 break;
             case MapNodeState.Cleared:
-                stageIcon.color = new Color(0.5f, 0.5f, 0.5f, 0.5f); // ¹İÅõ¸íÇÏ°Ô (Áö³ª¿Â ±æ)
+                stageIcon.color = new Color(0.5f, 0.5f, 0.5f, 0.5f); // ë°˜íˆ¬ëª…í•˜ê²Œ (ì§€ë‚˜ì˜¨ ê¸¸)
                 break;
         }
     }
@@ -52,18 +55,29 @@ public sealed class UIStageMapNode
 
     public void OnClick()
     {
-        // Àá°ÜÀÖ°Å³ª ÀÌ¹Ì Áö³ª¿Â ±æÀÌ¸é Å¬¸¯ÀÌº¥Æ® ¹«½Ã
-        if(currentState == MapNodeState.Locked || currentState == MapNodeState.Cleared)
+#if UNITY_EDITOR
+        if (AppManager.Instance.Cheat)
+        {
+            // ğŸ’¡ 4. ì¹˜íŠ¸ í´ë¦­ ì‹œì—ë„ nodeInfo ì „ë‹¬
+            OnClicked?.Invoke(nodeInfo);
+            return;
+        }
+#endif
+        // ì ê²¨ìˆê±°ë‚˜ ì´ë¯¸ ì§€ë‚˜ì˜¨ ê¸¸ì´ë©´ í´ë¦­ì´ë²¤íŠ¸ ë¬´ì‹œ
+        if (currentState == MapNodeState.Locked || currentState == MapNodeState.Cleared)
             return;
 
-        OnClicked?.Invoke(stageInfo);
+        // ğŸ’¡ 5. ì •ìƒ í´ë¦­ ì‹œ nodeInfo ì „ë‹¬
+        OnClicked?.Invoke(nodeInfo);
     }
 
     private void DrawStageIcon()
     {
-        if(stageInfo == null || stageIcon == null) return;
+        // ğŸ’¡ 6. stageInfo ê²€ì‚¬ë¥¼ nodeInfo ê²€ì‚¬ë¡œ ë³€ê²½
+        if (nodeInfo == null || stageIcon == null) return;
 
-        Sprite icon = AppManager.Instance.GetStageIcon(stageInfo.type);
+        // nodeInfo.type(ì „íˆ¬, ì´ë²¤íŠ¸, ìƒì  ë“±)ì— ë§ì¶°ì„œ ì•„ì´ì½˜ì„ ê°€ì ¸ì˜µë‹ˆë‹¤!
+        Sprite icon = AppManager.Instance.GetStageIcon(nodeInfo.type);
 
         if (icon != null)
         {

@@ -12,58 +12,6 @@ public class MapNode
     public List<int> nextNodeIds = new List<int>(); // 연결된 다음 노드들
 }
 
-
-[System.Serializable]
-public class StageMapNode : MapNode
-{
-    public StageInfo stageInfo;
-
-    public bool bIsCleared = false;
-    public bool bIsOpened = false;
-
-    public StageMapNode(StageInfo info)
-    {
-        stageInfo = info;
-        bIsCleared = info.bIsCleared;
-        bIsOpened = info.bIsOpened;
-    }
-
-    public StageMapNode(StageMapNode other)
-    {
-        id = other.id;
-        stageInfo = other.stageInfo;
-        bIsCleared = other.bIsCleared;
-        bIsOpened = other.bIsOpened;
-    }
-
-    public StageMapNode() { }
-
-    public int GetMapIndex()
-    {
-        return stageInfo != null ? stageInfo.mapIndex : -1;
-    }
-
-    public int GetStageId()
-    {
-        return stageInfo != null ? stageInfo.id : -1;
-    }
-
-    public List<int> GetGroupIds()
-    {
-        return stageInfo != null ? stageInfo.groupIds : null;
-    }
-
-    public int GetWave()
-    {
-        return stageInfo != null ? stageInfo.wave : -1;
-    }
-
-    public override string ToString()
-    {
-        return stageInfo?.ToString();
-    }
-}
-
 public class MapReplacer
 {
     private List<List<MapNode>> levels = new List<List<MapNode>>();
