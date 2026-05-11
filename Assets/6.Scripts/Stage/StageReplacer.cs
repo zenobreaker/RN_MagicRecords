@@ -62,14 +62,13 @@ public class StageReplacer
                     if(level > 1 && UnityEngine.Random.value < eventChance)
                     {
                         info.type = StageType.Event;
-                        //TODO : EventDB에서 랜덤 이벤트 ID를 연결
-                        info.contentId = 9999;
+                        info.contentId = AppManager.Instance.GetRandomExploreEvent(currentChapter); ;
                         info.mapIndex = -1;
                     }
                     else
                     {
                         info.type = StageType.Combat;
-                        info.contentId = AppManager.Instance.GetRandomBossStageID(currentChapter); 
+                        info.contentId = AppManager.Instance.GetRandomStageId(currentChapter); 
                         info.mapIndex = UnityEngine.Random.Range(0, maxMapCount);
                     }
                 }

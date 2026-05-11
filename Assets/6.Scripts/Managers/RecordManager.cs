@@ -22,7 +22,10 @@ public sealed class RecordManager : MonoBehaviour
     private bool isDirty = false;
 
     public void SetReceiveRecordFlag() => isReceived = true;
-
+    public void ResetReceiveFlag()
+    {
+        isReceived = false;
+    }
     public void OnInit()
     {
         foreach (var record in records)
@@ -75,7 +78,7 @@ public sealed class RecordManager : MonoBehaviour
         GenerateOption(generateCount);
     }
 
-    public void GenerateOption(int count = 3)
+    public void GenerateOption(int count = 3, bool canReroll = true)
     {
         if (isReceived) return; // 이미 받은 상태였다면 
 

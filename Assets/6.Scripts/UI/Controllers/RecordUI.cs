@@ -3,40 +3,30 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
 
-public class RecordUI : UiBase
+public class RecordUI : UIPopUp
 {
-    [SerializeField] private GameObject visualRoot;
+    [Header("Reroll UI")]
+    [SerializeField] private Button rerollButton;
     [SerializeField] private TextMeshProUGUI rerollText;
-    [SerializeField] private Button completeButton;
 
+    [Header("Confirm UI")]
+    [SerializeField] private Button completeButton;
 
     private List<RecordCard> cardPool = new();
 
-    //TODO : 레코드 선택 UI는 탐사 진입할 때 호출되는 타이밍이 있으므로 다른 경로로 이벤트를 
-    // 연결해야한다.
-
     private void Awake()
     {
-        if (AppManager.Instance != null)
-        {
-            AppManager.Instance.OnShowRecordUI += ShowUI;
-        }
-
-        visualRoot.SetActive(false);
         if (completeButton != null)
             completeButton.onClick.AddListener(OnCompleteSelectRecord);
     }
 
-    protected override void OnDisable()
+    protected override void DrawPopUp()
     {
-        base.OnDisable();
-        if (AppManager.Instance != null)
-            AppManager.Instance.OnShowRecordUI -= ShowUI;
+       
     }
 
-    private void ShowUI(List<RecordData> options)
+    public void ShowUI(List<RecordData> options, bool canReroll)
     {
-        visualRoot.SetActive(true);
 
         // 1. 모든 카드를 일단 비활성화 
         foreach (var card in cardPool)
@@ -64,9 +54,15 @@ public class RecordUI : UiBase
 
         });
 
-        //3. 리롤 카운트 텍스트 그리기
-        DrawRerollText();
+        // 💡 3. 리롤 UI 활성화/비활성화 처리
+        if (rerollButton != null) rerollButton.gameObject.SetActive(canReroll);
+        if (rerollText != null) rerollText.gameObject.SetActive(canReroll);
 
+        //3. 리롤 카운트 텍스트 그리기
+        if (canReroll)
+        {
+            DrawRerollText();
+        }
     }
 
 
@@ -80,7 +76,7 @@ public class RecordUI : UiBase
         bool? result = AppManager.Instance?.OnCompleteSelctRecords();
         if (result.HasValue && result.Value == true)
         {
-            visualRoot.SetActive(false);
+            CloseUI();
         }
         else
         {

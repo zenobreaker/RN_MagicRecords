@@ -40,6 +40,7 @@ public class StageUIController
         // 데이터가 로드 안되어 있다면 강제로 Init 
         var em = AppManager.Instance.GetExploreManager();
         em?.EnsureInitialized();
+        em.OnStageClear += RefreshMainUI;
 
         InitUIMapReplace();
 
@@ -55,6 +56,8 @@ public class StageUIController
 
         if (ManagerWaiter.TryGetManager(out CurrencyManager manager))
             manager.OnUpdatedCurrency -= UpdateCurrencies;
+        if(AppManager.Instance != null && AppManager.Instance.GetExploreManager() != null )
+            AppManager.Instance.GetExploreManager().OnStageClear -= RefreshMainUI;
     }
 
     private void InitUIMapReplace()
@@ -80,6 +83,14 @@ public class StageUIController
                 };
             }
         }
+    }
+
+    private void RefreshMainUI()
+    {
+        Debug.Assert(AppManager.Instance != null); 
+        Debug.Assert(AppManager.Instance.GetExploreManager() != null); 
+
+        AppManager.Instance.GetExploreManager().UpdateMapUIState(uiMapReplacer);
     }
 
     #region Button Events

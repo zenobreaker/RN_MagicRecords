@@ -9,7 +9,6 @@ public class AppManager
     : Singleton<AppManager>
 {
     public Action OnAwaked;
-    public event Action<List<RecordData>> OnShowRecordUI;
     public event Action OnSelectedRecordCard;
     public event Action<RecordData> OnRecordSelectedComplete;
 
@@ -226,13 +225,11 @@ public class AppManager
         return databaseManager.GetBossStageInfo(chapter, stageID);
     }
 
-    public StageInfo CreateRandomStageInfo()
+    public int GetRandomStageId(int chapter)
     {
-        if (exploreManager == null) return null;
+        if (exploreManager == null) return -1;
 
-        int chapter = exploreManager.Chapter;
-        var stageId = databaseManager.GetRandomStageID(chapter);
-        return GetStageInfo(stageId);
+        return databaseManager.GetRandomStageID(chapter); 
     }
 
     public int GetRandomBossStageID(int chapter)
@@ -268,8 +265,16 @@ public class AppManager
             exploreManager.EnterStageByNode(node);
         }
 
+        if (recordManager != null)
+            recordManager.ResetReceiveFlag();
+
         var nodeInfo = GetNodeInfoMatchedMapNode(node);
         NodeRouter.EnterNode(nodeInfo);
+    }
+
+    public int GetRandomExploreEvent(int chapter)
+    {
+       return  databaseManager.GetRandomEventID(chapter);
     }
 
     private void HandleExploreStart()
@@ -520,10 +525,10 @@ public class AppManager
     #endregion
 
     #region Record Data 
-    public void TriggerRecordUI(List<RecordData> records)
+    public void TriggerRecordUI(List<RecordData> records, bool canReroll = true)
     {
         PauseManager.RequestPause();
-        OnShowRecordUI?.Invoke(records);
+        UIManager.Instance.OpenRecordSelectPopUp(records, canReroll);
     }
 
     public void OnRecordSelected(RecordData selected)
@@ -553,9 +558,9 @@ public class AppManager
         return true;
     }
 
-    public void GenerateRecord(int recordCount)
+    public void GenerateRecord(int recordCount, bool canReroll = true)
     {
-        recordManager?.GenerateOption(recordCount);
+        recordManager?.GenerateOption(recordCount, canReroll);
     }
 
     public void RerollAllRecords()

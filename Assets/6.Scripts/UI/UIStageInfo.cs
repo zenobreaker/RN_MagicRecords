@@ -89,6 +89,7 @@ public class UIStageInfo
             || AppManager.Instance.EnableNode(node) == false)
             return;
 
+        UIManager.Instance.CloseTopUI();
         AppManager.Instance.EnterStageByNode(node);
     }
 }

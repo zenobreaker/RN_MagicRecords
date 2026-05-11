@@ -211,4 +211,9 @@ public class DataBaseManager : MonoBehaviour
     {
         return eventDataBase?.GetEventInfo(eventID);
     }
+
+    public int GetRandomEventID(int chapter)
+    {
+         return eventDataBase.GetRandomEventID(chapter);
+    }
 }

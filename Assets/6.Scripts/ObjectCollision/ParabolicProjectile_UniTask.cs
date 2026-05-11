@@ -36,8 +36,7 @@ public class ParabolicProjectile_UniTask
 
     public void SetTargetPosition(Vector3 targetPosition)
     {
-        // 💡 1.쏘라고 명령이 들어오면 비동기 함수(Task)를 실행만 시켜두고 본인은 퇴근합니다.
-        // GetCancellationTokenOnDestroy()는 이 오브젝트가 파괴되거나 꺼지면 Task도 같이 죽으라는 뜻입니다. (안전장치)
+        // GetCancellationTokenOnDestroy()는 이 오브젝트가 파괴되거나 꺼지면 Task도 같이 죽기
         FlyAndExplodeTask(transform.position, targetPosition, this.GetCancellationTokenOnDestroy()).Forget();
     }
 
@@ -46,12 +45,12 @@ public class ParabolicProjectile_UniTask
         ObjectPooler.ReturnToPool(this.gameObject);
     }
 
-    // 💡 2. 비동기 흐름 제어 (이 안에서 모든 게 끝납니다)
+    // 2. 비동기 흐름 제어
     private async UniTaskVoid FlyAndExplodeTask(Vector3 start, Vector3 target, CancellationToken token)
     {
         float progress = 0f;
 
-        // while문이 Update를 완벽하게 대체합니다.
+        // while문이 Update를 대체
         while (progress < 1f)
         {
             progress += Time.deltaTime / flightTime;
@@ -64,11 +63,11 @@ public class ParabolicProjectile_UniTask
 
             transform.position = currentPos;
 
-            // 💡 3. 다음 프레임까지 대기! (C++ 오버헤드 없이 깔끔하게 대기)
+            // 3. 다음 프레임까지 대기
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
         }
 
-        // 💡 4. 루프가 끝났다? = 도착했다! 터져라!
+        // 4. 루프가 끝났다? = 도착했다! 터져라!
         Explode();
     }
 

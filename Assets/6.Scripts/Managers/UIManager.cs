@@ -271,6 +271,40 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
+    /// <summary>
+    /// 스택의 최상단이 아니더라도 특정 UI를 찾아 안전하게 닫고 스택에서 제거합니다.
+    /// </summary>
+    public void CloseSpecificUI(UiBase targetUI)
+    {
+        if (openedUIs.Count == 0 || targetUI == null) return;
+
+        // 1. 타겟이 마침 스택 맨 위라면 기존 함수를 재사용하여 깔끔하게 Pop
+        if (openedUIs.Peek() == targetUI)
+        {
+            CloseTopUI();
+            return;
+        }
+
+        // 2. 타겟이 스택 중간에 껴있다면? (Stack은 중간 삭제가 안 되므로 분해 후 재조립)
+        if (openedUIs.Contains(targetUI))
+        {
+            // 스택을 리스트로 변환 (주의: 인덱스 0이 스택의 Top입니다)
+            List<UiBase> tempUiList = new List<UiBase>(openedUIs);
+
+            // 타겟 제거
+            tempUiList.Remove(targetUI);
+
+            // 다시 스택으로 만들기 위해 순서를 뒤집어줍니다 (Top이 마지막으로 들어가야 하므로)
+            tempUiList.Reverse();
+
+            // 스택 재할당
+            openedUIs = new Stack<UiBase>(tempUiList);
+
+            // UI 끄기
+            targetUI.gameObject.SetActive(false);
+        }
+    }
+
     private void SetStageUserInterface()
     {
         GameObject currentObject = null;
@@ -385,9 +419,27 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
+    public void OpenRecordSelectPopUp(List<RecordData> records, bool canReroll)
+    {
+        var ui = OpenUI<RecordUI>(true);
+        if(ui != null && ui.TryGetComponent<RecordUI>(out var target))
+        {
+            target.ShowUI(records, canReroll);
+        }
+    }
+
     public void OpenExploreResultPopUp()
     {
         var ui = OpenUI<UITotalResultPopUp>(true); // 팝업
+    }
+
+    public void OpenExploreEventPopup(EventInfo eventInfo)
+    {
+        var ui = OpenUI<UIPopupEventScreen>(true);  
+        if(ui!= null && ui.TryGetComponent<UIPopupEventScreen>(out var target))
+        {
+            target.SetData(eventInfo);
+        }
     }
 
     //--------------------------------------------------------------------------

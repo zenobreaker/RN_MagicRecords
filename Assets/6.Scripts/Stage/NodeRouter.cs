@@ -23,7 +23,7 @@ public static class NodeRouter
                 EventInfo eventData = AppManager.Instance.GetEventInfo(node.contentId);
 
                 // 이벤트는 진입 전까지 비밀로 하거나, 이름을 보여줄 수 있습니다.
-                title = "우연한 만남";
+                title = "미지의 영역";
                 desc = "알 수 없는 기운이 느껴집니다...";
                 break;
 
@@ -48,7 +48,7 @@ public static class NodeRouter
 
             case StageType.Event:
                 EventInfo eventData = AppManager.Instance.GetEventInfo(node.contentId);
-                // TODO: 이벤트 씬 로드 및 eventData 전달
+                UIManager.Instance.OpenExploreEventPopup(eventData);
                 break;
         }
     }
