@@ -58,14 +58,49 @@ public class UIEventChoiceButton : MonoBehaviour
         switch (costType)
         {
             case EventCostType.GOLD:
-                // 예: 현재 골드가 요구량보다 크거나 같은가?
-                return CurrencyManager.Instance.GetCurrency(CurrencyType.GOLD) >= costValue;
+            case EventCostType.EXPLORE_COIN:
+                CurrencyType ct = costType == EventCostType.GOLD ? CurrencyType.GOLD : CurrencyType.EXPOLORE_GOLD;
+                return CurrencyManager.Instance.GetCurrency(ct) >= costValue;
 
             case EventCostType.HP_PERCENT:
                 // 예: 현재 체력이 비용(%)으로 깎여도 죽지 않고 살아남을 수 있는가?
-                 //int hpCost = PlayerManager.Instance.MaxHP * costValue / 100;
-                 //return PlayerManager.Instance.CurrentHP > hpCost;
-                return true; 
+                //int hpCost = PlayerManager.Instance.MaxHP * costValue / 100;
+                //return PlayerManager.Instance.CurrentHP > hpCost;
+                return true;
+
+            case EventCostType.MANA_DEBUFF:
+                {
+                    //TODO : 상태이상 관리자?에게 관련 디버프 걸고 바로 패스 
+                    return true;
+                }
+
+            case EventCostType.RECORD_ANY:
+                // 소지한 레코드가 종류 상관없이 하나라도 있다면 
+                {
+                    var rm = AppManager.Instance.GetRecordManager();
+                    if (rm != null)
+                    {
+                        return rm.GetPossesRecord().Count >= costValue;
+                    }
+                    else
+                        return true;
+                }
+            case EventCostType.RECORD_SAVE:
+                {
+                    // 이전에 전송한 레코드가 있었다면 성공한다.
+                    var rm = AppManager.Instance.GetRecordManager();
+                    if (rm != null)
+                    {
+                        return (rm.GetTransferedRecordIDs().Count > 0);
+                    }
+
+                    return false;
+                }
+            case EventCostType.COMBAT_ELITE:
+                {
+                    // TODO : 바로 스테이지로 이동 후 전투 
+                    return true; 
+                }
 
             case EventCostType.NONE:
             default:

@@ -62,6 +62,7 @@ public class UIPopupEventScreen : UIPopUpBase
         await TypewriterAsync(descText, typingCts.Token);
 
         // 4. 타이핑이 자연스럽게 끝났거나 스킵되었다면, 숨겨둔 버튼들을 연출과 함께 보여줍니다.
+        CancellationToken safeToken = typingCts != null ? typingCts.Token : this.GetCancellationTokenOnDestroy();
         ShowChoicesWithAnimation(typingCts.Token).Forget();
     }
 
@@ -98,7 +99,7 @@ public class UIPopupEventScreen : UIPopUpBase
                 choiceContainerGroup.alpha = Mathf.Lerp(0, 1, t);
                 choiceContainer.localScale = Vector3.Lerp(Vector3.one * 0.9f, Vector3.one, t);
 
-                await UniTask.Yield(); // 다음 프레임까지 대기
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token); // 다음 프레임까지 대기
             }
 
             choiceContainerGroup.alpha = 1f;
@@ -106,7 +107,8 @@ public class UIPopupEventScreen : UIPopUpBase
         }
         catch (OperationCanceledException)
         {
-
+            choiceContainerGroup.alpha = 1f;
+            choiceContainer.localScale = Vector3.one;
         }
     }
 
@@ -176,12 +178,14 @@ public class UIPopupEventScreen : UIPopUpBase
 
         if (choice.RewardType == EventRewardType.RECORD_DRAFT)
         {
-            // 이벤트 팝업 숨기기
-            //gameObject.SetActive(false);
-
             // 💡 마법의 호출! (레코드 10개 뽑기, 리롤 불가능 설정)
             AppManager.Instance.GenerateRecord(10, false);
         }
+        else if(choice.RewardType == EventRewardType.RECORD_SKILL_UP)
+        {
+            //TODO : 스킬 관련 레코드 추가되면 추가 
+        }
+        
     }
 
     private async UniTaskVoid ShowResultPhaseAsync(string resultText)
@@ -197,7 +201,7 @@ public class UIPopupEventScreen : UIPopUpBase
 
         // 2. 닫기(떠난다) 버튼 미리 생성
         UIEventChoiceButton closeBtn = Instantiate(choicePrefab, choiceContainer);
-        EventChoice closeChoice = new EventChoice() { TextKey = "ui_button_leave", CostType = EventCostType.NONE };
+        EventChoice closeChoice = new EventChoice() { TextKey = "ui_btn_leave", CostType = EventCostType.NONE };
         closeBtn.Setup(closeChoice, _ => ClosePopup());
 
         // 3. 결과 텍스트 타이핑 시작 & 끝날때까지 대기
@@ -206,6 +210,7 @@ public class UIPopupEventScreen : UIPopUpBase
         await TypewriterAsync(resultText, typingCts.Token);
 
         // 4. 타이핑 완료 후 닫기 버튼 등장!
+        CancellationToken safeToken = typingCts != null ? typingCts.Token : this.GetCancellationTokenOnDestroy();
         ShowChoicesWithAnimation(typingCts.Token).Forget();
     }
 

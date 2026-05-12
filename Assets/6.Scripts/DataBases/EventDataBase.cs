@@ -46,6 +46,7 @@ public class EventInfoJson : InfoJson
     public string failtextkey;
     public string failtype;
     public int failvalue;
+    public string imageKey;
 }
 
 [System.Serializable]
@@ -54,6 +55,7 @@ public class EventInfo : InfoBase
     public int chapter;    
     public string nameKey;
     public string descriptionKey;
+    public string imageKey;
     public List<EventChoice> eventChoices = new List<EventChoice>();
 }
 
@@ -100,6 +102,7 @@ public sealed class EventDataBase : DataBase
                     newEvent.chapter = row.chapter;
                     newEvent.nameKey = row.name;
                     newEvent.descriptionKey = row.description;
+                    newEvent.imageKey = row.imageKey;
 
                     eventInfos[currentEventId] = newEvent;
 

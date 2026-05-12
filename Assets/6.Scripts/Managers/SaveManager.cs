@@ -84,6 +84,7 @@ public class CharacterSkillData
 public class RecordSaveData
 {
     public List<int> recordIDs = new();
+    public List<int> transferedrecordIDs = new(); 
     public bool isReceived = false;
 }
 

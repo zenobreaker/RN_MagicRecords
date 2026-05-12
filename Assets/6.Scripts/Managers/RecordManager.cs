@@ -17,6 +17,7 @@ public sealed class RecordManager : MonoBehaviour
 
     private int max_selectCount = 1;
     private List<RecordData> possesRecords = new List<RecordData>();
+    private List<int> transferedRecordIDs = new List<int>(); 
     private bool isReceived = false; 
 
     private bool isDirty = false;
@@ -46,12 +47,22 @@ public sealed class RecordManager : MonoBehaviour
             possesRecords.Add(recordsDict[id].GetRecordData()); 
         }
 
+        transferedRecordIDs = saveData.transferedrecordIDs;
+
         isReceived = saveData.isReceived;
     }
     
     public List<RecordData> GetPossesRecord() => possesRecords;
+    public List<int> GetTransferedRecordIDs() => transferedRecordIDs;
 
+    // 특정 레코드를 다음 회차에 사용할 수 있도록 보내는 함수 
+    public void SetTranferRecord(RecordData target)
+    {
+        var find = possesRecords.Find(x => x == target);
+        if (find == null) return; // 없는 대상은 실패 TODO: 토스트 문자 띄우기 
 
+        transferedRecordIDs.Unique(find.id); 
+    }
     private List<RecordData> GetAllEnrichedRecordData()
     {
         List<RecordData> rawRecords = AppManager.Instance?.GetAllRecordData();
@@ -118,7 +129,7 @@ public sealed class RecordManager : MonoBehaviour
         }
 
         // 5. AppManager를 통해 UI 오픈 이벤트 발행
-        AppManager.Instance?.TriggerRecordUI(CurrentOptions);
+        AppManager.Instance?.TriggerRecordUI(CurrentOptions, canReroll);
     }
 
     // 선택된 레코드 저장 
@@ -242,6 +253,8 @@ public sealed class RecordManager : MonoBehaviour
         {
             save.recordIDs.Add(data.id);
         }
+
+        save.transferedrecordIDs = this.transferedRecordIDs;
 
         save.isReceived = isReceived;
         SaveManager.SaveRecordData(save);

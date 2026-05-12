@@ -59,7 +59,7 @@ public enum CurrencyType
     NONE,
     GOLD,
     DIAMOND,
-    EXPOLORE_CREDIT,
+    EXPOLORE_GOLD,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -246,6 +246,7 @@ public enum EventCostType
     EXPLORE_COIN, 
     HP_PERCENT, 
     RECORD_ANY, 
+    RECORD_SAVE, 
     MANA_DEBUFF, 
     COMBAT_ELITE
 }
