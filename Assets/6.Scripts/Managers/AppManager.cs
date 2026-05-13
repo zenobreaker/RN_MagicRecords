@@ -525,10 +525,10 @@ public class AppManager
     #endregion
 
     #region Record Data 
-    public void TriggerRecordUI(List<RecordData> records, bool canReroll = true)
+    public void TriggerRecordUI(List<RecordData> records, bool canReroll = true, RecordUIMode mode = RecordUIMode.DRAFT)
     {
         PauseManager.RequestPause();
-        UIManager.Instance.OpenRecordSelectPopUp(records, canReroll);
+        UIManager.Instance.OpenRecordSelectPopUp(records, canReroll, mode);
     }
 
     public void OnRecordSelected(RecordData selected)
@@ -558,9 +558,26 @@ public class AppManager
         return true;
     }
 
+    public bool OnCompleteArchiveRecord()
+    {
+        List<RecordData> selectedRecords = recordManager?.SelectedRecords;
+        if (selectedRecords == null || selectedRecords.Count <= 0) return false;
+
+        foreach (RecordData data in selectedRecords)
+        {
+            recordManager.SetTranferRecord(data);
+            Debug.Log($"[{data.recordName}] 레코드가 아카이브에 저장되었습니다!");
+        }
+
+        // 처리가 끝났으니 선택 리스트 비워주기
+        recordManager.SelectedRecords.Clear();
+        PauseManager.RequestResume();
+        return true;
+    }
+
     public void GenerateRecord(int recordCount, bool canReroll = true)
     {
-        recordManager?.GenerateOption(recordCount, canReroll);
+        recordManager?.GenerateRecords(recordCount, canReroll);
     }
 
     public void RerollAllRecords()

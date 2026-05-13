@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public abstract class Inventory
@@ -19,6 +20,8 @@ public abstract class Inventory
     public virtual void RemoveItem(ItemData item)
     {
         items.Remove(item);
+
+        OnInventoryChanged?.Invoke(this);
     }
 
     public virtual bool RemoveItem(int itemID, int itemCount)
@@ -29,8 +32,6 @@ public abstract class Inventory
         item.ModifyCount(-1 * itemCount);
         if (item.GetCount() <= 0)
             RemoveItem(item);
-
-        OnInventoryChanged?.Invoke(this);
 
         return true;
     }
@@ -197,7 +198,7 @@ public class CurrencyInventory : Inventory
     public bool SpendCurrency(CurrencyType type, int amount, Action updatedCurrency = null)
     {
         var currencyItem = items.Find(i => (i as CurrencyItem)?.Type == type) as CurrencyItem;
-        
+
         if (currencyItem == null || currencyItem.GetCount() < amount)
         {
             return false;
@@ -220,5 +221,78 @@ public class CurrencyInventory : Inventory
         }
 
         return 0;
+    }
+}
+
+
+public sealed class RecordInventory
+{
+    private List<RecordData> records = new();
+    private HashSet<int> recordIdSet = new();
+    public event Action<RecordInventory> OnInventoryChanged;
+
+    public IReadOnlyList<RecordData> Records => records;
+
+    public void AddRecord(RecordData record)
+    {
+        if (record == null) return;
+
+        if(recordIdSet.Contains(record.id))
+        {
+            // 이미 존재하는 레코드 이므로 빈 레코드를 리스트에 추가 
+            RecordData emptyRecord = AppManager.Instance.GetEmptyRecord();
+            if (emptyRecord != null)
+            {
+                records.Add(emptyRecord);
+
+                OnInventoryChanged?.Invoke(this);
+            }
+            return; 
+        }
+
+        records.Add(record);
+        recordIdSet.Add(record.id);
+
+        OnInventoryChanged?.Invoke(this);
+    }
+
+    public void RemoveRecord(int id)
+    {
+        // 리스트에 존재해야 삭제 가능 
+        RecordData target = records.Find(x => x.id == id);
+        if (target != null)
+        {
+            RemoveRecord(target);
+        }
+    }
+
+    public void RemoveRecord(RecordData target)
+    {
+        if (target == null) return;
+
+        var finalTarget = records.Find(x => x.uniqueID == target.uniqueID);
+        if (finalTarget != null)
+        {
+            records.Remove(finalTarget);
+            if (records.Exists(x => x.id == finalTarget.id) == false)
+            {
+                recordIdSet.Remove(finalTarget.id);
+            }
+
+            OnInventoryChanged?.Invoke(this);
+        }
+
+    }
+
+    public void ClearAll()
+    {
+        records.Clear();
+        recordIdSet.Clear();
+        OnInventoryChanged?.Invoke(this);
+    }
+
+    public RecordData GetRecord(string uniqueID)
+    {
+        return records.FirstOrDefault(x => x.uniqueID == uniqueID);
     }
 }

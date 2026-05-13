@@ -39,12 +39,12 @@ public class UIRecordInfo : UiBase
 
         if (nameText != null)
         {
-            nameText.text = LocalizationManager.Instance.GetText(recordData.recordName);
+            nameText.text = recordData.recordName;
         }
 
         if (descText != null)
         {
-            descText.text = LocalizationManager.Instance.GetText(recordData.description);
+            descText.text = recordData.description;
         }
     }
 }

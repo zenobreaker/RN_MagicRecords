@@ -1,10 +1,11 @@
-using System.Runtime.InteropServices.WindowsRuntime;
+using System;
 using UnityEngine;
 
 [System.Serializable]
 public class RecordData
 {
     public int id;
+    public string uniqueID; 
     public string recordName;
     public string description;
     public Sprite icon;
@@ -21,6 +22,11 @@ public class RecordData
 
     public bool isLocked = false; 
 
+    public RecordData()
+    {
+        uniqueID = Guid.NewGuid().ToString();
+    }
+
     public bool IsTarget(int job)
     {
         return targetFilter == (TargetFilterType)job;
@@ -30,8 +36,9 @@ public class RecordData
     {
         var temp = new RecordData();
         temp.id = id;
-        temp.recordName = recordName;
-        temp.description = description;
+        temp.uniqueID = uniqueID;
+        temp.recordName = LocalizationManager.Instance.GetText(recordName);
+        temp.description = LocalizationManager.Instance.GetText(description);
         temp.icon = icon;
         temp.targetFilter = targetFilter;
         temp.type = type;
@@ -83,7 +90,7 @@ public class SO_RecordData : ScriptableObject
         recordData.triggerEvent = triggerEvent;
         recordData.className = className;
 
-        return recordData;
+        return recordData.GetData();
     }
 }
 

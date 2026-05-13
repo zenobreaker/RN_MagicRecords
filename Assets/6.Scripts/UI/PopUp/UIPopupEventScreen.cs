@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -73,6 +74,12 @@ public class UIPopupEventScreen : UIPopUpBase
 
         foreach (EventChoice choice in currentEvent.eventChoices)
         {
+//#if UNITY_EDITOR
+
+//#else
+            if(choice.ChoiceIsActive == false)
+                continue;
+//#endif
             UIEventChoiceButton btn = Instantiate(choicePrefab, choiceContainer);
             btn.Setup(choice, OnChoiceSelected);
         }
@@ -185,7 +192,14 @@ public class UIPopupEventScreen : UIPopUpBase
         {
             //TODO : 스킬 관련 레코드 추가되면 추가 
         }
-        
+        else if(choice.RewardType == EventRewardType.ARCHIVE_SAVE)
+        {
+            OpenArchiveRecordUI();
+        }
+        else if( choice.RewardType == EventRewardType.ARCHIVE_LOAD)
+        {
+
+        }
     }
 
     private async UniTaskVoid ShowResultPhaseAsync(string resultText)
@@ -235,5 +249,34 @@ public class UIPopupEventScreen : UIPopUpBase
     {
         // UniTaskVoid를 호출할 때는 .Forget()을 붙여 백그라운드 실행을 명시합니다.
         DrawPopUpAsync().Forget();
+    }
+
+
+    private void OpenArchiveRecordUI()
+    {
+        List<RecordData> myRecords = AppManager.Instance.GetRecordManager().GetPossesRecord();
+
+        if (myRecords != null && myRecords.Count > 0)
+        {
+            // (선택사항) 레코드 UI가 뜰 때 뒤에 이벤트 창이 보이는게 싫다면 이벤트 팝업을 숨깁니다.
+            // choiceContainerGroup.alpha = 0f; 
+
+            // 2. AppManager의 래핑 함수를 쓰지 않고, UIManager에게 직접 팝업을 띄우라고 명령합니다!
+            // (리롤 불가, SelectOwned 모드로 전달)
+            UIManager.Instance.OpenRecordSelectPopUp(myRecords, false, RecordUIMode.SELECT_OWNED);
+        }
+        else
+        {
+            Debug.LogWarning("보관할(가진) 레코드가 하나도 없습니다!");
+
+            // 가진 게 없으면 UI를 띄우지 않고 그냥 스테이지를 클리어 처리하고 끝냅니다.
+            AppManager.Instance.GetExploreManager().ClearStage(true);
+        }
+    }
+
+    // 지난 회차에 저장한 레코드 리스트를 띄우는 UI 
+    private void OpenLastSavedRecordUI()
+    {
+
     }
 }

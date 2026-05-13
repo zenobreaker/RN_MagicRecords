@@ -10,11 +10,11 @@ public class RecordCard : MonoBehaviour
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI descText;
     [SerializeField] private Image iconImage;
-    [SerializeField] private Image selectFrame; 
+    [SerializeField] private Image selectFrame;
     [SerializeField] private Button selectButton;
     [SerializeField] private Button lockButton;
-    [SerializeField] private TextMeshProUGUI lockText; 
-    
+    [SerializeField] private TextMeshProUGUI lockText;
+
 
     private RecordData myData;
 
@@ -32,25 +32,25 @@ public class RecordCard : MonoBehaviour
     }
 
     public void Setup(RecordData data,
-        System.Action onClickAction = null, 
-        System.Action onlockAction  = null)
+        System.Action onClickAction = null,
+        System.Action onlockAction = null)
     {
         myData = data;
 
         Debug.Assert(LocalizationManager.Instance != null);
 
         // 1. UI 텍스트 업데이트
-        nameText.text = LocalizationManager.Instance.GetText( data.recordName);
-        descText.text = LocalizationManager.Instance.GetText(data.description);
+        nameText.text = data.recordName;
+        descText.text = data.description;
         iconImage.sprite = data.icon;
 
         // 2. 버튼 리스너 초기화 및 재할당
         selectButton.onClick.RemoveAllListeners();
-        selectButton.onClick.AddListener(() => 
+        selectButton.onClick.AddListener(() =>
         {
             onClickAction?.Invoke();
             OnRecordData?.Invoke(myData);
-        }); 
+        });
 
         // 3. 등급(Rarity)에 따른 카드 테두리 색상 변경 등 연출 추가 가능
         // SetRarityColor(data.rarity);
@@ -63,7 +63,7 @@ public class RecordCard : MonoBehaviour
             DrawLockText();
         });
     }
-    
+
     public void ClearEvent()
     {
         selectButton?.onClick.RemoveAllListeners();
@@ -72,33 +72,33 @@ public class RecordCard : MonoBehaviour
 
     public void Refresh()
     {
-        OnSelectFrame(myData); 
+        OnSelectFrame(myData);
     }
 
     public void ShowCard()
     {
-        gameObject.SetActive(true); 
+        gameObject.SetActive(true);
     }
 
     private void OnSelectFrame(RecordData selectedData)
     {
-        if (selectedData == null || 
+        if (selectedData == null ||
             AppManager.Instance == null) return;
-        
+
         bool isSelected = AppManager.Instance.IsSelectRecordData(selectedData);
         selectFrame.gameObject.SetActive(isSelected);
     }
 
     private void DrawLockText()
     {
-        if (lockText == null) return; 
+        if (lockText == null) return;
 
-        if(myData.isLocked)
+        if (myData.isLocked)
         {
             lockText.text = "해제";
         }
-        else 
-        { 
+        else
+        {
             lockText.text = "잠금";
         }
     }

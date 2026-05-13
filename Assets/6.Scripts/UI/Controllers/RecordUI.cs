@@ -13,6 +13,7 @@ public class RecordUI : UIPopUp
     [SerializeField] private Button completeButton;
 
     private List<RecordCard> cardPool = new();
+    private RecordUIMode currentMode;
 
     private void Awake()
     {
@@ -22,11 +23,12 @@ public class RecordUI : UIPopUp
 
     protected override void DrawPopUp()
     {
-       
+
     }
 
-    public void ShowUI(List<RecordData> options, bool canReroll)
+    public void ShowUI(List<RecordData> options, bool canReroll, RecordUIMode mode = RecordUIMode.DRAFT)
     {
+        currentMode = mode;
 
         // 1. 모든 카드를 일단 비활성화 
         foreach (var card in cardPool)
@@ -73,10 +75,26 @@ public class RecordUI : UIPopUp
 
     private void OnCompleteSelectRecord()
     {
-        bool? result = AppManager.Instance?.OnCompleteSelctRecords();
+        bool? result = false;
+
+        if (currentMode == RecordUIMode.DRAFT || currentMode == RecordUIMode.SELECT_SAVED)
+        {
+            result = AppManager.Instance?.OnCompleteSelctRecords();
+        }
+        else if (currentMode == RecordUIMode.SELECT_OWNED)
+        {
+            result = AppManager.Instance?.OnCompleteArchiveRecord();
+        }
+
         if (result.HasValue && result.Value == true)
         {
             CloseUI();
+
+            // 아카이브 모드였다면, 레코드 선택이 곧 이벤트의 종료이므로 스테이지를 클리어 처리합니다.
+            //if (currentMode == RecordUIMode.SelectOwned)
+            //{
+            //    AppManager.Instance.GetExploreManager().ClearStage(true);
+            //}
         }
         else
         {

@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 
 
@@ -20,6 +21,7 @@ public class EventChoice
     public string FailTextKey;
     public EventRewardType FailType;
     public int FailValue;
+    public bool ChoiceIsActive;
 }
 
 // 💡 JsonLoader의 TJsonRoot 역할을 해줄 최상위 래퍼 클래스
@@ -47,6 +49,8 @@ public class EventInfoJson : InfoJson
     public string failtype;
     public int failvalue;
     public string imageKey;
+    public int event_is_active;
+    public int choice_is_active; 
 }
 
 [System.Serializable]
@@ -56,6 +60,7 @@ public class EventInfo : InfoBase
     public string nameKey;
     public string descriptionKey;
     public string imageKey;
+    public bool isActive;
     public List<EventChoice> eventChoices = new List<EventChoice>();
 }
 
@@ -71,6 +76,7 @@ public sealed class EventDataBase : DataBase
     public override void Initialize()
     {
         eventInfos.Clear();
+        chapterEventTable.Clear();
 
         if (jsonAsset == null)
         {
@@ -78,21 +84,29 @@ public sealed class EventDataBase : DataBase
             return;
         }
 
-        // 💡 람다식 밖에서 현재 조립 중인 이벤트 ID를 추적합니다. (Closure 활용)
         int currentEventId = -1;
+        // 💡 현재 파싱 중인 이벤트가 '통째로 비활성화' 상태인지 기억하기 위한 변수
+        bool isCurrentEventDisabled = false;
 
         JsonLoader.LoadJsonList<EventInfoJsonRoot, EventInfoJson, EventInfoJson>(
             jsonAsset,
-            // 1. extractListFunc: 루트 객체에서 리스트를 뽑아냅니다.
             root => root.eventList,
-
-            // 2. converFunc: 변환 없이 그대로 통과시킵니다.
             json => json,
-
-            // 3. onResult: 한 줄(row)씩 읽어올 때마다 1:N 조립 로직을 수행합니다!
             row =>
             {
-                // [이벤트 제목 줄인지 확인]
+                // --- 1. 이벤트 전체 활성화 체크 (대표 행인 ChoiceIndex 1에서 결정) ---
+                if (row.choiceIndex == 1)
+                {
+                    // 0이면 비활성이므로 이 이벤트는 이후 줄(선택지들)도 모두 무시하도록 플래그 설정
+                    isCurrentEventDisabled = (row.event_is_active == 0);
+
+                    if (isCurrentEventDisabled) return;
+                }
+
+                // 이벤트 자체가 비활성 상태면 아래 로직 수행 안 함
+                if (isCurrentEventDisabled) return;
+
+                // --- 2. 이벤트 기본 정보 조립 (새로운 ID 등장 시) ---
                 if (row.id > 0)
                 {
                     currentEventId = row.id;
@@ -103,10 +117,10 @@ public sealed class EventDataBase : DataBase
                     newEvent.nameKey = row.name;
                     newEvent.descriptionKey = row.description;
                     newEvent.imageKey = row.imageKey;
+                    newEvent.isActive = true;
 
                     eventInfos[currentEventId] = newEvent;
 
-                    // 💡 챕터별 테이블에 이벤트 ID 분류해서 쏙쏙 넣기
                     if (!chapterEventTable.ContainsKey(newEvent.chapter))
                     {
                         chapterEventTable[newEvent.chapter] = new List<int>();
@@ -114,13 +128,17 @@ public sealed class EventDataBase : DataBase
                     chapterEventTable[newEvent.chapter].Add(currentEventId);
                 }
 
-                // [선택지 데이터 조립 및 추가]
+                // --- 3. 개별 선택지 데이터 조립 ---
                 if (currentEventId > 0 && eventInfos.ContainsKey(currentEventId))
                 {
                     EventChoice newChoice = new EventChoice();
                     newChoice.ChoiceIndex = row.choiceIndex;
                     newChoice.TextKey = row.textkey;
 
+                    // 💡 개별 선택지 활성화 여부 저장 (UI 스크립트에서 사용)
+                    newChoice.ChoiceIsActive = (row.choice_is_active == 1);
+
+                    // 나머지 데이터 세팅
                     if (Enum.TryParse(row.costtype, out EventCostType parsedCost))
                         newChoice.CostType = parsedCost;
 
@@ -130,10 +148,7 @@ public sealed class EventDataBase : DataBase
                         newChoice.RewardType = parsedReward;
 
                     newChoice.RewardValue = row.rewardvalue;
-
-                    // 확률이 0으로 오면 100으로 보정
                     newChoice.Probability = row.probability == 0 ? 100 : row.probability;
-
                     newChoice.ResultTextKey = row.resulttextkey;
                     newChoice.FailTextKey = row.failtextkey;
 
@@ -142,13 +157,12 @@ public sealed class EventDataBase : DataBase
 
                     newChoice.FailValue = row.failvalue;
 
-                    // 현재 조립 중인 이벤트의 선택지 리스트에 쏙!
                     eventInfos[currentEventId].eventChoices.Add(newChoice);
                 }
             }
         );
 
-        Debug.Log($"[EventDataBase] {eventInfos.Count}개 이벤트 로드 완료 (챕터 그룹 수: {chapterEventTable.Count})");
+        Debug.Log($"[EventDataBase] 로드 완료. 활성 이벤트 수: {eventInfos.Count}");
     }
 
     public EventInfo GetEventInfo(int eventId)

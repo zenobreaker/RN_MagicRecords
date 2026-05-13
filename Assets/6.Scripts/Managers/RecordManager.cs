@@ -16,8 +16,8 @@ public sealed class RecordManager : MonoBehaviour
     public int RerollCount => rerollCount;
 
     private int max_selectCount = 1;
-    private List<RecordData> possesRecords = new List<RecordData>();
-    private List<int> transferedRecordIDs = new List<int>(); 
+    private RecordInventory recordInventory = new RecordInventory();
+    private List<RecordData> transferedRecords = new List<RecordData>();
     private bool isReceived = false; 
 
     private bool isDirty = false;
@@ -33,36 +33,67 @@ public sealed class RecordManager : MonoBehaviour
             recordsDict.Add(record.id, record);
         rerollCount = 3;
 
-        RecordSaveData saveData = SaveManager.LoadRecordData();
+        // 인벤토리에 변동이 생길 때마다 자동으로 세이브 플레그 ON 
+        recordInventory.OnInventoryChanged += (inv) => { isDirty = true; };
+
+        RecordSaveListData saveData = SaveManager.LoadRecordData();
         if (saveData != null)
             ApplySavedRecords(saveData);
     }
 
-    private void ApplySavedRecords(RecordSaveData saveData)
+    private void ApplySavedRecords(RecordSaveListData saveData)
     {
-        if (saveData == null) return; 
+        if (saveData == null) return;
 
-        foreach(int id in saveData.recordIDs)
+        // 혹시 모를 찌꺼기 데이터 초기화
+        recordInventory.ClearAll();
+        transferedRecords.Clear();
+
+
+        // 소지 중인 레코드 복구 
+        foreach (RecordSaveData savedInfo in saveData.recordIDs)
         {
-            possesRecords.Add(recordsDict[id].GetRecordData()); 
+            if (recordsDict.ContainsKey(savedInfo.recordID))
+            {
+                RecordData restoredData = recordsDict[savedInfo.recordID].GetRecordData();
+                restoredData.uniqueID = savedInfo.uniqueID;
+                recordInventory.AddRecord(restoredData);
+            }
         }
 
-        transferedRecordIDs = saveData.transferedrecordIDs;
+        // 다음 회차로 인계된 레코드 복구
+        foreach (RecordSaveData transferInfo in saveData.transferedrecordIDs)
+        {
+            if (recordsDict.ContainsKey(transferInfo.recordID))
+            {
+                RecordData restoredTransferData = recordsDict[transferInfo.recordID].GetRecordData();
+                restoredTransferData.uniqueID = transferInfo.uniqueID;
+                transferedRecords.Add(restoredTransferData);
+            }
+        }
 
         isReceived = saveData.isReceived;
     }
     
-    public List<RecordData> GetPossesRecord() => possesRecords;
-    public List<int> GetTransferedRecordIDs() => transferedRecordIDs;
+    public List<RecordData> GetPossesRecord() => recordInventory.Records.ToList();
+    public List<RecordData> GetTransferedRecordIDs() => transferedRecords;
 
     // 특정 레코드를 다음 회차에 사용할 수 있도록 보내는 함수 
     public void SetTranferRecord(RecordData target)
     {
-        var find = possesRecords.Find(x => x == target);
+        if (target == null) return; 
+
+        var find = recordInventory.GetRecord(target.uniqueID);
         if (find == null) return; // 없는 대상은 실패 TODO: 토스트 문자 띄우기 
 
-        transferedRecordIDs.Unique(find.id); 
+        // 이미 인계 목록에 없다면 추가
+        if (!transferedRecords.Exists(x => x.uniqueID == find.uniqueID))
+        {
+            transferedRecords.Add(find);
+            isDirty = true;
+        }
     }
+
     private List<RecordData> GetAllEnrichedRecordData()
     {
         List<RecordData> rawRecords = AppManager.Instance?.GetAllRecordData();
@@ -82,14 +113,8 @@ public sealed class RecordManager : MonoBehaviour
         return enrichedRecords;
     }
 
-    // 이벤트 노드에서 호출할 때 사용 
-    public void GenerateEventRecord()
-    {
-        isReceived = false;
-        GenerateOption(generateCount);
-    }
-
-    public void GenerateOption(int count = 3, bool canReroll = true)
+ 
+    public void GenerateRecords(int count = 3, bool canReroll = true)
     {
         if (isReceived) return; // 이미 받은 상태였다면 
 
@@ -99,9 +124,9 @@ public sealed class RecordManager : MonoBehaviour
         List<RecordData> allRecord = GetAllEnrichedRecordData();
 
         // 2. 현재 가지고 있는 레코드들이 있다면 제외 
-        if (possesRecords.Count > 0)
+        if (recordInventory.Records.Count > 0)
         {
-            allRecord.RemoveAll(data => possesRecords.Exists(last => last.id == data.id));
+            allRecord.RemoveAll(data => recordInventory.Records.Any(last => last.id == data.id));
         }
 
         if (CurrentOptions.Count > 0)
@@ -170,8 +195,8 @@ public sealed class RecordManager : MonoBehaviour
 
     public void AddRecord(RecordData recordData)
     {
-        possesRecords.Add(recordData);
-        isReceived = true; 
+        recordInventory.AddRecord(recordData);
+        isReceived = true;
         isDirty = true;
     }
 
@@ -189,7 +214,7 @@ public sealed class RecordManager : MonoBehaviour
         // 그래야 리롤 시점에 다시 나올 기회를 얻어 '빈 레코드'가 성급하게 뜨지 않습니다.
         var allRecord = GetAllEnrichedRecordData();
         var candidates = allRecord
-            .Where(data => !possesRecords.Exists(p => p.id == data.id))
+            .Where(data => !recordInventory.Records.Any(p => p.id == data.id))
             .ToList();
 
         // 2. 현재 잠금(Lock)된 데이터들은 후보군에서 즉시 제거하여 중복 생성 방지
@@ -238,23 +263,32 @@ public sealed class RecordManager : MonoBehaviour
         CurrentOptions = newOptions;
         AppManager.Instance?.TriggerRecordUI(CurrentOptions);
     }
-    public void OnReturendStageSelectScene()
-    {
-
-    }
 
     public void SaveIfDirty()
     {
-        if (isDirty == false)
-            return;
+        if (isDirty == false) return;
 
-        RecordSaveData save = new(); 
-        foreach(RecordData data in possesRecords)
+        RecordSaveListData save = new RecordSaveListData();
+
+        // 1. 소지 중인 레코드 저장
+        foreach (RecordData data in recordInventory.Records)
         {
-            save.recordIDs.Add(data.id);
+            save.recordIDs.Add(new RecordSaveData()
+            {
+                recordID = data.id,
+                uniqueID = data.uniqueID
+            });
         }
 
-        save.transferedrecordIDs = this.transferedRecordIDs;
+        // 2. 인계된 레코드 저장
+        foreach (RecordData data in transferedRecords)
+        {
+            save.transferedrecordIDs.Add(new RecordSaveData()
+            {
+                recordID = data.id,
+                uniqueID = data.uniqueID
+            });
+        }
 
         save.isReceived = isReceived;
         SaveManager.SaveRecordData(save);

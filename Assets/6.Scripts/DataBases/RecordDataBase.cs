@@ -117,6 +117,7 @@ public class RecordDataBase : DataBase
             description = "desc_emptyememory",
             rarity = RecordRarity.NORMAL,
             targetFilter = TargetFilterType.ALL,
+            type = RecordType.EMPTY,
             effectValue = 0,
             triggerEvent = "",
             className = string.Empty,

@@ -419,12 +419,12 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
-    public void OpenRecordSelectPopUp(List<RecordData> records, bool canReroll)
+    public void OpenRecordSelectPopUp(List<RecordData> records, bool canReroll, RecordUIMode mode)
     {
         var ui = OpenUI<RecordUI>(true);
         if(ui != null && ui.TryGetComponent<RecordUI>(out var target))
         {
-            target.ShowUI(records, canReroll);
+            target.ShowUI(records, canReroll, mode);
         }
     }
 

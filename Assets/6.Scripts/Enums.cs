@@ -7,6 +7,15 @@
 public enum LanguageType { KR, EN }
 
 ///////////////////////////////////////////////////////////////////////////////
+//  Record UI Type 
+public enum RecordUIMode
+{
+    DRAFT,          // 새로운 레코드를 획득하는 모드
+    SELECT_OWNED,    // 보유 중인 레코드를 선택하는 모드 (아카이브 보관용)
+    SELECT_SAVED,   // 지난 회차에 저장한 레코드 선택하는 모드
+}
+
+///////////////////////////////////////////////////////////////////////////////
 //  Exlplore
 public enum ExploreState
 {
@@ -214,6 +223,7 @@ public enum SkillTriggerTime
 public enum RecordType
 {
     NONE,
+    EMPTY,
     STAT,
     AGUMENT, // 증강
     MODIFY,  // 변형
@@ -224,15 +234,15 @@ public enum RecordType
 public enum TargetFilterType
 {
     ALL,
-    Shooter, 
+    Shooter,
 }
 
 public enum RecordRarity
 {
     NORMAL,
     RARE,
-    UNIQUE, 
-    LEGENDARY, 
+    UNIQUE,
+    LEGENDARY,
     MYTH,
 }
 
@@ -241,13 +251,13 @@ public enum RecordRarity
 // 이벤트 
 public enum EventCostType
 {
-    NONE, 
+    NONE,
     GOLD,
-    EXPLORE_COIN, 
-    HP_PERCENT, 
-    RECORD_ANY, 
-    RECORD_SAVE, 
-    MANA_DEBUFF, 
+    EXPLORE_COIN,
+    HP_PERCENT,
+    RECORD_ANY,
+    RECORD_SAVE,
+    MANA_DEBUFF,
     COMBAT_ELITE
 }
 

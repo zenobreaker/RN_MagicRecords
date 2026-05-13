@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 [System.Serializable]
-public class MapData
+public sealed class MapData
 {
     public List<MapNode> nodes = new();
     public int prevNodeId; 
@@ -15,14 +15,14 @@ public class MapData
 }
 
 [System.Serializable]
-public class StageNodeData
+public sealed class StageNodeData
 {
     public List<MapNodeInfo> nodeInfos = new();
 }
 
 
 [System.Serializable]
-public class AccountInfoData
+public sealed class AccountInfoData
 {
     public int accountId;
     public string accountName;
@@ -32,7 +32,7 @@ public class AccountInfoData
 }
 
 [System.Serializable]
-public class CharacterSaveData
+public sealed class CharacterSaveData
 {
     public int charId;
     public int charLevel;
@@ -43,13 +43,13 @@ public class CharacterSaveData
 }
 
 [System.Serializable]
-public class CharInfoListData
+public sealed class CharInfoListData
 {
     public List<CharacterSaveData> charInfoList = new();
 }
 
 [System.Serializable]
-public class ItemInfoSaveData
+public sealed class ItemInfoSaveData
 {
     public int itemId;
     public string uniqueId;
@@ -59,13 +59,13 @@ public class ItemInfoSaveData
 }
 
 [System.Serializable]
-public class ItemInfoListData
+public sealed class ItemInfoListData
 {
     public List<ItemInfoSaveData> itemInfoList = new();
 }
 
 [System.Serializable]
-public class SkillSaveData
+public sealed class SkillSaveData
 {
     public int skillID;
     public int skillLevel;
@@ -73,18 +73,26 @@ public class SkillSaveData
 }
 
 [System.Serializable]
-public class CharacterSkillData
+public sealed class CharacterSkillData
 {
     public int charID;
     public int classID; 
     public List<SkillSaveData> skillSaveDatas = new();
 }
 
+
 [System.Serializable]
-public class RecordSaveData
+public sealed class RecordSaveData
 {
-    public List<int> recordIDs = new();
-    public List<int> transferedrecordIDs = new(); 
+    public int recordID;
+    public string uniqueID; 
+}
+
+[System.Serializable]
+public sealed class RecordSaveListData
+{
+    public List<RecordSaveData> recordIDs = new();
+    public List<RecordSaveData> transferedrecordIDs = new(); 
     public bool isReceived = false;
 }
 
@@ -215,14 +223,14 @@ public static class SaveManager
     #endregion
 
     #region Record 
-    public static void SaveRecordData(RecordSaveData recordData)
+    public static void SaveRecordData(RecordSaveListData recordData)
     {
         string json = JsonUtility.ToJson(recordData, true);
         File.WriteAllText(recordPath, json);
         Debug.Log($"Record Data Svae at : {recordPath}");
     }
 
-    public static RecordSaveData LoadRecordData()
+    public static RecordSaveListData LoadRecordData()
     {
         if (!File.Exists(recordPath))
         {
@@ -231,7 +239,7 @@ public static class SaveManager
         }
 
         string json = File.ReadAllText(@recordPath);
-        RecordSaveData data = JsonUtility.FromJson<RecordSaveData>(json);
+        RecordSaveListData data = JsonUtility.FromJson<RecordSaveListData>(json);
         return data; 
     }
     #endregion
