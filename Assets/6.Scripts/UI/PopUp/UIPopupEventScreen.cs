@@ -28,10 +28,18 @@ public class UIPopupEventScreen : UIPopUpBase
     private bool isTyping = false;
     private bool isResultPhase = false;
 
+    private RecordManager recordManager;
+
     public void SetData(EventInfo eventInfo)
     {
         currentEvent = eventInfo;
         isResultPhase = false;
+
+        if (AppManager.Instance != null)
+        {
+            recordManager = AppManager.Instance.GetRecordManager();
+        }
+
         DrawPopUp();
     }
 
@@ -171,7 +179,7 @@ public class UIPopupEventScreen : UIPopUpBase
     private void OnChoiceSelected(EventChoice choice)
     {
         // 이제 타이핑 중에 버튼을 누를 일은 없지만, 혹시 모를 방어코드
-        if (isTyping) return;
+        if (isTyping || recordManager == null) return;
 
         bool isSuccess = UnityEngine.Random.Range(0, 100) < choice.Probability;
 
@@ -185,8 +193,8 @@ public class UIPopupEventScreen : UIPopUpBase
 
         if (choice.RewardType == EventRewardType.RECORD_DRAFT)
         {
-            // 💡 마법의 호출! (레코드 10개 뽑기, 리롤 불가능 설정)
-            AppManager.Instance.GenerateRecord(10, false);
+            // 마법의 호출! (레코드 10개 뽑기, 리롤 불가능 설정)
+            recordManager.GenerateRecords(10, false); 
         }
         else if(choice.RewardType == EventRewardType.RECORD_SKILL_UP)
         {
@@ -198,7 +206,7 @@ public class UIPopupEventScreen : UIPopUpBase
         }
         else if( choice.RewardType == EventRewardType.ARCHIVE_LOAD)
         {
-
+            OpenLastSavedRecordUI();
         }
     }
 
@@ -237,7 +245,13 @@ public class UIPopupEventScreen : UIPopUpBase
         }
         CancelTypingTask();
         UIManager.Instance.CloseTopUI();
-        AppManager.Instance.GetExploreManager().ClearStage(true);
+
+        if (AppManager.Instance == null) return; 
+        var exploreManager = AppManager.Instance.GetExploreManager();
+        if (exploreManager != null)
+        {
+            exploreManager.ClearStage(true);
+        }
     }
 
     protected override void OnDisable()
@@ -254,7 +268,9 @@ public class UIPopupEventScreen : UIPopUpBase
 
     private void OpenArchiveRecordUI()
     {
-        List<RecordData> myRecords = AppManager.Instance.GetRecordManager().GetPossesRecord();
+        if (recordManager == null) return; 
+
+        List<RecordData> myRecords = recordManager.GetPossesRecord();
 
         if (myRecords != null && myRecords.Count > 0)
         {
@@ -270,13 +286,31 @@ public class UIPopupEventScreen : UIPopUpBase
             Debug.LogWarning("보관할(가진) 레코드가 하나도 없습니다!");
 
             // 가진 게 없으면 UI를 띄우지 않고 그냥 스테이지를 클리어 처리하고 끝냅니다.
-            AppManager.Instance.GetExploreManager().ClearStage(true);
+            var exploreManager = AppManager.Instance.GetExploreManager();
+            if (exploreManager != null)
+                exploreManager.ClearStage(true);
         }
     }
 
     // 지난 회차에 저장한 레코드 리스트를 띄우는 UI 
     private void OpenLastSavedRecordUI()
     {
+        if (recordManager == null) return;
 
+        List<RecordData> transferedDatas = recordManager.GetTransferedRecordIDs();
+
+        if(transferedDatas != null && transferedDatas.Count > 0)
+        {
+            UIManager.Instance.OpenRecordSelectPopUp(transferedDatas, false, RecordUIMode.SELECT_SAVED);
+        }
+        else
+        {
+            Debug.LogWarning("보관할(가진) 레코드가 하나도 없습니다!");
+
+            // 가진 게 없으면 UI를 띄우지 않고 그냥 스테이지를 클리어 처리하고 끝냅니다.
+            var exploreManager = AppManager.Instance.GetExploreManager(); 
+            if(exploreManager != null)
+                exploreManager.ClearStage(true);
+        }
     }
 }

@@ -10,15 +10,15 @@ public sealed class RecordManager : MonoBehaviour
 
     public List<RecordData> SelectedRecords { get; private set; } = new();
 
-    private Dictionary<int, SO_RecordData> recordsDict = new Dictionary<int, SO_RecordData>();
+    private Dictionary<int, SO_RecordData> recordsDict = new();
     private int generateCount = 3;
     private int rerollCount;
     public int RerollCount => rerollCount;
 
     private int max_selectCount = 1;
-    private RecordInventory recordInventory = new RecordInventory();
-    private List<RecordData> transferedRecords = new List<RecordData>();
-    private bool isReceived = false; 
+    private RecordInventory recordInventory = new();
+    private RecordInventory transferInventory = new();
+    private bool isReceived = false;
 
     private bool isDirty = false;
 
@@ -35,6 +35,7 @@ public sealed class RecordManager : MonoBehaviour
 
         // 인벤토리에 변동이 생길 때마다 자동으로 세이브 플레그 ON 
         recordInventory.OnInventoryChanged += (inv) => { isDirty = true; };
+        transferInventory.OnInventoryChanged += (inv) => { isDirty = true; }; 
 
         RecordSaveListData saveData = SaveManager.LoadRecordData();
         if (saveData != null)
@@ -47,7 +48,7 @@ public sealed class RecordManager : MonoBehaviour
 
         // 혹시 모를 찌꺼기 데이터 초기화
         recordInventory.ClearAll();
-        transferedRecords.Clear();
+        transferInventory.ClearAll();
 
 
         // 소지 중인 레코드 복구 
@@ -68,35 +69,36 @@ public sealed class RecordManager : MonoBehaviour
             {
                 RecordData restoredTransferData = recordsDict[transferInfo.recordID].GetRecordData();
                 restoredTransferData.uniqueID = transferInfo.uniqueID;
-                transferedRecords.Add(restoredTransferData);
+                transferInventory.AddRecord(restoredTransferData);
             }
         }
 
         isReceived = saveData.isReceived;
     }
-    
+
     public List<RecordData> GetPossesRecord() => recordInventory.Records.ToList();
-    public List<RecordData> GetTransferedRecordIDs() => transferedRecords;
+    public List<RecordData> GetTransferedRecordIDs() => transferInventory.Records.ToList();
 
     // 특정 레코드를 다음 회차에 사용할 수 있도록 보내는 함수 
     public void SetTranferRecord(RecordData target)
     {
-        if (target == null) return; 
+        if (target == null) return;
 
         var find = recordInventory.GetRecord(target.uniqueID);
         if (find == null) return; // 없는 대상은 실패 TODO: 토스트 문자 띄우기 
 
-        // 이미 인계 목록에 없다면 추가
-        if (!transferedRecords.Exists(x => x.uniqueID == find.uniqueID))
-        {
-            transferedRecords.Add(find);
-            isDirty = true;
-        }
+        recordInventory.RemoveRecord(find); 
+       transferInventory.AddRecord(find);
     }
 
     private List<RecordData> GetAllEnrichedRecordData()
     {
-        List<RecordData> rawRecords = AppManager.Instance?.GetAllRecordData();
+        if (AppManager.Instance == null) return null; 
+
+        DataBaseManager db = AppManager.Instance.GetDataBaseManager();
+        if (db == null) return null; 
+
+        List<RecordData> rawRecords = db.GetAllRecordData();
         List<RecordData> enrichedRecords = new List<RecordData>();
 
         if (rawRecords != null)
@@ -113,10 +115,13 @@ public sealed class RecordManager : MonoBehaviour
         return enrichedRecords;
     }
 
- 
+
     public void GenerateRecords(int count = 3, bool canReroll = true)
     {
-        if (isReceived) return; // 이미 받은 상태였다면 
+        if (isReceived || AppManager.Instance == null) return; // 이미 받은 상태였다면 
+
+        DataBaseManager db = AppManager.Instance.GetDataBaseManager();
+        if (db == null) return;
 
         SelectedRecords = new List<RecordData>();
 
@@ -150,19 +155,14 @@ public sealed class RecordManager : MonoBehaviour
         // 5. 가질 레코드가 하나도 없다면 빈 메모리 레코드를 쥐어준다. 
         else
         {
-            CurrentOptions.Add(AppManager.Instance?.GetEmptyRecord());
+            CurrentOptions.Add(db.GetEmptyRecord());
         }
 
         // 5. AppManager를 통해 UI 오픈 이벤트 발행
-        AppManager.Instance?.TriggerRecordUI(CurrentOptions, canReroll);
+        PauseManager.RequestPause();
+        UIManager.Instance.OpenRecordSelectPopUp(CurrentOptions, canReroll,RecordUIMode.DRAFT);
     }
 
-    // 선택된 레코드 저장 
-    public void SelectedRecord(int id)
-    {
-        if (recordsDict.ContainsKey(id))
-            SelectedRecord(recordsDict[id].GetRecordData());
-    }
 
     public void SelectedRecord(RecordData data)
     {
@@ -200,14 +200,23 @@ public sealed class RecordManager : MonoBehaviour
         isDirty = true;
     }
 
+    public void RemoveTransferedRecord(RecordData target)
+    {
+        transferInventory.RemoveRecord(target);
+    }
 
     public void RerollAllCurrentRecords()
     {
-        if (rerollCount <= 0)
+        if (AppManager.Instance == null) return; 
+
+        if (rerollCount <= 0 )
         {
             // TODO: 알림 메세지 UI 호출
             return;
         }
+
+        DataBaseManager db = AppManager.Instance.GetDataBaseManager();
+        if (db == null) return; 
 
         // 1. 후보군 생성 (전체 - 이미 영구 보유 중인 것들)
         // 현재 떠 있는 것(CurrentOptions)은 제외하지 않습니다. 
@@ -248,7 +257,7 @@ public sealed class RecordManager : MonoBehaviour
             else
             {
                 // [핵심] 진짜로 모든 데이터를 다 소진했을 때만 빈 레코드 등장
-                var emptyRecord = AppManager.Instance?.GetEmptyRecord();
+                var emptyRecord = db.GetEmptyRecord();
                 if (emptyRecord != null)
                 {
                     newOptions.Add(emptyRecord);
@@ -261,7 +270,73 @@ public sealed class RecordManager : MonoBehaviour
 
         // 4. 데이터 갱신 및 UI 트리거
         CurrentOptions = newOptions;
-        AppManager.Instance?.TriggerRecordUI(CurrentOptions);
+
+        PauseManager.RequestPause();
+        UIManager.Instance.OpenRecordSelectPopUp(CurrentOptions, true, RecordUIMode.DRAFT);
+    }
+
+
+    public bool OnCompleteSelctRecords()
+    {
+        List<RecordData> selectedRecords = SelectedRecords;
+        if (selectedRecords.Count <= 0)
+            return false;
+        var ps = AppManager.Instance.GetPassiveSystem();
+        if (ps == null) return false;
+
+        foreach (RecordData data in selectedRecords)
+        {
+            // 선택된 레코드를 패시브 시스템에 등록
+            var rp = GetRecordPassive(data.id);
+            // 선택된 레코드를 소지품에 추가 
+            AddRecord(data);
+            ps.Add(9999, rp); // 레코드는 공용 패시브처리이므로 9999 
+        }
+
+        SelectedRecords.Clear();
+        PauseManager.RequestResume();
+        return true;
+    }
+
+    public bool OnCompleteArchiveRecord()
+    {
+        List<RecordData> selectedRecords = SelectedRecords;
+        if (selectedRecords == null || selectedRecords.Count <= 0) return false;
+
+        foreach (RecordData data in selectedRecords)
+        {
+            SetTranferRecord(data);
+            Debug.Log($"[{data.recordName}] 레코드가 아카이브에 저장되었습니다!");
+        }
+
+        // 처리가 끝났으니 선택 리스트 비워주기
+        SelectedRecords.Clear();
+        PauseManager.RequestResume();
+        return true;
+    }
+
+    // 이전 회차에서 가져온 레코드를 수령
+    public bool OnCompleteInheritReward()
+    {
+        List<RecordData> selectedRecords = SelectedRecords;
+        if (selectedRecords == null || selectedRecords.Count <= 0) return false;
+
+        var ps = AppManager.Instance.GetPassiveSystem();
+        if(ps == null) return false;    
+
+        foreach (RecordData data in selectedRecords)
+        {
+            var rp = GetRecordPassive(data.id);
+            // 선택된 레코드를 소지품에 추가 
+            AddRecord(data);
+            ps.Add(9999, rp); // 레코드는 공용 패시브처리이므로 9999 
+            RemoveTransferedRecord(data);
+        }
+
+
+        SelectedRecords.Clear();
+        PauseManager.RequestResume();
+        return true;
     }
 
     public void SaveIfDirty()
@@ -281,7 +356,7 @@ public sealed class RecordManager : MonoBehaviour
         }
 
         // 2. 인계된 레코드 저장
-        foreach (RecordData data in transferedRecords)
+        foreach (RecordData data in transferInventory.Records)
         {
             save.transferedrecordIDs.Add(new RecordSaveData()
             {

@@ -285,7 +285,10 @@ public class AppManager
     private void HandleReturnToMain()
     {
         // 탐사 씬 메인으로 오는 경우에도 호출 
-        GenerateRecord(3);
+        if (recordManager == null) return; 
+
+       recordManager.GenerateRecords();
+
     }
 
     private void HandleInStage(int stageID)
@@ -386,6 +389,8 @@ public class AppManager
         skillManager.SetActiveSkills(jobID, skillComp);
     }
 
+    public PassiveSystem GetPassiveSystem() { return passiveSystem; }
+
     public void AddPassiveSkill(int jobID, PassiveSkill passiveSkill)
     {
         if (passiveSystem == null) return;
@@ -435,6 +440,8 @@ public class AppManager
         else
             return GetCurrencyItem(itemId);
     }
+
+    public DataBaseManager GetDataBaseManager() => databaseManager;
 
     public EquipmentItem GetEquipmentItem(int itemid)
     {
@@ -534,46 +541,13 @@ public class AppManager
     public void OnRecordSelected(RecordData selected)
     {
         // 선택된 레코드 알림 
-        recordManager?.SelectedRecord(selected);
+        if(recordManager != null) 
+            recordManager.SelectedRecord(selected);
+
         OnSelectedRecordCard?.Invoke();
     }
 
-    public bool OnCompleteSelctRecords()
-    {
-        List<RecordData> selectedRecords = recordManager?.SelectedRecords;
-        if (selectedRecords.Count <= 0)
-            return false;
-        
-        foreach (RecordData data in selectedRecords)
-        {
-            // 선택된 레코드를 패시브 시스템에 등록
-            var rp = recordManager?.GetRecordPassive(data.id);
-            // 선택된 레코드를 소지품에 추가 
-            recordManager?.AddRecord(data);
-            AddPassiveSkill(9999, rp);
-            OnRecordSelectedComplete?.Invoke(data);
-        }
-
-        PauseManager.RequestResume();
-        return true;
-    }
-
-    public bool OnCompleteArchiveRecord()
-    {
-        List<RecordData> selectedRecords = recordManager?.SelectedRecords;
-        if (selectedRecords == null || selectedRecords.Count <= 0) return false;
-
-        foreach (RecordData data in selectedRecords)
-        {
-            recordManager.SetTranferRecord(data);
-            Debug.Log($"[{data.recordName}] 레코드가 아카이브에 저장되었습니다!");
-        }
-
-        // 처리가 끝났으니 선택 리스트 비워주기
-        recordManager.SelectedRecords.Clear();
-        PauseManager.RequestResume();
-        return true;
-    }
+    
 
     public void GenerateRecord(int recordCount, bool canReroll = true)
     {
@@ -590,10 +564,6 @@ public class AppManager
         return recordManager.RerollCount;
     }
 
-    public bool IsSelectRecordData(RecordData selectedData)
-    {
-        return recordManager == null ? false : recordManager.IsSelectedRecord(selectedData);
-    }
 
     public RecordManager GetRecordManager() { return recordManager; }
 

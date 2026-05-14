@@ -227,6 +227,9 @@ public class UIManager : Singleton<UIManager>
         if (uiInstances.TryGetValue(uiType, out UiBase existingUI) && existingUI != null)
         {
             existingUI.gameObject.SetActive(true);
+            
+            existingUI.transform.SetAsLastSibling();
+
             openedUIs.Push(existingUI);
 
             return existingUI as T;

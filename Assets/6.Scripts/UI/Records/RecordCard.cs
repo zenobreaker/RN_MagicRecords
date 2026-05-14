@@ -15,25 +15,12 @@ public class RecordCard : MonoBehaviour
     [SerializeField] private Button lockButton;
     [SerializeField] private TextMeshProUGUI lockText;
 
-
-    private RecordData myData;
-
-    private void OnEnable()
-    {
-        if (AppManager.Instance == null) return;
-        AppManager.Instance.OnSelectedRecordCard -= Refresh;
-        AppManager.Instance.OnSelectedRecordCard += Refresh;
-    }
-
-    private void OnDisable()
-    {
-        if (AppManager.Instance == null) return;
-        AppManager.Instance.OnSelectedRecordCard -= Refresh;
-    }
+    public RecordData myData { get; private set; } // 부모가 읽을 수 있게 프로퍼티로 변경
 
     public void Setup(RecordData data,
         System.Action onClickAction = null,
-        System.Action onlockAction = null)
+        System.Action onlockAction = null,
+        bool canReroll = true)
     {
         myData = data;
 
@@ -62,6 +49,8 @@ public class RecordCard : MonoBehaviour
             onlockAction?.Invoke();
             DrawLockText();
         });
+
+        lockButton?.gameObject.SetActive(canReroll);
     }
 
     public void ClearEvent()
@@ -70,9 +59,9 @@ public class RecordCard : MonoBehaviour
         lockButton?.onClick.RemoveAllListeners();
     }
 
-    public void Refresh()
+    public void Refresh(bool isSelected)
     {
-        OnSelectFrame(myData);
+        selectFrame.gameObject.SetActive(isSelected);
     }
 
     public void ShowCard()
@@ -80,26 +69,10 @@ public class RecordCard : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    private void OnSelectFrame(RecordData selectedData)
-    {
-        if (selectedData == null ||
-            AppManager.Instance == null) return;
-
-        bool isSelected = AppManager.Instance.IsSelectRecordData(selectedData);
-        selectFrame.gameObject.SetActive(isSelected);
-    }
-
     private void DrawLockText()
     {
         if (lockText == null) return;
 
-        if (myData.isLocked)
-        {
-            lockText.text = "해제";
-        }
-        else
-        {
-            lockText.text = "잠금";
-        }
+        lockText.text = myData.isLocked ? "해제" : "잠금";
     }
 }

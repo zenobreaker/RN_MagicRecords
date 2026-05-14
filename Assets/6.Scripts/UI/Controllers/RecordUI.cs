@@ -48,9 +48,10 @@ public class RecordUI : UIPopUp
 
             card.Setup(currentData,
                 () => OnCardClicked(currentData),
-                () => OnLockRecord(currentData));
+                () => OnLockRecord(currentData),
+                canReroll);
 
-            card.Refresh();
+            card.Refresh(false);
             card.ShowCard();
             index++;
 
@@ -70,20 +71,54 @@ public class RecordUI : UIPopUp
 
     private void OnCardClicked(RecordData selectedData)
     {
-        AppManager.Instance?.OnRecordSelected(selectedData);
+        if(AppManager.Instance == null) return; 
+        
+        var recordManager = AppManager.Instance.GetRecordManager();
+        if (recordManager == null) return; 
+
+        recordManager.SelectedRecord(selectedData);
+        RefreshAllCards();
+    }
+
+    private void RefreshAllCards()
+    {
+        var recordManager = AppManager.Instance.GetRecordManager();
+        if (recordManager == null) return;
+
+        foreach (var card in cardPool)
+        {
+            // 활성화되어 있는 카드만 검사
+            if (card.gameObject.activeSelf)
+            {
+                // 매니저에게 이 카드의 데이터가 선택된 상태인지 물어봄
+                bool isSelected = recordManager.IsSelectedRecord(card.myData);
+
+                // 카드에게 선택 상태를 주입하여 갱신 명령!
+                card.Refresh(isSelected);
+            }
+        }
     }
 
     private void OnCompleteSelectRecord()
     {
+        if (AppManager.Instance == null) return; 
+
         bool? result = false;
 
-        if (currentMode == RecordUIMode.DRAFT || currentMode == RecordUIMode.SELECT_SAVED)
+        RecordManager recordManager = AppManager.Instance.GetRecordManager(); 
+        if (recordManager == null) return;
+
+        if (currentMode == RecordUIMode.DRAFT)
         {
-            result = AppManager.Instance?.OnCompleteSelctRecords();
+            result = recordManager.OnCompleteSelctRecords();
         }
         else if (currentMode == RecordUIMode.SELECT_OWNED)
         {
-            result = AppManager.Instance?.OnCompleteArchiveRecord();
+            result = recordManager.OnCompleteArchiveRecord();
+        }
+        else if (currentMode == RecordUIMode.SELECT_SAVED)
+        {
+            result = recordManager.OnCompleteInheritReward();
         }
 
         if (result.HasValue && result.Value == true)
