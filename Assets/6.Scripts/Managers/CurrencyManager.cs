@@ -19,6 +19,7 @@ public class CurrencyManager
     {
         AddCurrency(CurrencyType.GOLD, 999999);
         AddCurrency(CurrencyType.DIAMOND, 999999);
+        AddCurrency(CurrencyType.EXPOLORE_GOLD, 999999);
     }
 
     protected override void SyncDataFromSingleton()

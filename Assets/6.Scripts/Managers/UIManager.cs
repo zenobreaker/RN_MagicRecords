@@ -427,7 +427,7 @@ public class UIManager : Singleton<UIManager>
         var ui = OpenUI<RecordUI>(true);
         if(ui != null && ui.TryGetComponent<RecordUI>(out var target))
         {
-            target.ShowUI(records, canReroll, mode);
+            target.SetData(records, canReroll, mode);
         }
     }
 

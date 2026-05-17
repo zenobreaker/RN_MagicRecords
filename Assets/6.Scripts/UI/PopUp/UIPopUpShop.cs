@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIPopUpShop : UIPopUpBase
+public class UIPopUpShop : UIPopUp
 {
     [SerializeField] protected ItemData item;
     [SerializeField] protected Image itemIconImage;

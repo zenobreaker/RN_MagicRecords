@@ -9,6 +9,7 @@ public sealed class RecordManager : MonoBehaviour
     public List<RecordData> CurrentOptions { get; private set; } = new();
 
     public List<RecordData> SelectedRecords { get; private set; } = new();
+    public event System.Action OnCostPaidSuccess; // 코스트 지불 성공 알림 이벤트 
 
     private Dictionary<int, SO_RecordData> recordsDict = new();
     private int generateCount = 3;
@@ -35,7 +36,7 @@ public sealed class RecordManager : MonoBehaviour
 
         // 인벤토리에 변동이 생길 때마다 자동으로 세이브 플레그 ON 
         recordInventory.OnInventoryChanged += (inv) => { isDirty = true; };
-        transferInventory.OnInventoryChanged += (inv) => { isDirty = true; }; 
+        transferInventory.OnInventoryChanged += (inv) => { isDirty = true; };
 
         RecordSaveListData saveData = SaveManager.LoadRecordData();
         if (saveData != null)
@@ -87,16 +88,17 @@ public sealed class RecordManager : MonoBehaviour
         var find = recordInventory.GetRecord(target.uniqueID);
         if (find == null) return; // 없는 대상은 실패 TODO: 토스트 문자 띄우기 
 
-        recordInventory.RemoveRecord(find); 
-       transferInventory.AddRecord(find);
+        recordInventory.RemoveRecord(find);
+        transferInventory.AddRecord(find);
     }
+
 
     private List<RecordData> GetAllEnrichedRecordData()
     {
-        if (AppManager.Instance == null) return null; 
+        if (AppManager.Instance == null) return null;
 
         DataBaseManager db = AppManager.Instance.GetDataBaseManager();
-        if (db == null) return null; 
+        if (db == null) return null;
 
         List<RecordData> rawRecords = db.GetAllRecordData();
         List<RecordData> enrichedRecords = new List<RecordData>();
@@ -116,10 +118,27 @@ public sealed class RecordManager : MonoBehaviour
     }
 
 
-    public void GenerateRecords(int count = 3, bool canReroll = true)
+    // 💡 1. 스테이지 클리어 / 탐사 시작 시 호출 (중복 방지 플래그 검사 O)
+    public void GenerateStageRecords(int count = 3, bool canReroll = true)
     {
-        if (isReceived || AppManager.Instance == null) return; // 이미 받은 상태였다면 
+        // 이미 이번 스테이지에서 기본 보상을 받았다면 무시
+        if (isReceived || AppManager.Instance == null) return;
 
+        GenerateRecordsInternal(count, canReroll);
+    }
+
+    // 💡 2. 이벤트 보상 시 호출 (중복 방지 플래그 검사 X - 무조건 지급)
+    public void GenerateEventRecords(int count = 3, bool canReroll = true)
+    {
+        if (AppManager.Instance == null) return;
+
+        // 플래그를 무시하고 즉시 레코드 선택창을 띄웁니다.
+        GenerateRecordsInternal(count, canReroll);
+    }
+
+    // 💡 3. 실제 레코드를 뽑고 UI를 띄우는 핵심 내부 로직 (은닉화)
+    private void GenerateRecordsInternal(int count, bool canReroll)
+    {
         DataBaseManager db = AppManager.Instance.GetDataBaseManager();
         if (db == null) return;
 
@@ -160,9 +179,71 @@ public sealed class RecordManager : MonoBehaviour
 
         // 5. AppManager를 통해 UI 오픈 이벤트 발행
         PauseManager.RequestPause();
-        UIManager.Instance.OpenRecordSelectPopUp(CurrentOptions, canReroll,RecordUIMode.DRAFT);
+        UIManager.Instance.OpenRecordSelectPopUp(CurrentOptions, canReroll, RecordUIMode.DRAFT);
     }
 
+    public RecordData GetEmptyRecord()
+    {
+        Debug.Assert(AppManager.Instance != null);
+
+        DataBaseManager db = AppManager.Instance.GetDataBaseManager();
+        if (db == null) return null;
+
+        return db.GetEmptyRecord();
+    }
+
+    public List<RecordData> GetNormalRecordDatas()
+    {
+        return GetUnpossessedRecordDatas(RecordRarity.NORMAL);
+    }
+    public List<RecordData> GetRareRecordDatas()
+    {
+        return GetUnpossessedRecordDatas(RecordRarity.RARE);
+    }
+    public List<RecordData> GetUniqueRecordDatas()
+    {
+        return GetUnpossessedRecordDatas(RecordRarity.UNIQUE);
+    }
+    public List<RecordData> GetLengdaryRecordDatas()
+    {
+        return GetUnpossessedRecordDatas(RecordRarity.LEGENDARY);
+    }
+    public List<RecordData> GetMythRecordDatas()
+    {
+        return GetUnpossessedRecordDatas(RecordRarity.MYTH);
+    }
+
+    private List<RecordData> GetRecordDatas(RecordRarity rarity)
+    {
+        Debug.Assert(AppManager.Instance != null);
+
+        List<RecordData> records;
+        DataBaseManager db = AppManager.Instance.GetDataBaseManager();
+        if (db == null) return null;
+
+        return records = db.GetRecordDatas(rarity);
+    }
+
+
+    // 💡 특정 등급의 레코드 중, '아직 획득하지 않은(미보유)' 레코드만 반환하는 함수
+    private List<RecordData> GetUnpossessedRecordDatas(RecordRarity rarity)
+    {
+        // 1. 데이터베이스에서 해당 등급의 모든 레코드를 가져옵니다.
+        List<RecordData> allRecordsOfRarity = GetRecordDatas(rarity);
+
+        // 예외 처리: 해당 등급의 레코드가 아예 없다면 빈 리스트 반환
+        if (allRecordsOfRarity == null || allRecordsOfRarity.Count == 0)
+        {
+            return new List<RecordData>();
+        }
+
+        // 2. LINQ를 사용하여 내가 가진 레코드(recordInventory)와 ID를 대조해 걸러냅니다.
+        List<RecordData> unpossessedRecords = allRecordsOfRarity
+            .Where(data => !recordInventory.Records.Any(owned => owned.id == data.id))
+            .ToList();
+
+        return unpossessedRecords;
+    }
 
     public void SelectedRecord(RecordData data)
     {
@@ -207,16 +288,16 @@ public sealed class RecordManager : MonoBehaviour
 
     public void RerollAllCurrentRecords()
     {
-        if (AppManager.Instance == null) return; 
+        if (AppManager.Instance == null) return;
 
-        if (rerollCount <= 0 )
+        if (rerollCount <= 0)
         {
             // TODO: 알림 메세지 UI 호출
             return;
         }
 
         DataBaseManager db = AppManager.Instance.GetDataBaseManager();
-        if (db == null) return; 
+        if (db == null) return;
 
         // 1. 후보군 생성 (전체 - 이미 영구 보유 중인 것들)
         // 현재 떠 있는 것(CurrentOptions)은 제외하지 않습니다. 
@@ -276,6 +357,35 @@ public sealed class RecordManager : MonoBehaviour
     }
 
 
+    // 레코드를 비용(Cost)으로 지불하고 완료하는 함수
+    public bool OnCompleteCostDiscard()
+    {
+        if (SelectedRecords == null || SelectedRecords.Count <= 0) return false;
+
+        foreach (RecordData data in SelectedRecords)
+        {
+            // 1. 인벤토리에서 해당 레코드 삭제 (소비)
+            recordInventory.RemoveRecord(data);
+
+            // (필요하다면 패시브 시스템에서도 제거하는 로직 추가)
+            // var ps = AppManager.Instance.GetPassiveSystem();
+            // ps?.Remove(9999, GetRecordPassive(data.id));
+
+            Debug.Log($"[{data.recordName}] 레코드를 비용으로 소모했습니다.");
+        }
+
+        SelectedRecords.Clear();
+        PauseManager.RequestResume();
+
+        return true;
+    }
+
+    public void TriggerCostPaidEvent()
+    {
+        OnCostPaidSuccess?.Invoke();
+    }
+
+
     public bool OnCompleteSelctRecords()
     {
         List<RecordData> selectedRecords = SelectedRecords;
@@ -322,7 +432,7 @@ public sealed class RecordManager : MonoBehaviour
         if (selectedRecords == null || selectedRecords.Count <= 0) return false;
 
         var ps = AppManager.Instance.GetPassiveSystem();
-        if(ps == null) return false;    
+        if (ps == null) return false;
 
         foreach (RecordData data in selectedRecords)
         {

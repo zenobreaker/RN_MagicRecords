@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class UIPopUpPause : UIPopUpBase
+public class UIPopUpPause : UIPopUp
 {
     [SerializeField] protected Button exitButton;
     [SerializeField] protected Button stageContinueButton; 

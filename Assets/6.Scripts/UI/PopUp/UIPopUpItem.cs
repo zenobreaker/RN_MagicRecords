@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIPopUpItem : UIPopUpBase
+public class UIPopUpItem : UIPopUp
 {
     [SerializeField] protected ItemData item;
     [SerializeField] protected Image itemIconImage;
@@ -29,7 +29,7 @@ public class UIPopUpItem : UIPopUpBase
     public void SetData(ItemData item)
     {
         this.item = item;
-        DrawPopUp();
+        ShowPopUp();
     }
 
     protected override void DrawPopUp()

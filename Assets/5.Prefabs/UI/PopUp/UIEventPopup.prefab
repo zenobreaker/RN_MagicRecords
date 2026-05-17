@@ -361,6 +361,7 @@ GameObject:
   - component: {fileID: 8702135311300722987}
   - component: {fileID: 7320318949631899815}
   - component: {fileID: 1354584719361496843}
+  - component: {fileID: 2887567468449229284}
   m_Layer: 5
   m_Name: UIEventPopup
   m_TagString: Untagged
@@ -447,10 +448,23 @@ MonoBehaviour:
   illustrationImage: {fileID: 6855235914528526161}
   titleText: {fileID: 3498102720448618115}
   descriptionText: {fileID: 9181841779638517023}
+  eventImagePalette: {fileID: 11400000, guid: 4c6209a1c873c4e4491c15dc1cd04f52, type: 2}
   choiceContainer: {fileID: 8335853513796052148}
   choicePrefab: {fileID: 1997388256834176037, guid: f977a9ee9fbd3e14d9985e743e294bff, type: 3}
   choiceContainerGroup: {fileID: 3711110993398992375}
   typingSpeed: 0.05
+--- !u!225 &2887567468449229284
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5488427415155754130}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &6466481592842701051
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,30 +12,37 @@ public class RecordUI : UIPopUp
     [Header("Confirm UI")]
     [SerializeField] private Button completeButton;
 
-    private List<RecordCard> cardPool = new();
     private RecordUIMode currentMode;
-
-    private void Awake()
+    private RecordCard selectCard;
+    private RecordManager rm; 
+    protected override void Awake()
     {
+        base.Awake();
         if (completeButton != null)
             completeButton.onClick.AddListener(OnCompleteSelectRecord);
     }
 
-    protected override void DrawPopUp()
+    protected override void OnEnable()
     {
+        base.OnEnable();
 
+        // 선택한 정보는 데이터가 세팅되면 초기화??
+        selectCard = null;
+        // 선택한 카드가 없으면 결정 버튼 비활성화 
+        if (selectCard == null)
+            completeButton.interactable = false;
+        else
+            completeButton.interactable = true;
     }
 
-    public void ShowUI(List<RecordData> options, bool canReroll, RecordUIMode mode = RecordUIMode.DRAFT)
+    public void SetData(List<RecordData> options, bool canReroll, RecordUIMode mode = RecordUIMode.DRAFT)
     {
         currentMode = mode;
 
-        // 1. 모든 카드를 일단 비활성화 
-        foreach (var card in cardPool)
-            card.gameObject.SetActive(false);
+        if (AppManager.Instance != null)
+            rm = AppManager.Instance.GetRecordManager();
 
-
-        //2. 전달받은 데이터 수만큼 카드 배치 
+        // 전달받은 데이터 수만큼 카드 배치 
         InitReplaceContentObject(options.Count);
 
         int index = 0;
@@ -47,7 +54,11 @@ public class RecordUI : UIPopUp
             var currentData = options[currentIndex];
 
             card.Setup(currentData,
-                () => OnCardClicked(currentData),
+                () =>
+                {
+                    OnCardClicked(currentData);
+                    Card_Clicked(card); 
+                },
                 () => OnLockRecord(currentData),
                 canReroll);
 
@@ -57,79 +68,78 @@ public class RecordUI : UIPopUp
 
         });
 
-        // 💡 3. 리롤 UI 활성화/비활성화 처리
+        // 리롤 UI 활성화/비활성화 처리
         if (rerollButton != null) rerollButton.gameObject.SetActive(canReroll);
         if (rerollText != null) rerollText.gameObject.SetActive(canReroll);
 
-        //3. 리롤 카운트 텍스트 그리기
         if (canReroll)
         {
             DrawRerollText();
         }
+
+        ShowPopUp();
     }
 
+    private void Card_Clicked(RecordCard card)
+    {
+        if (card == null ) return;
+        
+        // 이전에 선택한 카드랑 같으면 선택 해제 
+        if(selectCard != null && selectCard.Equals(card))
+        {
+            selectCard.Refresh(false);
+            selectCard = null;
+        }
+        // 이전에 선택한 카드랑 다르거나 선택한게 없고 들어온 정보가 있다면 해당 카드 선택
+        else if (selectCard == null || selectCard.Equals(card) == false)
+        {
+            selectCard = card;
+            card.Refresh(true); 
+        }
+
+        // 팝업 다시 그림 
+        DrawPopUp(); 
+    }
 
     private void OnCardClicked(RecordData selectedData)
     {
-        if(AppManager.Instance == null) return; 
-        
-        var recordManager = AppManager.Instance.GetRecordManager();
-        if (recordManager == null) return; 
+        if (rm == null) return;
 
-        recordManager.SelectedRecord(selectedData);
-        RefreshAllCards();
-    }
-
-    private void RefreshAllCards()
-    {
-        var recordManager = AppManager.Instance.GetRecordManager();
-        if (recordManager == null) return;
-
-        foreach (var card in cardPool)
-        {
-            // 활성화되어 있는 카드만 검사
-            if (card.gameObject.activeSelf)
-            {
-                // 매니저에게 이 카드의 데이터가 선택된 상태인지 물어봄
-                bool isSelected = recordManager.IsSelectedRecord(card.myData);
-
-                // 카드에게 선택 상태를 주입하여 갱신 명령!
-                card.Refresh(isSelected);
-            }
-        }
+        rm.SelectedRecord(selectedData);
     }
 
     private void OnCompleteSelectRecord()
     {
-        if (AppManager.Instance == null) return; 
+        if (rm == null) return; 
 
         bool? result = false;
 
-        RecordManager recordManager = AppManager.Instance.GetRecordManager(); 
-        if (recordManager == null) return;
-
         if (currentMode == RecordUIMode.DRAFT)
         {
-            result = recordManager.OnCompleteSelctRecords();
+            result = rm.OnCompleteSelctRecords();
         }
         else if (currentMode == RecordUIMode.SELECT_OWNED)
         {
-            result = recordManager.OnCompleteArchiveRecord();
+            result = rm.OnCompleteArchiveRecord();
         }
         else if (currentMode == RecordUIMode.SELECT_SAVED)
         {
-            result = recordManager.OnCompleteInheritReward();
+            result = rm.OnCompleteInheritReward();
+        }
+        else if (currentMode == RecordUIMode.DELETE)
+        {
+            result = rm.OnCompleteCostDiscard(); 
         }
 
         if (result.HasValue && result.Value == true)
         {
             CloseUI();
 
-            // 아카이브 모드였다면, 레코드 선택이 곧 이벤트의 종료이므로 스테이지를 클리어 처리합니다.
-            //if (currentMode == RecordUIMode.SelectOwned)
-            //{
-            //    AppManager.Instance.GetExploreManager().ClearStage(true);
-            //}
+            // 💡 2. 창이 닫힌 '이후'에 이벤트를 발생시켜, 새로운 보상창(DRAFT 모드)이 열리도록 합니다!
+            if (currentMode == RecordUIMode.DELETE)
+            {
+                rm.TriggerCostPaidEvent();
+            }
         }
         else
         {
@@ -146,11 +156,22 @@ public class RecordUI : UIPopUp
     {
         if (rerollText == null) return;
 
-        rerollText.text = AppManager.Instance.GetRerollCount().ToString();
+        rerollText.text = rm.RerollCount.ToString();
     }
 
     public void Reroll()
     {
-        AppManager.Instance?.RerollAllRecords();
+        if (rm == null) return;
+
+        rm.RerollAllCurrentRecords(); 
+    }
+
+    protected override void DrawPopUp()
+    {
+        // 선택한 카드가 없으면 결정 버튼 비활성화 
+        if (selectCard == null)
+            completeButton.interactable = false;
+        else 
+            completeButton.interactable = true;
     }
 }

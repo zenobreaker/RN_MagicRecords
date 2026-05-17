@@ -79,11 +79,9 @@ public class UIEventChoiceButton : MonoBehaviour
                 {
                     var rm = AppManager.Instance.GetRecordManager();
                     if (rm != null)
-                    {
                         return rm.GetPossesRecord().Count >= costValue;
-                    }
                     else
-                        return true;
+                        return false; 
                 }
             case EventCostType.RECORD_SAVE:
                 {

@@ -265,9 +265,6 @@ public class AppManager
             exploreManager.EnterStageByNode(node);
         }
 
-        if (recordManager != null)
-            recordManager.ResetReceiveFlag();
-
         var nodeInfo = GetNodeInfoMatchedMapNode(node);
         NodeRouter.EnterNode(nodeInfo);
     }
@@ -287,8 +284,7 @@ public class AppManager
         // 탐사 씬 메인으로 오는 경우에도 호출 
         if (recordManager == null) return; 
 
-       recordManager.GenerateRecords();
-
+       recordManager.GenerateStageRecords();
     }
 
     private void HandleInStage(int stageID)
@@ -551,17 +547,7 @@ public class AppManager
 
     public void GenerateRecord(int recordCount, bool canReroll = true)
     {
-        recordManager?.GenerateRecords(recordCount, canReroll);
-    }
-
-    public void RerollAllRecords()
-    {
-        recordManager?.RerollAllCurrentRecords();
-    }
-
-    public int GetRerollCount()
-    {
-        return recordManager.RerollCount;
+        recordManager?.GenerateStageRecords(recordCount, canReroll);
     }
 
 

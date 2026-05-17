@@ -48,7 +48,7 @@ public class EventInfoJson : InfoJson
     public string failtextkey;
     public string failtype;
     public int failvalue;
-    public string imageKey;
+    public string imagekey;
     public int event_is_active;
     public int choice_is_active; 
 }
@@ -116,7 +116,7 @@ public sealed class EventDataBase : DataBase
                     newEvent.chapter = row.chapter;
                     newEvent.nameKey = row.name;
                     newEvent.descriptionKey = row.description;
-                    newEvent.imageKey = row.imageKey;
+                    newEvent.imageKey = row.imagekey;
                     newEvent.isActive = true;
 
                     eventInfos[currentEventId] = newEvent;

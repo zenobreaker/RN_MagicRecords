@@ -164,42 +164,65 @@ public class DataBaseManager : MonoBehaviour
 
     public ShopItem GetShopItem(int itemID)
     {
-        return shopDataBase?.GetShopItemData(itemID);
+        if (shopDataBase == null)
+            return null;
+        return shopDataBase.GetShopItemData(itemID);
     }
 
     public List<ItemData> GetShopItems(ItemCategory category)
     {
-        return shopDataBase?.GetShopItems(category);
+        if (shopDataBase == null)
+            return null;
+        return shopDataBase.GetShopItems(category);
     }
 
     public EnhanceLevelData GetEnhanceLevelData(int rank, int enhanceLevel)
     {
-        return enhanceDataBase?.GetEnhanceLevelData(rank, enhanceLevel);
+        if (enhanceDataBase == null) return null;
+
+        return enhanceDataBase.GetEnhanceLevelData(rank, enhanceLevel);
     }
 
     public EnhanceStatData GetEnhanceStatData(int rank, int level)
     {
-        return enhanceDataBase?.GetEnhanceStatData(rank, level);
+        if (enhanceDataBase == null) return null;
+
+        return enhanceDataBase.GetEnhanceStatData(rank, level);
     }
 
     public List<EnhanceStatData> GetEnhanceStatDatas(int rank)
     {
-        return enhanceDataBase?.GetEnhanceStatDatas(rank);
+        if (enhanceDataBase == null) return null;
+
+        return enhanceDataBase.GetEnhanceStatDatas(rank);
     }
 
     public RecordData GetRecordData(int recordID)
     {
-        return recordDataBase?.GetRecordData(recordID);    
+        if (recordDataBase == null) return null; 
+
+        return recordDataBase.GetRecordData(recordID);    
     }
 
     public List<RecordData> GetAllRecordData()
     {
-        return recordDataBase?.GetAllRecordData(); 
+        if (recordDataBase == null) return null; 
+
+        return recordDataBase.GetAllRecordData(); 
     }
 
     public RecordData GetEmptyRecord()
     {
-        return recordDataBase?.GetEmptyRecord();
+        if (recordDataBase == null) return null; 
+
+        return recordDataBase.GetEmptyRecord();
+    }
+
+    public List<RecordData> GetRecordDatas(RecordRarity rarity)
+    {
+        if (recordDataBase == null) return null; 
+
+        return recordDataBase.GetRecordDatas(rarity);
     }
 
     public Sprite GetStageIcon(StageType type)

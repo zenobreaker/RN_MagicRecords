@@ -6,12 +6,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIPopupEventScreen : UIPopUpBase
+public class UIPopupEventScreen : UIPopUp
 {
     [Header("UI References")]
     [SerializeField] private Image illustrationImage;
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private TextMeshProUGUI descriptionText;
+
+    [Header("Event Data Assets")]
+    [SerializeField] private SO_EventImagePalette eventImagePalette;
 
     [Header("Choice Area")]
     [SerializeField] private Transform choiceContainer;
@@ -26,21 +29,20 @@ public class UIPopupEventScreen : UIPopUpBase
     private EventInfo currentEvent;
     private CancellationTokenSource typingCts;
     private bool isTyping = false;
-    private bool isResultPhase = false;
 
     private RecordManager recordManager;
+    private EventChoice pendingChoice;
 
     public void SetData(EventInfo eventInfo)
     {
         currentEvent = eventInfo;
-        isResultPhase = false;
 
         if (AppManager.Instance != null)
         {
             recordManager = AppManager.Instance.GetRecordManager();
         }
 
-        DrawPopUp();
+        ShowPopUp();
     }
 
     // 💡 화면 클릭이나 스페이스바 감지 (스킵 기능)
@@ -55,6 +57,25 @@ public class UIPopupEventScreen : UIPopUpBase
     // 💡 비동기(Async) 기반의 팝업 그리기
     private async UniTaskVoid DrawPopUpAsync()
     {
+        if (eventImagePalette != null && !string.IsNullOrEmpty(currentEvent.imageKey))
+        {
+            Sprite evSprite = eventImagePalette.GetImage(currentEvent.imageKey);
+            if (evSprite != null)
+            {
+                illustrationImage.sprite = evSprite;
+                illustrationImage.gameObject.SetActive(true);
+            }
+            else
+            {
+                // 이미지를 찾지 못하면 기본 이미지를 유지하거나 숨깁니다.
+                illustrationImage.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            illustrationImage.gameObject.SetActive(false);
+        }
+
         titleText.text = LocalizationManager.Instance.GetText(currentEvent.nameKey);
         string descText = LocalizationManager.Instance.GetText(currentEvent.descriptionKey);
 
@@ -175,12 +196,90 @@ public class UIPopupEventScreen : UIPopUpBase
         }
     }
 
-   
     private void OnChoiceSelected(EventChoice choice)
     {
-        // 이제 타이핑 중에 버튼을 누를 일은 없지만, 혹시 모를 방어코드
         if (isTyping || recordManager == null) return;
 
+        // 💡 1. 비용(Cost) 먼저 처리 시도
+        if (!TryPayCost(choice))
+        {
+            // TryPayCost가 false를 반환했다면:
+            // -> 코스트가 부족해서 실패했거나, 
+            // -> UI창을 띄우고 유저의 응답을 기다리는 '대기 상태'로 들어갔음을 의미합니다.
+            return;
+        }
+
+        // 코스트가 없거나, 즉시 지불 가능한 코스트(예: 골드)라면 바로 보상으로 넘어감
+        ProcessRewardAndResult(choice);
+    }
+
+    // 비용 지불 검사 및 대기열 처리
+    private bool TryPayCost(EventChoice choice)
+    {
+        // 비용이 없으면 프리패스
+        if (choice.CostType == EventCostType.NONE) return true;
+
+        // 💡 만약 비용이 '가진 레코드 소모' 라면?
+        if (choice.CostType == EventCostType.RECORD_ANY)
+        {
+            List<RecordData> myRecords = recordManager.GetPossesRecord();
+            if (myRecords == null || myRecords.Count == 0)
+            {
+                Debug.LogWarning("소모할 레코드가 없습니다!");
+                return false; // 진행 불가
+            }
+
+            // 나중에 콜백이 왔을 때 보상을 주기 위해 어떤 선택지였는지 기억해둡니다.
+            pendingChoice = choice;
+
+            // RecordManager의 "지불 성공" 콜백 이벤트에 귀를 기울입니다 (중복 방지를 위해 뺐다가 넣기)
+            recordManager.OnCostPaidSuccess -= ResumePendingChoice;
+            recordManager.OnCostPaidSuccess += ResumePendingChoice;
+
+            // 레코드 선택 창을 코스트 지불모드로 띄웁니다!
+            UIManager.Instance.OpenRecordSelectPopUp(myRecords, false, RecordUIMode.DELETE);
+
+            // 💡 당장 다음 단계로 넘어가지 않고 여기서 흐름을 '정지'시킵니다.
+            return false;
+        }
+
+        // (추가 확장) 만약 비용이 골드라면? (예시)
+        if (choice.CostType == EventCostType.GOLD ||
+            choice.CostType == EventCostType.EXPLORE_COIN)
+        {
+            CurrencyType ctype = CurrencyType.GOLD;  
+            if(choice.CostType == EventCostType.GOLD)
+                ctype = CurrencyType.GOLD;
+            else if (choice.CostType == EventCostType.EXPLORE_COIN)
+                ctype = CurrencyType.EXPOLORE_GOLD;
+
+            if (CurrencyManager.Instance.SpendCurrency(ctype, choice.CostValue)) return true; // 골드 차감 성공 시 패스
+                return false; // 돈 부족
+        }
+
+        return true;
+    }
+
+    // 💡 유저가 RecordUI에서 레코드를 바치고 [완료]를 누르면 이 함수가 자동으로 실행됩니다!
+    private void ResumePendingChoice()
+    {
+        if (recordManager != null)
+        {
+            // 1회용 콜백이므로 즉시 귀를 닫습니다 (메모리 누수 방지)
+            recordManager.OnCostPaidSuccess -= ResumePendingChoice;
+        }
+
+        // 기억해두었던 선택지를 꺼내서 드디어 보상 스텝으로 넘어갑니다!
+        if (pendingChoice != null)
+        {
+            ProcessRewardAndResult(pendingChoice);
+            pendingChoice = null; // 초기화
+        }
+    }
+
+    // 💡 기존 OnChoiceSelected에 있던 보상 지급 및 결과창 출력 로직을 그대로 옮겨옴
+    private void ProcessRewardAndResult(EventChoice choice)
+    {
         bool isSuccess = UnityEngine.Random.Range(0, 100) < choice.Probability;
 
         string resultKey = isSuccess ? choice.ResultTextKey : choice.FailTextKey;
@@ -190,29 +289,71 @@ public class UIPopupEventScreen : UIPopUpBase
 
         ShowResultPhaseAsync(resultText).Forget();
 
-
+        // 기존 보상(Reward) 분기문들 (RECORD_DRAFT 등등...)
         if (choice.RewardType == EventRewardType.RECORD_DRAFT)
         {
-            // 마법의 호출! (레코드 10개 뽑기, 리롤 불가능 설정)
-            recordManager.GenerateRecords(10, false); 
+            recordManager.GenerateEventRecords(10, false);
         }
-        else if(choice.RewardType == EventRewardType.RECORD_SKILL_UP)
-        {
-            //TODO : 스킬 관련 레코드 추가되면 추가 
-        }
-        else if(choice.RewardType == EventRewardType.ARCHIVE_SAVE)
+        else if (choice.RewardType == EventRewardType.ARCHIVE_SAVE)
         {
             OpenArchiveRecordUI();
         }
-        else if( choice.RewardType == EventRewardType.ARCHIVE_LOAD)
-        {
+        else if(choice.RewardType == EventRewardType.ARCHIVE_LOAD)
             OpenLastSavedRecordUI();
+        else
+            OpenTargetRarityRecord(choice.RewardType);  
+    }
+
+    private void OpenTargetRarityRecord(EventRewardType type)
+    {
+        if (recordManager == null) return;
+
+        // 💡 1. 초기화를 해두어야 switch문에 걸리지 않았을 때 발생하는 Null 에러를 막을 수 있습니다.
+        List<RecordData> records = new List<RecordData>();
+
+        switch (type)
+        {
+            case EventRewardType.RECORD_ONE_OF_NORMAL:
+                records = recordManager.GetNormalRecordDatas();
+                break;
+
+            case EventRewardType.RECORD_ONE_OF_RARE:
+                records = recordManager.GetRareRecordDatas();
+                break;
+
+            // 💡 2. 나머지 등급 추가 (프로젝트의 Enum 이름에 맞춰 수정하세요!)
+            case EventRewardType.RECORD_ONE_OF_UNIQUE:
+                records = recordManager.GetUniqueRecordDatas(); // 매니저에 이 함수들도 추가되어야 합니다!
+                break;
+
+            case EventRewardType.RECORD_ONE_OF_LEGEND:
+                records = recordManager.GetLengdaryRecordDatas();
+                break;
+
+            case EventRewardType.RECORD_ONE_OF_MYTH:
+                records = recordManager.GetMythRecordDatas();
+                break;
+
+            // 💡 3. 정의되지 않은 타입이 들어왔을 때의 안전장치
+            default:
+                Debug.LogWarning($"[OpenTargetRarityRecord] 처리되지 않은 레코드 보상 타입입니다: {type}");
+                return; // 에러를 막기 위해 UI를 열지 않고 함수 종료
         }
+
+        // 💡 4. 해당 등급의 레코드를 모두 획득해서 리스트가 비어있을 경우의 예외 처리
+        if (records == null || records.Count == 0)
+        {
+            Debug.LogWarning($"[{type}] 등급의 레코드가 없거나 모두 소진되었습니다.");
+
+            // 빈 레코드를 하나 쥐어주어 에러를 방지하고 UI를 띄웁니다.
+            records = new List<RecordData> { recordManager.GetEmptyRecord() };
+        }
+
+        UIManager.Instance.OpenRecordSelectPopUp(records, false, RecordUIMode.DRAFT);
     }
 
     private async UniTaskVoid ShowResultPhaseAsync(string resultText)
     {
-        isResultPhase = true;
 
         // 1. 기존 버튼들 스르륵 지우기 (옵션)
         choiceContainerGroup.alpha = 0f;

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class RecordCard : MonoBehaviour
 {
     public event Action<RecordData> OnRecordData;
+    public event Action<RecordCard, RecordData> OnRecordData_Two;
 
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI descText;
@@ -37,6 +38,7 @@ public class RecordCard : MonoBehaviour
         {
             onClickAction?.Invoke();
             OnRecordData?.Invoke(myData);
+            OnRecordData_Two?.Invoke(this, myData); 
         });
 
         // 3. 등급(Rarity)에 따른 카드 테두리 색상 변경 등 연출 추가 가능
