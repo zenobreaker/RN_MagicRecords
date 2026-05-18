@@ -27,6 +27,21 @@ public class HitData
         return DamageType == DamageType.DOT_BLEED || DamageType == DamageType.DOT_BURN ||
             DamageType == DamageType.DOT_HATERD || DamageType == DamageType.DOT_POISON;
     }
+
+    public HitData Clone()
+    {
+        HitData clone = new HitData();
+        clone.DamageType = DamageType;
+        clone.Distance = Distance;
+        clone.HeightValue = HeightValue;
+        clone.StopFrame = StopFrame;
+        clone.HitImpactIndex = HitImpactIndex;
+        clone.HitSoundName = HitSoundName;
+        clone.HitParticle = HitParticle;
+        clone.HitParticlePositionOffset = HitParticlePositionOffset;
+        clone.HitParticleScaleOffset = HitParticleScaleOffset;
+        return clone;
+    }
 }
 
 
@@ -74,6 +89,21 @@ public class DamageData
         if (hitData == null) return;
         
         hitData.PlayHitSound(); 
+    }
+
+    public DamageData Clone()
+    {
+        DamageData clone = new DamageData();
+        clone.damageType = this.damageType;
+        clone.baseDamage = this.baseDamage;
+        clone.statCoefficient = this.statCoefficient;
+        clone.bDownable = bDownable;
+        clone.bLauncher = bLauncher;
+        clone.SoundName = SoundName;
+        clone.impulseDirection = impulseDirection;
+        clone.settings = settings;
+        clone.hitData = this.hitData.Clone();
+        return clone; 
     }
 }
 

@@ -1,5 +1,7 @@
-﻿using JetBrains.Annotations;
+﻿using DG.Tweening;
+using JetBrains.Annotations;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -193,6 +195,17 @@ public class Module_SpawnEffect : SkillModule
             ? skill.Blackboard.GetValue<float>(Constants.PatternAngle, 0f)
             : this.angleBetween;
 
+        // A.투사체 개수: 내 인스펙터 값(Base) + 블랙보드의 추가 개수(Bonus)
+        // 레코드가 없다면 GetValue가 0을 반환하므로, this.spawnCount(4) + 0 = 4발이 나갑니다.
+        int bonusCount = skill.Blackboard.GetValue<int>("BonusSpawnCount", 0);
+        finalSpawnCount = this.spawnCount + bonusCount;
+
+        // B. 집탄률(각도): 내 인스펙터 값(Base) * 블랙보드의 배율(Multiplier)
+        // 각도는 더하기/빼기보다 곱하기(%)로 처리해야 여러 스킬에 범용적으로 적용하기 좋습니다.
+        // 레코드가 없다면 GetValue가 1.0f를 반환하므로, this.angleBetween(15) * 1.0 = 15도가 유지됩니다.
+        float angleMultiplier = skill.Blackboard.GetValue<float>("AngleMultiplier", 1.0f);
+        finalAngleBetween = this.angleBetween * angleMultiplier;
+
         // 3. 부모 페이즈 스킬과 나의 세팅을 비교해서 '최종 데미지' 데이터를 확정
         DamageData finalDamageData = GetEffectiveDamageData(phaseSkill);
 
@@ -276,6 +289,22 @@ public class Module_SpawnEffect : SkillModule
         }
 
         return new DamageData(); // 예외 상황 (에러 방지)
+    }
+
+    public override SkillModule Clone()
+    {
+        // 1. 얕은 복사: int, float, Vector3, bool, string, GameObject 참조 등은 여기서 완벽히 복사됨
+        Module_SpawnEffect clone = (Module_SpawnEffect)base.Clone();
+
+        // 2. 깊은 복사: 클래스(class) 타입인 커스텀 데이터만 새로 메모리를 할당해서 덮어씌움
+        if (this.damageData != null)
+        {
+            clone.damageData = this.damageData.Clone();
+        }
+
+        // (기존에 작성하시던 patternData는 현재 클래스 변수에 없으므로 지웠습니다!)
+
+        return clone;
     }
 }
 
