@@ -18,7 +18,7 @@ MonoBehaviour:
   learnableLevel: 0
   maxLevel: 0
   skillUpgradeCost: 
-  skillImage: {fileID: 21300000, guid: 708b42f86826998499977109e76563c6, type: 3}
+  skillImage: {fileID: 21300000, guid: bc093f88e6d03a647ba5e492ccf4467d, type: 3}
   leadingSkillList: 
   cost: 0
   cooldown: 0
@@ -29,13 +29,10 @@ MonoBehaviour:
     isInstant: 1
     modules:
     - rid: 455251792409133377
-    baseDamage: 1
-    confficient: 0
-    hitDelay: 0
-    duration: 0
     damageData:
       damageType: 0
-      Power: 5
+      baseDamage: 10
+      statCoefficient: 0
       bDownable: 0
       bLauncher: 0
       SoundName: Hit
@@ -75,13 +72,10 @@ MonoBehaviour:
     - rid: 5085156208516268147
     - rid: 455251804093153386
     - rid: 9058063302450741394
-    baseDamage: 1
-    confficient: 0
-    hitDelay: 0
-    duration: 0
     damageData:
       damageType: 0
-      Power: 5
+      baseDamage: 10
+      statCoefficient: 0
       bDownable: 0
       bLauncher: 0
       SoundName: Hit
@@ -165,9 +159,12 @@ MonoBehaviour:
       type: {class: Module_SpawnEffect, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 2
+        damageApplyType: 0
+        damageMultiplier: 1
         damageData:
           damageType: 0
-          Power: 1
+          baseDamage: 10
+          statCoefficient: 0
           bDownable: 0
           bLauncher: 0
           SoundName: 

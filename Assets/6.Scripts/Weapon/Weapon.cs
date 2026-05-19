@@ -132,7 +132,7 @@ public class ActionData
     public string LayerName { get => layerName; }
     
     [SerializeField] private float actionSpeed = 1.0f;
-    public float ActionSpeed { get => actionSpeed; }
+    public float ActionSpeed { get => actionSpeed; set => actionSpeed = value; }
     // StateName을 해시 값으로 저장
     private int actionSpeedHash = -1;
     public int ActionSpeedHash
@@ -161,12 +161,11 @@ public class ActionData
     public bool bCanMove;
     //public bool bFixedCamera;
 
-    public virtual ActionData DeepCopy()
+    public virtual ActionData Clone()
     {
         ActionData actionData = new ActionData();
-
-        actionData.bCanMove = bCanMove;
-
+        actionData = (ActionData)MemberwiseClone();
+        actionData.settings = settings;
         return actionData;
     }
 

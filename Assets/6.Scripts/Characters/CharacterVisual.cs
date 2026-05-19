@@ -81,6 +81,11 @@ public sealed class CharacterVisual : MonoBehaviour
         InitDamageMotions();
     }
 
+    public float GetAnimSpeed()
+    {
+        return originAnimSpeed; 
+    }
+
     private void InitDamageMotions()
     {
         damageMotionTable = new Dictionary<DamageType, List<DamageMotionData>>();

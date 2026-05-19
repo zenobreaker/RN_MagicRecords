@@ -25,8 +25,10 @@ public class Module_PlayAnimation : SkillModule
 
     public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        ownerCharacter?.PlayAction(actionData);
-        weaponController?.DoAction(actionData);
+        if(ownerCharacter != null) 
+            ownerCharacter.PlayAction(actionData);
+        if(weaponController != null)
+            weaponController.DoAction(actionData);
     }
 }
 
