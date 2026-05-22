@@ -58,14 +58,26 @@ public class Weapon_Combo : Weapon
   
         // Play Animation 
         {
-            ownerCharacter?.PlayAction(actionDatas[this.index]);
-            weaponController?.DoAction(actionDatas[this.index].WeaponActionName);
+            if (ownerCharacter != null)
+            {
+                ownerCharacter.PlayAction(actionDatas[this.index]);
+            }
+            if(weaponController != null)
+                weaponController.DoAction(actionDatas[this.index].WeaponActionName);
 
 #if UNITY_EDITOR
             if (bDebug)
                 Debug.Log($"Combo Play: {this.index} {actionDatas[this.index].StateName}");
 #endif
         }
+    }
+
+    public override void Begin_JudgeAttack(AnimationEvent e)
+    {
+        base.Begin_JudgeAttack(e);
+
+        if (ownerCharacter != null)
+            ownerCharacter.BroadcastAttack("Normal", actionDatas[this.index], ownerCharacter);
     }
 
     protected virtual void OnTriggerEnter(Collider other)

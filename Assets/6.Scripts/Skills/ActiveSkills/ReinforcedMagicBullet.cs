@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ModuleCategory("Special/MagicBulletConsum")]
 // 3. 마탄 전용 로직 모듈 (특수 로직도 모듈화 가능!)
 [Serializable]
 public class Module_MagicBulletConsum : SkillModule

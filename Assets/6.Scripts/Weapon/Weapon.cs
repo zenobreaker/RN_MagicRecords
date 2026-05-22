@@ -164,6 +164,7 @@ public class ActionData
     public virtual ActionData Clone()
     {
         ActionData actionData = new ActionData();
+        Initialize();
         actionData = (ActionData)MemberwiseClone();
         actionData.settings = settings;
         return actionData;
