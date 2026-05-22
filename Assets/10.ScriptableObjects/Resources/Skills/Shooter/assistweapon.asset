@@ -23,11 +23,12 @@ MonoBehaviour:
   cost: 10
   cooldown: 15
   limitCooldown: 2
-  castingTime: 2
+  castingTime: -1
   phaseList:
-  - phaseName: 
-    isInstant: 0
-    modules: []
+  - phaseName: "\uC0DD\uC131"
+    isInstant: 1
+    modules:
+    - rid: 8682830616796856459
     damageData:
       damageType: 0
       baseDamage: 10
@@ -48,8 +49,8 @@ MonoBehaviour:
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 1, y: 1, z: 1}
     bonusOptionList: 
-    skillObject: {fileID: 0}
-    objectName: AssistWeapon
+    skillObject: {fileID: 3606507098463213375, guid: a154784cad37b0545beb0c94f0df3e87, type: 3}
+    objectName: 
     actionData:
       subStateName: 
       stateName: 
@@ -65,4 +66,38 @@ MonoBehaviour:
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 8682830616796856459
+      type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        damageApplyType: 0
+        damageMultiplier: 1
+        damageData:
+          damageType: 0
+          baseDamage: 10
+          statCoefficient: 0
+          bDownable: 0
+          bLauncher: 0
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          settings: {fileID: 0}
+          hitData:
+            DamageType: 0
+            Distance: 0
+            HeightValue: 0
+            StopFrame: 0
+            HitImpactIndex: 0
+            HitSoundName: 
+            HitParticle: {fileID: 0}
+            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+        spawnPosition: {x: 0, y: 0, z: 0}
+        spawnRotation: {x: 0, y: 0, z: 0}
+        patternType: 0
+        spawnObj: {fileID: 3606507098463213375, guid: a154784cad37b0545beb0c94f0df3e87, type: 3}
+        objectName: 
+        baseLifeTime: -1
+        useBlackboardPattern: 1
+        spawnCount: 1
+        angleBetween: 0

@@ -30,6 +30,7 @@ public class Character
     private CancellationTokenSource slowCts;
 
     #region ACTION
+    public event Action<string, ActionData, GameObject> OnAttackExecuted; 
     public Action OnBeginDoAction;
     public Action OnEndDoAction;
     public Action<Character> OnDead;
@@ -167,11 +168,17 @@ public class Character
         float statSpeed = status != null ? status.GetStatusValue(StatusType.ATTACKSPEED) : 1.0f;
 
         // 💡 액션 재생을 온전히 Visual에게 위임합니다!
-        visual?.PlayActionAnimation(actionData, layer, statSpeed);
+        if(visual != null)
+            visual.PlayActionAnimation(actionData, layer, statSpeed);
     }
 
     protected virtual void Dead() { }
 
+
+    public void BroadcastAttack(string skillID, ActionData actionData, GameObject attacker)
+    {
+        OnAttackExecuted?.Invoke(skillID, actionData, attacker);    
+    }
 
     public static implicit operator GameObject(Character c)
     {

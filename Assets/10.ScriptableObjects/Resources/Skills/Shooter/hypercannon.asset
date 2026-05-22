@@ -25,13 +25,11 @@ MonoBehaviour:
   limitCooldown: 2
   castingTime: -1
   phaseList:
-  - phaseName: "\uC0AC\uACA9"
+  - phaseName: "\uCDA9\uC804"
     isInstant: 0
     modules:
     - rid: 9058063329371095122
-    - rid: 9058063329371095123
     - rid: 9058063329371095124
-    - rid: 9058063329371095125
     damageData:
       damageType: 0
       baseDamage: 10
@@ -53,7 +51,48 @@ MonoBehaviour:
         HitParticleScaleOffset: {x: 1, y: 1, z: 1}
     bonusOptionList: 
     skillObject: {fileID: 5904922040541714445, guid: 4d08b90daa2f6e646b2a16a1baee277c, type: 3}
-    objectName: Beam
+    objectName: HyperCannon
+    actionData:
+      subStateName: 
+      stateName: 
+      layerName: 
+      actionSpeed: 1
+      weaponActionName: 
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      bCanMove: 0
+    soundName: 
+    spawnPosition: {x: 0, y: 0, z: 0}
+    spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
+  - phaseName: "\uC0AC\uACA9"
+    isInstant: 0
+    modules:
+    - rid: 8682830616796856405
+    - rid: 8682830616796856406
+    - rid: 8682830616796856407
+    damageData:
+      damageType: 0
+      baseDamage: 10
+      statCoefficient: 0
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      settings: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+    bonusOptionList: 
+    skillObject: {fileID: 5904922040541714445, guid: 4d08b90daa2f6e646b2a16a1baee277c, type: 3}
+    objectName: HyperCannon
     actionData:
       subStateName: 
       stateName: 
@@ -70,37 +109,32 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 9058063329371095122
-      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 4
-        soundName: 
-    - rid: 9058063329371095123
-      type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 0
-        impulseDirection: {x: 0, y: 0, z: 0}
-        settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
-    - rid: 9058063329371095124
+    - rid: 8682830616796856405
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
         actionData:
-          subStateName: Skill01
-          stateName: Skill
+          subStateName: 
+          stateName: 
           layerName: 
           actionSpeed: 1
-          weaponActionName: Action
+          weaponActionName: 
           SoundName: 
           impulseDirection: {x: 0, y: 0, z: 0}
           settings: {fileID: 0}
           bCanMove: 0
-    - rid: 9058063329371095125
-      type: {class: Module_SpawnEffect, ns: , asm: Assembly-CSharp}
+    - rid: 8682830616796856406
+      type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 2
+        impulseDirection: {x: 0, y: 0, z: 0}
+        settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
+    - rid: 8682830616796856407
+      type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 2
         damageApplyType: 0
-        damageMultiplier: 1
+        damageMultiplier: 1.2
         damageData:
           damageType: 0
           baseDamage: 10
@@ -123,8 +157,28 @@ MonoBehaviour:
         spawnPosition: {x: 0, y: 1, z: 1}
         spawnRotation: {x: 0, y: 0, z: 0}
         patternType: 0
-        skillObject: {fileID: 0}
-        objectName: HyperCannon
+        spawnObj: {fileID: 0}
+        objectName: Beam
+        baseLifeTime: -1
         useBlackboardPattern: 1
         spawnCount: 1
         angleBetween: 0
+    - rid: 9058063329371095122
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        soundName: 
+    - rid: 9058063329371095124
+      type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        actionData:
+          subStateName: Charging_Start
+          stateName: Charging
+          layerName: 
+          actionSpeed: 1
+          weaponActionName: 
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          settings: {fileID: 0}
+          bCanMove: 0

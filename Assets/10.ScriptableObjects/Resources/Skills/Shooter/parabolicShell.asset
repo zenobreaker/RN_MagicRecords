@@ -71,7 +71,7 @@ MonoBehaviour:
     - rid: 5085156208516268138
     - rid: 5085156208516268147
     - rid: 455251804093153386
-    - rid: 9058063302450741394
+    - rid: 8682830616796856474
     damageData:
       damageType: 0
       baseDamage: 10
@@ -155,10 +155,10 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           settings: {fileID: 0}
           bCanMove: 0
-    - rid: 9058063302450741394
-      type: {class: Module_SpawnEffect, ns: , asm: Assembly-CSharp}
+    - rid: 8682830616796856474
+      type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 2
+        triggerTime: 0
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -183,8 +183,9 @@ MonoBehaviour:
         spawnPosition: {x: 0, y: 0, z: 0}
         spawnRotation: {x: 0, y: 0, z: 0}
         patternType: 0
-        skillObject: {fileID: 0}
+        spawnObj: {fileID: 0}
         objectName: ParabolicShell
+        baseLifeTime: -1
         useBlackboardPattern: 1
         spawnCount: 1
         angleBetween: 0

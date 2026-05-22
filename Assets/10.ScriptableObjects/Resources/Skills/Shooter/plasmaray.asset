@@ -31,7 +31,7 @@ MonoBehaviour:
     - rid: 9058063302450741333
     - rid: 9058063302450741332
     - rid: 9058063302450741331
-    - rid: 9058063302450741399
+    - rid: 8682830616796856472
     damageData:
       damageType: 0
       baseDamage: 20
@@ -70,6 +70,40 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 8682830616796856472
+      type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        damageApplyType: 0
+        damageMultiplier: 1
+        damageData:
+          damageType: 0
+          baseDamage: 10
+          statCoefficient: 0
+          bDownable: 0
+          bLauncher: 0
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          settings: {fileID: 0}
+          hitData:
+            DamageType: 0
+            Distance: 0
+            HeightValue: 0
+            StopFrame: 0
+            HitImpactIndex: 0
+            HitSoundName: 
+            HitParticle: {fileID: 0}
+            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+        spawnPosition: {x: 0, y: 1, z: 1}
+        spawnRotation: {x: 0, y: 0, z: 0}
+        patternType: 0
+        spawnObj: {fileID: 0}
+        objectName: Beam
+        baseLifeTime: -1
+        useBlackboardPattern: 1
+        spawnCount: 1
+        angleBetween: 0
     - rid: 9058063302450741331
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
@@ -95,36 +129,3 @@ MonoBehaviour:
       data:
         triggerTime: 4
         soundName: Gun_Normal2
-    - rid: 9058063302450741399
-      type: {class: Module_SpawnEffect, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 2
-        damageApplyType: 0
-        damageMultiplier: 1
-        damageData:
-          damageType: 0
-          baseDamage: 10
-          statCoefficient: 1
-          bDownable: 0
-          bLauncher: 0
-          SoundName: 
-          impulseDirection: {x: 0, y: 0, z: 0}
-          settings: {fileID: 0}
-          hitData:
-            DamageType: 0
-            Distance: 0
-            HeightValue: 0
-            StopFrame: 0
-            HitImpactIndex: 0
-            HitSoundName: 
-            HitParticle: {fileID: 0}
-            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
-        spawnPosition: {x: 0, y: 1, z: 1}
-        spawnRotation: {x: 0, y: 0, z: 0}
-        patternType: 0
-        skillObject: {fileID: 0}
-        objectName: Beam
-        useBlackboardPattern: 1
-        spawnCount: 1
-        angleBetween: 0

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.AI;
@@ -65,7 +66,10 @@ public abstract class ActiveSkill
         }
     }
     public int PhaseIndex => phaseIndex;
-
+    // 💡 [추가] 이 스킬이 다른 행동 중에도 쓸 수 있는 '즉발/동시 사용' 스킬인가?
+    public bool isConcurrentSkill = false;
+    // 각 페이즈별로 애니메이션 유무를 미리 저장해둘 캐싱 배열
+    private bool[] cachedActionDataFlags;
 
     public ActiveSkill(SO_SkillData skillData)
         : base(skillData)
@@ -77,6 +81,7 @@ public abstract class ActiveSkill
             this.limitCooldown = activeSkillData.limitCooldown;
             this.maxCooldown = activeSkillData.cooldown;
             this.castingTime = activeSkillData.castingTime;
+            this.isConcurrentSkill = activeSkillData.isConcurrentSkill;
         }
     }
 
@@ -92,12 +97,58 @@ public abstract class ActiveSkill
             weaponController = user.GetWeaponController();
         }
 
-         skillComponent  = ownerObject.GetComponent<SkillComponent>();  
+         skillComponent  = ownerObject.GetComponent<SkillComponent>();
 
         foreach (var phase in phaseList)
         {
             phase.actionData?.Initialize();
         }
+
+        CacheActionDataFlags();
+    }
+
+    private void CacheActionDataFlags()
+    {
+        if (phaseList == null) return;
+
+        // 페이즈 개수만큼 배열을 만듭니다.
+        cachedActionDataFlags = new bool[phaseList.Count];
+
+        for (int i = 0; i < phaseList.Count; i++)
+        {
+            // 아까 만들었던 그 복잡한 2중 검사 로직을 여기서 '딱 한 번만' 돌립니다.
+            cachedActionDataFlags[i] = CalculateHasActionData(i);
+        }
+    }
+
+    private bool CalculateHasActionData(int index)
+    {
+        var phase = phaseList[index];
+
+        if (phase.isInstant) return false;
+
+        if (phase.actionData != null && !string.IsNullOrEmpty(phase.actionData.SubStateName))
+            return true;
+
+        if (phase.modules != null)
+        {
+            foreach (var module in phase.modules)
+            {
+                if (module != null && module.HasAnimationData())
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public bool HasActionData(int index)
+    {
+        if (cachedActionDataFlags != null && index >= 0 && index < cachedActionDataFlags.Length)
+        {
+            // 루프? 검사? 아무것도 안 합니다. 그냥 미리 구해둔 정답지를 제출합니다! O(1)
+            return cachedActionDataFlags[index];
+        }
+        return false;
     }
 
     protected void SetCurrentPhaseSkill(int phaseIndex)
@@ -131,24 +182,29 @@ public abstract class ActiveSkill
         if (IsOnCooldown)
             return;
 
-        isCasting = true;   
+        isCasting = true;
 
-        NavMeshAgent agent = ownerObject?.GetComponent<NavMeshAgent>(); 
-        if (agent != null && agent.isActiveAndEnabled)
+        if (!isConcurrentSkill)
         {
-            agent.updateRotation = false;
-            agent.isStopped = true;
-            agent.velocity = Vector3.zero;
+            NavMeshAgent agent = ownerObject?.GetComponent<NavMeshAgent>();
+            if (agent != null && agent.isActiveAndEnabled)
+            {
+                agent.updateRotation = false;
+                agent.isStopped = true;
+                agent.velocity = Vector3.zero;
+            }
+
+            // 상태 변경 
+            if(state != null)
+                state.SetActionMode(); 
+
+            // 첫 번째 페이즈 
+            ExecutePhase(0);
         }
 
         // 쿨타임 
         currentCooldown = initCooldown;
 
-        // 상태 변경 
-        state?.SetActionMode(); 
-
-        // 첫 번째 페이즈 
-        ExecutePhase(0);
     }
 
     public virtual void Update(float deltaTime) { }
@@ -171,11 +227,16 @@ public abstract class ActiveSkill
         return false;
     }
 
+
     public virtual void Start_DoAction() 
     {
        
     }
-    public virtual void Begin_DoAction() { }
+    public virtual void Begin_DoAction() 
+    {
+        if (ownerCharacter != null)
+            ownerCharacter.BroadcastAttack(skillName, phaseList[phaseIndex].actionData, ownerCharacter); 
+    }
     public virtual void End_DoAction() 
     {
         // 장판 등이 진행 중이여서 다음 페이즈가 남아있다면,
@@ -189,16 +250,20 @@ public abstract class ActiveSkill
         isCasting = false;
         
         // 다음 번 스킬을 위해 초기화
-        phaseIndex = 0; 
+        phaseIndex = 0;
 
-        NavMeshAgent agent = ownerObject?.GetComponent<NavMeshAgent>();
-        if (agent != null && agent.isActiveAndEnabled)
+        if (!isConcurrentSkill)
         {
-            agent.updateRotation = true;
-            agent.isStopped = false;
-        }
+            NavMeshAgent agent = ownerObject?.GetComponent<NavMeshAgent>();
+            if (agent != null && agent.isActiveAndEnabled)
+            {
+                agent.updateRotation = true;
+                agent.isStopped = false;
+            }
 
-        state?.SetIdleMode(); 
+            if (state != null)
+                state.SetIdleMode();
+        }
     }
 
     public virtual void Begin_JudgeAttack(AnimationEvent e) { }

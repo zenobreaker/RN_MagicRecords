@@ -1,6 +1,4 @@
-﻿using Unity.VisualScripting;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEditor;
 
 [CustomEditor(typeof(SO_ActiveSkillData))]
 public class SO_ActiveSkillDataEditor : Editor

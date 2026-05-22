@@ -32,13 +32,10 @@ MonoBehaviour:
     - rid: 7308159202074034583
     - rid: 455251804093153401
     - rid: 7308159180900401259
-    baseDamage: 1
-    confficient: 0
-    hitDelay: 0
-    duration: 0
     damageData:
       damageType: 0
-      Power: 5
+      baseDamage: 10
+      statCoefficient: 0
       bDownable: 0
       bLauncher: 0
       SoundName: Hit
@@ -60,8 +57,10 @@ MonoBehaviour:
     actionData:
       subStateName: 
       stateName: 
+      state: 
       layerName: 
       actionSpeed: 0
+      actionSpeedHash: -1
       weaponActionName: 
       SoundName: 
       impulseDirection: {x: 0, y: 0, z: 0}
@@ -77,13 +76,10 @@ MonoBehaviour:
     - rid: 5085156208516268138
     - rid: 5085156208516268147
     - rid: 9058063302450741394
-    baseDamage: 1
-    confficient: 0
-    hitDelay: 0
-    duration: 0
     damageData:
       damageType: 0
-      Power: 5
+      baseDamage: 10
+      statCoefficient: 0
       bDownable: 0
       bLauncher: 0
       SoundName: Hit
@@ -105,8 +101,10 @@ MonoBehaviour:
     actionData:
       subStateName: 
       stateName: 
+      state: 
       layerName: 
       actionSpeed: 0
+      actionSpeedHash: -1
       weaponActionName: 
       SoundName: 
       impulseDirection: {x: 0, y: 0, z: 0}
@@ -118,6 +116,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 455251804093153401
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
@@ -125,13 +125,17 @@ MonoBehaviour:
         actionData:
           subStateName: Charging_Start
           stateName: Charging
+          state: 
           layerName: 
           actionSpeed: 1
+          actionSpeedHash: -1
           weaponActionName: 
           SoundName: 
           impulseDirection: {x: 0, y: 0, z: 0}
           settings: {fileID: 0}
           bCanMove: 0
+        ownerCharacter: {fileID: 0}
+        weaponController: {fileID: 0}
     - rid: 5085156208516268138
       type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
       data:
@@ -150,13 +154,17 @@ MonoBehaviour:
         actionData:
           subStateName: Skill03
           stateName: Skill
+          state: 
           layerName: 
           actionSpeed: 1.5
+          actionSpeedHash: -1
           weaponActionName: Action
           SoundName: 
           impulseDirection: {x: 0, y: 0, z: 0}
           settings: {fileID: 0}
           bCanMove: 0
+        ownerCharacter: {fileID: 0}
+        weaponController: {fileID: 0}
     - rid: 7308159180900401259
       type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
       data:
@@ -179,6 +187,7 @@ MonoBehaviour:
         triggerTime: 0
         isAutoTarget: 1
         defaultDistance: 0
+        perception: {fileID: 0}
     - rid: 7308159202074034583
       type: {class: Module_LookAtTarget, ns: , asm: Assembly-CSharp}
       data:
@@ -186,13 +195,17 @@ MonoBehaviour:
         useBlackboardPos: 1
         lookAtOwnerTarget: 0
         turnSpeed: 0
+        perception: {fileID: 0}
     - rid: 9058063302450741394
       type: {class: Module_SpawnEffect, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 2
+        damageApplyType: 0
+        damageMultiplier: 1
         damageData:
           damageType: 0
-          Power: 1
+          baseDamage: 10
+          statCoefficient: 0
           bDownable: 0
           bLauncher: 0
           SoundName: 

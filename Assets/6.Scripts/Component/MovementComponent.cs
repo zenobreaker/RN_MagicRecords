@@ -13,6 +13,7 @@ public class MovementComponent : MonoBehaviour
     private SO_Movement movement;
 
     private float speed;
+    private float originSpeed;
     public float Speed => speed;
     public float DeltaSpeed { get; private set; }
     private bool bRun = false;
@@ -51,6 +52,7 @@ public class MovementComponent : MonoBehaviour
 
     private void OnEnable()
     {
+        originSpeed = speed; 
         if (statusEffect != null) statusEffect.OnStatusEffectChanged += OnStatusEffectChanged;
     }
 
@@ -66,6 +68,13 @@ public class MovementComponent : MonoBehaviour
         bRun = isRunning;
     }
 
+    public void SetMoveSpeed(float speed)
+    {
+        originSpeed = this.speed;
+        this.speed = speed;
+    }
+    public void RecoverSpeed() => speed = originSpeed; 
+
     public void Move() { bCanMove = true; }
     public void Stop() { bCanMove = false; }
 
@@ -78,7 +87,8 @@ public class MovementComponent : MonoBehaviour
         if (!bCanMove || (state != null && state.EvadeMode))
         {
             DeltaSpeed = 0f;
-            visual?.SetMovementAnimation(DeltaSpeed);
+            if (visual != null)
+                visual.SetMovementAnimation(DeltaSpeed);
             return;
         }
 
@@ -96,7 +106,8 @@ public class MovementComponent : MonoBehaviour
         }
 
         DeltaSpeed = moveDir.magnitude / movement.WalkSpeed * movement.Ratio;
-        visual?.SetMovementAnimation(DeltaSpeed);
+        if (visual != null)
+            visual.SetMovementAnimation(DeltaSpeed);
     }
 
     // --------------------------------------------------------
@@ -139,15 +150,20 @@ public class MovementComponent : MonoBehaviour
         state.SetEvadeMode();
 
         DashDirection dd = DashDirection.Forward;
+        bool isDash;
         if (targetDirection.magnitude == 0.0f)
         {
             dd = DashDirection.Backward;
-            visual?.PlayDashAnimation(true);
+            isDash = true;
+
         }
         else
         {
-            visual?.PlayDashAnimation(false);
+            isDash = false;
         }
+
+        if (visual != null)
+            visual.PlayDashAnimation(isDash);
 
         CancelDashTimer();
         dashCts = new CancellationTokenSource();

@@ -70,7 +70,6 @@ MonoBehaviour:
     - rid: 5085156208516268146
     - rid: 5085156208516268138
     - rid: 5085156208516268147
-    - rid: 9058063302450741393
     damageData:
       damageType: 0
       baseDamage: 10
@@ -134,39 +133,6 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           settings: {fileID: 0}
           bCanMove: 0
-    - rid: 9058063302450741393
-      type: {class: Module_SpawnEffect, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 2
-        damageApplyType: 0
-        damageMultiplier: 1
-        damageData:
-          damageType: 0
-          baseDamage: 10
-          statCoefficient: 0
-          bDownable: 0
-          bLauncher: 0
-          SoundName: 
-          impulseDirection: {x: 0, y: 0, z: 0}
-          settings: {fileID: 0}
-          hitData:
-            DamageType: 0
-            Distance: 0
-            HeightValue: 0
-            StopFrame: 0
-            HitImpactIndex: 0
-            HitSoundName: 
-            HitParticle: {fileID: 0}
-            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
-        spawnPosition: {x: 0, y: 20, z: 20}
-        spawnRotation: {x: 30, y: 0, z: 0}
-        patternType: 0
-        skillObject: {fileID: 0}
-        objectName: StarFall
-        useBlackboardPattern: 1
-        spawnCount: 1
-        angleBetween: 0
     - rid: 9058063375093465164
       type: {class: Module_CalcTargetPosition, ns: , asm: Assembly-CSharp}
       data:

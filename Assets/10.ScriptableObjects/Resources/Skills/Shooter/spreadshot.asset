@@ -55,8 +55,10 @@ MonoBehaviour:
     actionData:
       subStateName: 
       stateName: 
+      state: 
       layerName: 
       actionSpeed: 1
+      actionSpeedHash: -1
       weaponActionName: 
       SoundName: 
       impulseDirection: {x: 0, y: 0, z: 0}
@@ -68,6 +70,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 8682830518195847350
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
@@ -75,13 +79,17 @@ MonoBehaviour:
         actionData:
           subStateName: Skill01
           stateName: Skill
+          state: 
           layerName: 
           actionSpeed: 1.5
+          actionSpeedHash: -1
           weaponActionName: Action
           SoundName: Gun_Normal2
           impulseDirection: {x: 0, y: 0, z: 0}
           settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
           bCanMove: 0
+        ownerCharacter: {fileID: 0}
+        weaponController: {fileID: 0}
     - rid: 8682830518195847364
       type: {class: Module_SpawnEffect, ns: , asm: Assembly-CSharp}
       data:

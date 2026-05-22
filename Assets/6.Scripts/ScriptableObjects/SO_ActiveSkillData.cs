@@ -61,6 +61,9 @@ public class SO_ActiveSkillData : SO_SkillData
     public float limitCooldown;
     public float castingTime;
 
+    [Header("동시 사용 가능 스킬 여부")]
+    public bool isConcurrentSkill = false;
+
     [Header("Phase")]
     public List<PhaseSkill> phaseList;
 

@@ -63,12 +63,14 @@ public class Player
 
         onAction = (context) =>
         {
-            comboComponent?.InputQueue(InputCommandType.ACTION);
+            if(comboComponent != null)
+                comboComponent.InputQueue(InputCommandType.ACTION);
         };
 
         onDash = (context) =>
         {
-            comboComponent?.InputQueue(InputCommandType.DASH);
+            if (comboComponent != null)
+                comboComponent.InputQueue(InputCommandType.DASH);
         };
 
 

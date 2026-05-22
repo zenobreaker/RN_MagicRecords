@@ -152,7 +152,7 @@ public class SelectImplementationDrawer : PropertyDrawer
                             break;
                     }
                 }
-                else if (property.managedReferenceValue is Module_SpawnEffect spawnEffect)
+                else if (property.managedReferenceValue is Module_SpawnObject spawnEffect)
                 {
                     switch (field.Name)
                     {

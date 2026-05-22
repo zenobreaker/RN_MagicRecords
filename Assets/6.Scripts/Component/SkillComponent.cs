@@ -80,7 +80,7 @@ public sealed class SkillComponent
         if (capabilityTable.ContainsKey(type))
             capabilityTable[type] = capability;  // 이미 있으면 덮어쓰기 
         else
-            capabilityTable.Add(type, capability);  
+            capabilityTable.Add(type, capability);
     }
 
     // 기능 조회 (액티브가 호출)
@@ -110,7 +110,6 @@ public sealed class SkillComponent
         {
             BeginDoAction();
 
-            // 1. 현재 사용 중인 스킬의 총 페이즈 횟수 가져오기
             int phaseCount = 1;
             ActiveSkill currentSkill = null;
 
@@ -120,23 +119,24 @@ public sealed class SkillComponent
                     phaseCount = currentSkill.MaxPhaseCount;
             }
 
-            // 2. 페이즈 개수만큼 가짜 타이머 반복 실행!
             for (int i = 0; i < phaseCount; i++)
             {
-                // 애니메이션 선딜레이
-                await UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: token);
+                // 💡 [핵심 1] 애니메이션(ActionData) 데이터가 존재하는가?
+                bool hasAnimation = currentSkill != null && currentSkill.HasActionData(i);
+
+                if (hasAnimation)
+                {
+                    // 애니메이션이 있을 때만 선딜레이 0.2초 대기
+                    await UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: token);
+                }
 
                 BeginJudgeAttack(null);
                 EndJudgeAttack(null);
 
-                // ====================================================================
-                // 💡 [핵심 픽스] 이 페이즈가 스스로 끝내는 능력이 있는지(장판 등) 검사!
                 bool isSelfControlled = currentSkill != null && currentSkill.DoesPhaseControlItself(i);
 
                 if (isSelfControlled)
                 {
-                    // 장판이 터지면서 스스로 'EndPhaseAndNext()'를 부를 때까지 
-                    // 가짜 타이머는 여기서 시간만 죽이며 조용히 기다립니다.
                     int cachedPhase = i;
                     while (currentSkill.PhaseIndex == cachedPhase)
                     {
@@ -145,23 +145,40 @@ public sealed class SkillComponent
                 }
                 else
                 {
-                    // 일반 단타 공격이라면 상사(가짜 타이머)가 0.3초 뒤에 강제로 넘깁니다.
-                    await UniTask.Delay(TimeSpan.FromSeconds(0.3f), cancellationToken: token);
+                    if (hasAnimation)
+                    {
+                        // 애니메이션이 있을 때만 후딜레이 0.3초 대기
+                        await UniTask.Delay(TimeSpan.FromSeconds(0.3f), cancellationToken: token);
+                    }
+                    else
+                    {
+                        // 💡 애니메이션이 없다면 대기 시간 없이 즉시 1프레임만 쉬고 넘깁니다.
+                        // (프레임 꼬임 방지를 위해 딱 1프레임 Yield를 주는 것이 안전합니다)
+                        await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
+                    }
 
                     if (i < phaseCount - 1)
                     {
                         currentSkill?.End_DoAction();
                     }
                 }
-                // ====================================================================
             }
 
-            // 3. 모든 페이즈가 끝났으므로 컴포넌트 전체의 행동을 진짜로 종료!
+            // 모든 페이즈가 정상적으로 끝났을 때
             EndDoAction();
         }
         catch (OperationCanceledException)
         {
-            // 피격 시 캔슬
+            // 피격/스턴 등으로 인한 정상적인 캔슬
+        }
+        catch (Exception e)
+        {
+            // 💡 [핵심 2] 절대 방어선 구축 (Failsafe)
+            // 모듈을 잘못 짰거나 널 포인트 에러가 터져서 루틴이 죽어버려도, 
+            // 여기서 에러를 잡아서 강제로 EndDoAction()을 호출해 캐릭터 굳음을 방지합니다!
+            Debug.LogError($"<color=red>스킬 실행 중 치명적 에러 발생, 캐릭터 잠금을 강제 해제합니다.</color>\n{e}");
+
+            EndDoAction();
         }
     }
 
@@ -177,7 +194,8 @@ public sealed class SkillComponent
     public void SetActiveSkill(SkillSlot slot, ActiveSkill skill)
     {
         SetActiveSkill(slot.ToString(), skill);
-        skillEventHandler?.OnSetting_ActiveSkill(slot, skill);
+        if (skillEventHandler != null)
+            skillEventHandler.OnSetting_ActiveSkill(slot, skill);
     }
 
     // AI에서 접근할 때는 첫 번째 인자는 스킬 이름으로 오므로 주의해야 함 
@@ -200,6 +218,20 @@ public sealed class SkillComponent
 
     public void UseSkill(string skillName)
     {
+        if (!skillSlotTable.TryGetValue(skillName, out var skill) || skill == null) return;
+
+        if(skill.isConcurrentSkill)
+        {
+            if (skill.IsOnCooldown) return ;
+
+            skill.Cast();
+
+            ExecuteConcurrentSkillAsync(skill).Forget();
+            return; 
+        }
+
+
+
         if (InAction || CanUseSkill(skillName) == false)
         {
             OnSkillUse?.Invoke(false);
@@ -210,7 +242,68 @@ public sealed class SkillComponent
         OnSkillUse?.Invoke(true);
 
         base.DoAction();
-        skillSlotTable[currentSkillName]?.Cast();
+        skill?.Cast();
+
+        if (!skill.HasActionData(skill.PhaseIndex))
+        {
+            SimulateAnimationEventsAsync(skill).Forget();
+        }
+    }
+
+    private async UniTaskVoid SimulateAnimationEventsAsync(ActiveSkill skill)
+    {
+        try
+        {
+            // 1프레임 대기 (로직 꼬임 방지)
+            await UniTask.Yield(PlayerLoopTiming.Update);
+
+            // 장판 모듈처럼 스스로 끝나는 스킬이라면 조용히 대기
+            if (skill.DoesPhaseControlItself(skill.PhaseIndex))
+            {
+                int cachedPhase = skill.PhaseIndex;
+                while (skill.PhaseIndex == cachedPhase)
+                {
+                    // 피격 등으로 강제로 InAction이 풀렸다면 루틴 안전 종료
+                    if (!InAction) return;
+                    await UniTask.Yield(PlayerLoopTiming.Update);
+                }
+            }
+            else
+            {
+                // 💡 애니메이션이 없으므로, 아주 짧은 시간(0.1초) 간격으로
+                // 공격 판정과 종료 이벤트를 유니태스크가 대신 타다닥! 쏴줍니다.
+
+                BeginJudgeAttack(null); // 공격 판정 시작! (오브젝트 스폰 등)
+                await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
+
+                EndJudgeAttack(null);   // 공격 판정 끝!
+                await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
+
+                // 💡 드디어 플레이어를 굳음 상태에서 해방시켜주는 궁극의 함수!
+                EndDoAction();
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"가짜 애니메이션 이벤트 발생 중 에러!\n{e}");
+            EndDoAction(); // 에러가 나도 무조건 풀어줍니다!
+        }
+    }
+
+    private async UniTaskVoid ExecuteConcurrentSkillAsync(ActiveSkill skill)
+    {
+        for (int i = 0; i < skill.MaxPhaseCount; i++)
+        {
+            skill.Begin_JudgeAttack(null);
+            skill.End_JudgeAttack(null);
+
+            if (i < skill.MaxPhaseCount - 1)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
+                skill.End_DoAction();
+            }
+        }
+        skill.End_DoAction(); 
     }
 
     public override void StartAction()
@@ -285,7 +378,7 @@ public sealed class SkillComponent
 
     public void NotifyMagicBulletChanged(Queue<BulletData> bullets)
     {
-        skillEventHandler?.OnChangedBullets(bullets);   
+        skillEventHandler?.OnChangedBullets(bullets);
     }
 
     #endregion
