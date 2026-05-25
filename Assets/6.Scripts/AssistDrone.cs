@@ -17,6 +17,8 @@ public class AssistDrone
     [Header("Muzzles")]
     [SerializeField] private Transform[] muzzles;
     [SerializeField] private string droneNormalProj = "Bullet";
+    [SerializeField] private string droneBeamProj = "AssistDroneBeam";
+    [SerializeField] private string droneHyperBeamProj = "AssistDroneHyperBeam";
 
     private Character ownerCharacter;
     private Animator[] anims;
@@ -47,8 +49,8 @@ public class AssistDrone
                 break;
 
             case "skill_name_hyperbeam":
-
-
+                DroneHyperLaserAttackAsync(actionData, attacker, cts.Token).Forget();
+                break;
             case "skill_name_plasmaray":
                 DroneLaserAttackAsync(actionData, attacker, cts.Token).Forget();
                 break;
@@ -114,8 +116,31 @@ public class AssistDrone
             anim.SetTrigger("Fire");
         Debug.Log("드론 좌우 포신에서 굵은 레이저 출력 시작!");
 
+        foreach (var muzzle in muzzles)
+        {
+            SpawnProjectile(droneBeamProj, muzzle, attacker);
+        }
+
         // 레이저 유지 시간 대기 후 종료
-        await UniTask.Delay(TimeSpan.FromSeconds(2.0f), cancellationToken: token);
+        await UniTask.Delay(TimeSpan.FromSeconds(1.0f), cancellationToken: token);
+        Debug.Log("드론 레이저 출력 종료.");
+    }
+
+    private async UniTaskVoid DroneHyperLaserAttackAsync(ActionData data, GameObject attacker, CancellationToken token)
+    {
+        // 레이저 발사 기믹 (예: LineRenderer 켜기, 이펙트 활성화 등)
+
+        foreach (var anim in anims)
+            anim.SetTrigger("Fire");
+        Debug.Log("드론 좌우 포신에서 굵은 레이저 출력 시작!");
+
+        foreach (var muzzle in muzzles)
+        {
+            SpawnProjectile(droneHyperBeamProj, muzzle, attacker);
+        }
+
+        // 레이저 유지 시간 대기 후 종료
+        await UniTask.Delay(TimeSpan.FromSeconds(1.0f), cancellationToken: token);
         Debug.Log("드론 레이저 출력 종료.");
     }
 

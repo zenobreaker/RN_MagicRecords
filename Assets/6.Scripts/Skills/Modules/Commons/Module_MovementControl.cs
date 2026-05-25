@@ -24,8 +24,6 @@ public class Module_MovementControl : SkillModule
         NavMeshAgent agent = owner.GetComponent<NavMeshAgent>();
         MovementComponent move = owner.GetComponent<MovementComponent>();
 
-        if (agent == null) return;
-
         switch (controlType)
         {
             case MovementControlType.LockMovement:

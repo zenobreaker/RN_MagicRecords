@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class UISkillTreeSlot : MonoBehaviour
 {
     private SkillRuntimeData skillData;
-    private Image skillIcon; 
+    [SerializeField] private Image skillIcon; 
 
     public event Action<SkillRuntimeData> OnClickedSlot;
 
@@ -23,10 +23,11 @@ public class UISkillTreeSlot : MonoBehaviour
 
     private void DrawSkillSlot()
     {
-        if (skillData == null || skillIcon == null)
+        if (skillData == null ||  skillData.template == null || 
+            skillIcon == null)
             return;
 
-        skillIcon.sprite = skillData?.template?.skillImage;
+        skillIcon.sprite = skillData.template.skillImage;
     }
 
     public void OnClick()

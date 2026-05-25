@@ -27,6 +27,7 @@ public class Player
     private Action<InputAction.CallbackContext> onMove;
     private Action<InputAction.CallbackContext> onDash;
     private Action<InputAction.CallbackContext>[] onSkillActions;
+    private Action<InputAction.CallbackContext>[] onSkillCancels;
 
 
     private int jobID; 
@@ -92,6 +93,7 @@ public class Player
         if (actionMap == null || skill == null)
             return;
         onSkillActions = new Action<InputAction.CallbackContext>[4];
+        onSkillCancels = new Action<InputAction.CallbackContext>[4];
 
         for (int i = 0; i < 4; i++)
         {
@@ -101,8 +103,14 @@ public class Player
                 comboComponent.InputQueue(InputCommandType.SKILL, slot);
             };
 
+            onSkillCancels[i] = (context) =>
+            {
+                skill.ReleaseSkill(((SkillSlot)slot).ToString());
+            };
+
             string actionName = $"SkillAction{slot + 1}";
             actionMap.FindAction(actionName).started += onSkillActions[i];
+            actionMap.FindAction(actionName).canceled += onSkillCancels[i]; 
         }
     }
 

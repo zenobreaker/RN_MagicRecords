@@ -32,12 +32,13 @@ public class BeamProjectile
     private HashSet<GameObject> ignores = new();
 
     // 무기(Gun)에서 데미지 정보를 넘겨줄 때 호출하는 함수
-    public void SetDamageInfo(GameObject attacker, DamageData damageData, bool bExtraCrit = false)
+    public void SetDamageInfo(GameObject attacker, DamageData damageData, bool bExtraCrit = false, 
+        float damageMultiplier = 1.0f)
     {
         if (attacker == null || damageData == null) return;
 
         ownerObject = attacker;
-        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit);
+        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit, damageMultiplier);
     }
 
     public void AddIgnore(GameObject ignore)
@@ -158,7 +159,8 @@ public class BeamProjectile
         }
     }
 
-    // 🎁 보너스: 유니티 에디터에서 빔의 두께와 길이를 빨간색 선으로 보여줍니다! (디버깅용)
+    // 🎁 보너스: 유니티 에디터에서 빔의 두께와 길이를 빨간색 선으로
+    // 보여줍니다! (디버깅용)
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

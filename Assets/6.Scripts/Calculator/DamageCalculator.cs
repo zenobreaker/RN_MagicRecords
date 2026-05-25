@@ -13,7 +13,7 @@ public static class DamageCalculator
     }
 
     public static DamageEvent GetMyDamageEvent(StatusComponent status, DamageData data, 
-        bool bFirstHit = false, bool bExtraCrit = false)
+        bool bFirstHit = false, bool bExtraCrit = false, float multiplier = 1.0f)
     {
         float attack = status.GetStatusValue(StatusType.ATTACK);
         float critRatio = status.GetStatusValue(StatusType.CRIT_RATIO);
@@ -21,6 +21,7 @@ public static class DamageCalculator
         bool crit = false;
 
         float result = data.baseDamage + (attack * data.statCoefficient);
+        result *= multiplier;
         
         crit = bExtraCrit;
         if (bExtraCrit)

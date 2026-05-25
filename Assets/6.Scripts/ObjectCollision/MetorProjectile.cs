@@ -18,6 +18,7 @@ public class MetorProjectile
     private Vector3 targetPosition;
     private GameObject ownerObject;
     private DamageData damageData;
+    private float cachedMultiplier = 1f;
     private bool isExploded = false;
 
     private HashSet<GameObject> ignores = new(); 
@@ -29,10 +30,11 @@ public class MetorProjectile
 
     public void SetDamageInfo(GameObject attacker
         , DamageData damageData
-        , bool bExtraCrit = false)
+        , bool bExtraCrit = false, float mulitplier = 1.0f)
     {
         ownerObject = attacker;
         this.damageData = damageData;
+        cachedMultiplier = mulitplier;
     }
 
     // 투사체가 스폰될 때 목표 지점을 설정해주는 함수
@@ -78,7 +80,7 @@ public class MetorProjectile
         // 2. 광역 데미지 판정 
         if(explosion != null && explosion.TryGetComponent<ISkillEffect>(out var skillEffect))
         {
-            skillEffect.SetDamageInfo(ownerObject, damageData, false);
+            skillEffect.SetDamageInfo(ownerObject, damageData, false, cachedMultiplier);
             skillEffect.AddIgnore(ownerObject); 
         }
         ObjectPooler.FinishSpawn(explosion);

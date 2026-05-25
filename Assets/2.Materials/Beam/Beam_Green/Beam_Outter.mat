@@ -7,17 +7,16 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Effect_54_Beam
+  m_Name: Beam_Outter
   m_Shader: {fileID: 4800000, guid: 1d58a8e283100ea4f8435e923e54553e, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - IS_MASK_FADE
   - IS_NORMAL_ANIMATE
-  - IS_NORMAL_DISTORTION
   - IS_SOFT_PARTICLES
   - IS_TEXCOORD_MOVE
   - IS_TEXTURE_ANIMATE
-  - IS_USE_SECOND_COLOR
   m_InvalidKeywords:
   - IS_UNITY_PARTICLE_INSTANCING_ENABLED
   - _ALPHAPREMULTIPLY_ON
@@ -27,7 +26,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: _TextureAnimateSpeed
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -60,20 +59,16 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 67b8806fa9373774088013c2e7a9a59c, type: 3}
         m_Scale: {x: 2, y: 2}
         m_Offset: {x: 0, y: 0}
-    - _Mask:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _MaskDistortion:
-        m_Texture: {fileID: 2800000, guid: 9a9498ac1b0e2484dbe7cdeee7973e50, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 2, y: 2}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:
-        m_Texture: {fileID: 2800000, guid: 1dd87d263698bdd489172bf9aa265da1, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: ced23a9040cdc9341b98674e347b4844, type: 3}
+        m_Scale: {x: 5, y: 5}
         m_Offset: {x: 1, y: 1}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
@@ -87,13 +82,9 @@ Material:
         m_Texture: {fileID: 2800000, guid: 708d24fa8e8cc804aba4ce74d4e6a1b1, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _NormalMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _NormalTex:
         m_Texture: {fileID: 2800000, guid: 9a9498ac1b0e2484dbe7cdeee7973e50, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Scale: {x: 1, y: 7.5}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
@@ -112,13 +103,12 @@ Material:
     - _CameraFadingEnabled: 0
     - _CameraFarFadeDistance: 2
     - _CameraNearFadeDistance: 1
-    - _ColorFactor: 0.5
+    - _ColorFactor: 15
     - _ColorMode: 0
     - _Cull: 2
-    - _Culling: 2
+    - _Culling: 0
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DistortFactor: 10
     - _DistortionBlend: 0.5
     - _DistortionEnabled: 0
     - _DistortionStrength: 1
@@ -137,10 +127,10 @@ Material:
     - _Lighting: 0
     - _LightingEnabled: 0
     - _LinePass: 0
-    - _MaskAnimatedSpeed: 5
+    - _MaskAnimatedSpeed: 1
     - _MaskCutOut: 1
-    - _MaskFade: 0
-    - _MaskOffsetFactor: 1
+    - _MaskFade: 1
+    - _MaskOffsetFactor: 0.5
     - _MaxIndex: 2
     - _Metallic: 0
     - _MixedMove: 0
@@ -149,8 +139,8 @@ Material:
     - _NoiseScale: 0.01
     - _NormalAnimate: 1
     - _NormalAnimateSpeed: 0.15
-    - _NormalDistortion: 1
-    - _NormalDistortionFactor: 2
+    - _NormalDistortion: 0
+    - _NormalDistortionFactor: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _ParticleInstancing: 1
@@ -158,7 +148,7 @@ Material:
     - _RimScale: 2
     - _RimStrength: 1
     - _RotateAngle: 0
-    - _SecondColor: 1
+    - _SecondColor: 0
     - _SmoothnessTextureChannel: 0
     - _SoftParticle: 1
     - _SoftParticlesEnabled: 0
@@ -192,9 +182,9 @@ Material:
     - _ColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _NoiseValue: {r: 0.1, g: 1, b: 2, a: 1}
-    - _RimColor: {r: 1, g: 0, b: 0.00806427, a: 1}
+    - _RimColor: {r: 0.9716981, g: 0, b: 0.009329386, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
-    - _TintColor: {r: 0, g: 0, b: 0, a: 1}
-    - _TintColor2: {r: 1.4142135, g: 1.4142135, b: 1.4142135, a: 1}
+    - _TintColor: {r: 0.007076334, g: 0.06940012, b: 0.00360095, a: 1}
+    - _TintColor2: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -80,7 +80,11 @@ public class GenericActiveSkill
         }
     }
 
-    public override void Begin_JudgeAttack(AnimationEvent e) => NotifyModules(phaseIndex, SkillTriggerTime.OnJudgeAttack);
+    public override void Begin_JudgeAttack(AnimationEvent e)
+    {
+        base.Begin_JudgeAttack(e);
+        NotifyModules(phaseIndex, SkillTriggerTime.OnJudgeAttack);
+    }
     public override void Play_Sound() => NotifyModules(phaseIndex, SkillTriggerTime.OnSoundEvent);
     public override void Play_CameraShake() => NotifyModules(phaseIndex, SkillTriggerTime.OnCameraShake);
     public override void End_DoAction()
@@ -90,7 +94,9 @@ public class GenericActiveSkill
     }
     protected override void ExecutePhase(int phaseIndex)
     {
-        if (isCasting == false) return; 
+        if (isCasting == false) return;
+
+        base.ExecutePhase(phaseIndex);
 
         SetCurrentPhaseSkill(phaseIndex);
 

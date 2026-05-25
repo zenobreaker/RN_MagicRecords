@@ -23,6 +23,7 @@ public class ParabolicProjectile
     // 데미지 정보를 다음 폭발(AoE)로 토스하기 위한 캐싱 변수들
     private GameObject ownerObject;
     private DamageData cachedDamageData;
+    private float cachedMultiplier = 1f;
     private bool cachedCrit;
 
     public void AddIgnore(GameObject ignore)
@@ -30,9 +31,11 @@ public class ParabolicProjectile
         
     }
 
-    public void SetDamageInfo(GameObject attacker, DamageData damageData, bool bExtraCrit = false)
+    public void SetDamageInfo(GameObject attacker, DamageData damageData
+        , bool bExtraCrit = false, float multiplier = 1.0f)
     {
         ownerObject = attacker;
+        cachedMultiplier = multiplier;
         cachedDamageData = damageData;
         cachedCrit = bExtraCrit;
     }
@@ -90,7 +93,7 @@ public class ParabolicProjectile
         GameObject explosion = ObjectPooler.DeferredSpawnFromPool(explosionEffectName, transform);
         if (explosion != null && explosion.TryGetComponent<ISkillEffect>(out var effect))
         {
-            effect.SetDamageInfo(ownerObject, cachedDamageData, cachedCrit);
+            effect.SetDamageInfo(ownerObject, cachedDamageData, cachedCrit, cachedMultiplier);
             effect.AddIgnore(ownerObject); 
         }
 

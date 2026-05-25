@@ -443,9 +443,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 1.5
+  m_Height: 3.652567
   m_Direction: 1
-  m_Center: {x: 0, y: 0.7, z: 0}
+  m_Center: {x: 0, y: 1.7762835, z: 0}
 --- !u!114 &2254106761312302047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -685,6 +685,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SO_Movement: {fileID: 11400000, guid: 8b47bfc4a8b8c2e4c9abc94758b81c19, type: 2}
+  dashSpeed: 25
+  dashDistance: 5
 --- !u!1 &7218114331738614421
 GameObject:
   m_ObjectHideFlags: 0

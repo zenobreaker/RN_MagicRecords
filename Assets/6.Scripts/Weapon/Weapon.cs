@@ -73,15 +73,18 @@ public class DamageData
     public HitData hitData;
 
     public DamageEvent GetMyDamageEvent(GameObject attacker,
-        bool bFirstHit = false, bool bExtraCrit = false )
+        bool bFirstHit = false, bool bExtraCrit = false, 
+        float multiplier = 1.0f)
     {
-        return GetMyDamageEvent(attacker, attacker.GetComponent<StatusComponent>(), bFirstHit, bExtraCrit);
+        return GetMyDamageEvent(attacker, 
+            attacker.GetComponent<StatusComponent>(), bFirstHit,
+            bExtraCrit, multiplier);
     }
 
     public DamageEvent GetMyDamageEvent(GameObject attacker, StatusComponent status, 
-        bool bFirstHit = false, bool bExtraCrit = false)
+        bool bFirstHit = false, bool bExtraCrit = false, float multiplier = 1.0f)
     {
-        return DamageCalculator.GetMyDamageEvent(status, this, bFirstHit, bExtraCrit);
+        return DamageCalculator.GetMyDamageEvent(status, this, bFirstHit, bExtraCrit, multiplier);
     }
 
     public void PlayHitSound()

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PiercingDrillProjectile : MonoBehaviour, ISkillEffect
+public class PiercingDrillProjectile 
+    : MonoBehaviour
+    , ISkillEffect
 {
     [Header("Projectile Settings")]
     [SerializeField] private float force = 1000.0f;
@@ -41,12 +43,13 @@ public class PiercingDrillProjectile : MonoBehaviour, ISkillEffect
     // =======================================================
     // 💡 ISkillEffect 인터페이스 구현부
     // =======================================================
-    public void SetDamageInfo(GameObject attacker, DamageData damageData, bool bExtraCrit = false)
+    public void SetDamageInfo(GameObject attacker, DamageData damageData, 
+        bool bExtraCrit = false, float multiplier = 1.0f)
     {
         if (attacker == null || damageData == null) return;
 
         ownerObject = attacker;
-        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit);
+        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit, multiplier);
     }
 
     public void AddIgnore(GameObject ignore)

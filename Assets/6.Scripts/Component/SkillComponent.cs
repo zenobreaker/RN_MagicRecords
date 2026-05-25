@@ -14,7 +14,7 @@ public enum SkillSlot
 public sealed class SkillComponent
     : ActionComponent
 {
-    private string currentSkillName = "";
+    private string currentSlotName = "";
 
     // 장착 스킬 정보 
     private Dictionary<string, ActiveSkill> skillSlotTable;
@@ -63,13 +63,15 @@ public sealed class SkillComponent
 
             // 3. 스킬 로직 업데이트
             pair.Value.Update(Time.deltaTime);
-            skillEventHandler?.OnInCoolDown(currentSlot, pair.Value.IsOnCooldown);
+            if(skillEventHandler != null)
+                skillEventHandler.OnInCoolDown(currentSlot, pair.Value.IsOnCooldown);
 
             if (pair.Value.IsOnCooldown == false) continue;
 
             // 4. 쿨타임 UI 이벤트 발송
             pair.Value.Update_Cooldown(Time.deltaTime);
-            skillEventHandler?.OnCooldown(currentSlot, pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
+            if(skillEventHandler != null)
+                skillEventHandler.OnCooldown(currentSlot, pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
         }
     }
 
@@ -103,6 +105,17 @@ public sealed class SkillComponent
     }
 
 
+    public void ReleaseSkill(string slot)
+    {
+        if (currentSlotName == slot)
+        {
+            if (skillSlotTable.TryGetValue(slot, out ActiveSkill skill))
+            {
+                // 현재 실행 중인 스킬이 뗐다고 보고된 스킬과 일치한다면
+                skill?.OnReleaseKey();
+            }
+        }
+    }
 
     protected override async UniTaskVoid ManualActionRoutine(CancellationToken token)
     {
@@ -113,7 +126,7 @@ public sealed class SkillComponent
             int phaseCount = 1;
             ActiveSkill currentSkill = null;
 
-            if (!string.IsNullOrEmpty(currentSkillName) && skillSlotTable.TryGetValue(currentSkillName, out currentSkill))
+            if (!string.IsNullOrEmpty(currentSlotName) && skillSlotTable.TryGetValue(currentSlotName, out currentSkill))
             {
                 if (currentSkill != null)
                     phaseCount = currentSkill.MaxPhaseCount;
@@ -216,33 +229,33 @@ public sealed class SkillComponent
         UseSkill(slot.ToString());
     }
 
-    public void UseSkill(string skillName)
+    public void UseSkill(string slotName)
     {
-        if (!skillSlotTable.TryGetValue(skillName, out var skill) || skill == null) return;
+        if (!skillSlotTable.TryGetValue(slotName, out var skill) || skill == null) return;
 
-        if(skill.isConcurrentSkill)
+        if (skill.isConcurrentSkill)
         {
-            if (skill.IsOnCooldown) return ;
+            if (skill.IsOnCooldown) return;
 
             skill.Cast();
 
             ExecuteConcurrentSkillAsync(skill).Forget();
-            return; 
+            return;
         }
 
 
 
-        if (InAction || CanUseSkill(skillName) == false)
+        if (InAction || CanUseSkill(slotName) == false)
         {
             OnSkillUse?.Invoke(false);
             return;
         }
 
-        currentSkillName = skillName;
+        currentSlotName = slotName;
         OnSkillUse?.Invoke(true);
 
         base.DoAction();
-        skill?.Cast();
+        skill.Cast();
 
         if (!skill.HasActionData(skill.PhaseIndex))
         {
@@ -303,69 +316,78 @@ public sealed class SkillComponent
                 skill.End_DoAction();
             }
         }
-        skill.End_DoAction(); 
+        skill.End_DoAction();
     }
 
     public override void StartAction()
     {
-        if (string.IsNullOrEmpty(currentSkillName)) return;
+        if (string.IsNullOrEmpty(currentSlotName)) return;
         base.StartAction();
 
-        skillSlotTable[currentSkillName]?.Start_DoAction();
+        skillSlotTable[currentSlotName]?.Start_DoAction();
     }
 
     public override void BeginDoAction()
     {
-        if (string.IsNullOrEmpty(currentSkillName)) return;
+        if (string.IsNullOrEmpty(currentSlotName)) return;
         base.BeginDoAction();
 
-        skillSlotTable[currentSkillName]?.Begin_DoAction();
+        skillSlotTable[currentSlotName]?.Begin_DoAction();
 
         OnBeginDoAction?.Invoke();
-        skillEventHandler?.OnBegin_UseSkill();
+        if (skillEventHandler != null)
+            skillEventHandler.OnBegin_UseSkill();
     }
 
     public override void EndDoAction()
     {
-        if (string.IsNullOrEmpty(currentSkillName)) return;
-        base.EndDoAction();
+        if (string.IsNullOrEmpty(currentSlotName)) return;
 
-        skillSlotTable[currentSkillName]?.End_DoAction();
-        currentSkillName = string.Empty;
+        ActiveSkill skill = skillSlotTable[currentSlotName];
+        skill?.End_DoAction();
+
+        if(skill != null && skill.IsCasting)
+        {
+            return;
+        }
+
+        base.EndDoAction();
+        currentSlotName = string.Empty;
 
         OnEndDoAction?.Invoke();
-        skillEventHandler?.OnEnd_UseSkill();
+        if(skillEventHandler != null)
+            skillEventHandler.OnEnd_UseSkill();
     }
 
     public override void BeginJudgeAttack(AnimationEvent e)
     {
-        if (string.IsNullOrEmpty(currentSkillName)) return;
+        if (string.IsNullOrEmpty(currentSlotName)) return;
         base.BeginJudgeAttack(e);
 
-        skillSlotTable[currentSkillName]?.Begin_JudgeAttack(e);
+        skillSlotTable[currentSlotName]?.Begin_JudgeAttack(e);
     }
 
     public override void EndJudgeAttack(AnimationEvent e)
     {
-        if (string.IsNullOrEmpty(currentSkillName)) return;
+        if (string.IsNullOrEmpty(currentSlotName)) return;
         base.EndJudgeAttack(e);
-        skillSlotTable[currentSkillName]?.End_JudgeAttack(e);
+        skillSlotTable[currentSlotName]?.End_JudgeAttack(e);
     }
 
     public override void PlaySound()
     {
-        if (string.IsNullOrEmpty(currentSkillName)) return;
+        if (string.IsNullOrEmpty(currentSlotName)) return;
         base.PlaySound();
 
-        skillSlotTable[currentSkillName]?.Play_Sound();
+        skillSlotTable[currentSlotName]?.Play_Sound();
     }
 
     public override void PlayCameraShake()
     {
-        if (string.IsNullOrEmpty(currentSkillName)) return;
+        if (string.IsNullOrEmpty(currentSlotName)) return;
         base.PlayCameraShake();
 
-        skillSlotTable[currentSkillName]?.Play_CameraShake();
+        skillSlotTable[currentSlotName]?.Play_CameraShake();
     }
 
 
@@ -373,12 +395,14 @@ public sealed class SkillComponent
     #region NOTIFY
     public void NotifyBulletInit(int bulletCount)
     {
-        skillEventHandler?.OnUpdateMagciBulletLoad(bulletCount);
+        if (skillEventHandler != null)
+            skillEventHandler.OnUpdateMagciBulletLoad(bulletCount);
     }
 
     public void NotifyMagicBulletChanged(Queue<BulletData> bullets)
     {
-        skillEventHandler?.OnChangedBullets(bullets);
+        if (skillEventHandler != null)
+            skillEventHandler.OnChangedBullets(bullets);
     }
 
     #endregion

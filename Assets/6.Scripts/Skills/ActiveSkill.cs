@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering.Universal;
 
 
 public enum SkillPhase
@@ -53,9 +55,13 @@ public abstract class ActiveSkill
     protected float maxCooldown;
     protected float castingTime;
     protected float currentCastingTime;
-    protected bool isCasting = false; 
+    protected bool isCasting = false;
+    protected int expectedAnimEventPhaseIndex = 0;
+    public bool isWaitingForRelease = false;
+    protected float chargeStartTime = 0f;
 
-    public float CurrentCooldown { get => currentCooldown; }
+    public bool IsCasting { get => isCasting; set => isCasting = value; }
+    public float CurrentCooldown { get => currentCooldown;}
     public float MaxCooldown { get => maxCooldown; }
     public Dictionary<string, object> Blackboard;
     public int MaxPhaseCount
@@ -66,10 +72,14 @@ public abstract class ActiveSkill
         }
     }
     public int PhaseIndex => phaseIndex;
-    // 💡 [추가] 이 스킬이 다른 행동 중에도 쓸 수 있는 '즉발/동시 사용' 스킬인가?
+    // 이 스킬이 다른 행동 중에도 쓸 수 있는 '즉발/동시 사용' 스킬인가?
     public bool isConcurrentSkill = false;
     // 각 페이즈별로 애니메이션 유무를 미리 저장해둘 캐싱 배열
     private bool[] cachedActionDataFlags;
+
+    // 모듈들의 비동기 타이머를 관리할 토큰 소스 
+    protected CancellationTokenSource phaseCts;
+    public CancellationToken PhaseToken => phaseCts?.Token ?? default;
 
     public ActiveSkill(SO_SkillData skillData)
         : base(skillData)
@@ -182,7 +192,13 @@ public abstract class ActiveSkill
         if (IsOnCooldown)
             return;
 
+        phaseCts?.Cancel();
+        phaseCts?.Dispose();
+        phaseCts = new CancellationTokenSource();
+
         isCasting = true;
+        isWaitingForRelease = false;
+        chargeStartTime = Time.time;
 
         if (!isConcurrentSkill)
         {
@@ -209,9 +225,39 @@ public abstract class ActiveSkill
 
     public virtual void Update(float deltaTime) { }
     public virtual void EndPhaseAndNext() { }   // 페이즈를 종료 후 넘기는 처리 
-    protected abstract void ExecutePhase(int phaseIndex);
+
+    public void JumpToPhase(int index) 
+    {
+        if (phaseList.Count <= index) return;
+        ExecutePhase(index); 
+    }
+    protected virtual void ExecutePhase(int phaseIndex)
+    {
+        expectedAnimEventPhaseIndex = phaseIndex;
+    }
+
     protected abstract void ApplyEffects();     // 개별 효과 적용 
-    
+
+
+    // 키를 뗐을 때 호출되는 함수
+    public virtual void OnReleaseKey()
+    {
+        // 차징 중(0페이즈)일 때 키를 뗐다면?
+        if (isWaitingForRelease)
+        {
+            isWaitingForRelease = false;
+
+            // 💡 [핵심] 몇 초나 모았는지 계산해서 블랙보드에 저장! 
+            // (나중에 투사체 모듈이 이 값을 보고 데미지나 크기를 키울 수 있습니다)
+            float chargedTime = Time.time - chargeStartTime;
+            Blackboard["ChargedTime"] = chargedTime;
+
+            // 차징을 끝내고 발사 페이즈(1페이즈)로 강제로 넘깁니다!
+            EndPhaseAndNext();
+        }
+    }
+
+
     //현재 페이즈가 장판처럼 "스스로 페이즈를 끝내는" 능력이 있는지 확인.
     public bool DoesPhaseControlItself(int index)
     {
@@ -220,7 +266,9 @@ public abstract class ActiveSkill
             foreach (var mod in phaseList[index].modules)
             {
                 // 장판 모듈은 OnEndSign 델리게이트를 통해 스스로 EndPhaseAndNext를 부르므로 true!
-                if (mod is Module_SpawnWarningSign)
+                if (mod is Module_SpawnWarningSign || 
+                    mod is Module_PhaseTransition ||
+                    mod is Module_ChargeWait)
                     return true;
             }
         }
@@ -234,27 +282,32 @@ public abstract class ActiveSkill
     }
     public virtual void Begin_DoAction() 
     {
-        if (ownerCharacter != null)
-            ownerCharacter.BroadcastAttack(skillName, phaseList[phaseIndex].actionData, ownerCharacter); 
+       
     }
     public virtual void End_DoAction() 
     {
-        // 장판 등이 진행 중이여서 다음 페이즈가 남아있다면,
-        // 애니메이션이 끝났다고 해서 취소하지 않은다. 
-        if(phaseIndex < phaseList.Count -1)
+        if(expectedAnimEventPhaseIndex != phaseIndex)
         {
-            phaseIndex++;
             return; 
         }
 
-        isCasting = false;
-        
+
+        phaseCts?.Cancel();
+
+        // 장판 등이 진행 중이여서 다음 페이즈가 남아있다면,
+        // 애니메이션이 끝났다고 해서 취소하지 않은다. 
+        if (phaseIndex < phaseList.Count -1)
+        {
+            return; 
+        }
+
         // 다음 번 스킬을 위해 초기화
         phaseIndex = 0;
+        isCasting = false; 
 
-        if (!isConcurrentSkill)
+        if (!isConcurrentSkill && ownerObject != null)
         {
-            NavMeshAgent agent = ownerObject?.GetComponent<NavMeshAgent>();
+            NavMeshAgent agent = ownerObject.GetComponent<NavMeshAgent>();
             if (agent != null && agent.isActiveAndEnabled)
             {
                 agent.updateRotation = true;
@@ -266,7 +319,11 @@ public abstract class ActiveSkill
         }
     }
 
-    public virtual void Begin_JudgeAttack(AnimationEvent e) { }
+    public virtual void Begin_JudgeAttack(AnimationEvent e) 
+    {
+        if (ownerCharacter != null)
+            ownerCharacter.BroadcastAttack(skillName, phaseList[phaseIndex].actionData, ownerCharacter);
+    }
     public virtual void End_JudgeAttack(AnimationEvent e) { }
 
     public virtual void Play_Sound () 

@@ -20,6 +20,7 @@ public class ParabolicProjectile_UniTask
 
     private GameObject ownerObject;
     private DamageData cachedDamageData;
+    private float cachedMultiplier = 1.0f;
     private bool cachedCrit;
 
     public void AddIgnore(GameObject ignore)
@@ -27,10 +28,12 @@ public class ParabolicProjectile_UniTask
         
     }
 
-    public void SetDamageInfo(GameObject attacker, DamageData damageData, bool bExtraCrit = false)
+    public void SetDamageInfo(GameObject attacker, DamageData damageData,
+        bool bExtraCrit = false, float multiplier = 1.0f)
     {
         ownerObject = attacker;
         cachedDamageData = damageData;
+        cachedMultiplier = multiplier;
         cachedCrit = bExtraCrit;
     }
 
@@ -76,7 +79,7 @@ public class ParabolicProjectile_UniTask
         GameObject explosion = ObjectPooler.DeferredSpawnFromPool(explosionEffectName, transform);
         if (explosion != null && explosion.TryGetComponent<ISkillEffect>(out var effect))
         {
-            effect.SetDamageInfo(ownerObject, cachedDamageData, cachedCrit);
+            effect.SetDamageInfo(ownerObject, cachedDamageData, cachedCrit, cachedMultiplier);
             effect.AddIgnore(ownerObject);
         }
 

@@ -31,6 +31,7 @@ public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
     // 💡 [최적화] Update문 안에서 'new'로 데미지 데이터를 계속 생성하면 렉 유발!
     // 최초 주입 시 자탄용 데미지 데이터를 딱 한 번만 만들어 두고 캐싱해서 씁니다.
     private DamageData cachedChildDamageData;
+    private float cachedMultiplier = 1.0f;
 
     private HashSet<GameObject> ignores = new HashSet<GameObject>();
 
@@ -43,7 +44,8 @@ public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
     // =======================================================
     // 💡 ISkillEffect 인터페이스 구현부
     // =======================================================
-    public void SetDamageInfo(GameObject attacker, DamageData damageData, bool bExtraCrit = false)
+    public void SetDamageInfo(GameObject attacker, DamageData damageData
+        , bool bExtraCrit = false, float mulitplier = 1.0f)
     {
         if (attacker == null || damageData == null) return;
 
@@ -63,6 +65,8 @@ public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
             settings = damageData.settings,
             hitData = damageData.hitData
         };
+
+        cachedMultiplier = mulitplier;
     }
 
     public void AddIgnore(GameObject ignore)
@@ -133,7 +137,7 @@ public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
             if (childObj != null && childObj.TryGetComponent<ISkillEffect>(out var childEffect))
             {
                 // 캐싱된 데미지 데이터를 전달하므로 매 프레임 수십 개씩 쏴도 힙 메모리가 깨끗합니다.
-                childEffect.SetDamageInfo(ownerObject, cachedChildDamageData, isCrit);
+                childEffect.SetDamageInfo(ownerObject, cachedChildDamageData, isCrit, cachedMultiplier);
                 childEffect.AddIgnore(ownerObject);
             }
         }

@@ -24,6 +24,7 @@ MonoBehaviour:
   cooldown: 0
   limitCooldown: 0
   castingTime: 0
+  isConcurrentSkill: 0
   phaseList:
   - phaseName: "\uC804\uBC29 \uD0C0\uAC9F\uD305"
     isInstant: 1
@@ -70,6 +71,7 @@ MonoBehaviour:
     - rid: 5085156208516268146
     - rid: 5085156208516268138
     - rid: 5085156208516268147
+    - rid: 8682830680103846004
     damageData:
       damageType: 0
       baseDamage: 10
@@ -133,6 +135,40 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           settings: {fileID: 0}
           bCanMove: 0
+    - rid: 8682830680103846004
+      type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 2
+        damageApplyType: 0
+        damageMultiplier: 1
+        damageData:
+          damageType: 0
+          baseDamage: 10
+          statCoefficient: 0
+          bDownable: 0
+          bLauncher: 0
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          settings: {fileID: 0}
+          hitData:
+            DamageType: 0
+            Distance: 0
+            HeightValue: 0
+            StopFrame: 0
+            HitImpactIndex: 0
+            HitSoundName: 
+            HitParticle: {fileID: 0}
+            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+        spawnPosition: {x: 0, y: 5, z: 0}
+        spawnRotation: {x: 0, y: 0, z: 0}
+        patternType: 0
+        spawnObj: {fileID: 0}
+        objectName: StarFall
+        baseLifeTime: -1
+        useBlackboardPattern: 1
+        spawnCount: 1
+        angleBetween: 0
     - rid: 9058063375093465164
       type: {class: Module_CalcTargetPosition, ns: , asm: Assembly-CSharp}
       data:

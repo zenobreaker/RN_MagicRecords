@@ -108,13 +108,13 @@ public class Projectile
     }
 
     public void SetDamageInfo(GameObject attacker, DamageData damageData,
-        bool bExtraCrit = false)
+        bool bExtraCrit = false, float multiplier = 1.0f)
     {
         if (attacker == null) return;
         if (damageData == null) return;
 
         ownerObject = attacker.gameObject;
-        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit);
+        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit, multiplier);
     }
 
 }

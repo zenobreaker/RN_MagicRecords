@@ -334,8 +334,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 1, z: 3}
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Size: {x: 2, y: 3.564716, z: 3}
+  m_Center: {x: 0, y: 1.782358, z: 0}
 --- !u!195 &6010760231534463131
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -597,6 +597,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SO_Movement: {fileID: 11400000, guid: 39de9af0063a5314ebc408f75ed3d5ca, type: 2}
+  dashSpeed: 25
+  dashDistance: 5
 --- !u!1 &4611624665609859860
 GameObject:
   m_ObjectHideFlags: 0

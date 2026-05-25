@@ -9,7 +9,8 @@ public enum WarningSignType { Circle, Rectangle, Fan }
 
 public interface ISkillEffect
 {
-    void SetDamageInfo(GameObject attacker, DamageData damageData, bool bExtraCrit = false);
+    void SetDamageInfo(GameObject attacker, DamageData damageData, bool bExtraCrit = false, 
+        float multiplier = 1.0f);
     void AddIgnore(GameObject ignore);
 }
 

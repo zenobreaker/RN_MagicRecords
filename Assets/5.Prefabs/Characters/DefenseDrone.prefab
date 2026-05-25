@@ -139,7 +139,6 @@ GameObject:
   - component: {fileID: 8433306430752814027}
   - component: {fileID: 7485237532033845665}
   - component: {fileID: 4684953710537435347}
-  - component: {fileID: 649729886035762403}
   - component: {fileID: 8259173487962323447}
   - component: {fileID: 7751063619706842142}
   - component: {fileID: 1576108522960726996}
@@ -154,6 +153,7 @@ GameObject:
   - component: {fileID: 9135154297117308984}
   - component: {fileID: 3760456487707589166}
   - component: {fileID: 4440592410547144305}
+  - component: {fileID: 9177195392627580268}
   m_Layer: 3
   m_Name: DefenseDrone
   m_TagString: Untagged
@@ -170,7 +170,7 @@ Transform:
   m_GameObject: {fileID: 1808002145706194585}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 5.448}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -300,29 +300,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!136 &649729886035762403
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1808002145706194585}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1.5
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.7, z: 0}
 --- !u!114 &8259173487962323447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -583,6 +560,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SO_Movement: {fileID: 11400000, guid: 8b47bfc4a8b8c2e4c9abc94758b81c19, type: 2}
+  dashSpeed: 25
+  dashDistance: 5
+--- !u!65 &9177195392627580268
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1808002145706194585}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.0114217, y: 3.6566195, z: 2.1135635}
+  m_Center: {x: 0, y: 1.7594998, z: 0.55678177}
 --- !u!1 &3026914382011742948
 GameObject:
   m_ObjectHideFlags: 0

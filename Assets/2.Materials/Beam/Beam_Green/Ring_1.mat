@@ -7,11 +7,12 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Effect_54_Particle_Green
+  m_Name: Ring_1
   m_Shader: {fileID: 4800000, guid: 1d58a8e283100ea4f8435e923e54553e, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - IS_NORMAL_ANIMATE
   - IS_SOFT_PARTICLES
   - IS_TEXTURE_BLEND
   m_InvalidKeywords:
@@ -56,7 +57,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 1071ab01a543d1c4a91150e2ed7bbb08, type: 3}
+        m_Texture: {fileID: 2800000, guid: e99a9bdab939cc84396941770a4d4aa1, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskDistortion:
@@ -72,16 +73,16 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseNormal:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: 708d24fa8e8cc804aba4ce74d4e6a1b1, type: 3}
+        m_Scale: {x: 10, y: 10}
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalTex:
-        m_Texture: {fileID: 2800000, guid: 9a9498ac1b0e2484dbe7cdeee7973e50, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: c8620e029366c5c4eb99569cc94a6564, type: 3}
+        m_Scale: {x: 10, y: 10}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
@@ -100,7 +101,7 @@ Material:
     - _CameraFadingEnabled: 0
     - _CameraFarFadeDistance: 2
     - _CameraNearFadeDistance: 1
-    - _ColorFactor: 3
+    - _ColorFactor: 5
     - _ColorMode: 0
     - _Cull: 2
     - _Culling: 0
@@ -132,12 +133,12 @@ Material:
     - _Metallic: 0
     - _MixedMove: 0
     - _Mode: 3
-    - _NoiseNormalFactor: 1
+    - _NoiseNormalFactor: 0.001
     - _NoiseScale: 1
-    - _NormalAnimate: 0
+    - _NormalAnimate: 1
     - _NormalAnimateSpeed: 1
     - _NormalDistortion: 0
-    - _NormalDistortionFactor: 1
+    - _NormalDistortionFactor: 0.02
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _ParticleInstancing: 1
@@ -162,7 +163,7 @@ Material:
     - _TextureAnimate: 0
     - _TextureAnimateAdvanced: 0
     - _TextureAnimateSpeed: 1
-    - _TextureAnimateStyle: 1
+    - _TextureAnimateStyle: 1.02
     - _TextureBlend: 1
     - _TextureNoise: 0
     - _UVSec: 0
@@ -181,7 +182,7 @@ Material:
     - _NoiseValue: {r: 1, g: 1, b: 1, a: 0}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
-    - _TintColor: {r: 7.990824, g: 1.2551033, b: 1.459232, a: 1}
+    - _TintColor: {r: 0.32903257, g: 2.3130932, b: 0.054554075, a: 1}
     - _TintColor2: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

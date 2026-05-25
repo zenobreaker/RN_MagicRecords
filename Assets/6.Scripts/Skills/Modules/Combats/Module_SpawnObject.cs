@@ -45,6 +45,10 @@ public class Module_SpawnObject : SkillModule
     public int spawnCount = 1;
     public float angleBetween = 0f;
 
+    [Header("Damage Modifiers")]
+    [Tooltip("블랙보드에서 이 키값을 찾아 데미지 배율로 사용합니다. (비워두면 1배)")]
+    public string multiplierBlackboardKey = "DamageMultiplier";
+
     public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         // 1. 스폰 위치 계산 
@@ -77,6 +81,15 @@ public class Module_SpawnObject : SkillModule
         float finalLifeTime = useBlackboardPattern
         ? skill.Blackboard.GetValue<float>("LifeTime", baseLifeTime)
         : this.baseLifeTime;
+
+        // 5. 기본 배율은 1배
+        float damageMultiplier = 1.0f;
+
+        if (!string.IsNullOrEmpty(multiplierBlackboardKey) && 
+            skill.Blackboard.TryGetValue(multiplierBlackboardKey, out object multiObj))
+        {
+            damageMultiplier = (float)multiObj; 
+        }
 
         // 3. 다중 생성 루프 
         for (int i = 0; i < finalSpawnCount; i++)
@@ -118,7 +131,7 @@ public class Module_SpawnObject : SkillModule
                 if (obj.TryGetComponent<ISkillEffect>(out var projectile))
                 {
                     bool isCrit = skill?.Blackboard.GetValue<bool>("isCrit", false) ?? false;
-                    projectile.SetDamageInfo(owner, finalDamageData, isCrit);
+                    projectile.SetDamageInfo(owner, finalDamageData, isCrit, damageMultiplier);
                     projectile.AddIgnore(owner);
                 }
 

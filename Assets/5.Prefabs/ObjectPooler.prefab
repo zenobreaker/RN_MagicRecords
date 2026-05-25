@@ -76,10 +76,10 @@ MonoBehaviour:
     size: 5
     parentTransform: {fileID: 0}
   - tag: Beam
-    prefab: {fileID: 1208751775541016116, guid: f89766842e8e7024c93bd9105fa78104, type: 3}
+    prefab: {fileID: 1208751775541016116, guid: 8c1ad0e1b85b4664490ca2145f267774, type: 3}
     size: 5
     parentTransform: {fileID: 0}
-  - tag: HyperCannon
+  - tag: HyperCanon
     prefab: {fileID: 5904922040541714445, guid: 4d08b90daa2f6e646b2a16a1baee277c, type: 3}
     size: 5
     parentTransform: {fileID: 0}
@@ -97,5 +97,25 @@ MonoBehaviour:
     parentTransform: {fileID: 0}
   - tag: ParabolicShell_AOE
     prefab: {fileID: 36369754381117536, guid: 9d933da9f4bbab74a957355b4bed91c8, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: SpiralBullet
+    prefab: {fileID: 8024328742427582494, guid: eea120b0d1d54bf4b942b10ed1b54bc5, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: SplitMotherBullet
+    prefab: {fileID: 2006234525802268607, guid: 556d6581a3a0f9c418f19704e6054abd, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: AssistDroneBullet
+    prefab: {fileID: 7935417353228486464, guid: 4760895ce813d0448899ead78a75c134, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: AssistDroneBeam
+    prefab: {fileID: 1208751775541016116, guid: f89766842e8e7024c93bd9105fa78104, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: AssistDroneHyperBeam
+    prefab: {fileID: 5904922040541714445, guid: 1ff102a86ccd88f40bc8192ed9ccd835, type: 3}
     size: 5
     parentTransform: {fileID: 0}

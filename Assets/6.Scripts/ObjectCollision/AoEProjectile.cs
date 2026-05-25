@@ -24,10 +24,11 @@ public class AoEProjectile
     private HashSet<Collider> hitTargets = new HashSet<Collider>();
     private HashSet<GameObject> ignores = new HashSet<GameObject>();
 
-    public void SetDamageInfo(GameObject attacker, DamageData damageData, bool bExtraCrit = false)
+    public void SetDamageInfo(GameObject attacker, DamageData damageData
+        , bool bExtraCrit = false, float mulitplier = 1.0f)
     {
         ownerObject = attacker;
-        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit);
+        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit, mulitplier);
     }
 
     public void AddIgnore(GameObject ignore)
