@@ -1,7 +1,7 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.AI;
+using UnityEngine.Audio; // ğŸ’¡ [ì¶”ê°€] AudioMixerë¥¼ ì‚¬ìš©í•˜ê¸° ìœ„í•œ ë„¤ì„ìŠ¤í˜ì´ìŠ¤
 
 [System.Serializable]
 public class Sound
@@ -12,7 +12,28 @@ public class Sound
 
 public class SoundManager : MonoBehaviour
 {
-    private  static SoundManager instance;
+    private static SoundManager instance;
+
+    public static SoundManager Instance { get { return instance; } }
+
+    [Header("ì‚¬ìš´ë“œ ë“±ë¡")]
+    [SerializeField] Sound[] bgmSounds = null;
+    [SerializeField] Sound[] sfxSounds = null;
+
+    [Header("ì˜¤ë””ì˜¤ ë¯¹ì„œ (Audio Mixer)")]
+    [Tooltip("ìµœìƒìœ„ Audio Mixer ì—ì…‹ì„ ì—°ê²°í•˜ì„¸ìš”.")]
+    public AudioMixer masterMixer;
+    [Tooltip("BGMìš© Audio Mixer Groupì„ ì—°ê²°í•˜ì„¸ìš”.")]
+    public AudioMixerGroup bgmGroup;
+    [Tooltip("SFXìš© Audio Mixer Groupì„ ì—°ê²°í•˜ì„¸ìš”.")]
+    public AudioMixerGroup sfxGroup;
+
+    [Header("í”Œë ˆì´ì–´ í• ë‹¹")]
+    public AudioSource bgmPlayer = null;
+    public AudioSource[] sfxPlayers = null;
+
+    private Dictionary<string, AudioClip> bgmSoundTable = new Dictionary<string, AudioClip>();
+    private Dictionary<string, AudioClip> sfxSoundTable = new Dictionary<string, AudioClip>();
 
     private void Awake()
     {
@@ -21,138 +42,169 @@ public class SoundManager : MonoBehaviour
             instance = this;
         }
         else if (instance != null)
+        {
             Destroy(gameObject);
+            return;
+        }
 
         DontDestroyOnLoad(gameObject);
 
         Awake_InitSFXTable();
+        Awake_InitBGMTable();
+        Awake_InitMixerGroups(); // ğŸ’¡ ë¯¹ì„œ ê·¸ë£¹ ìë™ í• ë‹¹
     }
-
-    public static SoundManager Instance { get { return instance; } }
-
-    
-    ///////////////////////////////////////////////////////////////////////////
-
-    [Header("»ç¿îµå µî·Ï")]
-    [SerializeField] Sound[] bgmSounds = null;
-    [SerializeField] Sound[] sfxSounds = null;
-
-    [Header("BGM ÇÃ·¹ÀÌ¾î")]
-    public AudioSource bgmPlayer = null;
-
-    [Header("È¿°úÀ½ ÇÃ·¹ÀÌ¾î")]
-    public AudioSource[] sfxPlayers = null;
-
-    private Dictionary<string, AudioClip> sfxSoundTable = new Dictionary<string, AudioClip>();
 
     private void Awake_InitSFXTable()
     {
-        foreach(Sound sound in sfxSounds )
+        foreach (Sound sound in sfxSounds)
         {
-            sfxSoundTable.Add(sound.soundName, sound.clip);
+            if (!sfxSoundTable.ContainsKey(sound.soundName))
+            {
+                sfxSoundTable.Add(sound.soundName, sound.clip);
+            }
         }
     }
 
-    private void Start()
+    private void Awake_InitBGMTable()
     {
-        PlayRandomBGM();
+        foreach (Sound sound in bgmSounds)
+        {
+            if (!bgmSoundTable.ContainsKey(sound.soundName))
+            {
+                bgmSoundTable.Add(sound.soundName, sound.clip);
+            }
+        }
     }
 
-    private void Update()
+    // ğŸ’¡ [ì¶”ê°€] ì¸ìŠ¤í™í„°ì—ì„œ ë¯¹ì„œ ê·¸ë£¹ì„ ë„£ì—ˆìœ¼ë©´, ì˜¤ë””ì˜¤ ì†ŒìŠ¤ë“¤ì— ìë™ìœ¼ë¡œ ì—°ê²°í•´ì¤ë‹ˆë‹¤.
+    private void Awake_InitMixerGroups()
     {
-        if (!bgmPlayer.isPlaying && bgmSounds.Length > 0)
+        if (bgmPlayer != null && bgmGroup != null)
         {
-            int random = Random.Range(0, bgmSounds.Length - 1);
+            bgmPlayer.outputAudioMixerGroup = bgmGroup;
+        }
 
-            bgmPlayer.clip = bgmSounds[random].clip;
-            bgmPlayer.Play();
+        if (sfxPlayers != null && sfxGroup != null)
+        {
+            foreach (AudioSource source in sfxPlayers)
+            {
+                source.outputAudioMixerGroup = sfxGroup;
+            }
         }
     }
 
     public void PlayRandomBGM()
     {
-        if (bgmSounds.Length <= 0)
-            return; 
+        if (bgmSounds.Length <= 0) return;
 
-        int random = Random.Range(0, bgmSounds.Length - 1); // Á¤¼öÅ¸ÀÔÀº MAX°ª ¹ÌÆ÷ÇÔ ½Ç¼ö Å¸ÀÔÀº MAX°ª Æ÷ÇÔ
+        // ğŸ’¡ [ìˆ˜ì •] Random.Range(int min, int max)ëŠ” maxë¥¼ í¬í•¨í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤!
+        // bgmSounds.Length - 1 ì„ ë„£ìœ¼ë©´ ë§ˆì§€ë§‰ ìš”ì†Œê°€ ì ˆëŒ€ ë‚˜ì˜¤ì§€ ì•Šìœ¼ë¯€ë¡œ Lengthë¥¼ ê·¸ëŒ€ë¡œ ë„£ì–´ì•¼ í•©ë‹ˆë‹¤.
+        int random = Random.Range(0, bgmSounds.Length);
+
         bgmPlayer.clip = bgmSounds[random].clip;
         bgmPlayer.Play();
     }
+
+    public void PlayBGM(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName) || bgmSoundTable == null) return;
+
+        if(bgmSoundTable.ContainsKey(soundName))
+        {
+            bgmPlayer.clip = bgmSoundTable[soundName];
+            bgmPlayer.Play(); 
+        }
+    }
+
     public void PlaySFX(string soundName)
     {
-        if (string.IsNullOrEmpty(soundName))
-            return;
-
-        if (sfxSoundTable == null)
-            return;
-
+        if (string.IsNullOrEmpty(soundName) || sfxSoundTable == null) return;
 
         if (sfxSoundTable.TryGetValue(soundName, out AudioClip clip))
         {
             AudioSource audioSource = GetNotPlayingAudioSource();
             if (audioSource == null)
             {
-                Debug.Log($"Auido Source All Playing");
+                // ë¹ˆ í”Œë ˆì´ì–´ê°€ ì—†ë‹¤ë©´, ê°™ì€ ì†Œë¦¬ë¥¼ ë‚´ê³  ìˆëŠ” ë…€ì„ì„ ì°¾ì•„ì„œ ì²˜ìŒë¶€í„° ë‹¤ì‹œ ì¬ìƒì‹œí‚µë‹ˆë‹¤.
                 FindExistingAudioSource(clip)?.Play();
-
                 return;
             }
+
             audioSource.clip = clip;
             audioSource.Play();
-
             return;
         }
 
-        Debug.Log($"Not Registered Sound");
+        Debug.LogWarning($"[SoundManager] ë“±ë¡ë˜ì§€ ì•Šì€ íš¨ê³¼ìŒì…ë‹ˆë‹¤: {soundName}");
     }
 
     private AudioSource GetNotPlayingAudioSource()
     {
-        foreach(AudioSource audioSource in sfxPlayers)
+        foreach (AudioSource audioSource in sfxPlayers)
         {
-            if (audioSource.isPlaying)
-                continue;
-
-            return audioSource;
+            if (!audioSource.isPlaying)
+                return audioSource;
         }
-
-        return null; 
+        return null;
     }
 
     private AudioSource FindExistingAudioSource(AudioClip clip)
     {
         foreach (AudioSource source in sfxPlayers)
         {
-            if(/*source.isPlaying && */source.clip == clip)
+            if (source.clip == clip)
             {
                 return source;
             }
         }
-
         return null;
     }
 
-    private void Old_Code(string _soundName)
+    // =========================================================================
+    // ğŸ’¡ [ì¶”ê°€] UI ìŠ¬ë¼ì´ë”ì—ì„œ í˜¸ì¶œí•  ë³¼ë¥¨ ì¡°ì ˆ í•¨ìˆ˜ë“¤ (0.0 ~ 1.0 ê°’ì„ ë°›ìŒ)
+    // =========================================================================
+
+    public void SetMasterVolume(float sliderValue)
     {
-        // È¿°úÀ½ ÇÃ·¹ÀÌ¾î¿¡ ¿©·¯°³ÀÇ ¿Àµğ¿À¼Ò¸¦ ³Ö¾îÁÖ¸é ¿¬¼ÓÀûÀÎ Àç»ıÀÌ °¡´ÉÇØÁø´Ù. (°³¼ö°¡ ÀûÀ» ¼ö·Ï ¼Ò¸® µô·¹ÀÌ°¡ Å©´Ù)
-        for (int i = 0; i < sfxSounds.Length; i++)
+        if (masterMixer == null) return;
+
+        // ğŸ’¡ [í•µì‹¬] ë“¤ì–´ì˜¨ ê°’(0~10)ì„ ìµœëŒ€ê°’(10)ìœ¼ë¡œ ë‚˜ëˆ„ì–´ 0.0 ~ 1.0 ë¹„ìœ¨(%)ë¡œ ë§Œë“­ë‹ˆë‹¤.
+        // ë§Œì•½ ìŠ¬ë¼ì´ë”ì˜ Max Valueë¥¼ 100ìœ¼ë¡œ ì“°ì‹ ë‹¤ë©´ 100fë¡œ ë‚˜ëˆ„ì‹œë©´ ë©ë‹ˆë‹¤!
+        float normalizedValue = sliderValue / 10f;
+
+        if (normalizedValue <= 0.001f)
         {
-            if (_soundName == sfxSounds[i].soundName)
-            {
-                for (int x = 0; x < sfxPlayers.Length; x++)
-                {
-                    if (!sfxPlayers[x].isPlaying)
-                    {
-                        sfxPlayers[x].clip = sfxSounds[i].clip;
-                        sfxPlayers[x].Play();
-                        //Debug.Log("ÇÃ·¹ÀÌÇÔ" + _soundName);
-                        return;
-                    }
-                }
-                Debug.Log("¸ğµç È¿°úÀ½ ÇÃ·¹ÀÌ¾î°¡ »ç¿ë ÁßÀÔ´Ï´Ù!");
-                return;
-            }
+            masterMixer.SetFloat("Master", -80f);
         }
-        Debug.Log("µî·ÏµÈ È¿°úÀ½ÀÌ ¾ø½À´Ï´Ù.");
+        else
+        {
+            // ì´ì œ 0.0 ~ 1.0 ì‚¬ì´ì˜ ê°’ì´ ë“¤ì–´ê°€ë¯€ë¡œ ë¶€ë“œëŸ½ê²Œ ê¹ì…ë‹ˆë‹¤!
+            Debug.Log($"Sound matster : {normalizedValue}");
+            masterMixer.SetFloat("Master", Mathf.Lerp(-40f, 0f, normalizedValue));
+        }
+    }
+
+    public void SetBGMVolume(float sliderValue)
+    {
+        if (masterMixer == null) return;
+
+        float normalizedValue = sliderValue / 10f;
+
+        if (normalizedValue <= 0.001f)
+            masterMixer.SetFloat("BGM", -80f);
+        else
+            masterMixer.SetFloat("BGM", Mathf.Lerp(-40f, 0f, normalizedValue));
+    }
+
+    public void SetSFXVolume(float sliderValue)
+    {
+        if (masterMixer == null) return;
+
+        float normalizedValue = sliderValue / 10f;
+
+        if (normalizedValue <= 0.001f)
+            masterMixer.SetFloat("SFX", -80f);
+        else
+            masterMixer.SetFloat("SFX", Mathf.Lerp(-40f, 0f, normalizedValue));
     }
 }

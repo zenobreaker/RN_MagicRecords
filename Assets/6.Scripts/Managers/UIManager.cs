@@ -445,6 +445,15 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
+    public void OpenOptionPopUp()
+    {
+        UIPopUpOption ui = OpenUI<UIPopUpOption>(true);
+        if(ui != null && ui.TryGetComponent<UIPopUpOption>(out UIPopUpOption target))
+        {
+
+        }
+    }
+
     //--------------------------------------------------------------------------
     // Damage Text
     //--------------------------------------------------------------------------

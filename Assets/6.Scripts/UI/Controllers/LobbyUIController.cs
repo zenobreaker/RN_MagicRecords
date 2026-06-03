@@ -57,4 +57,9 @@ public class LobbyUIController
     {
         UIManager.Instance.OpenUI<Exploration_Main_UI>();
     }
+
+    public void OnOpenOptionUI()
+    {
+        UIManager.Instance.OpenOptionPopUp();
+    }
 }
