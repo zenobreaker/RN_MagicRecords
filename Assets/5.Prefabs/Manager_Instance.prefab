@@ -2020,12 +2020,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bef8f8911b11e244a0ca5f25ceb9b3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bgmSounds: []
+  bgmSounds:
+  - soundName: MainTheme1
+    clip: {fileID: 8300000, guid: 6732736c8759af144b5513d7024ec2c9, type: 3}
+  - soundName: Forest_Battle1
+    clip: {fileID: 8300000, guid: 1fbec18f73eea874eb23a0a9caad9882, type: 3}
+  - soundName: Battle1
+    clip: {fileID: 8300000, guid: c7d4abaf1d8185c4696bd762d482b157, type: 3}
   sfxSounds:
   - soundName: Gun_Normal1
     clip: {fileID: 8300000, guid: ef1aa073dba5df24886ea9765dc5893f, type: 3}
   - soundName: Gun_Normal2
     clip: {fileID: 8300000, guid: 0561032dd5a2e16418e21ab524a543cc, type: 3}
+  masterMixer: {fileID: 24100000, guid: abf4aac28bd7b5e42b06c0bff1367cc4, type: 2}
+  bgmGroup: {fileID: 2889626302884008671, guid: abf4aac28bd7b5e42b06c0bff1367cc4, type: 2}
+  sfxGroup: {fileID: -809776525529572944, guid: abf4aac28bd7b5e42b06c0bff1367cc4, type: 2}
   bgmPlayer: {fileID: 7940262953784555836}
   sfxPlayers:
   - {fileID: 4477383645032393050}
