@@ -23,7 +23,7 @@ public class RewardManager
             ManagerWaiter.WaitForManager<UIManager>((uiManager) =>
             {
                 uiManager.OnJoinedLobby += OnJoinedLobby;
-                uiManager.OnReturnedStageSelectStage += OnReturnedStageSelectScene;
+                uiManager.OnReturnedStageSelect += OnReturnedStageSelectScene;
             });
 
             ManagerWaiter.WaitForManager<InventoryManager>((Inventory) =>

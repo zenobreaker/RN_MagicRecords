@@ -14,10 +14,11 @@ public class UISkillReplaceDetail : UiBase
 
     private int selectedSlot = -1;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         SetSlots();
-    }
+    }  
 
     public void SetSkillTreeManager(SkillTreeManager manager)
     {

@@ -13,6 +13,22 @@ public abstract class UiBase : MonoBehaviour
     public event Action UIOpend;
     public event Action UIClosed;
 
+    protected virtual void Awake()
+    {
+        Button[] allButtons = GetComponentsInChildren<Button>(true);
+
+        foreach (Button button in allButtons)
+        {
+            if (button.GetComponent<UIButtonSound>() != null) 
+            {
+                continue; 
+            }
+
+            button.gameObject.AddComponent<UIButtonSound>();
+        }
+
+    }
+
     protected virtual void OnEnable()
     {
         UIOpend?.Invoke();

@@ -11,7 +11,7 @@ public abstract class UIPopUp : UiBase, IPointerClickHandler
 
     protected CanvasGroup canvasGroup;
 
-    protected virtual void Awake()
+    protected override void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
     }

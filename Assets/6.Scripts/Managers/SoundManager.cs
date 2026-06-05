@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using Cysharp.Threading.Tasks;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Audio; // 💡 [추가] AudioMixer를 사용하기 위한 네임스페이스
 
@@ -34,6 +36,8 @@ public class SoundManager : MonoBehaviour
 
     private Dictionary<string, AudioClip> bgmSoundTable = new Dictionary<string, AudioClip>();
     private Dictionary<string, AudioClip> sfxSoundTable = new Dictionary<string, AudioClip>();
+    
+    private CancellationTokenSource bgmFadeCts;
 
     private void Awake()
     {
@@ -76,7 +80,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // 💡 [추가] 인스펙터에서 믹서 그룹을 넣었으면, 오디오 소스들에 자동으로 연결해줍니다.
+    // 💡 인스펙터에서 믹서 그룹을 넣었으면, 오디오 소스들에 자동으로 연결해줍니다.
     private void Awake_InitMixerGroups()
     {
         if (bgmPlayer != null && bgmGroup != null)
@@ -91,6 +95,54 @@ public class SoundManager : MonoBehaviour
                 source.outputAudioMixerGroup = sfxGroup;
             }
         }
+    }
+
+    public void ChangeBGM(string soundName, float fadeDuration = 1.0f)
+    {
+        if (bgmSoundTable.TryGetValue(soundName, out AudioClip newClip))
+        {
+            // 이미 똑같은 음악이 나오고 있다면 무시
+            if (bgmPlayer.clip == newClip && bgmPlayer.isPlaying) return;
+
+            // 💡 1. 진행 중인 페이드 작업이 있다면 즉시 취소 (안전한 스레드 종료)
+            bgmFadeCts?.Cancel();
+            bgmFadeCts?.Dispose();
+            bgmFadeCts = new CancellationTokenSource();
+
+            // 💡 2. UniTask 실행 (Forget을 붙여 워닝을 없애고 비동기로 흘려보냄)
+            ChangeBGMTask(newClip, fadeDuration, bgmFadeCts.Token).Forget();
+        }
+    }
+
+    private async UniTaskVoid ChangeBGMTask(AudioClip newClip, float duration, CancellationToken token)
+    {
+        float startVolume = bgmPlayer.volume;
+        float currentTime = 0f;
+
+        // 1. 기존 음악 Fade Out
+        while (currentTime < duration)
+        {
+            currentTime += Time.deltaTime;
+            bgmPlayer.volume = Mathf.Lerp(startVolume, 0f, currentTime / duration);
+
+            // 💡 yield return null 대신 UniTask.Yield 사용 (취소 토큰 전달)
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
+        }
+
+        // 2. 클립 교체 및 재생
+        bgmPlayer.clip = newClip;
+        bgmPlayer.Play();
+
+        // 3. 새 음악 Fade In
+        currentTime = 0f;
+        while (currentTime < duration)
+        {
+            currentTime += Time.deltaTime;
+            bgmPlayer.volume = Mathf.Lerp(0f, startVolume, currentTime / duration);
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
+        }
+
+        bgmPlayer.volume = startVolume;
     }
 
     public void PlayRandomBGM()
@@ -161,7 +213,7 @@ public class SoundManager : MonoBehaviour
     }
 
     // =========================================================================
-    // 💡 [추가] UI 슬라이더에서 호출할 볼륨 조절 함수들 (0.0 ~ 1.0 값을 받음)
+    // UI 슬라이더에서 호출할 볼륨 조절 함수들 (0.0 ~ 1.0 값을 받음)
     // =========================================================================
 
     public void SetMasterVolume(float sliderValue)

@@ -10,7 +10,6 @@ public class AppManager
 {
     public Action OnAwaked;
     public event Action OnSelectedRecordCard;
-    public event Action<RecordData> OnRecordSelectedComplete;
 
     private DataBaseManager databaseManager;
     private SkillManager skillManager;
@@ -54,7 +53,7 @@ public class AppManager
         {
             ManagerWaiter.WaitForManager<UIManager>((uiManager) =>
             {
-                uiManager.OnReturnedStageSelectStage += exploreManager.OnReturnedStageSelectScene;
+                uiManager.OnReturnedStageSelect += exploreManager.OnReturnedStageSelectScene;
             });
         }
 

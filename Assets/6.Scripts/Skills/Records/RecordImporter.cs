@@ -11,10 +11,6 @@ public class RecordImporter : MonoBehaviour
         owner = GetComponent<Character>(); 
     }
 
-    private void Start()
-    {
-        AppManager.Instance.OnRecordSelectedComplete += AddRecordDirectly;
-    }
 
     [ContextMenu("지정한 ID 레코드 즉시 획득")]
     public static void AddRecordDirectly(RecordData data)

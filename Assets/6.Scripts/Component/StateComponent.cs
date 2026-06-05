@@ -60,12 +60,15 @@ public class StateComponent : MonoBehaviour
         ChangeType(StateType.Damaged);
 
         // 2. 현재 공격 중이거나 행동 중이었다면 취소 (경직)
-        character?.End_Damaged();
-
-        // 3. 시각적 피격 애니메이션 재생!
-        if (hitData != null)
+        if (character != null)
         {
-            character?.Visual?.PlayDamageAnimation(hitData);
+            character.End_Damaged();
+
+            // 3. 시각적 피격 애니메이션 재생!
+            if (hitData != null && character.Visual != null)
+            {
+                character.Visual.PlayDamageAnimation(hitData);
+            }
         }
     }
 

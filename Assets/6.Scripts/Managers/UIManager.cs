@@ -40,8 +40,8 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private InputActionReference submitAction;
 
     public event Action OnJoinedLobby;                  // 로비 
-    public event Action OnJoinedStage;                  // 스테이지 입장
-    public event Action OnReturnedStageSelectStage;     // 스테이지 선택 씬 
+    //public event Action OnJoinedStage;                  // 스테이지 입장
+    public event Action OnReturnedStageSelect;     // 스테이지 선택 씬 
 
     // 💡 [수정] 팝업 큐를 삭제하고 오직 하나의 스택(openedUIs)으로 모든 UI와 팝업을 관리합니다.
     private Stack<UiBase> openedUIs = new Stack<UiBase>();
@@ -325,7 +325,7 @@ public class UIManager : Singleton<UIManager>
 
     private void SetStageSelectScene()
     {
-        OnReturnedStageSelectStage?.Invoke();
+        OnReturnedStageSelect?.Invoke();
     }
 
     private void SetLobbyProgress()

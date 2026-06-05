@@ -18,8 +18,10 @@ public class SkillTreeController : UiBase
     private Skill_Category category;
     private int classID = 1;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake(); 
+
         Debug.Assert(SkillTreeManager.Instance != null);
         skillTreeManager = SkillTreeManager.Instance;
 

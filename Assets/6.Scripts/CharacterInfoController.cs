@@ -12,8 +12,10 @@ public class CharacterInfoController : UiBase
     private Action<CharStatusData, CharEquipmentData> DrawnCharInfo;
     private Action<CharEquipmentData> DrawenCharEquipment;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake(); 
+
         uiCharEquipment = FindAnyObjectByType<UICharEquipment>();
         if (uiCharEquipment != null)
             DrawenCharEquipment += uiCharEquipment.OnDrawCharEquipment;

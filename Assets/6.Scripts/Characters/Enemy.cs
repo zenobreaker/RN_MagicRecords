@@ -283,7 +283,7 @@ public class Enemy
         }
         else
         {
-            state?.SetDamagedMode();
+            state?.SetDamagedMode(damgeEvent.hitData);
         }
     }
 }

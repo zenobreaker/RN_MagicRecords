@@ -32,7 +32,7 @@ public class StageUIController
 
     private void Init(UIManager ui)
     {
-        ui.OnReturnedStageSelectStage += UpdateCurrencies;
+        ui.OnReturnedStageSelect += UpdateCurrencies;
     }
 
     protected void Start()
@@ -52,7 +52,7 @@ public class StageUIController
     protected void OnDisable()
     {
         if (ManagerWaiter.TryGetManager<UIManager>(out UIManager ui))
-            ui.OnReturnedStageSelectStage -= UpdateCurrencies;
+            ui.OnReturnedStageSelect -= UpdateCurrencies;
 
         if (ManagerWaiter.TryGetManager(out CurrencyManager manager))
             manager.OnUpdatedCurrency -= UpdateCurrencies;

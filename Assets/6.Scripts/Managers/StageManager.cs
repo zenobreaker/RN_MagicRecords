@@ -33,7 +33,7 @@ public sealed class StageManager : MonoBehaviour
     private bool bEnableSpawn = false;
     private bool bStageClearSuccess = false;
 
-    public event Action OnPreProcess;
+    //public event Action OnPreProcess;
     public event Action OnProcessBattle;
     public event Action OnFinishStage;
     public event Action OnSucccedStage;

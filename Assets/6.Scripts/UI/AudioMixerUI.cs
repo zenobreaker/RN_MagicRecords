@@ -15,8 +15,10 @@ public class AudioMixerUI : UiBase
     private float bgmVolume;
     private float sfxVolume;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake(); 
+
         slider_Master.onValueChanged.AddListener(SetMaterVolume);
         slider_BGM.onValueChanged.AddListener(SetBGMVolume);
         slider_SFX.onValueChanged.AddListener(SetSFXVolume);

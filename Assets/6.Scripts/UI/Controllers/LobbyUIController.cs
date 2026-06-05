@@ -5,6 +5,14 @@ using UnityEngine;
 public class LobbyUIController
     : UIController
 {
+    private void Start()
+    {
+        if(SoundManager.Instance != null)
+        {
+            SoundManager.Instance.ChangeBGM("Lobby1");
+        }
+    }
+
     protected override void OnEnable()
     {
         base.OnEnable();

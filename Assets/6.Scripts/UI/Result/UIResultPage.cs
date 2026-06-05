@@ -18,8 +18,10 @@ public class UIResultPage : UiBase
 
     private bool isSuccess;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake(); 
+
         confirmButton.onClick.AddListener(OnConfirmClicked);
 
         if (fadeImage != null)

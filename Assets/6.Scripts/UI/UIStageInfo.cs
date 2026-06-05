@@ -12,8 +12,10 @@ public class UIStageInfo
 
     [SerializeField] private TextMeshProUGUI titleText;
 
-    private void Awake()
+    protected override  void Awake()
     {
+        base.Awake(); 
+
         rect = GetComponent<RectTransform>();
     }
 
