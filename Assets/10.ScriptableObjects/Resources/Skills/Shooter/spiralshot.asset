@@ -31,6 +31,7 @@ MonoBehaviour:
     modules:
     - rid: 8682830537020145741
     - rid: 8682830537020145742
+    - rid: 25348276825882838
     damageData:
       damageType: 0
       baseDamage: 10
@@ -69,6 +70,11 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 25348276825882838
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        soundName: Gun_Normal2
     - rid: 8682830537020145741
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
@@ -117,3 +123,4 @@ MonoBehaviour:
         useBlackboardPattern: 1
         spawnCount: 1
         angleBetween: 0
+        multiplierBlackboardKey: DamageMultiplier

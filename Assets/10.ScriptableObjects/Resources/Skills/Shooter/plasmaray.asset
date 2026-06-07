@@ -24,12 +24,13 @@ MonoBehaviour:
   cooldown: 12
   limitCooldown: 2
   castingTime: -1
+  isConcurrentSkill: 0
   phaseList:
   - phaseName: "\uC0AC\uACA9"
     isInstant: 0
     modules:
-    - rid: 9058063302450741333
     - rid: 9058063302450741332
+    - rid: 25348276825882823
     - rid: 9058063302450741331
     - rid: 8682830616796856472
     damageData:
@@ -70,10 +71,15 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 25348276825882823
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        soundName: Laser01
     - rid: 8682830616796856472
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 0
+        triggerTime: 2
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -104,6 +110,7 @@ MonoBehaviour:
         useBlackboardPattern: 1
         spawnCount: 1
         angleBetween: 0
+        multiplierBlackboardKey: DamageMultiplier
     - rid: 9058063302450741331
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
@@ -124,8 +131,3 @@ MonoBehaviour:
         triggerTime: 5
         impulseDirection: {x: 0, y: 0, z: 0}
         settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
-    - rid: 9058063302450741333
-      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 4
-        soundName: Gun_Normal2

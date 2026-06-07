@@ -34,6 +34,7 @@ MonoBehaviour:
     - rid: 8682830680103845989
     - rid: 8682830680103845977
     - rid: 8682830698810441813
+    - rid: 25348276825882832
     damageData:
       damageType: 0
       baseDamage: 10
@@ -77,6 +78,7 @@ MonoBehaviour:
     - rid: 8682830698810441814
     - rid: 8682830616796856407
     - rid: 8682830698810441876
+    - rid: 25348276825882833
     damageData:
       damageType: 0
       baseDamage: 10
@@ -156,6 +158,16 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 25348276825882832
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        soundName: Laser_Charging
+    - rid: 25348276825882833
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        soundName: Laser02
     - rid: 8682830616796856405
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
