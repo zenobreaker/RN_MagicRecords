@@ -151,7 +151,7 @@ MonoBehaviour:
   - rid: 5085156115266142415
   - rid: 9058062983924023485
   - rid: 9058062983924023636
-  m_VersionTimestamp: 639120564158440355
+  m_VersionTimestamp: 639164286860987941
   m_CommandBuffer:
     m_Commands: []
   m_RuntimeBlackboardAsset: {fileID: -3124936328520751148}
@@ -175,7 +175,7 @@ MonoBehaviour:
           m_Value0: 13280988714468782050
           m_Value1: 14242116260096663902
         Name: AttackDistance
-        IsExposed: 0
+        IsExposed: 1
         m_IsShared: 0
         m_Value: 0
     - rid: 6694591329077297440
@@ -317,7 +317,7 @@ MonoBehaviour:
   - rid: 9058062983924023710
   - rid: 9058063005651042535
   - rid: 455252085954576468
-  m_VersionTimestamp: 639120564166707645
+  m_VersionTimestamp: 639164286837668066
   m_DebugInfo: {fileID: -2786540578946187512}
   m_RuntimeGraph: {fileID: 5663370945778764342}
   AssetID:
@@ -4219,7 +4219,7 @@ MonoBehaviour:
         AuthoringAssetID:
           m_Value0: 2654242306252150435
           m_Value1: 17501610737993760248
-        m_DebugInfo: {fileID: 0}
+        m_DebugInfo: {fileID: -2786540578946187512}
         Root:
           rid: 455252085954576477
         BlackboardReference:
@@ -4231,7 +4231,7 @@ MonoBehaviour:
           rid: 455252085954576479
         m_EndedNodes:
           rid: 455252085954576480
-        m_VersionTimestamp: 639120564166707645
+        m_VersionTimestamp: 639164286837668066
     - rid: 455252085954576477
       type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
