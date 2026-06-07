@@ -85,6 +85,8 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
             };
 
             ObjectPooler.FinishSpawn(sign.gameObject);
+
+            skill.AddTrackedEffect(sign.gameObject);
         }
     }
 

@@ -17,6 +17,7 @@ public class ParabolicProjectile_UniTask
 
     [Tooltip("바닥에 닿았을 때 터질 이펙트(이전에 만든 AoEExplosion 프리팹)")]
     [SerializeField] private string explosionEffectName = "VFX_Explosion";
+    [SerializeField] private string impactSoundName = "";
 
     private GameObject ownerObject;
     private DamageData cachedDamageData;
@@ -83,6 +84,10 @@ public class ParabolicProjectile_UniTask
             effect.AddIgnore(ownerObject);
         }
 
+        // Play Sound
+        {
+            SoundManager.Instance.SafeInvoke(v => v.PlaySFX(impactSoundName));
+        }
         ObjectPooler.FinishSpawn(explosion);
         gameObject.SetActive(false);
     }

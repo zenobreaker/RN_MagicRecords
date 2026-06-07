@@ -13,6 +13,7 @@ public class AoEProjectile
     [Header("Hit Settings")]
     [SerializeField] private bool isMultiHit = false; // 단타 폭발 vs 지속 장판
     [SerializeField] private float tickRate = 0.5f;   // 다단히트 간격
+    [SerializeField] private string impactSoundName = "";
 
     private float lifeTimer;
     private float tickTimer;

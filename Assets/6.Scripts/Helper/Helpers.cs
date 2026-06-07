@@ -1,6 +1,23 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+
+
+public static class UnitySafeInvokeExtension
+{
+    /// <summary>
+    /// 유니티 오브젝트(파괴된 오브젝트 포함)가 안전하게 살아있을 때만 함수를 실행합니다.
+    /// </summary>
+    public static void SafeInvoke<T>(this T obj, Action<T> action) where T : UnityEngine.Object
+    {
+        // 여기서 obj != null 은 유니티가 재정의한 똑똑한 null 체크를 수행합니다.
+        if (obj != null)
+        {
+            action?.Invoke(obj);
+        }
+    }
+}
 
 public static class LayerMaskExtensions
 {

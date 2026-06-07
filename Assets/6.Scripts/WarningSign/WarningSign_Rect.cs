@@ -39,7 +39,10 @@ public class WarningSign_Rect : WarningSign
             UpdateSubPlanePositionAndScale();
         }
         else
+        {
+            OnEndSign?.Invoke();
             gameObject.SetActive(false);
+        }
     }
 
     public override void Setup(IWarningData data, float duration)

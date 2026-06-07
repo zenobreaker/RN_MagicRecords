@@ -56,6 +56,8 @@ public class PhaseSkill
 public class SO_ActiveSkillData : SO_SkillData
 {
     [Header("Skill Settings")]
+    [Tooltip("AI용 값이므로 웬만하면 건들지 않는다.")]
+    public float range = -1;
     public int cost; 
     public float cooldown;
     public float limitCooldown;
@@ -68,4 +70,6 @@ public class SO_ActiveSkillData : SO_SkillData
     public List<PhaseSkill> phaseList;
 
     public SO_ActiveSkillData Clone() => Instantiate(this);
+
+    public float Range => range; 
 }

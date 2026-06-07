@@ -34,9 +34,9 @@ public enum SkillPhase
 
 
 [System.Serializable]
-public abstract class ActiveSkill 
+public abstract class ActiveSkill
     : Skill
-    ,ICooldownable
+    , ICooldownable
 {
     protected int phaseIndex;
     protected List<PhaseSkill> phaseList;
@@ -47,10 +47,18 @@ public abstract class ActiveSkill
     protected Character ownerCharacter;
     protected WeaponController weaponController;
     protected SkillComponent skillComponent;
-    protected StateComponent state; 
+    protected StateComponent state;
+
+    protected List<GameObject> trackedEffects = new List<GameObject>();
+
+    /// <summary>
+    /// AI가 사용할 때 해당 스킬 패턴의 기준을 정리하는 값 
+    /// </summary>
+    protected float range = 0.0f;
+    public float Range => range;
 
     public bool IsOnCooldown => currentCooldown > 0;
-    protected float limitCooldown; 
+    protected float limitCooldown;
     protected float initCooldown;
     protected float maxCooldown;
     protected float castingTime;
@@ -61,7 +69,7 @@ public abstract class ActiveSkill
     protected float chargeStartTime = 0f;
 
     public bool IsCasting { get => isCasting; set => isCasting = value; }
-    public float CurrentCooldown { get => currentCooldown;}
+    public float CurrentCooldown { get => currentCooldown; }
     public float MaxCooldown { get => maxCooldown; }
     public Dictionary<string, object> Blackboard;
     public int MaxPhaseCount
@@ -84,9 +92,10 @@ public abstract class ActiveSkill
     public ActiveSkill(SO_SkillData skillData)
         : base(skillData)
     {
-        Blackboard = new(); 
+        Blackboard = new();
         if (skillData is SO_ActiveSkillData activeSkillData)
         {
+            this.range = activeSkillData.range;
             phaseList = activeSkillData.phaseList;
             this.limitCooldown = activeSkillData.limitCooldown;
             this.maxCooldown = activeSkillData.cooldown;
@@ -100,14 +109,14 @@ public abstract class ActiveSkill
     {
         ownerObject = gameObject;
         ownerCharacter = gameObject.GetComponent<Character>();
-        state = gameObject.GetComponent<StateComponent>(); 
+        state = gameObject.GetComponent<StateComponent>();
 
         if (ownerObject.TryGetComponent(out IWeaponUser user))
         {
             weaponController = user.GetWeaponController();
         }
 
-         skillComponent  = ownerObject.GetComponent<SkillComponent>();
+        skillComponent = ownerObject.GetComponent<SkillComponent>();
 
         foreach (var phase in phaseList)
         {
@@ -211,8 +220,8 @@ public abstract class ActiveSkill
             }
 
             // 상태 변경 
-            if(state != null)
-                state.SetActionMode(); 
+            if (state != null)
+                state.SetActionMode();
 
             // 첫 번째 페이즈 
             ExecutePhase(0);
@@ -226,10 +235,10 @@ public abstract class ActiveSkill
     public virtual void Update(float deltaTime) { }
     public virtual void EndPhaseAndNext() { }   // 페이즈를 종료 후 넘기는 처리 
 
-    public void JumpToPhase(int index) 
+    public void JumpToPhase(int index)
     {
         if (phaseList.Count <= index) return;
-        ExecutePhase(index); 
+        ExecutePhase(index);
     }
     protected virtual void ExecutePhase(int phaseIndex)
     {
@@ -266,7 +275,7 @@ public abstract class ActiveSkill
             foreach (var mod in phaseList[index].modules)
             {
                 // 장판 모듈은 OnEndSign 델리게이트를 통해 스스로 EndPhaseAndNext를 부르므로 true!
-                if (mod is Module_SpawnWarningSign || 
+                if (mod is Module_SpawnWarningSign ||
                     mod is Module_PhaseTransition ||
                     mod is Module_ChargeWait)
                     return true;
@@ -275,35 +284,54 @@ public abstract class ActiveSkill
         return false;
     }
 
-
-    public virtual void Start_DoAction() 
+    // 모듈이 무언가를 소환하면 여기에 신고(등록)하게 만듭니다.
+    public void AddTrackedEffect(GameObject effect)
     {
-       
-    }
-    public virtual void Begin_DoAction() 
-    {
-       
-    }
-    public virtual void End_DoAction() 
-    {
-        if(expectedAnimEventPhaseIndex != phaseIndex)
+        if (effect != null && !trackedEffects.Contains(effect))
         {
-            return; 
+            trackedEffects.Add(effect);
         }
+    }
+
+    public virtual void Start_DoAction()
+    {
+
+    }
+    public virtual void Begin_DoAction()
+    {
+
+    }
+    public virtual void End_DoAction()
+    {
+        if (expectedAnimEventPhaseIndex != phaseIndex)
+        {
+            return;
+        }
+
+        foreach (var effect in trackedEffects)
+        {
+            if (effect != null && effect.activeInHierarchy)
+            {
+                effect.gameObject.SetActive(false);
+            }
+        }
+
+        // 다음 번 스킬 사용을 위해 리스트를 비워줍니다.
+        trackedEffects.Clear();
 
 
         phaseCts?.Cancel();
 
         // 장판 등이 진행 중이여서 다음 페이즈가 남아있다면,
         // 애니메이션이 끝났다고 해서 취소하지 않은다. 
-        if (phaseIndex < phaseList.Count -1)
+        if (phaseIndex < phaseList.Count - 1)
         {
-            return; 
+            return;
         }
 
         // 다음 번 스킬을 위해 초기화
         phaseIndex = 0;
-        isCasting = false; 
+        isCasting = false;
 
         if (!isConcurrentSkill && ownerObject != null)
         {
@@ -319,18 +347,18 @@ public abstract class ActiveSkill
         }
     }
 
-    public virtual void Begin_JudgeAttack(AnimationEvent e) 
+    public virtual void Begin_JudgeAttack(AnimationEvent e)
     {
         if (ownerCharacter != null)
             ownerCharacter.BroadcastAttack(skillName, phaseList[phaseIndex].actionData, ownerCharacter);
     }
     public virtual void End_JudgeAttack(AnimationEvent e) { }
 
-    public virtual void Play_Sound () 
+    public virtual void Play_Sound()
     {
         phaseSkill?.actionData?.Play_Sound();
     }
-    public virtual void Play_CameraShake() 
+    public virtual void Play_CameraShake()
     {
         phaseSkill?.actionData?.Play_CameraShake();
     }

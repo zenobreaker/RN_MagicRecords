@@ -59,16 +59,10 @@ public class StateComponent : MonoBehaviour
         // 1. 상태를 Damaged로 변경
         ChangeType(StateType.Damaged);
 
-        // 2. 현재 공격 중이거나 행동 중이었다면 취소 (경직)
-        if (character != null)
+        // 2. 시각적 피격 애니메이션 재생!
+        if (character != null && hitData != null && character.Visual != null)
         {
-            character.End_Damaged();
-
-            // 3. 시각적 피격 애니메이션 재생!
-            if (hitData != null && character.Visual != null)
-            {
-                character.Visual.PlayDamageAnimation(hitData);
-            }
+            character.Visual.PlayDamageAnimation(hitData);
         }
     }
 
@@ -76,7 +70,7 @@ public class StateComponent : MonoBehaviour
     {
         if (this.type == type)
             return;
-
+        //Debug.Log($"{character.name} State Change {type}");
         StateType prevType = this.type;
         this.type = type;
 

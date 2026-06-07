@@ -34,7 +34,6 @@ public abstract class WarningSign : MonoBehaviour
 
     protected virtual void OnDisable()
     {
-        OnEndSign?.Invoke();
         ObjectPooler.ReturnToPool(gameObject);
         OnEndSign = null;
     }
@@ -50,7 +49,10 @@ public abstract class WarningSign : MonoBehaviour
             subPlane.localScale = Vector3.one * currentScale;
         }
         else
+        {
+            OnEndSign?.Invoke(); 
             gameObject.SetActive(false);
+        }
     }
 
     public void SetData(float scale, float duration = 1.0f)

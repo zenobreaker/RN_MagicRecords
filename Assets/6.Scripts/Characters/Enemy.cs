@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Enemy
     : Character
@@ -29,7 +30,7 @@ public class Enemy
     protected SkillComponent skill;
     protected WeaponComponent weapon;
 
-    private MonsterGrade grade; 
+    private MonsterGrade grade;
 
     protected override void Awake()
     {
@@ -75,7 +76,7 @@ public class Enemy
         if (state != null)
             state.OnStateTypeChanged += ChangeType;
 
-        BattleManager.Instance?.ResistEnemy(this);
+        BattleManager.Instance.SafeInvoke(v => v.ResistEnemy(this));
     }
 
     protected override void OnDisable()
@@ -83,7 +84,7 @@ public class Enemy
         base.OnDisable();
 
         if (state != null)
-            state.OnStateTypeChanged -= ChangeType; 
+            state.OnStateTypeChanged -= ChangeType;
 
         BattleManager.Instance?.UnreistEnemy(this);
         CancelInvoke();
@@ -103,7 +104,7 @@ public class Enemy
         bInAction = false;
         foreach (var ac in actionComponents)
             if (ac.InAction) ac.EndDoAction();
-        
+
         OnEndDoAction?.Invoke();
     }
 
@@ -126,8 +127,8 @@ public class Enemy
     {
         if (healthPoint != null && healthPoint.Dead)
             return;
-        
-        damageHandle?.OnDamage(attacker, damageEvent);
+
+        damageHandle.SafeInvoke(v => v.OnDamage(attacker, damageEvent));
 
         // 💡 3. [보스 vs 잡몹 구분] 피격 애니메이션(경직) 처리
         if (isBoss)
@@ -156,12 +157,12 @@ public class Enemy
             return;
 
         // Dead..
-        state?.SetDeadMode();
+        state.SafeInvoke(v => v.SetDeadMode());
         Collider collider = GetComponent<Collider>();
         collider.isTrigger = true;
         rigidbody.isKinematic = true;
 
-        visual?.PlayDeadAnimation();
+        visual.SafeInvoke(v => v.PlayDeadAnimation());
         HandleDeath().Forget();
     }
 
@@ -201,7 +202,9 @@ public class Enemy
     {
         base.End_Damaged();
 
-        state?.SetIdleMode();
+        if (state != null)
+            state.SetIdleMode();
+
         foreach (var ac in actionComponents)
             ac.EndDoAction();
     }
@@ -209,7 +212,7 @@ public class Enemy
     private async UniTaskVoid HandleDeath()
     {
         await UniTask.Delay(TimeSpan.FromSeconds(2.0f));
-        Dead(); 
+        Dead();
     }
 
     protected override void Dead()
@@ -218,14 +221,14 @@ public class Enemy
         if (this == null || gameObject == null || !gameObject.activeInHierarchy)
             return;
         base.Dead();
-        gameObject?.SetActive(false);
+        gameObject.SafeInvoke(v => v.SetActive(false));
     }
 
     private void ChangeType(StateType prevType, StateType newType)
     {
-        if(newType == StateType.Dead)
+        if (newType == StateType.Dead)
         {
-            OnDead?.Invoke(this); 
+            OnDead?.Invoke(this);
         }
     }
 
@@ -243,7 +246,7 @@ public class Enemy
 
     public void ApplyLaunch(GameObject attacker, Weapon causer, HitData hitData)
     {
-        launch?.ApplyLaunch(attacker, causer, hitData);
+        launch.SafeInvoke(v => v.ApplyLaunch(attacker, causer, hitData));
     }
 
 
@@ -251,13 +254,13 @@ public class Enemy
     {
         grade = monsterGrade;
         if (grade == MonsterGrade.BOSS)
-            isBoss = true; 
+            isBoss = true;
     }
 
     public void SetGrade(MonsterData data)
     {
-        if(data != null)
-            SetGrade(data.monsterGrade); 
+        if (data != null)
+            SetGrade(data.monsterGrade);
     }
 
     public void SetStatData(MonsterStatData statData)
@@ -275,15 +278,15 @@ public class Enemy
 
     private void HandleHitReaction(DamageEvent damgeEvent)
     {
-        if (damgeEvent.IsDOTEffect()) return; 
+        if (damgeEvent.IsDOTEffect()) return;
 
-        if(isBoss)
+        if (isBoss)
         {
 
         }
         else
         {
-            state?.SetDamagedMode(damgeEvent.hitData);
+            state.SafeInvoke(v => v.SetDamagedMode(damgeEvent.hitData));
         }
     }
 }

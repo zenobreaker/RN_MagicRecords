@@ -11,6 +11,7 @@ public class MetorProjectile
     [SerializeField] private float explosionRadius = 2f;
     [SerializeField] private LayerMask collisionLayer;
     [SerializeField] private string explosionEffectName = "";
+    [SerializeField] private string impactSoundName = "";
 
     [Header("Visuals (선택")]
     [SerializeField] private TrailRenderer trail;
@@ -83,6 +84,12 @@ public class MetorProjectile
             skillEffect.SetDamageInfo(ownerObject, damageData, false, cachedMultiplier);
             skillEffect.AddIgnore(ownerObject); 
         }
+
+        // Play Sound
+        {
+            SoundManager.Instance.SafeInvoke(v => v.PlaySFX(impactSoundName));
+        }
+
         ObjectPooler.FinishSpawn(explosion);
 
         // 3. 운석 역할 끝

@@ -12,6 +12,7 @@ public class PiercingDrillProjectile
     [SerializeField] private float life = 5.0f;
     [SerializeField] private LayerMask ignoreLayer;
     [SerializeField] private string bombEffectName = "";
+    [SerializeField] private string impactSoundName = "";
 
     [Header("Piercing Drill Settings")]
     [Tooltip("관통 중일 때의 속도 배율 (0.2 = 평소 속도의 20%로 감속)")]
@@ -148,6 +149,11 @@ public class PiercingDrillProjectile
         if (currentTargets.Add(other))
         {
             ApplyDamage(other);
+
+            // Play Sound
+            {
+                SoundManager.Instance.SafeInvoke(v => v.PlaySFX(impactSoundName));
+            }
 
             // 관통 이펙트 재생 (필요시)
             if (!string.IsNullOrEmpty(bombEffectName))

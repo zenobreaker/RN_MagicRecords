@@ -93,6 +93,14 @@ public sealed class AIBehaviourComponent : MonoBehaviour
         bgAgent.SetVariableValue<AIState>(AIStateTypeName, state);
     }
 
+    public void SetAttackDistance(float value)
+    {
+        if (bgAgent == null) return;
+
+        bgAgent.SetVariableValue(AttackDistanceName, value);
+
+    }
+
     private void OnStateTypeChanged(StateType oldType, StateType newType)
     {
         bool bCanMove = false;

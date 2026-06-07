@@ -7,7 +7,7 @@ public class UIButtonSound : MonoBehaviour, IPointerEnterHandler, IPointerClickH
 {
     private Button button;
 
-    [SerializeField] private string hoverSoundName = "UI_Hover";
+    [SerializeField] private string hoverSoundName = "";
     [SerializeField] private string clickSoundName = "UI_Click";
 
     private void Awake()

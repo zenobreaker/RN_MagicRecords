@@ -18,6 +18,7 @@ public class BeamProjectile
     [Header("Hit Settings")]
     [SerializeField] private bool isMultiHit = false; // 체크 끄면 단발, 켜면 다단히트
     [SerializeField] private float tickRate = 0.2f;   // 다단히트 시 데미지 들어가는 간격(초)
+    [SerializeField] private string impactSoundName = "";
 
     private float currentDelayTimer = 0f;
     private float currentLifeTimer = 0f;
@@ -139,6 +140,11 @@ public class BeamProjectile
             // 단발 모드일 때 이미 때린 적이면 무시 (다단히트는 무시 안 함)
             if (!isMultiHit && hitTargets.Contains(hit.collider))
                 continue;
+
+            // Play Sound
+            {
+                SoundManager.Instance.SafeInvoke(v => v.PlaySFX(impactSoundName));
+            }   
 
             // Damage 처리
             IDamagable damageTarget = hit.collider.GetComponent<IDamagable>();

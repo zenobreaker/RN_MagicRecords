@@ -10,6 +10,6 @@ public class Module_Sound : SkillModule
 
     public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        phaseSkill?.actionData?.Play_Sound();
+        SoundManager.Instance.SafeInvoke(v => v.PlaySFX(soundName)); 
     }
 }

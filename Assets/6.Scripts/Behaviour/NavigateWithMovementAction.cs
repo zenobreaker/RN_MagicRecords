@@ -56,7 +56,9 @@ public partial class NavigateWithMovementAction : Action
         if (Vector3.Distance(lastTargetPos, currentTargetPos) > 0.1f)
         {
             lastTargetPos = currentTargetPos;
-            m_NavMeshAgent.SetDestination(currentTargetPos);
+            
+            if(m_NavMeshAgent.isStopped == false)
+                m_NavMeshAgent.SetDestination(currentTargetPos);
         }
 
         // 💡 3. 함정 회피: 3D 거리가 아닌 X, Z축(바닥 평면) 거리만 계산! (높이 차이 무시)

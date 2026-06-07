@@ -14,6 +14,7 @@ public class Projectile
     [SerializeField] private LayerMask ignoreLayer;
 
     [SerializeField] private string bombEffectName = "";
+    [SerializeField] private string impactSoundName = ""; 
 
     private float curLife = 0f;
 
@@ -95,6 +96,11 @@ public class Projectile
         if(string.IsNullOrEmpty(bombEffectName) == false)
         {
             ObjectPooler.SpawnFromPool(bombEffectName, this.transform.position);
+        }
+
+        // Play Sound
+        {
+            SoundManager.Instance.SafeInvoke(v => v.PlaySFX(impactSoundName));
         }
 
         // Damage 
