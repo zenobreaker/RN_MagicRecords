@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6435505657770604870}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Rocket.R_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6760390537940688751}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Prop.R_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -72,7 +72,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5909985833063123530}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Arm.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,7 +104,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4435635019092028333}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Armature
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 3760456487707589166}
   - component: {fileID: 4440592410547144305}
   - component: {fileID: 9177195392627580268}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: DefenseDrone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -506,35 +506,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1a6b0daebc84d94a85c987321f2ae8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  combatStyle: 0
   patternEntries:
   - slotName: slot1
     conditions:
     - type: 0
       ctype: 4
-      value: 999
+      value: 10
     - type: 3
       ctype: 4
-      value: 1
-    skill: {fileID: 11400000, guid: c59277076ca99464eb051c2681c4ff82, type: 2}
+      value: 10
+    skill: {fileID: 11400000, guid: 1105d551c74d81541a4f31f384357d05, type: 2}
   - slotName: slot2
     conditions:
     - type: 0
       ctype: 4
-      value: 999
+      value: 7
     - type: 3
       ctype: 4
-      value: 3
-    skill: {fileID: 11400000, guid: 7f3a86edc1afce34d890f7f459bbb08b, type: 2}
-  - slotName: slot3
-    conditions:
-    - type: 0
-      ctype: 4
-      value: 9999
-    - type: 3
-      ctype: 4
-      value: 3
+      value: 5
     skill: {fileID: 11400000, guid: 7d2440c2ca5e9a746907242493d0e015, type: 2}
-  - slotName: slot4
+  - slotName: slot3
     conditions:
     - type: 0
       ctype: 4
@@ -592,7 +584,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2082890051352391922}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Gun_Muzzle_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -623,7 +615,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5664910719385801732}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Prop.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -655,7 +647,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6670655631580154567}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Prop.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -687,7 +679,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2891406034060614723}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Prop.L_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -718,7 +710,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4282558120156869966}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Rocket.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -750,7 +742,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2267343729942607708}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -785,7 +777,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2875732731400583875}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PropArm.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -817,7 +809,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1911557701897992513}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Arm.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -849,7 +841,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 623924262551417002}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Weapon_Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -881,7 +873,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3625280488136483548}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PropArm.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -913,7 +905,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5255706497097213474}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Gun_Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -948,7 +940,7 @@ GameObject:
   - component: {fileID: 7194144096922782533}
   - component: {fileID: 7629952787925834670}
   - component: {fileID: 2071212067070711202}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1052,7 +1044,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3620332030054918916}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Gun_Muzzle_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1084,7 +1076,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9212198426165628862}
   - component: {fileID: 2324869483125191684}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: DefenseDrone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1139,7 +1131,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8198387539406392628}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Rocket.L_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1171,7 +1163,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3083979455244828978}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Rocket.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1204,7 +1196,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2128773758764812426}
   - component: {fileID: 5522752591369817493}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1300,7 +1292,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6653125628518353357}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model_Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1040804607467413107}
   - component: {fileID: 1020605655958192350}
   - component: {fileID: 5234313488518518723}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Wheel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 1302555339339959761}
   - component: {fileID: 1341421188013784244}
   - component: {fileID: 1403520849185641085}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Rifle 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 8492268346531535873}
   - component: {fileID: 1295153726893066048}
   - component: {fileID: 170239112187763671}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Wheeler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -561,6 +561,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1a6b0daebc84d94a85c987321f2ae8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  combatStyle: 0
   patternEntries:
   - slotName: slot1
     conditions:
@@ -569,8 +570,8 @@ MonoBehaviour:
       value: 5
     - type: 3
       ctype: 4
-      value: 1
-    skill: {fileID: 11400000, guid: c59277076ca99464eb051c2681c4ff82, type: 2}
+      value: 7
+    skill: {fileID: 11400000, guid: f18986f394989954aba7f76f86268a6c, type: 2}
   - slotName: slot2
     conditions:
     - type: 0
@@ -578,8 +579,8 @@ MonoBehaviour:
       value: 7
     - type: 3
       ctype: 4
-      value: 3
-    skill: {fileID: 11400000, guid: 7f3a86edc1afce34d890f7f459bbb08b, type: 2}
+      value: 10
+    skill: {fileID: 11400000, guid: 1105d551c74d81541a4f31f384357d05, type: 2}
   defaultAttack:
     slotName: 
     conditions: []
@@ -610,7 +611,7 @@ GameObject:
   - component: {fileID: 3080391859438013228}
   - component: {fileID: 1671169262037498935}
   - component: {fileID: 4260412484975279478}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Wheel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -695,7 +696,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7093597470290403353}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Weapon_Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -727,7 +728,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8678640267601369704}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Gun_Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -758,7 +759,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5219167907400398868}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model_Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -790,7 +791,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6359005552110316944}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model_Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -824,7 +825,7 @@ GameObject:
   - component: {fileID: 1898973575756669344}
   - component: {fileID: 61607855586680527}
   - component: {fileID: 7285126968458038275}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Car02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -916,7 +917,7 @@ GameObject:
   - component: {fileID: 9180334256349626611}
   - component: {fileID: 2578964241700180353}
   - component: {fileID: 2131054138842569579}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Wheel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1003,7 +1004,7 @@ GameObject:
   - component: {fileID: 6989227029233427883}
   - component: {fileID: 5038863865449029296}
   - component: {fileID: 2624826540421047969}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1077,7 +1078,7 @@ GameObject:
   - component: {fileID: 919152998947407367}
   - component: {fileID: 3715242083456825657}
   - component: {fileID: 1740273113708499664}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Wheel
   m_TagString: Untagged
   m_Icon: {fileID: 0}

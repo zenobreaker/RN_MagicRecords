@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3518934669681744809}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Back.R.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5499978859635510566}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -77,7 +77,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7562670550132963759}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Weapon_Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -109,7 +109,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2271645063737655651}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Head_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,7 +140,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2979194702420249271}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Front.R.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -172,7 +172,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2728477040770803713}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Front.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,7 +204,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4636917907905157331}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Back.R.003_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -235,7 +235,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6464224889372963228}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Drone_Rig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -269,7 +269,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4541099702822277721}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Front.R.003_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -300,7 +300,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4715266671201574745}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Back.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -332,7 +332,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6159252386432363245}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Front.L.003_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -364,7 +364,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4502135882030746119}
   - component: {fileID: 1141070098414648088}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -470,7 +470,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2345557389479591517}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Back.L.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -502,7 +502,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6237948515514306646}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Back.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -534,7 +534,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2252629981410934899}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Front.L.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -584,7 +584,7 @@ GameObject:
   - component: {fileID: 148172610069775332}
   - component: {fileID: 6956887947569765016}
   - component: {fileID: 6357141231635159876}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SignalDrone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -956,6 +956,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1a6b0daebc84d94a85c987321f2ae8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  combatStyle: 0
   patternEntries:
   - slotName: slot1
     conditions:
@@ -964,17 +965,17 @@ MonoBehaviour:
       value: 5
     - type: 3
       ctype: 4
-      value: 1
-    skill: {fileID: 11400000, guid: c59277076ca99464eb051c2681c4ff82, type: 2}
+      value: 10
+    skill: {fileID: 11400000, guid: 1105d551c74d81541a4f31f384357d05, type: 2}
   - slotName: slot2
     conditions:
     - type: 0
       ctype: 4
-      value: 7
+      value: 4
     - type: 3
       ctype: 4
-      value: 3
-    skill: {fileID: 11400000, guid: 7f3a86edc1afce34d890f7f459bbb08b, type: 2}
+      value: 10
+    skill: {fileID: 11400000, guid: f18986f394989954aba7f76f86268a6c, type: 2}
   defaultAttack:
     slotName: 
     conditions: []
@@ -992,6 +993,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SO_Movement: {fileID: 11400000, guid: 8b47bfc4a8b8c2e4c9abc94758b81c19, type: 2}
+  dashSpeed: 25
+  dashDistance: 5
 --- !u!1 &5403652959933258611
 GameObject:
   m_ObjectHideFlags: 0
@@ -1001,7 +1004,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8117560089190268945}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Front.L.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1033,7 +1036,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2506680992101797062}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Back.L.003_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1064,7 +1067,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6815852433720886758}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Front.L.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1096,7 +1099,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7224461337050212593}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Back.L.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1128,7 +1131,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4128691924678221380}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model_Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1159,7 +1162,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4459979756960385868}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Front.R.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1191,7 +1194,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5021991749453084922}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Front.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1225,7 +1228,7 @@ GameObject:
   - component: {fileID: 3233725859050560815}
   - component: {fileID: 4958209172054097289}
   - component: {fileID: 5625573194426891403}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Left_Prop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1309,7 +1312,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5359213415365160465}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Gun_Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1340,7 +1343,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 541760914384673124}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Back.R.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1372,7 +1375,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5601827835193934297}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Front.R.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1404,7 +1407,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4504010397134237398}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Back.L.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1436,7 +1439,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1999537733413329293}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Neck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1468,7 +1471,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6527561895646620711}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SignalDrone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1501,7 +1504,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8589828180799375202}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1535,7 +1538,7 @@ GameObject:
   - component: {fileID: 3671381809333477116}
   - component: {fileID: 2889967666758400561}
   - component: {fileID: 6185292653336901213}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Right_Prop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1623,7 +1626,7 @@ GameObject:
   - component: {fileID: 632896993447111788}
   - component: {fileID: 7246842280956970742}
   - component: {fileID: 1552395241329474577}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1727,7 +1730,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8023136531679853838}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Leg_Back.R.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}

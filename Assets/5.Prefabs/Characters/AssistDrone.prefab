@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4441245530212834286}
   - component: {fileID: 5006087992828114847}
   - component: {fileID: 2312615186005991236}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1714899253400813171}
   - component: {fileID: 5248776351838748018}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -186,7 +186,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1579183932738088475}
   - component: {fileID: 7417686120137424443}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: weapon_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -242,7 +242,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2900428476633862823}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: root_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -274,7 +274,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6032712426824953764}
   - component: {fileID: 7463207806892246568}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -330,7 +330,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5902355893336046603}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: gunAni
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -362,7 +362,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7869855472072172626}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -394,7 +394,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2519083923551478197}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: gunAni
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -427,7 +427,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3393672535253742905}
   - component: {fileID: 7966126061797557619}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: AssistDrone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -467,6 +467,8 @@ MonoBehaviour:
   - {fileID: 6032712426824953764}
   - {fileID: 1579183932738088475}
   droneNormalProj: AssistDroneBullet
+  droneBeamProj: AssistDroneBeam
+  droneHyperBeamProj: AssistDroneHyperBeam
 --- !u!1 &4898807819642063198
 GameObject:
   m_ObjectHideFlags: 0
@@ -476,7 +478,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2302982213846844807}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -509,7 +511,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6625250320260849557}
   - component: {fileID: 6478149049962801103}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -598,7 +600,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2047550673572640012}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -630,7 +632,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2450755787427263173}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: root_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -661,7 +663,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9183297239031298584}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -695,7 +697,7 @@ GameObject:
   - component: {fileID: 3974009845403441516}
   - component: {fileID: 1817926675967188904}
   - component: {fileID: 1673553926080980447}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
