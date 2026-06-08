@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,7 +11,6 @@ public class GameManager
         NONE,
         BEGIN_STAGE,
         PROCESS_BATTLE,
-
         FINISH_STAGE,
     };
 
@@ -19,9 +19,6 @@ public class GameManager
     public event Action OnBeginStage;
     public event Action OnBattleStage;
     public event Action OnFinishStage;
-    public event Action OnSuccedStage;
-    public event Action OnFailedStage;
-
     public event Action<float> OnUpdated;
 
     private StageManager stageManager;
@@ -30,12 +27,26 @@ public class GameManager
     protected override void Awake()
     {
         base.Awake();
-
-        Awake_StageManager();
-        Awake_BattleManager();
+        stageManager = GetComponent<StageManager>();
 
         if (Instance == this)
             SceneManager.sceneLoaded += HandleSceneLoaded;
+    }
+
+    private void OnEnable()
+    {
+        if(stageManager != null)
+        {
+            stageManager.OnProcessBattle += OnPrecessBattle;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if(stageManager != null)
+        {
+            stageManager.OnProcessBattle -= OnPrecessBattle;
+        }
     }
 
     protected override void SyncDataFromSingleton()
@@ -43,14 +54,6 @@ public class GameManager
         base.SyncDataFromSingleton();
         SceneManager.sceneLoaded -= HandleSceneLoaded;
         this.stageManager = Instance.StageManager;
-    }
-    private void OnDisable()
-    {
-        if (stageManager == null) return;
-        stageManager.OnProcessBattle -= ProcessBattle;
-        stageManager.OnFinishStage -= FinishStage;
-        stageManager.OnSucccedStage -= SuccedStage;
-        stageManager.OnFailedStage -= FailedStage;
     }
 
     protected void Update()
@@ -60,91 +63,42 @@ public class GameManager
             OnUpdated?.Invoke(Time.deltaTime);
         }
     }
+
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "Stage" || scene.name == "UnitTest")
         {
-            // 스테이지 시작 (이 안에서 Pooler를 대기함)
-            SetBeginStage();
+            RunStageAsync().Forget();
         }
     }
 
-    #region AWAKE_FUNC
-    private void Awake_StageManager()
+    private async UniTaskVoid RunStageAsync()
     {
-        stageManager = GetComponent<StageManager>();
-        if (stageManager == null) return;
+        SetGameState(GameState.BEGIN_STAGE);
 
-        stageManager.OnProcessBattle -= ProcessBattle;
-        stageManager.OnFinishStage -= FinishStage;
-        stageManager.OnSucccedStage -= SuccedStage;
-        stageManager.OnFailedStage -= FailedStage;
+        // 스테이지 돌리고 결과 가져오기
+        StageResult result = await stageManager.RunStageFlowAsync(this.GetCancellationTokenOnDestroy());
 
-        stageManager.OnProcessBattle += ProcessBattle;
-        stageManager.OnFinishStage += FinishStage;
-        stageManager.OnSucccedStage += SuccedStage;
-        stageManager.OnFailedStage += FailedStage;
+        SetGameState(GameState.FINISH_STAGE);
+
+        // 💡 결과를 God Object(AppManager)에게 넘겨서 뒷수습을 맡깁니다.
+        AppManager.Instance.HandleStageResult(result);
     }
 
-
-    private void Awake_BattleManager()
+    public void OnPrecessBattle()
     {
-        BattleManager battleManager = GetComponent<BattleManager>();
-        if (battleManager == null) return;
-
+        SetGameState(GameState.PROCESS_BATTLE);
     }
-    #endregion
-
-    #region SET_STATE
-    public void SetBeginStage() => SetGameState(GameState.BEGIN_STAGE);
-
-    public void SetProcessBattle() => SetGameState(GameState.PROCESS_BATTLE);
-    public void SetFinishStage() => SetGameState(GameState.FINISH_STAGE);
 
     private void SetGameState(GameState newState)
     {
         state = newState;
-        HandleGameState();
-    }
-    #endregion
-
-    private void HandleGameState()
-    {
         switch (state)
         {
-            case GameState.BEGIN_STAGE:
-                {
-                    OnBeginStage?.Invoke(); 
-                }
-                break;
-            case GameState.PROCESS_BATTLE:
-                {
-                    OnBattleStage?.Invoke();
-                }
-                break;
-
-            case GameState.FINISH_STAGE:
-                {
-                    OnFinishStage?.Invoke();
-#if UNITY_EDITOR
-                    Debug.Log("Finish Stage");
-#endif           
-                }
-                break;
+            case GameState.BEGIN_STAGE: OnBeginStage?.Invoke(); break;
+            case GameState.PROCESS_BATTLE: OnBattleStage?.Invoke(); break;
+            case GameState.FINISH_STAGE: OnFinishStage?.Invoke(); break;
         }
-    }
-    
-    private void ProcessBattle() => SetProcessBattle();
-    public void FinishStage() => SetFinishStage();
-
-    public void SuccedStage()
-    {
-        OnSuccedStage?.Invoke();
-    }
-
-    public void FailedStage()
-    {
-        OnFailedStage?.Invoke();
     }
 
     public void EnterStage(StageInfo info)
@@ -153,7 +107,6 @@ public class GameManager
 
         state = GameState.NONE;
         stageManager.SetEnteredStage(info);
-
         SceneManager.LoadScene(2);
     }
 }

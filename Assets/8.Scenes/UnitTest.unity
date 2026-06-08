@@ -3752,50 +3752,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.size
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[4].clip
-      value: 
-      objectReference: {fileID: 8300000, guid: 78a6f4a5d96ce8c469d32db273e7d88a, type: 3}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[5].clip
-      value: 
-      objectReference: {fileID: 8300000, guid: ebf03063ef4e6d646b3ef24c7dfd854f, type: 3}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[6].clip
-      value: 
-      objectReference: {fileID: 8300000, guid: aa9c267119d8d8943a2ee37fd4bc4475, type: 3}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[7].clip
-      value: 
-      objectReference: {fileID: 8300000, guid: 15c24a404348e714f97bb762b902c05b, type: 3}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[8].clip
-      value: 
-      objectReference: {fileID: 8300000, guid: 5646f18f27bc1f948b29f22b0478802d, type: 3}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[4].soundName
-      value: Hit_Meele_Normal
-      objectReference: {fileID: 0}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[5].soundName
-      value: Gun_Impact
-      objectReference: {fileID: 0}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[6].soundName
-      value: Laser01
-      objectReference: {fileID: 0}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[7].soundName
-      value: Laser02
-      objectReference: {fileID: 0}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[8].soundName
-      value: Laser_Charging
-      objectReference: {fileID: 0}
     - target: {fileID: 6372159647807091890, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: m_Name
       value: AppManager_Instance
@@ -3893,22 +3849,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
-      propertyPath: pools.Array.size
-      value: 19
-      objectReference: {fileID: 0}
-    - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
-      propertyPath: pools.Array.data[18].tag
-      value: HitImpact01
-      objectReference: {fileID: 0}
-    - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
-      propertyPath: pools.Array.data[18].size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
-      propertyPath: pools.Array.data[18].prefab
-      value: 
-      objectReference: {fileID: 3492691017000508022, guid: 2487b6872f1800e4582019293a0b2c04, type: 3}
     - target: {fileID: 2486142185516263993, guid: 2375186cdf999824ea58e502dfa1b7d9, type: 3}
       propertyPath: pools.Array.data[0].parentTransform
       value: 

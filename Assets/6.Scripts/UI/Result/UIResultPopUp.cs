@@ -56,7 +56,7 @@ public class UITotalResultPopUp : UIPopUp
 
         // 2. 데이터 세팅 (그리기는 하지만 alpha가 0이라 안 보임)
         FetchResultData();
-        DrawPopUp();
+        ShowPopUp();
 
         // 💡 기존 취소 토큰이 있다면 정리하고 새로 생성
         CancelAndDisposeCTS();

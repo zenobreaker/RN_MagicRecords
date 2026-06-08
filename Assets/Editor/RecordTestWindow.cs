@@ -21,14 +21,14 @@ public class RecordTestWindow : EditorWindow
         }
 
         GUILayout.Label("레코드 즉시 지급 도구", EditorStyles.boldLabel);
-        
+
         // --- 필터링 UI 구역 ---
         EditorGUILayout.BeginVertical("helpbox");
         searchFilter = EditorGUILayout.TextField("이름 검색", searchFilter);
         selectedTarget = (TargetFilterType)EditorGUILayout.EnumPopup("대상 필터 (Target)", selectedTarget);
         EditorGUILayout.EndVertical();
         // ----------------------
-        
+
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
         // DataManager에 저장된 전체 레코드 리스트 순회
@@ -58,7 +58,7 @@ public class RecordTestWindow : EditorWindow
                 continue;
 
             EditorGUILayout.BeginHorizontal("box");
-            
+
             EditorGUILayout.LabelField($"[{record.id}] {record.recordName}", GUILayout.Width(200));
             EditorGUILayout.LabelField($"<{record.targetFilter}>", EditorStyles.miniLabel, GUILayout.Width(80));
 
@@ -66,7 +66,7 @@ public class RecordTestWindow : EditorWindow
             {
                 AppManager.Instance.OnRecordSelected(record);
                 RecordImporter.AddRecordDirectly(record);
-                GameManager.Instance.SetProcessBattle();
+                GameManager.Instance.OnPrecessBattle();
             }
             EditorGUILayout.EndHorizontal();
         }
@@ -76,7 +76,7 @@ public class RecordTestWindow : EditorWindow
         if (GUILayout.Button("UI 강제 호출 (랜덤 3개)", GUILayout.Height(30)))
         {
             AppManager.Instance.GenerateRecord(3);
-            GameManager.Instance.SetProcessBattle();
+            GameManager.Instance.OnPrecessBattle();
         }
     }
 }

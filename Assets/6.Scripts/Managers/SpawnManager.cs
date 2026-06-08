@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.AI;
@@ -26,10 +28,12 @@ public sealed class SpawnManager : MonoBehaviour
     private List<Character> spawnedPlayers = new();
     private List<Character> spawnedEnemies = new();
 
-    public event Action OnCompleteSpawnedPlayer;
-    public event Action OnCompleteSpawnedEnemy;
     public event Action OnAllPlayersDead;
     public event Action OnAllEnemiesDead;
+
+    // 💡 StageManager가 대기할 때 사용할 프로퍼티 추가
+    public int ActivePlayerCount => spawnedPlayers.Count;
+    public int ActiveEnemyCount => spawnedEnemies.Count;
 
     private void Awake()
     {
@@ -40,7 +44,12 @@ public sealed class SpawnManager : MonoBehaviour
             soNpcObject.Init();
     }
 
-
+    // 플레이어 스폰 비동기 래퍼 
+    public UniTask SpawnCharacterAsync(int id, List<Transform> points, CancellationToken token)
+    {
+        SpawnCharacter(id, points);
+        return UniTask.CompletedTask;
+    }
     public void SpawnCharacter(int id, List<Transform> spawnPoints)
     {
         if (spawnPoints == null || spawnPoints.Count <= 0)
@@ -68,15 +77,15 @@ public sealed class SpawnManager : MonoBehaviour
             if(playerGO.TryGetComponent<Player>(out var player))
             {
                 // Char ID 
-                player.CharID = id; 
-                PlayerManager.Instance?.SetCurrentPlayer(player);
+                player.CharID = id;
+                PlayerManager.Instance.SafeInvoke(v => v.SetCurrentPlayer(player));
 
                 //TODO : class(=job) 기능이 생기면 그 아이디로 지정해야 한다.
                 int jobID = 1; 
                 player.JobID = jobID;
 
                 // Passive 등록한 이력 처리
-                AppManager.Instance?.OnAcquire(jobID, playerGO);
+                AppManager.Instance.SafeInvoke(v => v.OnAcquire(jobID, playerGO));
 
                 // Setting Skills
                 player.SetActiveSkills();
@@ -85,8 +94,8 @@ public sealed class SpawnManager : MonoBehaviour
                 player.SetStatus();
 
                 // Setting Passive Status 
-                AppManager.Instance?.OnApplyStaticEffct(jobID, playerGO);
-                AppManager.Instance?.OnApplyStaticEffct(Constants.GLOBAL_RECORD_JOB_ID, playerGO); 
+                AppManager.Instance.SafeInvoke(v=> v.OnApplyStaticEffct(jobID, playerGO));
+                AppManager.Instance.SafeInvoke(v => v.OnApplyStaticEffct(Constants.GLOBAL_RECORD_JOB_ID, playerGO));
 
                 // Setting Equipment 
                 player.SetEquipments();
@@ -104,91 +113,58 @@ public sealed class SpawnManager : MonoBehaviour
                 player.OnDead += OnPlayerDead;
             }
         }
-
-        OnCompleteSpawnedPlayer?.Invoke();
     }
 
-    public void SpawnNPC(int groupID, List<Transform> spawnPoints, bool isEnemy = false )
+    // 💡 풀러 콜백을 기다려주는 진짜 비동기 NPC 스폰 함수!
+    public async UniTask SpawnNPCAsync(int groupID, List<Transform> spawnPoints, bool isEnemy, CancellationToken token)
     {
-        if (spawnPoints == null || spawnPoints.Count <= 0)
-        {
-#if UNITY_EDITOR
-            Debug.Log($"Spawn Point Don't exist");
-#endif
-            return;
-        }
-        
-        MonsterGroupData data = AppManager.Instance.GetGroupData(groupID);
-        if (data == null) return;
+        if (spawnPoints == null || spawnPoints.Count <= 0) return;
 
-        // 1. 이번에 스폰할 총 몬스터 개수 확인
+        MonsterGroupData data = AppManager.Instance.GetGroupData(groupID);
+        if (data == null || data.monsterIDs.Count == 0) return;
+
+        var tcs = new UniTaskCompletionSource();
         int totalToSpawn = data.monsterIDs.Count;
-        int currentSpawnedCount = 0;
+        int spawnedCount = 0;
 
         foreach (var id in data.monsterIDs)
         {
-#if UNITY_EDITOR
-            Debug.Log($"Monster ID : {id}");
-#endif
             int idx = Random.Range(0, spawnPoints.Count);
-
             string tag = $"NPC_{id}";
 
-
-            ObjectPooler.DeferredSpawnWithCallback(tag, spawnPoints[idx], 
-                (npc) =>
-            // Set Stat 
+            ObjectPooler.DeferredSpawnWithCallback(tag, spawnPoints[idx], (npc) =>
             {
-
-                // 💡 [핵심 추가] 스폰되는 오브젝트의 레이어를 "Enemy"로 강제 설정합니다.
                 int enemyLayer = LayerMask.NameToLayer("Enemy");
-                if (enemyLayer != -1 && isEnemy) // 레이어가 정상적으로 존재하는지 확인 (안전장치)
-                {
-                    //npc.layer = enemyLayer;
+                if (enemyLayer != -1 && isEnemy)
                     SetLayerRecursively(npc, enemyLayer);
-                }
-                else
-                {
-                    Debug.LogWarning("Enemy 레이어가 Project Settings에 존재하지 않습니다! 만들어주세요.");
-                }
 
                 var statData = AppManager.Instance.GetMonsterStatData(id);
                 if (npc.TryGetComponent<Enemy>(out Enemy enemy))
                 {
                     spawnedEnemies.Add(enemy);
-                    // Set Stat 
                     enemy.SetStatData(statData);
 
-                    // Set Grade 
-                    enemy.SetGrade(AppManager.Instance?.GetMonsterData(id));
-
-                    // Dead Event
+                    if(AppManager.Instance != null)
+                        enemy.SetGrade(AppManager.Instance?.GetMonsterData(id));
+                    
                     enemy.OnDead += OnEnemyDead;
 
-                    // Set Navigate 
-                    var agent = enemy.GetComponent<NavMeshAgent>();
-                    if (agent != null)
+                    if (enemy.TryGetComponent<NavMeshAgent>(out var agent)) 
                         agent.enabled = true;
 
-                    // Return Object Pool
                     ObjectPooler.FinishSpawn(npc);
                 }
 
-                // 2. 콜백이 실행될 때 마다 카운트 증가 
-                currentSpawnedCount++; 
-
-                // 3. 마지막 몬스터까지 세팅이 완료되었다면 이벤트 발생 
-                if(currentSpawnedCount >= totalToSpawn)
+                spawnedCount++;
+                if (spawnedCount >= totalToSpawn)
                 {
-                    Debug.Log($"[SpawnManager] 모든 {totalToSpawn}마리의 몬스터 스폰 및 세팅 완료!");
-                    OnCompleteSpawnedEnemy?.Invoke();
+                    tcs.TrySetResult(); // 스폰 완료!
                 }
+            });
+        }
 
-            }); // Defered
-
-        }//foreach(data)
+        await tcs.Task;
     }
-
 
     public void OnEndSpawn() { }
 

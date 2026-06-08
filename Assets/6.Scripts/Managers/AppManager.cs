@@ -63,10 +63,7 @@ public class AppManager
         {
             GameManager.Instance.OnBeginStage += OnBeginStage;
             GameManager.Instance.OnUpdated += OnUpdate;
-
             GameManager.Instance.OnFinishStage += FinishStageProcess;
-            GameManager.Instance.OnSuccedStage += SuccessStageProcess;
-            GameManager.Instance.OnFailedStage += FailedStageProcess;
         }
 
         if (exploreManager != null)
@@ -114,22 +111,34 @@ public class AppManager
 
         GameManager.Instance.OnBeginStage -= OnBeginStage;
         GameManager.Instance.OnUpdated -= OnUpdate;
-
         GameManager.Instance.OnFinishStage -= FinishStageProcess;
-        GameManager.Instance.OnSuccedStage -= SuccessStageProcess;
-        GameManager.Instance.OnFailedStage -= FailedStageProcess;
-
-        if (exploreManager != null)
-        {
-            exploreManager.OnExploreStart -= HandleExploreStart;
-            exploreManager.OnReturnToMain -= HandleReturnToMain;
-            exploreManager.OnInStage -= HandleInStage;
-            exploreManager.OnStageClear -= HandleStageClear;
-            exploreManager.OnExploreFinish -= HanldeExploreFinish;
-        }
     }
 
     #region Explore 
+
+    public void HandleStageResult(StageResult result)
+    {
+        if (exploreManager == null) return;
+
+        // 1. ExploreManager에게 결과 알리기 (여기서 AllStageClear 등을 세팅)
+        exploreManager.ClearStage(result.IsSuccess);
+
+        // 2. UI 띄우기 책임 (이전에 StageManager가 하던 일을 여기서 처리)
+        bool isRunCompletelyFinished = !result.IsSuccess || exploreManager.AllStageClear;
+
+        if (isRunCompletelyFinished)
+        {
+            UIManager.Instance.OpenExploreResultPopUp();
+        }
+        else
+        {
+            UIManager.Instance.SafeInvoke(v => v.ShowStageResultUI(result.IsSuccess));
+        }
+
+        // 3. 보상 처리 및 세이브
+        AcceptReward();
+        SaveIfDirty();
+    }
 
     public ExploreManager GetExploreManager() { return exploreManager; }
 
@@ -137,10 +146,7 @@ public class AppManager
     {
         return exploreManager == null ? null : exploreManager.MapReplacer;
     }
-    private void ResetData()
-    {
-        exploreManager?.ResetData();
-    }
+
 
     private void AcceptReward()
     {
@@ -227,6 +233,7 @@ public class AppManager
     public int GetRandomStageId(int chapter)
     {
         if (exploreManager == null) return -1;
+        if (databaseManager == null) return -1;
 
         return databaseManager.GetRandomStageID(chapter); 
     }
@@ -241,7 +248,8 @@ public class AppManager
 
     public MonsterData GetMonsterData(int monsterID)
     {
-        return databaseManager?.GetMonsterData(monsterID);
+        if (databaseManager == null) return null;
+        return databaseManager.GetMonsterData(monsterID);
     }
 
     public MonsterGroupData GetGroupData(int groupID)
@@ -265,7 +273,7 @@ public class AppManager
         }
 
         var nodeInfo = GetNodeInfoMatchedMapNode(node);
-        NodeRouter.EnterNode(nodeInfo);
+
     }
 
     public int GetRandomExploreEvent(int chapter)
@@ -311,19 +319,6 @@ public class AppManager
         AcceptReward();
 
         SaveIfDirty();
-    }
-    private void SuccessStageProcess()
-    {
-        if (exploreManager != null)
-        {
-            exploreManager.ClearStage(true);
-        }
-    }
-
-    private void FailedStageProcess()
-    {
-        Debug.Log($"Stage Challege Failed!..");
-        exploreManager.ClearStage(false);
     }
 
 
@@ -511,18 +506,19 @@ public class AppManager
 
     public ClearRewardData GetStageClearRewardData(int stageid)
     {
-        return databaseManager?.GetStageClearReward(stageid);
+        return databaseManager.GetStageClearReward(stageid);
     }
 
     public ClearRewardData GetChapterClearRewardData(int clearedChapter)
     {
-        // 챕터가 클리어 되면 해당 챕터에 맞는 id로 변환되어 반환함 
-        return databaseManager?.GetChapterClearReward(clearedChapter);
+        // 챕터가 클리어 되면 해당 챕터에 맞 는 id로 변환되어 반환함
+        if (databaseManager == null) return null;
+        return databaseManager.GetChapterClearReward(clearedChapter);
     }
 
     public void SetChapterClearReward(int clearedChapter)
     {
-        rewardManager?.GiveChapterReward(clearedChapter);
+        rewardManager.SafeInvoke(v => v.GiveChapterReward(clearedChapter));
     }
     #endregion
 
@@ -546,7 +542,7 @@ public class AppManager
 
     public void GenerateRecord(int recordCount, bool canReroll = true)
     {
-        recordManager?.GenerateStageRecords(recordCount, canReroll);
+        recordManager.SafeInvoke(v => v.GenerateStageRecords(recordCount, canReroll));
     }
 
 
@@ -592,21 +588,23 @@ public class AppManager
 
     public void SaveIfDirty()
     {
-        skillTree?.SaveIfDirty();
-        InventoryManager.Instance?.SaveIfDirty();
-        PlayerManager.Instance?.SaveIfDirty();
-        exploreManager?.SaveExploreMap();
-        recordManager?.SaveIfDirty();
+        skillTree.SafeInvoke(v => v.SaveIfDirty());
+        InventoryManager.Instance.SafeInvoke(v => v.SaveIfDirty());
+        PlayerManager.Instance.SafeInvoke(v => v.SaveIfDirty());
+        exploreManager.SafeInvoke(v => v.SaveExploreMap());
+        recordManager.SafeInvoke(v => v.SaveIfDirty());
     }
 
     public void SaveExploreMap()
     {
-        exploreManager?.SaveExploreMap();
+        exploreManager.SafeInvoke(v => v.SaveExploreMap());
     }
     #endregion
 
     public Sprite GetStageIcon(StageType type)
     {
-        return databaseManager?.GetStageIcon(type);
+        if (databaseManager == null) return null;
+
+        return databaseManager.GetStageIcon(type);
     }
 }

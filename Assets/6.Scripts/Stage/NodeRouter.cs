@@ -37,7 +37,7 @@ public static class NodeRouter
     }
 
     // 💡 진입 버튼을 눌렀을 때 실제로 방을 실행하는 함수
-    public static void EnterNode(MapNodeInfo node)
+    public static void EnterNode(int chapter, MapNodeInfo node)
     {
         switch (node.type)
         {
@@ -45,6 +45,11 @@ public static class NodeRouter
                 StageInfo combatData = AppManager.Instance.GetStageInfo(node.contentId);
                 GameManager.Instance.EnterStage(combatData);
                 break;
+
+            case StageType.Boss_Combat:
+                StageInfo bossCombat = AppManager.Instance.GetBossStageInfo(chapter, node.contentId);
+                GameManager.Instance.EnterStage(bossCombat); 
+                break; 
 
             case StageType.Event:
                 EventInfo eventData = AppManager.Instance.GetEventInfo(node.contentId);

@@ -86,7 +86,7 @@ public class Enemy
         if (state != null)
             state.OnStateTypeChanged -= ChangeType;
 
-        BattleManager.Instance?.UnreistEnemy(this);
+        BattleManager.Instance.SafeInvoke(v => v.UnreistEnemy(this));
         CancelInvoke();
         ObjectPooler.ReturnToPool(gameObject);
     }

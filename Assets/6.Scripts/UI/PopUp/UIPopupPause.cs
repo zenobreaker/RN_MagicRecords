@@ -19,7 +19,6 @@ public class UIPopUpPause : UIPopUp
         {
             exitButton.onClick.AddListener(() =>
             {
-                GameManager.Instance?.FinishStage();
                 SceneManager.LoadScene(1);
             });
         }
@@ -43,6 +42,8 @@ public class UIPopUpPause : UIPopUp
             inventory?.SetRecordManager(AppManager.Instance.GetRecordManager());
             inventory?.RefreshUI();
         }
+
+        ShowPopUp();
     }
 
     protected override void OnDisable()
@@ -53,6 +54,6 @@ public class UIPopUpPause : UIPopUp
 
     protected override void DrawPopUp()
     {
-     
+
     }
 }

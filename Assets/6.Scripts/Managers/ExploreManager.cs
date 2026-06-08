@@ -217,8 +217,20 @@ public sealed class ExploreManager : MonoBehaviour
 
     public void EnterStageByNode(MapNode node)
     {
+   if (node == null) return;
+
         MapNodeID = node.id;
         bClearCurrentNode = false;
+
+        ChangeState(ExploreState.IN_STAGE);
+
+        // 💡 실제 진입은 라우터에게 위임
+        MapNodeInfo nodeInfo = GetReplacedNodeInfo(MapNodeID);
+        if (nodeInfo != null)
+        {
+            OnInStage?.Invoke(nodeInfo.contentId);
+            NodeRouter.EnterNode(Chapter, nodeInfo);
+        }
     }
 
     public void ClearStage(bool isWin)
@@ -236,7 +248,6 @@ public sealed class ExploreManager : MonoBehaviour
 
             bool bIsFinal = MapReplacer.IsFinalNode(MapNodeID);
             bClearCurrentNode = true;
-
             prevNodeId = MapNodeID;
 
             if (bIsFinal)
@@ -254,6 +265,8 @@ public sealed class ExploreManager : MonoBehaviour
         {
             bClearCurrentNode = false;
         }
+
+        SaveExploreMap();
     }
 
     public void ChangeState(ExploreState newState, int stageID = -1)

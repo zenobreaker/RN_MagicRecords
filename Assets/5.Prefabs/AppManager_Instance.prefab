@@ -2214,7 +2214,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f409d3c189cac747ad9c9f84f2e79e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bCheat: 1
+  bCheat: 0
 --- !u!114 &8802727893416295790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2457,10 +2457,22 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: ef1aa073dba5df24886ea9765dc5893f, type: 3}
   - soundName: Gun_Normal2
     clip: {fileID: 8300000, guid: 0561032dd5a2e16418e21ab524a543cc, type: 3}
-  - soundName: IconClick1
-    clip: {fileID: 8300000, guid: fd4e182d62e40394e850862d9bf31d07, type: 3}
-  - soundName: IconClick2
+  - soundName: UI_Click1
+    clip: {fileID: 8300000, guid: adcad27f62af0134a9b20d8bd0377257, type: 3}
+  - soundName: UI_Click2
     clip: {fileID: 8300000, guid: 9dcbe9004bd9db640bc02a33d6be3cb2, type: 3}
+  - soundName: UI_Click3
+    clip: {fileID: 8300000, guid: fd4e182d62e40394e850862d9bf31d07, type: 3}
+  - soundName: Hit_Meele_Normal
+    clip: {fileID: 8300000, guid: 78a6f4a5d96ce8c469d32db273e7d88a, type: 3}
+  - soundName: Gun_Impact
+    clip: {fileID: 8300000, guid: ebf03063ef4e6d646b3ef24c7dfd854f, type: 3}
+  - soundName: Laser01
+    clip: {fileID: 8300000, guid: aa9c267119d8d8943a2ee37fd4bc4475, type: 3}
+  - soundName: Laser02
+    clip: {fileID: 8300000, guid: 15c24a404348e714f97bb762b902c05b, type: 3}
+  - soundName: Laser_Charging
+    clip: {fileID: 8300000, guid: 5646f18f27bc1f948b29f22b0478802d, type: 3}
   masterMixer: {fileID: 24100000, guid: abf4aac28bd7b5e42b06c0bff1367cc4, type: 2}
   bgmGroup: {fileID: 2889626302884008671, guid: abf4aac28bd7b5e42b06c0bff1367cc4, type: 2}
   sfxGroup: {fileID: -809776525529572944, guid: abf4aac28bd7b5e42b06c0bff1367cc4, type: 2}

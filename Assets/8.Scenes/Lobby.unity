@@ -1340,8 +1340,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd674afa3c7e78f49a26e07f38594f71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverSoundName: UI_Hover
-  clickSoundName: UI_Click
+  hoverSoundName: 
+  clickSoundName: UI_Click1
 --- !u!4 &389081209 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: e3de063afc49b2c429c4d54cfe3deb52, type: 3}
@@ -1748,8 +1748,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd674afa3c7e78f49a26e07f38594f71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverSoundName: UI_Hover
-  clickSoundName: UI_Click
+  hoverSoundName: 
+  clickSoundName: UI_Click1
 --- !u!1001 &445378304
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2407,8 +2407,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd674afa3c7e78f49a26e07f38594f71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverSoundName: UI_Hover
-  clickSoundName: UI_Click
+  hoverSoundName: 
+  clickSoundName: UI_Click1
 --- !u!1 &621404061
 GameObject:
   m_ObjectHideFlags: 0
@@ -4548,26 +4548,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[4].clip
-      value: 
-      objectReference: {fileID: 8300000, guid: adcad27f62af0134a9b20d8bd0377257, type: 3}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[2].soundName
-      value: Click1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[3].soundName
-      value: Click2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6235755972502760631, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
-      propertyPath: sfxSounds.Array.data[4].soundName
-      value: UI_Click
-      objectReference: {fileID: 0}
     - target: {fileID: 6372159647807091890, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: m_Name
       value: AppManager_Instance
@@ -6437,8 +6417,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd674afa3c7e78f49a26e07f38594f71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverSoundName: UI_Hover
-  clickSoundName: UI_Click
+  hoverSoundName: 
+  clickSoundName: UI_Click1
 --- !u!1001 &1782256598
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6851,8 +6831,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd674afa3c7e78f49a26e07f38594f71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverSoundName: UI_Hover
-  clickSoundName: UI_Click
+  hoverSoundName: 
+  clickSoundName: UI_Click1
 --- !u!1 &1900005093
 GameObject:
   m_ObjectHideFlags: 0
@@ -6999,8 +6979,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd674afa3c7e78f49a26e07f38594f71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverSoundName: UI_Hover
-  clickSoundName: UI_Click
+  hoverSoundName: 
+  clickSoundName: UI_Click1
 --- !u!1001 &1900371334
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7373,8 +7353,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd674afa3c7e78f49a26e07f38594f71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverSoundName: UI_Hover
-  clickSoundName: UI_Click
+  hoverSoundName: 
+  clickSoundName: UI_Click1
 --- !u!1 &120167703022396664
 GameObject:
   m_ObjectHideFlags: 0
