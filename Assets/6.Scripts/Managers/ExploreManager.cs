@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using UnityEngine;
 
 public sealed class ExploreManager : MonoBehaviour
@@ -31,61 +32,59 @@ public sealed class ExploreManager : MonoBehaviour
 
     private int maxChapter = 1;
     private int prevNodeId = -1;
-    private bool bClearCurrentNode = false;
 
     private bool bCreate = false;
     private bool bAllCleared = false;
-    private bool bFinished = false;
-    public bool IsFinish => bFinished;
 
     public void EnsureInitialized()
     {
         if (bCreate == false)
         {
             Debug.Log("씬에서 직접 시작됨: 자동 Init 실행");
-            StartExplore(); // 기존의 맵 생성/로드 로직 실행
+            Init(false);  // 기존의 맵 생성/로드 로직 실행
         }
     }
     public void ResetData()
     {
-        bCreate = false; bAllCleared = false;
+        bCreate = false; 
+        bAllCleared = false;
         Chapter = 1;
         MapNodeID = 0;
         prevNodeId = 0;
-
-        bClearCurrentNode = false;
     }
 
     public void StartExplore()
     {
         ResetData();
-        Init();
+        Init(true);
 
         ChangeState(ExploreState.READY);
     }
 
-    public void Init()
+    public void Init(bool foreceGenerate = false)
     {
         if (bCreate == false)
         {
             bCreate = true;
             mapReplacer = new MapReplacer();
             stageReplacer = new StageReplacer();
-            ReplaceLevel();
+            ReplaceLevel(foreceGenerate);
         }
     }
 
-    private void ReplaceLevel()
+    private void ReplaceLevel(bool forceGenerate)
     {
-        Chapter = 1;
+        //Chapter = 1;
 
-        MapData loadMap = SaveManager.LoadMap();
+        MapData loadMap = forceGenerate ? null : SaveManager.LoadMap();
+
         if (loadMap != null)
         {
+            Chapter = loadMap.chapter;
+
             mapReplacer.RestoreMap(loadMap.nodes);
             MapNodeID = loadMap.currentNodeId;
             prevNodeId = loadMap.prevNodeId;
-            bClearCurrentNode = loadMap.bClear;
         }
         else
         {
@@ -94,11 +93,10 @@ public sealed class ExploreManager : MonoBehaviour
 
             MapNodeID = 0;
             prevNodeId = 0;
-            bClearCurrentNode = true;
         }
 
 
-        StageNodeData loadStage = SaveManager.LoadStageNode();
+        StageNodeData loadStage = forceGenerate ? null : SaveManager.LoadStageNode();
         stageReplacer.StartChapter(Chapter);
         if (loadStage != null)
         {
@@ -134,27 +132,19 @@ public sealed class ExploreManager : MonoBehaviour
         return mapReplacer?.GetCanEnableNodeIds(MapNodeID);
     }
 
-    public bool EnableNode(MapNode node, bool bCheat = false)
-    {
-        if (node == null) return false;
-
-        return EnableNode(node.id, bCheat);
-    }
-
-    public bool EnableNode(int id, bool bCheat = false)
+    public bool CanEnableNode(int id, bool bCheat = false)
     {
         if (bCheat) return true;
 
-        if (MapNodeID == 0)
-        {
-            return mapReplacer.CanEnableNode(0, id);
-        }
-
         // 1. 현재 노드를 아직 못 깼다면? 
         // 오직 "지금 그 노드"만 다시 들어갈 수 있음 (이어하기/재도전)
-        if (bClearCurrentNode == false)
+        if (stageReplacer != null)
         {
-            return MapNodeID == id;
+            MapNodeInfo mni = stageReplacer.GetReplacedNodeInfo(id);
+            if (mni != null)
+            {
+                return mni.isCleared == false;
+            }
         }
 
         // 2. 현재 노드를 깼다면?
@@ -168,7 +158,7 @@ public sealed class ExploreManager : MonoBehaviour
         // 1. 플레이어가 서 있는 바로 그곳
         if (MapNodeID == targetNodeId)
         {
-            return bClearCurrentNode ? MapNodeState.Cleared : MapNodeState.Current;
+            return MapNodeID == targetNodeId ? MapNodeState.Cleared : MapNodeState.Current;
         }
 
         // 2. 이미 지나온 과거 (레벨 비교)
@@ -181,7 +171,7 @@ public sealed class ExploreManager : MonoBehaviour
         }
 
         // 3. 갈 수 있는 곳 (EnableNode 로직 활용)
-        if (EnableNode(targetNodeId))
+        if (CanEnableNode(targetNodeId))
         {
             return MapNodeState.Selectable;
         }
@@ -189,6 +179,7 @@ public sealed class ExploreManager : MonoBehaviour
         // 4. 아직 못 가는 먼 곳
         return MapNodeState.Locked;
     }
+
     // =======================================================
     // 💡 2. 화면에 떠있는 UI 노드들에게 "상태에 맞춰서 색깔 바꿔!" 라고 명령하는 함수
     // =======================================================
@@ -220,7 +211,6 @@ public sealed class ExploreManager : MonoBehaviour
    if (node == null) return;
 
         MapNodeID = node.id;
-        bClearCurrentNode = false;
 
         ChangeState(ExploreState.IN_STAGE);
 
@@ -235,8 +225,6 @@ public sealed class ExploreManager : MonoBehaviour
 
     public void ClearStage(bool isWin)
     {
-        bFinished = false;
-
         if (isWin)
         {
             // 💡 승리 시 현재 노드의 껍데기에 클리어 처리를 해줍니다.
@@ -247,23 +235,32 @@ public sealed class ExploreManager : MonoBehaviour
             }
 
             bool bIsFinal = MapReplacer.IsFinalNode(MapNodeID);
-            bClearCurrentNode = true;
             prevNodeId = MapNodeID;
 
             if (bIsFinal)
             {
-                if (++Chapter < maxChapter)
+                // 챕터 처리 
+                if (Chapter < maxChapter)
+                {
+                    Chapter++;
                     bCreate = false;
+                    ChangeState(ExploreState.STAGE_CLEAR);
+                }
+                // 모든 챕터 클리어 탐사 종료 처리 
                 else
+                {
                     bAllCleared = true;
+                    ChangeState(ExploreState.EXPLORE_FINISH);
+                }
             }
-
-            bFinished = true;
-            ChangeState(ExploreState.STAGE_CLEAR);
+            else
+            {
+                ChangeState(ExploreState.STAGE_CLEAR);
+            }
         }
         else
         {
-            bClearCurrentNode = false;
+            ChangeState(ExploreState.ON_EXPLORE);
         }
 
         SaveExploreMap();
@@ -289,7 +286,7 @@ public sealed class ExploreManager : MonoBehaviour
             case ExploreState.STAGE_CLEAR:
                 HandleStageClear();
                 break;
-            case ExploreState.FINISH:
+            case ExploreState.EXPLORE_FINISH:
                 HandleExploreFinish();
                 break;
         }
@@ -309,7 +306,6 @@ public sealed class ExploreManager : MonoBehaviour
     }
     private void HandleInStage(int stageID)
     {
-        bClearCurrentNode = false;
         OnInStage.Invoke(stageID);
     }
     private void HandleStageClear()
@@ -341,7 +337,6 @@ public sealed class ExploreManager : MonoBehaviour
 
             mapData.prevNodeId = prevNodeId;
             mapData.currentNodeId = MapNodeID;
-            mapData.bClear = bClearCurrentNode;
 
             mapData.biomeName = BiomeName;
 

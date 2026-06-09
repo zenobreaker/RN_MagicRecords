@@ -7,11 +7,13 @@ using UnityEngine;
 public sealed class MapData
 {
     public List<MapNode> nodes = new();
+    
+    public int chapter; 
     public int prevNodeId; 
     public int currentNodeId;
-    public bool bClear = false;
     
-    public string biomeName; 
+    public string biomeName;
+    
 }
 
 [System.Serializable]
@@ -154,6 +156,13 @@ public static class SaveManager
         StageNodeData stageData = JsonUtility.FromJson<StageNodeData>(json);
         return stageData;
     }
+    
+    public static bool HasSavedMapData()
+    {
+        MapData loadMap = LoadMap();
+        return loadMap != null && loadMap.nodes.Count > 0;
+    }
+
     #endregion
 
     #region Character_Info

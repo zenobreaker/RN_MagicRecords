@@ -88,7 +88,7 @@ public class UIStageInfo
     public void EnterStage()
     {
         if (node == null || mapNodeInfo.isCleared
-            || AppManager.Instance.EnableNode(node) == false)
+            || AppManager.Instance.CanEnableNode(node) == false)
             return;
 
         UIManager.Instance.CloseTopUI();

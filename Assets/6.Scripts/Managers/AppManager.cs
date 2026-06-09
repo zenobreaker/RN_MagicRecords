@@ -196,11 +196,24 @@ public class AppManager
         SceneManager.LoadScene(1);
     }
 
-    public bool EnableNode(MapNode node)
+    // AppManager.cs 내부에 추가
+    public void ContinueExplorationProcess()
+    {
+        // 💡 StartExplore()를 부르지 않고 바로 씬만 넘깁니다!
+        // 그러면 ExploreManager.EnsureInitialized()가 씬 로드 후 알아서 Init(false)를 호출하여 로드할 것입니다.
+        SceneManager.LoadScene(1);
+    }
+
+    public bool HasSavedExploration()
+    {
+        return SaveManager.HasSavedMapData();
+    }
+
+    public bool CanEnableNode(MapNode node)
     {
         if (node == null || exploreManager == null) return false;
 
-        return exploreManager.EnableNode(node.id, bCheat);
+        return exploreManager.CanEnableNode(node.id, bCheat);
     }
 
     public string GetRandomBiome(int chapter)

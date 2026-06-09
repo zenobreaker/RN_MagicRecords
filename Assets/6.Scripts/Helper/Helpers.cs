@@ -17,6 +17,36 @@ public static class UnitySafeInvokeExtension
             action?.Invoke(obj);
         }
     }
+
+    /// <summary>
+    /// [반환값 있음] 유니티 오브젝트가 살아있을 때만 함수(Func)를 실행하고 값을 반환합니다.
+    /// 오브젝트가 파괴되었거나 null이면 해당 타입의 기본값(default)을 반환합니다.
+    /// </summary>
+    public static TResult SafeInvoke<T, TResult>(this T obj, Func<T, TResult> func) where T : UnityEngine.Object
+    {
+        if (obj != null && func != null)
+        {
+            return func.Invoke(obj);
+        }
+
+        // int면 0, bool이면 false, 참조형이면 null을 자동 반환
+        return default(TResult);
+    }
+
+    /// <summary>
+    /// [반환값 있음 + 대체값 지정] 유니티 오브젝트가 살아있을 때만 함수(Func)를 실행하고 값을 반환합니다.
+    /// 오브젝트가 파괴되었거나 null이면 사용자가 지정한 fallbackValue를 반환합니다.
+    /// </summary>
+    public static TResult SafeInvoke<T, TResult>(this T obj, Func<T, TResult> func, TResult fallbackValue) where T : UnityEngine.Object
+    {
+        if (obj != null && func != null)
+        {
+            return func.Invoke(obj);
+        }
+
+        // 오브젝트가 죽었을 때 돌려줄 안전한 기본값
+        return fallbackValue;
+    }
 }
 
 public static class LayerMaskExtensions

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -452,6 +453,14 @@ public class UIManager : Singleton<UIManager>
         {
 
         }
+    }
+
+    public void OpenTwoButtonPopUp(string title, string message, string confirmText, string cancelText,
+        UnityAction onConfirm, UnityAction onCancel)
+    {
+        UIPopUpTwoButton ui = OpenUI<UIPopUpTwoButton>(true);
+        if (ui != null && ui.TryGetComponent<UIPopUpTwoButton>(out UIPopUpTwoButton target))
+            target.SetData(title, message, confirmText, cancelText, onConfirm, onCancel); 
     }
 
     //--------------------------------------------------------------------------

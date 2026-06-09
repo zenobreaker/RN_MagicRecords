@@ -25,7 +25,7 @@ public enum ExploreState
     ON_EXPLORE, // 탐사 메인 씬
     IN_STAGE,   // 실제 전투
     STAGE_CLEAR, // 전투 종료 및 보상 획득 시점
-    FINISH,     // 탐사 전체 종료
+    EXPLORE_FINISH,     // 탐사 전체 종료
 }
 
 ///////////////////////////////////////////////////////////////////////////////
