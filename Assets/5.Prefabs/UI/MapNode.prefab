@@ -137,7 +137,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -236,6 +236,8 @@ MonoBehaviour:
     isCleared: 0
     clearRewardId: 0
   stageIcon: {fileID: 4873810808644882504}
+  nodeImage: {fileID: 2266294392211901203}
+  currentColor: {r: 0.8962264, g: 0.75843126, b: 0.26633143, a: 1}
 --- !u!114 &8784023484581861942
 MonoBehaviour:
   m_ObjectHideFlags: 0

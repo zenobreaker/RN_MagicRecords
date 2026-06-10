@@ -115,6 +115,8 @@ public class MovementComponent : MonoBehaviour
     // --------------------------------------------------------
     private void FixedUpdate()
     {
+        if (rigid.isKinematic) return;
+
         // [핵심 방어막] 대시 중(EvadeMode)이거나 이동 불가면 일반 걷기 물리 연산을 완벽 차단!
         if (!bCanMove || (state != null && state.EvadeMode))
         {

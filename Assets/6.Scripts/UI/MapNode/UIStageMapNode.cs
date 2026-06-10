@@ -7,6 +7,8 @@ public sealed class UIStageMapNode : UIMapNode
     // 💡 1. StageInfo -> MapNodeInfo로 가볍게 교체!
     [SerializeField] private MapNodeInfo nodeInfo;
     [SerializeField] private Image stageIcon;
+    [SerializeField] private Image nodeImage;
+    [SerializeField] private Color currentColor; 
 
     // 선택 시 활성화 되는 UI 
     // [SerializeField] private Image outlineImage;
@@ -33,21 +35,23 @@ public sealed class UIStageMapNode : UIMapNode
     {
         currentState = state;
 
-        if (stageIcon == null) return;
+        if (nodeImage == null || stageIcon == null) return;
 
         switch (state)
         {
             case MapNodeState.Locked:
-                stageIcon.color = new Color(0.3f, 0.3f, 0.3f, 1f); // 어두운 회색 (잠김)
+                stageIcon.color = new Color(0.3f, 0.3f, 0.3f, 1f);
+                nodeImage.color = new Color(0.3f, 0.3f, 0.3f, 1f); // 어두운 회색 (잠김)
                 break;
             case MapNodeState.Selectable:
-                stageIcon.color = Color.white; // 원래 색상 (선택 가능!)
+                nodeImage.color = Color.white; // 원래 색상 (선택 가능!)
                 break;
             case MapNodeState.Current:
-                stageIcon.color = Color.green; // 현재 위치 (초록색 등으로 강조)
+                nodeImage.color = currentColor; // 현재 위치 (초록색 등으로 강조)
                 break;
             case MapNodeState.Cleared:
-                stageIcon.color = new Color(0.5f, 0.5f, 0.5f, 0.5f); // 반투명하게 (지나온 길)
+                stageIcon.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+                nodeImage.color = new Color(0.5f, 0.5f, 0.5f, 0.5f); // 반투명하게 (지나온 길)
                 break;
         }
     }

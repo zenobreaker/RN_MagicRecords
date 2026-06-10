@@ -9,7 +9,6 @@ public sealed class MapData
     public List<MapNode> nodes = new();
     
     public int chapter; 
-    public int prevNodeId; 
     public int currentNodeId;
     
     public string biomeName;
