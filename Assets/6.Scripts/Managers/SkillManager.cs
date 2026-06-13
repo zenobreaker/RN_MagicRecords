@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Splines.ExtrusionShapes;
 
 public class SkillManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class SkillManager : MonoBehaviour
     private Dictionary<int, List<SkillRuntimeData>> equippedActiveSkills = new();
 
     public event Action OnDataChanaged;
+    private SO_SkillEventHandler handler;
+    private readonly string path = "Skills/SO_SkillEventHandler";
 
     private void Awake()
     {
@@ -18,7 +21,9 @@ public class SkillManager : MonoBehaviour
         var slots = new List<SkillRuntimeData>(SKILL_SLOT_MAX_COUNT);
         for (int i = 0; i < SKILL_SLOT_MAX_COUNT; i++)
             slots.Add(null);
-        equippedActiveSkills.Add(1, slots); 
+        equippedActiveSkills.Add(1, slots);
+
+        handler = Resources.Load<SO_SkillEventHandler>(path);
     }
 
 
@@ -61,5 +66,10 @@ public class SkillManager : MonoBehaviour
 
             skillComp.SetActiveSkill((SkillSlot)i, active as ActiveSkill);
         }
+    }
+
+    public void ResetRunData()
+    {
+        handler.SafeInvoke(v => v.ClearCache());
     }
 }

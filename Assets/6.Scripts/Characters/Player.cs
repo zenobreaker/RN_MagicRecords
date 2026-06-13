@@ -125,7 +125,7 @@ public class Player
         if (state != null)
             state.OnStateTypeChanged += ChangeType;
 
-        BattleManager.Instance?.RegistPlayer(this);
+        Debug.Log($"Battle Manager {BattleManager.Instance}");
     }
 
     protected override void OnDisable()

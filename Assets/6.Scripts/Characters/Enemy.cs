@@ -75,8 +75,6 @@ public class Enemy
     {
         if (state != null)
             state.OnStateTypeChanged += ChangeType;
-
-        BattleManager.Instance.SafeInvoke(v => v.ResistEnemy(this));
     }
 
     protected override void OnDisable()

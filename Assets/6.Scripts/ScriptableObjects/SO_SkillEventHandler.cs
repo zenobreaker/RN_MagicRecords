@@ -20,14 +20,27 @@ public class SO_SkillEventHandler : ScriptableObject
     public event Action<int> OnUpdateMagicBulletLoad;
     public event Action<Queue<BulletData>> OnChangeBullets;
 
+    public ActiveSkill[] CurrentActiveSkills = new ActiveSkill[(int)SkillSlot.MAX];
+
     public int MagicBulletCount { get; private set; }
 
     #region EQUIP SKILL
-    public void OnSetting_ActiveSkill(SkillSlot slot, ActiveSkill skill) => OnSetActiveSkill?.Invoke(slot, skill);  
+    public void OnSetting_ActiveSkill(SkillSlot slot, ActiveSkill skill)
+    {
+        CurrentActiveSkills[(int)slot] = skill; 
 
-#endregion
+        OnSetActiveSkill?.Invoke(slot, skill);
+    }
 
-#region COOLDOWN
+    // 씬 종료나 로비로 나갈 때 캐시를 비워주는 유틸리티 함수
+    public void ClearCache()
+    {
+        Array.Clear(CurrentActiveSkills, 0, CurrentActiveSkills.Length);
+    }
+
+    #endregion
+
+    #region COOLDOWN
     // 쿨타임 
     public void OnInCoolDown(SkillSlot slot, bool inCooldown) => OnInSkillCooldown?.Invoke(slot, inCooldown);
     public void OnCooldown(SkillSlot slot, float cooldown, float maxCooldown) => OnSkillCooldown?.Invoke(slot, cooldown, maxCooldown);

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using UnityEditorInternal;
 using UnityEngine;
 
 
@@ -7,12 +8,12 @@ using UnityEngine;
 public sealed class MapData
 {
     public List<MapNode> nodes = new();
-    
-    public int chapter; 
+
+    public int chapter;
     public int currentNodeId;
-    
+
     public string biomeName;
-    
+    public RunStatus runStatus;
 }
 
 [System.Serializable]
@@ -37,7 +38,7 @@ public sealed class CharacterSaveData
 {
     public int charId;
     public int charLevel;
-    public int classID; 
+    public int classID;
 
     public List<string> equippedItemIds = new();
     public List<int> equippedSkillIds = new();
@@ -77,7 +78,7 @@ public sealed class SkillSaveData
 public sealed class CharacterSkillData
 {
     public int charID;
-    public int classID; 
+    public int classID;
     public List<SkillSaveData> skillSaveDatas = new();
 }
 
@@ -86,14 +87,14 @@ public sealed class CharacterSkillData
 public sealed class RecordSaveData
 {
     public int recordID;
-    public string uniqueID; 
+    public string uniqueID;
 }
 
 [System.Serializable]
 public sealed class RecordSaveListData
 {
     public List<RecordSaveData> recordIDs = new();
-    public List<RecordSaveData> transferedrecordIDs = new(); 
+    public List<RecordSaveData> transferedrecordIDs = new();
     public bool isReceived = false;
 }
 
@@ -155,12 +156,19 @@ public static class SaveManager
         StageNodeData stageData = JsonUtility.FromJson<StageNodeData>(json);
         return stageData;
     }
-    
+
     public static bool HasSavedMapData()
     {
         MapData loadMap = LoadMap();
         return loadMap != null && loadMap.nodes.Count > 0;
     }
+
+    public static void DeleteStageNodeData()
+    {
+        if (File.Exists(stageDataPath))
+        { File.Delete(stageDataPath); }
+    }
+
 
     #endregion
 
@@ -218,7 +226,7 @@ public static class SaveManager
 
     public static CharacterSkillData LoadSkillData()
     {
-        if(!File.Exists(skillPath))
+        if (!File.Exists(skillPath))
         {
             Debug.LogWarning("No save skill data found.");
             return null;
@@ -226,7 +234,7 @@ public static class SaveManager
 
         string json = File.ReadAllText(@skillPath);
         CharacterSkillData data = JsonUtility.FromJson<CharacterSkillData>(json);
-        return data; 
+        return data;
     }
     #endregion
 
@@ -248,7 +256,7 @@ public static class SaveManager
 
         string json = File.ReadAllText(@recordPath);
         RecordSaveListData data = JsonUtility.FromJson<RecordSaveListData>(json);
-        return data; 
+        return data;
     }
     #endregion
 }

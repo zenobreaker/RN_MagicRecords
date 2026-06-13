@@ -188,18 +188,31 @@ public class AppManager
     }
 
 
+    // 최종 결과창의 [확인/로비로] 버튼에 이 함수를 연결
+    public void CompleteRunAndReturnToLobby()
+    {
+        // 1. 최종 보상 지급 (필요하다면 여기서 지급)
+        // rewardManager?.GiveChapterReward(exploreManager.Chapter);
+
+        // 2. 런이 끝났고 보상도 받았으므로, 기존 세이브 데이터를 날려버립니다!
+        exploreManager.SafeInvoke(v => v.PurgeCurrentRun());
+
+        // 3. 로비 씬으로 이동
+        ReturnToLobbyScene();
+    }
+
     public void EnterTheExplorationProcess()
     {
         // 탐사 데이터 초기화 
-        exploreManager?.StartExplore();
+        exploreManager.SafeInvoke(v => v.StartExplore());
+
+        skillManager.SafeInvoke(v => v.ResetRunData());
 
         SceneManager.LoadScene(1);
     }
 
-    // AppManager.cs 내부에 추가
     public void ContinueExplorationProcess()
     {
-        // 💡 StartExplore()를 부르지 않고 바로 씬만 넘깁니다!
         // 그러면 ExploreManager.EnsureInitialized()가 씬 로드 후 알아서 Init(false)를 호출하여 로드할 것입니다.
         SceneManager.LoadScene(1);
     }
@@ -448,65 +461,65 @@ public class AppManager
 
     public EquipmentItem GetEquipmentItem(int itemid)
     {
-        return databaseManager?.GetEquipmentItem(itemid);
+        return databaseManager.SafeInvoke(v=>v.GetEquipmentItem(itemid));
     }
 
     public IngredientItem GetIngredientItem(int itemId)
     {
-        return databaseManager?.GetIngredientItem(itemId);
+        return databaseManager.SafeInvoke(v => v.GetIngredientItem(itemId));
     }
 
     public CurrencyItem GetCurrencyItem(int itemId)
     {
-        return databaseManager?.GetCurrencyItem(itemId);
+        return databaseManager.SafeInvoke(v => v.GetCurrencyItem(itemId));
     }
 
     public CurrencyItem GetCurrencyItemByType(CurrencyType type)
     {
-        return databaseManager?.GetCurrencyItemByType(type);
+        return databaseManager.SafeInvoke(v => v.GetCurrencyItemByType(type));
     }
 
     public ShopItem GetShopItem(int itemId)
     {
-        return databaseManager?.GetShopItem(itemId);
+        return databaseManager.SafeInvoke(v => v.GetShopItem(itemId));
     }
 
     public List<ItemData> GetShopItems(ItemCategory category)
     {
-        return databaseManager?.GetShopItems(category);
+        return databaseManager.SafeInvoke(v => v.GetShopItems(category));
     }
 
     public EnhanceLevelData GetEnhanceLevelData(ItemRank rank, int enhanceLevel)
     {
-        return databaseManager?.GetEnhanceLevelData((int)rank, enhanceLevel);
+        return databaseManager.SafeInvoke(v => v.GetEnhanceLevelData((int)rank, enhanceLevel));
     }
 
     public EnhanceStatData GetEnhanceStatData(ItemRank rank, int enhanceLevel)
     {
-        return databaseManager?.GetEnhanceStatData((int)rank, enhanceLevel);
+        return databaseManager.SafeInvoke(v => v.GetEnhanceStatData((int)rank, enhanceLevel));
     }
 
     public List<EnhanceStatData> GetEnhanceStatDatas(ItemRank rank)
     {
-        return databaseManager?.GetEnhanceStatDatas((int)rank);
+        return databaseManager.SafeInvoke(v => v.GetEnhanceStatDatas((int)rank));
     }
 
     public RecordData GetRecordData(int recordID)
     {
-        return databaseManager?.GetRecordData(recordID);
+        return databaseManager.SafeInvoke(v => v.GetRecordData(recordID));
     }
 
     public List<RecordData> GetAllRecordData()
     {
-        return databaseManager?.GetAllRecordData();
+        return databaseManager.SafeInvoke(v => v.GetAllRecordData());
     }
 
     public RecordData GetEmptyRecord()
-    { return databaseManager?.GetEmptyRecord(); }
+    { return databaseManager.SafeInvoke(v => v.GetEmptyRecord()); }
 
     public EventInfo GetEventInfo(int eventID)
     {
-        return databaseManager?.GetEventInfo(eventID); 
+        return databaseManager.SafeInvoke(v => v.GetEventInfo(eventID)); 
     }
 
     #endregion
@@ -514,19 +527,18 @@ public class AppManager
     #region Reward
     public RewardData GetRewardData(int rewardId)
     {
-        return databaseManager?.GetRewardData(rewardId);
+        return databaseManager.SafeInvoke(v => v.GetRewardData(rewardId));
     }
 
     public ClearRewardData GetStageClearRewardData(int stageid)
     {
-        return databaseManager.GetStageClearReward(stageid);
+        return databaseManager.SafeInvoke(v=>v.GetStageClearReward(stageid));
     }
 
     public ClearRewardData GetChapterClearRewardData(int clearedChapter)
     {
         // 챕터가 클리어 되면 해당 챕터에 맞 는 id로 변환되어 반환함
-        if (databaseManager == null) return null;
-        return databaseManager.GetChapterClearReward(clearedChapter);
+        return databaseManager.SafeInvoke(v=>v.GetChapterClearReward(clearedChapter));
     }
 
     public void SetChapterClearReward(int clearedChapter)
@@ -539,14 +551,13 @@ public class AppManager
     public void TriggerRecordUI(List<RecordData> records, bool canReroll = true, RecordUIMode mode = RecordUIMode.DRAFT)
     {
         PauseManager.RequestPause();
-        UIManager.Instance.OpenRecordSelectPopUp(records, canReroll, mode);
+        UIManager.Instance.SafeInvoke(v=>v.OpenRecordSelectPopUp(records, canReroll, mode));
     }
 
     public void OnRecordSelected(RecordData selected)
     {
         // 선택된 레코드 알림 
-        if(recordManager != null) 
-            recordManager.SelectedRecord(selected);
+        recordManager.SafeInvoke(v=>v.SelectedRecord(selected));
 
         OnSelectedRecordCard?.Invoke();
     }
@@ -616,8 +627,6 @@ public class AppManager
 
     public Sprite GetStageIcon(StageType type)
     {
-        if (databaseManager == null) return null;
-
-        return databaseManager.GetStageIcon(type);
+        return databaseManager.SafeInvoke(v => v.GetStageIcon(type));
     }
 }

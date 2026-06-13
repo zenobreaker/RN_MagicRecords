@@ -428,6 +428,6 @@ public class UITotalResultPopUp : UIPopUp
 
     public void OnClickedConfirmButton()
     {
-        AppManager.Instance?.ReturnToLobbyScene();
+        AppManager.Instance.SafeInvoke(v => v.CompleteRunAndReturnToLobby());
     }
 }

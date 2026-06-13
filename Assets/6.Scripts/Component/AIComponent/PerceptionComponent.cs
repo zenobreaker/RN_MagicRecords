@@ -48,6 +48,8 @@ public class PerceptionComponent
 
         //candidateList.ForEach(collider => print(collider.name));
 
+        if (percievedTable == null) return; 
+
         //2. 후보자들 시간들 갱신
         foreach (Collider collider in candidateList)
         {
@@ -75,11 +77,14 @@ public class PerceptionComponent
     public GameObject GetTarget()
     {
         OnPerceptionUpdated?.Invoke(percievedTable.Keys.ToList());
-        foreach (var item in percievedTable)
+        if (percievedTable != null)
         {
-            if (item.Key == null) continue;
-            if (item.Key.CompareTag("Player"))
-                return item.Key;
+            foreach (var item in percievedTable)
+            {
+                if (item.Key == null) continue;
+                if (item.Key.CompareTag("Player"))
+                    return item.Key;
+            }
         }
 
         return null;

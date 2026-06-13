@@ -10,13 +10,16 @@ public class SkillPanel : MonoBehaviour
 
     private readonly string path = "Skills/SO_SkillEventHandler";
 
-    private void Start()
+    private void Awake()
     {
         if(handler == null)
         {
             handler = Resources.Load<SO_SkillEventHandler>(path);
         }
+    }
 
+    private void Start()
+    {
         SetSkillHandlerToSlots();
     }
 

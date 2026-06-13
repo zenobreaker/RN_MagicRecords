@@ -5,51 +5,51 @@ public class Exploration_Main_UI : UiBase
     protected override void OnEnable()
     {
         base.OnEnable();
-        
     }
 
     public void EnterTheExploration()
     {
         if (AppManager.Instance == null) return;
 
-        // 1. 기존에 진행 중인 탐사 데이터가 있는지 검사합니다.
-        bool hasSaveData = AppManager.Instance.HasSavedExploration();
+        // 1. 가벼운 MapData만 쓱 읽어옵니다.
+        MapData loadMap = SaveManager.LoadMap();
 
-        if (hasSaveData)
+        // 2. 세이브가 없으면 묻지도 따지지도 않고 새 게임
+        if (loadMap == null || loadMap.nodes.Count == 0)
         {
-            // 2-A. 세이브가 있다면 [이어하기 / 새로하기] 팝업 호출
-            UIManager.Instance.OpenTwoButtonPopUp(
-                title: "알림",
-                message: "진행 중인 탐사 기록이 있습니다.\n이어서 진행하시겠습니까?",
-                confirmText: "이어서 하기",
-                cancelText: "새로 시작",
-                onConfirm: () =>
-                {
-                    // [이어서 하기] -> 저장된 데이터 유지하고 씬 이동
-                    AppManager.Instance.ContinueExplorationProcess();
-                },
-                onCancel: () =>
-                {
-                    // [새로 시작] -> 데이터가 날아가므로 2차 경고!
-                    UIManager.Instance.OpenTwoButtonPopUp(
-                        title: "경고",
-                        message: "기존 탐사 기록과 아이템이 모두 삭제됩니다.\n정말 새로 시작하시겠습니까?",
-                        confirmText: "확인",
-                        cancelText: "취소",
-                        onConfirm: () =>
-                        {
-                            // [확인] -> 데이터 덮어쓰고 1챕터부터 새로 출발!
-                            AppManager.Instance.EnterTheExplorationProcess();
-                        },
-                        onCancel: () => { /* 아무 일도 일어나지 않고 팝업 닫힘 */ }
-                    );
-                }
-            );
-        }
-        else
-        {
-            // 2-B. 세이브가 아예 없다면 고민할 필요 없이 새 탐사 진입
             AppManager.Instance.EnterTheExplorationProcess();
+            return;
+        }
+
+        // 3. 💡 저장된 명시적 상태(RunStatus)를 기반으로 깔끔하게 처리합니다!
+        switch (loadMap.runStatus)
+        {
+            case RunStatus.MidRun:
+            case RunStatus.NoSave: // (예외 처리용)
+                // 평범하게 진행 중이던 상태 -> 이어하기 팝업 호출
+                UIManager.Instance.OpenTwoButtonPopUp(
+                    title: "알림",
+                    message: "진행 중인 탐사 기록이 있습니다.\n이어서 진행하시겠습니까?",
+                    confirmText: "이어서 하기",
+                    cancelText: "새로 시작",
+                    onConfirm: () =>
+                    {
+                        AppManager.Instance.ContinueExplorationProcess();
+                    },
+                    onCancel: () =>
+                    {
+                        UIManager.Instance.OpenTwoButtonPopUp("경고", "기존 기록이 사라집니다. 새로 시작합니까?", "확인", "취소",
+                            () => AppManager.Instance.EnterTheExplorationProcess(), null);
+                    }
+                );
+                break;
+
+            case RunStatus.ChapterCleared:
+            case RunStatus.FinalRunCleared:
+                // 크래시가 나서 보상을 못 받고 꺼졌던 상태 -> 팝업 없이 강제 진입시켜서 결산창을 띄워줌!
+                Debug.LogWarning("[구제 시스템] 보상 미수령 세이브 발견! 결산 처리를 위해 강제 진입합니다.");
+                AppManager.Instance.ContinueExplorationProcess();
+                break;
         }
     }
 }

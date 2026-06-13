@@ -406,7 +406,18 @@ public partial class ObjectPooler : MonoBehaviour
         // Pooler를 부모로 하여금 해당 오브젝트 생성
         var obj = Instantiate(prefab, transform);
         obj.name = tag;
-        obj.SetActive(false); // 비활성화시 ReturnToPool을 하므로 Enqueue가 됨
+        
+        // 프리팹이 원래 꺼져있었는지 확인합니다.
+        bool wasActive = obj.activeSelf;
+
+        obj.SetActive(false);
+
+        // 프리팹이 원래 꺼져있었다면 OnDisable이 발동하지 않았을 테니 강제로 큐에 넣어줍니다!
+        if (wasActive == false)
+        {
+            ReturnToPool(obj);
+        }
+
         return obj;
     }
 

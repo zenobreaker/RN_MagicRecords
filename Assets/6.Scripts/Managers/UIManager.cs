@@ -321,7 +321,7 @@ public class UIManager : Singleton<UIManager>
         if (currentObject == null) return;
 
         var go = Instantiate<GameObject>(currentObject);
-        go?.SetActive(true);
+        go.SafeInvoke(v => v.SetActive(true));
     }
 
     private void SetStageSelectScene()
@@ -473,7 +473,26 @@ public class UIManager : Singleton<UIManager>
         Transform dtParent = currentUIGroup.transform.FindChildByName("DmgTxtParent");
         if (dtParent == null) return;
 
-        DamageText dt = ObjectPooler.SpawnFromPool<DamageText>("DamageText", dtParent);
-        dt?.DrawDamage(pos, value, damageEvent);
+        // 💡 [해결책] 동시 타격 시 텍스트가 겹치는 것을 막기 위해 미세한 랜덤 좌표(Jitter)를 더해줍니다.
+        // 2D/UI 직교 좌표계라면 x, y에 오프셋을, 3D 공간이라면 x, y, z에 맞게 조절하세요.
+        Vector3 randomOffset = new Vector3(
+            UnityEngine.Random.Range(-0.5f, 0.5f),
+            UnityEngine.Random.Range(-0.2f, 0.5f),
+            0f);
+
+        Vector3 finalPos = pos + randomOffset;
+
+        DamageText dt = ObjectPooler.DeferredSpawnFromPool<DamageText>("DamageText", finalPos);
+
+        if (dt != null)
+        {
+            dt.transform.SetParent(dtParent, false);
+
+            dt.transform.position = finalPos;
+
+            dt.SafeInvoke(v => v.DrawDamage(finalPos, value, damageEvent));
+
+            ObjectPooler.FinishSpawn(dt.gameObject); 
+        }
     }
 }

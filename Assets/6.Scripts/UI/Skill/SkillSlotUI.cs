@@ -33,6 +33,12 @@ public class SkillSlotUI : MonoBehaviour
         handler.OnSetActiveSkill += OnDrawSkill;
         handler.OnInSkillCooldown += OnIsCooldown;
         handler.OnSkillCooldown += OnSkillCoolDown;
+
+        ActiveSkill cachedSkill = handler.CurrentActiveSkills[(int)mySlot];
+        if (cachedSkill != null)
+        {
+            OnDrawSkill(mySlot, cachedSkill);
+        }
     }
 
     // 스킬 이미지 그리기

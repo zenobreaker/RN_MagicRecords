@@ -48,6 +48,7 @@ public sealed class SpawnManager : MonoBehaviour
     public UniTask SpawnCharacterAsync(int id, List<Transform> points, CancellationToken token)
     {
         SpawnCharacter(id, points);
+
         return UniTask.CompletedTask;
     }
     public void SpawnCharacter(int id, List<Transform> spawnPoints)
@@ -111,6 +112,8 @@ public sealed class SpawnManager : MonoBehaviour
 
                 // Dead Event 
                 player.OnDead += OnPlayerDead;
+
+                BattleManager.Instance.SafeInvoke(v => v.RegistPlayer(player));
             }
         }
     }
@@ -138,22 +141,31 @@ public sealed class SpawnManager : MonoBehaviour
                 if (enemyLayer != -1 && isEnemy)
                     SetLayerRecursively(npc, enemyLayer);
 
-                var statData = AppManager.Instance.GetMonsterStatData(id);
+                MonsterStatData statData = AppManager.Instance.SafeInvoke(v => v.GetMonsterStatData(id));
                 if (npc.TryGetComponent<Enemy>(out Enemy enemy))
                 {
                     spawnedEnemies.Add(enemy);
                     enemy.SetStatData(statData);
 
                     if(AppManager.Instance != null)
-                        enemy.SetGrade(AppManager.Instance?.GetMonsterData(id));
+                        enemy.SetGrade(AppManager.Instance.SafeInvoke(v=>v.GetMonsterData(id)));
                     
                     enemy.OnDead += OnEnemyDead;
 
                     if (enemy.TryGetComponent<NavMeshAgent>(out var agent)) 
                         agent.enabled = true;
 
-                    ObjectPooler.FinishSpawn(npc);
+
+                    BattleManager.Instance.SafeInvoke(v => v.ResistEnemy(enemy));
+                    
                 }
+
+                if(npc.TryGetComponent<StateComponent>(out StateComponent component))
+                {
+                    component.SetIdleMode();
+                }
+
+                ObjectPooler.FinishSpawn(npc);
 
                 spawnedCount++;
                 if (spawnedCount >= totalToSpawn)

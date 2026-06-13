@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class PlayerUIController : UIController
 {
-    [SerializeField] private Button pauseButton; 
+    [SerializeField] private Button pauseButton;
 
     private void Awake()
     {

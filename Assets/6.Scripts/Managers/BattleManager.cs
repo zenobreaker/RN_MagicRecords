@@ -17,17 +17,25 @@ public class BattleManager
 
     private bool bInBattle = false;
 
-    protected override void Awake()
-    {
-        base.Awake();
-        Instance = this;
-    }
-
     protected override void Start()
     {
         battleTable = new Dictionary<Character, List<Character>>();
         
         base.Start(); 
+    }
+
+    protected override void SyncDataFromSingleton()
+    {
+        base.SyncDataFromSingleton();
+
+        players = Instance.players;
+        enemies = Instance.enemies;
+        OnAnyAttackHit = Instance.OnAnyAttackHit;
+        OnAnyAttackHitFinish = Instance.OnAnyAttackHitFinish;
+        OnFinishBeginBattle = Instance.OnFinishBeginBattle;
+
+        bInBattle = Instance.bInBattle;
+        battleTable = Instance.battleTable;
     }
 
     private void OnEnable()
@@ -56,7 +64,10 @@ public class BattleManager
 
     public void UnreistEnemy(Character character) => enemies.Remove(character);
 
-    public void RegistPlayer(Character character) => players.Unique(character);
+    public void RegistPlayer(Character character)
+    {
+        players.Unique(character);
+    }
 
     public void UnreistPlayer(Character character) => players.Remove(character);
 
@@ -69,13 +80,13 @@ public class BattleManager
         }
 
         // 플레이어가 등록이 되지 않았다면 플레이어 등록
-        if (battleTable.ContainsKey(player) == false)
+        if (battleTable != null && battleTable.ContainsKey(player) == false)
         {
             battleTable.Add(player, new List<Character>());
         }
 
         // 등록된 플레이어에 적들 리스트에서 추가
-        if (battleTable.TryGetValue(player, out List<Character> list))
+        if (battleTable != null && battleTable.TryGetValue(player, out List<Character> list))
         {
             list.Unique(enemy);
             return true;
@@ -87,33 +98,27 @@ public class BattleManager
     public void OutBattle()
     {
         battleTable.Clear();
+
+        bInBattle = false; 
     }
 
 
     private Character GetPrioritizedPlayer()
     {
-        //TODO: 최적의 플레이어를 계산해서 던져주기 
-        foreach (var player in players)
-        {
-            return player;
-        }
-
-        return null;
+        return players.FirstOrDefault();
     }
-
 
     public void OnBattle()
     {
+        foreach (var p in players)
+        {
+            Debug.Log($"Player = {p}");
+        }
+
         bInBattle = true;
 
         foreach (var enemy in enemies)
             TryAiToJoinBattle(enemy);
-
-#if UNITY_EDITOR
-        Debug.Log("Battle : OnBeginBattle");
-#endif
-
-        OnFinishBeginBattle?.Invoke();
     }
 
 
