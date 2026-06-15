@@ -20,6 +20,7 @@ MonoBehaviour:
   skillUpgradeCost: 
   skillImage: {fileID: 21300000, guid: c2c4ced47962c1f4baa78b91b6fc205a, type: 3}
   leadingSkillList: 
+  range: -1
   cost: 10
   cooldown: 12
   limitCooldown: 2
@@ -60,6 +61,7 @@ MonoBehaviour:
       stateName: 
       layerName: 
       actionSpeed: 1
+      droneReactionType: 3
       weaponActionName: 
       SoundName: 
       impulseDirection: {x: 0, y: 0, z: 0}
@@ -88,7 +90,7 @@ MonoBehaviour:
           statCoefficient: 0
           bDownable: 0
           bLauncher: 0
-          SoundName: 
+          SoundName: Laser01
           impulseDirection: {x: 0, y: 0, z: 0}
           settings: {fileID: 0}
           hitData:
@@ -120,6 +122,7 @@ MonoBehaviour:
           stateName: Skill
           layerName: 
           actionSpeed: 1
+          droneReactionType: 3
           weaponActionName: Action
           SoundName: 
           impulseDirection: {x: 0, y: 0, z: 0}

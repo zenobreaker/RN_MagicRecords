@@ -20,13 +20,14 @@ MonoBehaviour:
   skillUpgradeCost: 
   skillImage: {fileID: 21300000, guid: 38c23e410f444a94ebd02c4b43beb1fe, type: 3}
   leadingSkillList: 
+  range: -1
   cost: 10
   cooldown: 12
   limitCooldown: 2
   castingTime: -1
   isConcurrentSkill: 0
   phaseList:
-  - phaseName: 
+  - phaseName: "\uBC1C\uC0AC"
     isInstant: 0
     modules:
     - rid: 8682830572024496210
@@ -57,6 +58,7 @@ MonoBehaviour:
       stateName: 
       layerName: 
       actionSpeed: 1
+      droneReactionType: 1
       weaponActionName: 
       SoundName: 
       impulseDirection: {x: 0, y: 0, z: 0}
@@ -75,12 +77,13 @@ MonoBehaviour:
         objectName: Bullet
         spawnPosition: {x: 0, y: 1, z: 1}
         totalShots: 5
-        fireInterval: 0.1
+        fireInterval: 0.25
         actionData:
           subStateName: Skill01
           stateName: Skill
           layerName: 
           actionSpeed: 1
+          droneReactionType: 1
           weaponActionName: Action
           SoundName: 
           impulseDirection: {x: 0, y: 0, z: 0}

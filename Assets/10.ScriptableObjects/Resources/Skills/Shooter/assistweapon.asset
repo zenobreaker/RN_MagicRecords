@@ -20,10 +20,12 @@ MonoBehaviour:
   skillUpgradeCost: 
   skillImage: {fileID: 21300000, guid: 8a8f8ef6d8cb2354881f7285a8a554cf, type: 3}
   leadingSkillList: 
+  range: -1
   cost: 10
   cooldown: 15
   limitCooldown: 2
   castingTime: -1
+  isConcurrentSkill: 0
   phaseList:
   - phaseName: "\uC0DD\uC131"
     isInstant: 1
@@ -56,6 +58,7 @@ MonoBehaviour:
       stateName: 
       layerName: 
       actionSpeed: 1
+      droneReactionType: 0
       weaponActionName: 
       SoundName: 
       impulseDirection: {x: 0, y: 0, z: 0}
@@ -101,3 +104,4 @@ MonoBehaviour:
         useBlackboardPattern: 1
         spawnCount: 1
         angleBetween: 0
+        multiplierBlackboardKey: DamageMultiplier
