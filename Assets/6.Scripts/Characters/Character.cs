@@ -30,7 +30,7 @@ public class Character
     private CancellationTokenSource slowCts;
 
     #region ACTION
-    public event Action<string, ActionData, GameObject> OnAttackExecuted; 
+    public event Action<ActionData, GameObject> OnAttackExecuted; 
     public Action OnBeginDoAction;
     public Action OnEndDoAction;
     public Action<Character> OnDead;
@@ -175,9 +175,9 @@ public class Character
     protected virtual void Dead() { }
 
 
-    public void BroadcastAttack(string skillID, ActionData actionData, GameObject attacker)
+    public void BroadcastAttack(ActionData actionData, GameObject attacker)
     {
-        OnAttackExecuted?.Invoke(skillID, actionData, attacker);    
+        OnAttackExecuted?.Invoke(actionData, attacker);    
     }
 
     public static implicit operator GameObject(Character c)
