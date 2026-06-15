@@ -11,7 +11,7 @@ public class SkillRuntimeData
     public int currentLevel;    // 플레이어가 배운 현재 레벨
     public bool isUnlocked;     // 해금 여부
 
-    public Action<SkillRuntimeData> OnDataChanged; 
+    public Action<SkillRuntimeData> OnDataChanged;
 
     public int GetSkillID()
     {
@@ -79,7 +79,7 @@ public class SkillRuntimeData
 // 캐릭터 ID와 캐릭터의 직업군 ID를 받아내고 그 정보값들로 스킬트리UI에게 전달하여 
 // 화면을 그리게 한다. 
 
-public class SkillTreeManager 
+public class SkillTreeManager
     : Singleton<SkillTreeManager>
 {
     [SerializeField] private List<SkillTree> classSkillTreeList;
@@ -109,7 +109,10 @@ public class SkillTreeManager
 
     protected override void Awake()
     {
-        base.Awake(); 
+        Debug.Log($"Awake {GetInstanceID()} Dirty:{isDirty}");
+        base.Awake();
+
+        if (IsDuplicate) return;
 
         InitializeClassSkillTable();
 
@@ -121,13 +124,13 @@ public class SkillTreeManager
     protected override void Start()
     {
         selectedSkillData = null;
-        
-        base.Start(); 
+
+        base.Start();
     }
 
     protected override void SyncDataFromSingleton()
     {
-        if(Instance != this)
+        if (Instance != this)
         {
             isDirty = Instance.isDirty;
             classSkillTreeList = Instance.classSkillTreeList;
@@ -143,7 +146,7 @@ public class SkillTreeManager
 
     public SkillTree GetSkillTree(SkillTreeCategory category, int classID)
     {
-        switch(category)
+        switch (category)
         {
             case SkillTreeCategory.Theme:
                 return skillByClassIdTable[classID];
@@ -156,13 +159,13 @@ public class SkillTreeManager
         }
 
 
-        return null; 
+        return null;
     }
 
 
     public void SkillUnlock(SkillRuntimeData data)
     {
-        data.isUnlocked = true;   
+        data.isUnlocked = true;
     }
 
     public void SetSkillTree(int ownerId, int classId)
@@ -201,14 +204,14 @@ public class SkillTreeManager
             if (runtimeSkill.template is SO_PassiveSkillData so_passive)
             {
                 //앱매니저에게 해당 스킬이 레벨업되었다고 알림
-                AppManager.Instance?.OnChangedLevelPassiveSkill(so_passive.jobID, runtimeSkill);
+                AppManager.Instance.SafeInvoke(v => v.OnChangedLevelPassiveSkill(so_passive.jobID, runtimeSkill));
             }
         }
     }
 
     public SkillRuntimeData GetSkillRuntimeData(int classID, int skillID)
     {
-        if(skillByClassIdTable.TryGetValue(classID, out SkillTree tree))
+        if (skillByClassIdTable.TryGetValue(classID, out SkillTree tree))
             return tree.GetSkillRuntimeDataByID(skillID);
         return null;
     }
@@ -216,26 +219,36 @@ public class SkillTreeManager
     public void OnSkillRuntimeDataChanged(SkillRuntimeData data)
     {
         isDirty = true;
-        OnDataChanged?.Invoke(); 
+        OnDataChanged?.Invoke();
 
-        if(data.template is SO_PassiveSkillData so_passive)
+        Debug.Log(
+            $"Dirty TRUE {GetInstanceID()}"
+        );
+        if (data.template is SO_PassiveSkillData so_passive)
         {
             //앱매니저에게 해당 스킬이 레벨업되었다고 알림
             AppManager.Instance?.OnChangedLevelPassiveSkill(so_passive.jobID, data);
         }
     }
 
+    private void OnDestroy()
+    {
+        Debug.Log(
+            $"Destroy {GetInstanceID()} Dirty:{isDirty}"
+        );
+    }
+
     public void SaveIfDirty()
     {
-        if (isDirty == false) 
-            return; 
+        if (isDirty == false)
+            return;
 
         // 스킬 정보 저장 
         CharacterSkillData charSkillData = new CharacterSkillData { charID = 1, classID = 1 };
 
         //TODO : id 지정해야할 듯 
         SkillTree skillTree = GetSkillTableByClassId(1);
-        if (skillTree == null) return; 
+        if (skillTree == null) return;
 
         List<SkillSaveData> saveList = new();
         for (int i = 0; i <= 50; i++)
@@ -253,7 +266,7 @@ public class SkillTreeManager
         charSkillData.skillSaveDatas = saveList;
 
         SaveManager.SaveSkillData(charSkillData);
-        isDirty = false; 
+        isDirty = false;
     }
 }
 

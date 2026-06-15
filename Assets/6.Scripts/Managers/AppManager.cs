@@ -29,6 +29,8 @@ public class AppManager
     {
         base.Awake();
 
+        if (IsDuplicate) return; 
+
         if (Instance != this)
             return;
 

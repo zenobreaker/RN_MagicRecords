@@ -8,6 +8,13 @@ public class CurrencyManager
 
     public event Action OnUpdatedCurrency;
 
+    protected override void Awake()
+    {
+        base.Awake();
+
+        if (IsDuplicate) return;
+    }
+
     public void OnInit(CurrencyInventory inventory)
     {
         if (inventory == null) return;

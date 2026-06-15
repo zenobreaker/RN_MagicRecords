@@ -3,6 +3,9 @@ using UnityEngine;
 
 public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
+    protected bool IsDuplicate { get; private set; }
+
+
     private static T instance;
     public static T Instance
     {
@@ -30,6 +33,8 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
         else if (instance != this)
         {
+            IsDuplicate = true; 
+
             // 데이터 동기화가 필요한 것이 아니라면 파괴 후 아무 것도 안함
             SyncDataFromSingleton();
             Destroy(gameObject);

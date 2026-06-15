@@ -150,7 +150,7 @@ public class UIManager : Singleton<UIManager>
         currentToastIndex = (currentToastIndex + 1) % maxToastCount;
     }
 
-    // 💡 [수정] ESC 처리 로직 통합: 스택 맨 위에 있는 것(팝업이든 UI든)을 하나씩 무조건 닫습니다.
+    // 💡ESC 처리 로직 통합: 스택 맨 위에 있는 것(팝업이든 UI든)을 하나씩 무조건 닫습니다.
     private void OnCancelPressed(InputAction.CallbackContext context)
     {
         if (openedUIs.Count > 0)
@@ -198,7 +198,7 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
-    // 💡 [수정] 매개변수에 isPopup 플래그 추가 (기본값 false)
+    // 💡 매개변수에 isPopup 플래그 추가 (기본값 false)
     public void OpenUI(UiBase ui, bool isPopup = false)
     {
         if (ui == null) return;
@@ -213,7 +213,7 @@ public class UIManager : Singleton<UIManager>
         openedUIs.Push(ui);
     }
 
-    // 💡 [수정] 매개변수에 isPopup 플래그 추가 (기본값 false)
+    // 💡 매개변수에 isPopup 플래그 추가 (기본값 false)
     public T OpenUI<T>(bool isPopup = false) where T : UiBase
     {
         // 💡 팝업이 아닌 일반 UI가 새로 열릴 경우, 스택을 모두 비워줍니다.
@@ -324,6 +324,11 @@ public class UIManager : Singleton<UIManager>
         go.SafeInvoke(v => v.SetActive(true));
     }
 
+    private T GetCurrentOpenedUI<T>()  where T : UiBase
+    {
+        return openedUIs.Peek() as T;
+    }
+
     private void SetStageSelectScene()
     {
         OnReturnedStageSelect?.Invoke();
@@ -432,6 +437,14 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
+    public void RefreshRecordSelectPopUp(List<RecordData> records)
+    {
+        RecordUI currentPopup = GetCurrentOpenedUI<RecordUI>();
+        if (currentPopup == null) return;
+        currentPopup.SetData(records, true);
+        currentPopup.RefreshUI(); 
+    }
+
     public void OpenExploreResultPopUp()
     {
         var ui = OpenUI<UITotalResultPopUp>(true); // 팝업
@@ -468,31 +481,6 @@ public class UIManager : Singleton<UIManager>
     //--------------------------------------------------------------------------
     public void DrawDamageText(Vector3 pos, float value, DamageEvent damageEvent)
     {
-        if (currentUIGroup == null) return;
-
-        Transform dtParent = currentUIGroup.transform.FindChildByName("DmgTxtParent");
-        if (dtParent == null) return;
-
-        // 💡 [해결책] 동시 타격 시 텍스트가 겹치는 것을 막기 위해 미세한 랜덤 좌표(Jitter)를 더해줍니다.
-        // 2D/UI 직교 좌표계라면 x, y에 오프셋을, 3D 공간이라면 x, y, z에 맞게 조절하세요.
-        Vector3 randomOffset = new Vector3(
-            UnityEngine.Random.Range(-0.5f, 0.5f),
-            UnityEngine.Random.Range(-0.2f, 0.5f),
-            0f);
-
-        Vector3 finalPos = pos + randomOffset;
-
-        DamageText dt = ObjectPooler.DeferredSpawnFromPool<DamageText>("DamageText", finalPos);
-
-        if (dt != null)
-        {
-            dt.transform.SetParent(dtParent, false);
-
-            dt.transform.position = finalPos;
-
-            dt.SafeInvoke(v => v.DrawDamage(finalPos, value, damageEvent));
-
-            ObjectPooler.FinishSpawn(dt.gameObject); 
-        }
+        DamageTextPooler.Instance.SafeInvoke(v => v.ShowDamage(pos, value, damageEvent));
     }
 }

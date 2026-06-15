@@ -19,6 +19,13 @@ public class PlayerManager :
 
     private Dictionary<int, Player> currentPlayerDicts = new Dictionary<int, Player>();
 
+    protected override void Awake()
+    {
+        base.Awake();
+
+        if (IsDuplicate) return;
+    }
+
     public void SetCurrentPlayer(Player player)
     {
         currentPlayerDicts[player.CharID] = player;

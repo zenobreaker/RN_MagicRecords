@@ -352,8 +352,7 @@ public sealed class RecordManager : MonoBehaviour
         // 4. 데이터 갱신 및 UI 트리거
         CurrentOptions = newOptions;
 
-        PauseManager.RequestPause();
-        UIManager.Instance.OpenRecordSelectPopUp(CurrentOptions, true, RecordUIMode.DRAFT);
+        UIManager.Instance.SafeInvoke(v => v.RefreshRecordSelectPopUp(CurrentOptions)); 
     }
 
 

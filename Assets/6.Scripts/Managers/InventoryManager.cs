@@ -15,6 +15,14 @@ public class InventoryManager
     public Action OnDataChanged;
     public event Action OnInitialized; // Added: event to notify when initialization is finished
 
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        if (IsDuplicate) return;
+    }
+
     public void OnInit()
     {
         inventories.Clear();

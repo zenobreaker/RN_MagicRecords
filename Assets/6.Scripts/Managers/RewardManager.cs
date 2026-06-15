@@ -15,7 +15,7 @@ public class RewardManager
     protected override void Awake()
     {
         base.Awake();
-
+        if (IsDuplicate) return;
         AppManager.Instance.OnAwaked += () =>
         {
             if (IsInitialized) return;

@@ -27,6 +27,9 @@ public class GameManager
     protected override void Awake()
     {
         base.Awake();
+
+        if (IsDuplicate) return;
+
         stageManager = GetComponent<StageManager>();
 
         if (Instance == this)
@@ -81,7 +84,7 @@ public class GameManager
 
         SetGameState(GameState.FINISH_STAGE);
 
-        // 💡 결과를 God Object(AppManager)에게 넘겨서 뒷수습을 맡깁니다.
+        //  결과를 (AppManager)에게 넘겨서 뒷수습을 맡김.
         AppManager.Instance.HandleStageResult(result);
     }
 

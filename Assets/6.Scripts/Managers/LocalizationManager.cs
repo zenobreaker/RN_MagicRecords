@@ -29,6 +29,8 @@ public class LocalizationManager : Singleton<LocalizationManager>
     protected override void Awake()
     {
         base.Awake();
+        if (IsDuplicate) return;
+
         InitializeStringData();
     }
 

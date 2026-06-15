@@ -18,6 +18,7 @@ public sealed class BiomeManager : Singleton<BiomeManager>
     {
         base.Awake();
 
+        if (IsDuplicate) return;
         if (chapterData == null) return;
 
         foreach (var biome in chapterData.possibleBiomes)

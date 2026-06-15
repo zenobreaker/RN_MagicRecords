@@ -16,6 +16,12 @@ public class BattleManager
     private Dictionary<Character, List<Character>> battleTable;
 
     private bool bInBattle = false;
+    protected override void Awake()
+    {
+        base.Awake();
+
+        if (IsDuplicate) return;
+    }
 
     protected override void Start()
     {
