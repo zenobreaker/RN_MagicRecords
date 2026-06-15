@@ -2,8 +2,7 @@
 using UnityEngine;
 
 public class MetorProjectile
-    : MonoBehaviour
-    , ISkillEffect
+    : BaseProjectile
     , ITargetableEffect
 {
     [Header("Meteor Settings")]
@@ -17,26 +16,9 @@ public class MetorProjectile
     [SerializeField] private TrailRenderer trail;
 
     private Vector3 targetPosition;
-    private GameObject ownerObject;
     private DamageData damageData;
     private float cachedMultiplier = 1f;
     private bool isExploded = false;
-
-    private HashSet<GameObject> ignores = new(); 
-
-    public void AddIgnore(GameObject ignore)
-    {
-        ignores.Add(ignore);    
-    }
-
-    public void SetDamageInfo(GameObject attacker
-        , DamageData damageData
-        , bool bExtraCrit = false, float mulitplier = 1.0f)
-    {
-        ownerObject = attacker;
-        this.damageData = damageData;
-        cachedMultiplier = mulitplier;
-    }
 
     // 투사체가 스폰될 때 목표 지점을 설정해주는 함수
     public void SetTargetPosition(Vector3 targetPosition)
@@ -51,8 +33,9 @@ public class MetorProjectile
         if(trail != null) trail.Clear(); 
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
         ObjectPooler.ReturnToPool(this.gameObject);
     }
 

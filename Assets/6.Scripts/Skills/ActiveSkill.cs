@@ -350,7 +350,7 @@ public abstract class ActiveSkill
     public virtual void Begin_JudgeAttack(AnimationEvent e)
     {
         if (ownerCharacter != null)
-            ownerCharacter.BroadcastAttack(skillName, phaseList[phaseIndex].actionData, ownerCharacter);
+            ownerCharacter.BroadcastAttack(phaseList[phaseIndex].actionData, ownerCharacter);
     }
     public virtual void End_JudgeAttack(AnimationEvent e) { }
 

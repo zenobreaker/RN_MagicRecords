@@ -4,8 +4,7 @@ using System.Threading;
 using System;
 
 public class ParabolicProjectile_UniTask
-       : MonoBehaviour
-    , ISkillEffect
+    : BaseProjectile
     , ITargetableEffect
 {
     [Header("Parabola Settings")]
@@ -19,19 +18,15 @@ public class ParabolicProjectile_UniTask
     [SerializeField] private string explosionEffectName = "VFX_Explosion";
     [SerializeField] private string impactSoundName = "";
 
-    private GameObject ownerObject;
     private DamageData cachedDamageData;
     private float cachedMultiplier = 1.0f;
     private bool cachedCrit;
 
-    public void AddIgnore(GameObject ignore)
-    {
-        
-    }
 
-    public void SetDamageInfo(GameObject attacker, DamageData damageData,
+    public override void SetDamageInfo(GameObject attacker, DamageData damageData,
         bool bExtraCrit = false, float multiplier = 1.0f)
     {
+        base.SetDamageInfo(attacker, damageData, bExtraCrit, multiplier);
         ownerObject = attacker;
         cachedDamageData = damageData;
         cachedMultiplier = multiplier;
@@ -44,7 +39,7 @@ public class ParabolicProjectile_UniTask
         FlyAndExplodeTask(transform.position, targetPosition, this.GetCancellationTokenOnDestroy()).Forget();
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
         ObjectPooler.ReturnToPool(this.gameObject);
     }

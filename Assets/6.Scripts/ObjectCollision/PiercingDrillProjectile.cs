@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PiercingDrillProjectile 
-    : MonoBehaviour
+    : BaseProjectile
     , ISkillEffect
 {
     [Header("Projectile Settings")]
@@ -25,9 +25,6 @@ public class PiercingDrillProjectile
     private Rigidbody rigid;
     private new Collider collider;
 
-    private GameObject ownerObject;
-    private DamageEvent damageEvent;
-    private HashSet<GameObject> ignores = new HashSet<GameObject>();
 
     // 드릴 상태 추적
     private HashSet<Collider> currentTargets = new HashSet<Collider>();
@@ -41,23 +38,7 @@ public class PiercingDrillProjectile
         collider = GetComponent<Collider>();
     }
 
-    // =======================================================
-    // 💡 ISkillEffect 인터페이스 구현부
-    // =======================================================
-    public void SetDamageInfo(GameObject attacker, DamageData damageData, 
-        bool bExtraCrit = false, float multiplier = 1.0f)
-    {
-        if (attacker == null || damageData == null) return;
-
-        ownerObject = attacker;
-        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit, multiplier);
-    }
-
-    public void AddIgnore(GameObject ignore)
-    {
-        ignores.Add(ignore);
-    }
-
+    
     // =======================================================
     // 🔄 생명주기 및 물리 이동 로직
     // =======================================================
@@ -74,10 +55,11 @@ public class PiercingDrillProjectile
         isVelocityCaptured = false;
     }
 
-    private void OnDisable()
+    protected override  void OnDisable()
     {
+        base.OnDisable();
+
         ObjectPooler.ReturnToPool(this.gameObject);
-        ignores.Clear();
         currentTargets.Clear();
 
         if (rigid != null)
@@ -144,6 +126,8 @@ public class PiercingDrillProjectile
     {
         if (ignores.Contains(other.gameObject)) return;
         if (ignoreLayer.Contains(other.gameObject)) return;
+        if (IsFriendlyFire(other.gameObject))
+            return;
 
         // 관통 시작: 목록에 추가하고 즉시 1타 데미지
         if (currentTargets.Add(other))
@@ -165,6 +149,9 @@ public class PiercingDrillProjectile
 
     private void OnTriggerExit(Collider other)
     {
+        if (IsFriendlyFire(other.gameObject))
+            return;
+
         // 완전히 뚫고 지나가면 목록에서 제거 (속도 원상복구용)
         if (currentTargets.Contains(other))
         {

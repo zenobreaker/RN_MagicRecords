@@ -9,6 +9,15 @@ public interface IOwnerSetup
     void SetupOwner(GameObject owner);
 }
 
+public enum DroneAttackType
+{
+    None,           // 드론은 아무것도 안 함
+    Normal,         // 일반 사격
+    RapidFire,      // 연사
+    PlasmaLaser,    // 플라즈마 레이저
+    HyperLaser      // 하이퍼 레이저
+}
+
 public class AssistDrone 
     : MonoBehaviour
     , ILifetimeSetup
@@ -32,31 +41,28 @@ public class AssistDrone
         return muzzles;
     }
 
-    public void HandlePlayerAttack(string skillID, ActionData actionData, GameObject attacker)
+    public void HandlePlayerAttack(ActionData actionData, GameObject attacker)
     {
         cts?.Cancel();
         cts = new CancellationTokenSource();
 
-        // 🎯 [핵심] 넘어온 식별자(skillID)에 따라 드론의 행동을 완벽하게 분기!
-        switch (skillID)
+        // 넘어온 식별자(skillID)에 따라 드론의 행동을 완벽하게 분기!
+        switch (actionData.droneReactionType)
         {
-            case "Normal":
+            case DroneAttackType.Normal:
                 DroneNormalAttackAsync(actionData, attacker, cts.Token).Forget();
                 break;
-
-            case "skill_name_consecutiveshot":
-                DroneRapidFireAsync(actionData, attacker, cts.Token).Forget();
-                break;
-
-            case "skill_name_hyperbeam":
+                //DroneNormalAttackAsync(actionData, attacker, cts.Token).Forget();
+                //break;
+            case DroneAttackType.HyperLaser:
                 DroneHyperLaserAttackAsync(actionData, attacker, cts.Token).Forget();
                 break;
-            case "skill_name_plasmaray":
+            case DroneAttackType.PlasmaLaser:
                 DroneLaserAttackAsync(actionData, attacker, cts.Token).Forget();
                 break;
 
             default:
-                Debug.Log($"드론: {skillID}는 모르는 기술입니다. 가만히 있겠습니다.");
+                Debug.Log($"드론 모르는 기술입니다. 가만히 있겠습니다.");
                 break;
         }
     }

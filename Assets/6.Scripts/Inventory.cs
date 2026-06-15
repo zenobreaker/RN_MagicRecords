@@ -19,6 +19,7 @@ public abstract class Inventory
 
     public virtual void RemoveItem(ItemData item)
     {
+        item.OnChanged -= HandleItemChanged;
         items.Remove(item);
 
         OnInventoryChanged?.Invoke(this);

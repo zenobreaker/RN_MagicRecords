@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 
 public class ParabolicProjectile
-        : MonoBehaviour
-    , ISkillEffect
+    : BaseProjectile
     , ITargetableEffect
 {
     [Header("Parabola Settings")]
@@ -22,19 +21,15 @@ public class ParabolicProjectile
     private bool isFired = false;
 
     // 데미지 정보를 다음 폭발(AoE)로 토스하기 위한 캐싱 변수들
-    private GameObject ownerObject;
     private DamageData cachedDamageData;
     private float cachedMultiplier = 1f;
     private bool cachedCrit;
 
-    public void AddIgnore(GameObject ignore)
-    {
-        
-    }
-
-    public void SetDamageInfo(GameObject attacker, DamageData damageData
+    public override  void SetDamageInfo(GameObject attacker, DamageData damageData
         , bool bExtraCrit = false, float multiplier = 1.0f)
     {
+        base.SetDamageInfo(attacker, damageData , bExtraCrit , multiplier); 
+
         ownerObject = attacker;
         cachedMultiplier = multiplier;
         cachedDamageData = damageData;
@@ -55,8 +50,9 @@ public class ParabolicProjectile
         progress = 0f;
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();   
         ObjectPooler.ReturnToPool(gameObject); 
     }
 

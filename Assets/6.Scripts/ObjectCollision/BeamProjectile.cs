@@ -2,8 +2,7 @@
 using UnityEngine;
 
 public class BeamProjectile 
-    : MonoBehaviour
-    , ISkillEffect
+    : BaseProjectile
 {
     [Header("Beam Settings")]
     [SerializeField] private float beamRadius = 1.5f; // 레이저 두께 (반지름)
@@ -25,33 +24,16 @@ public class BeamProjectile
     private float tickTimer = 0f;
     private bool isBeamActive = false;
 
-    private GameObject ownerObject;
-    private DamageEvent damageEvent;
-
     // 💡 단발 모드일 때 한 번 맞은 적이 또 맞는 걸 방지하는 리스트
     private HashSet<Collider> hitTargets = new HashSet<Collider>();
-    private HashSet<GameObject> ignores = new();
-
-    // 무기(Gun)에서 데미지 정보를 넘겨줄 때 호출하는 함수
-    public void SetDamageInfo(GameObject attacker, DamageData damageData, bool bExtraCrit = false, 
-        float damageMultiplier = 1.0f)
-    {
-        if (attacker == null || damageData == null) return;
-
-        ownerObject = attacker;
-        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit, damageMultiplier);
-    }
-
-    public void AddIgnore(GameObject ignore)
-    {
-        ignores.Add(ignore); 
-    }
 
     private void OnEnable()
     {
         // 빔이 켜질 때마다 초기화
         hitTargets.Clear();
         tickTimer = 0f;
+        
+        isBeamActive = false;
 
         // 타이머 초기화 
         currentDelayTimer = hitDelay;
@@ -64,9 +46,9 @@ public class BeamProjectile
         }
     }
 
-    void OnDisable()
+    protected override void  OnDisable()
     {
-        ignores.Clear();
+        base.OnDisable();
         ObjectPooler.ReturnToPool(gameObject);    // 한 객체에 한번만 
         CancelInvoke();    // Monobehaviour에 Invoke가 있다면 
     }
@@ -133,8 +115,7 @@ public class BeamProjectile
 
         foreach (RaycastHit hit in hits)
         {
-            // 무시할 대상은 무시 
-            if (ignores.Contains(hit.collider.gameObject))
+            if (IsFriendlyFire(hit.collider.gameObject))
                 continue;
 
             // 단발 모드일 때 이미 때린 적이면 무시 (다단히트는 무시 안 함)

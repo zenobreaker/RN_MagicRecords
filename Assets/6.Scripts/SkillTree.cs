@@ -31,8 +31,11 @@ public class SkillTree
                     isUnlocked = false,
                 };
 
-                if(action != null)
+                if (action != null)
+                {
+                    runtimedata.OnDataChanged = null;
                     runtimedata.OnDataChanged += action;
+                }
                 skillRuntimeDatas.Add(skill.id, runtimedata);
             }
         }

@@ -143,10 +143,10 @@ public class EquipmentItem : ItemData
     public void EnhanceItem(int enhanceLevel, bool loaded = false)
     {
         enhance = enhanceLevel;
-        Debug.Log($"강화 전 {modifier.value}");
+        //Debug.Log($"강화 전 {modifier.value}");
         modifier.value = EnhanceCalculator.CaclculateEnhancedStat(this, 
             AppManager.Instance.GetEnhanceStatDatas(rank));
-        Debug.Log($"강화 후 {modifier.value}");
+        //Debug.Log($"강화 후 {modifier.value}");
         if (loaded)
             return;
         NotifyChanged();

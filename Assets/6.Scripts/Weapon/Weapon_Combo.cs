@@ -77,7 +77,7 @@ public class Weapon_Combo : Weapon
         base.Begin_JudgeAttack(e);
 
         if (ownerCharacter != null)
-            ownerCharacter.BroadcastAttack("Normal", actionDatas[this.index], ownerCharacter);
+            ownerCharacter.BroadcastAttack(actionDatas[this.index], ownerCharacter);
     }
 
     protected virtual void OnTriggerEnter(Collider other)

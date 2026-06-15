@@ -2,8 +2,7 @@
 using UnityEngine;
 
 public class AoEProjectile 
-    : MonoBehaviour
-    , ISkillEffect
+    : BaseProjectile
 {
     [Header("Explosion Settings")]
     [SerializeField] private float explosionRadius = 3f;
@@ -18,24 +17,9 @@ public class AoEProjectile
     private float lifeTimer;
     private float tickTimer;
 
-    private GameObject ownerObject;
-    private DamageEvent damageEvent;
-
     // 단타일 때 중복 피격 방지용
     private HashSet<Collider> hitTargets = new HashSet<Collider>();
-    private HashSet<GameObject> ignores = new HashSet<GameObject>();
 
-    public void SetDamageInfo(GameObject attacker, DamageData damageData
-        , bool bExtraCrit = false, float mulitplier = 1.0f)
-    {
-        ownerObject = attacker;
-        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit, mulitplier);
-    }
-
-    public void AddIgnore(GameObject ignore)
-    {
-        ignores.Add(ignore);
-    }
 
     private void OnEnable()
     {
@@ -50,9 +34,9 @@ public class AoEProjectile
         }
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
-        ignores.Clear();
+        base.OnDisable(); 
         ObjectPooler.ReturnToPool(this.gameObject);
     }
 
@@ -88,7 +72,9 @@ public class AoEProjectile
 
         foreach (Collider hitCollider in hits)
         {
-            if (ignores.Contains(hitCollider.gameObject)) continue;
+            if (IsFriendlyFire(hitCollider.gameObject))
+                continue;
+
             if (ownerObject != null && hitCollider.gameObject == ownerObject) continue;
 
             if (!isMultiHit && hitTargets.Contains(hitCollider)) continue;

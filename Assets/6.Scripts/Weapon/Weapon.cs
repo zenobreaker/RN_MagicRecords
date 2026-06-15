@@ -136,6 +136,9 @@ public class ActionData
     
     [SerializeField] private float actionSpeed = 1.0f;
     public float ActionSpeed { get => actionSpeed; set => actionSpeed = value; }
+
+    public DroneAttackType droneReactionType  = DroneAttackType.Normal;
+
     // StateName을 해시 값으로 저장
     private int actionSpeedHash = -1;
     public int ActionSpeedHash
@@ -169,6 +172,7 @@ public class ActionData
         ActionData actionData = new ActionData();
         Initialize();
         actionData = (ActionData)MemberwiseClone();
+        actionData.droneReactionType = droneReactionType;
         actionData.settings = settings;
         return actionData;
     }

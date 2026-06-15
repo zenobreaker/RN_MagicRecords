@@ -5,7 +5,7 @@ using UnityEngine;
 
 [RequireComponent (typeof(Rigidbody))]
 public class Projectile 
-    : MonoBehaviour
+    : BaseProjectile
     , ISkillEffect
 {
     [Header("Projectile Settings")]
@@ -27,15 +27,6 @@ public class Projectile
     public event Action<Collider> OnTriggerEnterAction;
     public event Action<Collider, Collider, Vector3> OnProjectileHit;
 
-    private HashSet<GameObject> ignores = new HashSet<GameObject>();
-
-    private GameObject ownerObject; 
-    private DamageEvent damageEvent;
-
-    public void AddIgnore(GameObject ignore)
-    {
-        ignores.Add(ignore);
-    }
 
     private void Awake()
     {
@@ -57,10 +48,10 @@ public class Projectile
     }
 
 
-    protected virtual void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
         ObjectPooler.ReturnToPool(this.gameObject);
-        ignores.Clear();
 
         if (rigidbody == null)
             return;
@@ -85,7 +76,10 @@ public class Projectile
             return;
 
         if (ignoreLayer.Contains(other.gameObject))
-            return; 
+            return;
+
+        if (IsFriendlyFire(other.gameObject))
+            return;
 
         OnTriggerEnterAction?.Invoke(other);
 
@@ -112,15 +106,4 @@ public class Projectile
             damage?.OnDamage(ownerObject, null, hitPoint, damageEvent);
         }
     }
-
-    public void SetDamageInfo(GameObject attacker, DamageData damageData,
-        bool bExtraCrit = false, float multiplier = 1.0f)
-    {
-        if (attacker == null) return;
-        if (damageData == null) return;
-
-        ownerObject = attacker.gameObject;
-        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit, multiplier);
-    }
-
 }
