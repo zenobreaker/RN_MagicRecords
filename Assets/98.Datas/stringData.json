@@ -81,6 +81,11 @@
       "en": "Enhance"
     },
     {
+      "key": "ui_setting_sound",
+      "kr": "음향",
+      "en": "Sound"
+    },
+    {
       "key": "ui_lobby_btn_info",
       "kr": "정보",
       "en": "Info"
@@ -381,9 +386,9 @@
       "en": "Increases Attack Speed by 30% when HP is 30% or lower."
     },
     {
-      "key": "skill_name_reinforcedmaigcbullet",
-      "kr": "강화 마탄",
-      "en": "Enhanced Core"
+      "key": "skill_name_magnumbullet",
+      "kr": "매그넘탄",
+      "en": "Magnum Bullet"
     },
     {
       "key": "skill_name_plasmaray",
@@ -476,8 +481,8 @@
       "en": "Curse from the Abyss"
     },
     {
-      "key": "skill_desc_reinforcedmaigcbullet",
-      "kr": "강력한 마력이 담긴 탄을 발사합니다.  \\n 탄환이 있으면 1개 소모합니다.",
+      "key": "skill_desc_magnumbullet",
+      "kr": "강력한 마력이 담긴 탄을 발사합니다.  \\n 탄환이 있으면 1개 소모하여 위력을 10% 증가합니다.",
       "en": null
     },
     {
@@ -723,197 +728,422 @@
     {
       "key": "evt_name_1001",
       "kr": "이상 관측 - 메아리치는 방",
-      "en": null
+      "en": "Anomaly: Room of Echoes"
     },
     {
       "key": "evt_name_1002",
-      "kr": "이상 관측 - 마나의 파도",
-      "en": null
+      "kr": "이상 관측 - 요동치는 마나의 파도",
+      "en": "Anomaly: Surging Mana Wave"
     },
     {
       "key": "evt_name_1003",
-      "kr": "방랑하는 수리공",
-      "en": null
+      "kr": "방랑하는 수리공 조우",
+      "en": "Encounter: The Wandering Mechanic"
     },
     {
       "key": "evt_name_1004",
-      "kr": "신비한 레코드 아카이브",
-      "en": null
+      "kr": "레코드 아카이브",
+      "en": "The Arcane Record Archive"
     },
     {
       "key": "evt_name_1005",
       "kr": "마법 시험",
-      "en": null
+      "en": "Trial of Magic"
+    },
+    {
+      "key": "evt_name_1006",
+      "kr": "폐쇄된 관측소",
+      "en": "The Sealed Observatory"
+    },
+    {
+      "key": "evt_name_1007",
+      "kr": "교체되지 못한 자",
+      "en": "The Unreplaced"
+    },
+    {
+      "key": "evt_name_1008",
+      "kr": "이상 관측 - 코로니움 공명",
+      "en": "Anomaly: Coronium Resonance"
+    },
+    {
+      "key": "evt_name_1009",
+      "kr": "이상 관측 - 위로 흐르는 폭포",
+      "en": "Anomaly: Ascending Falls"
+    },
+    {
+      "key": "evt_name_1010",
+      "kr": "이상 관측 - 멈춘 도시",
+      "en": "Anomaly: City in Stasis"
+    },
+    {
+      "key": "evt_name_1011",
+      "kr": "이상 관측 - 지하의 심장",
+      "en": "Anomaly: Heart of the Depths"
     },
     {
       "key": "evt_desc_1001",
-      "kr": "수많은 메아리가 서로 얽히고설키는 방에 도달했습니다. \\n 그 메아리들로부터 당신은 무얼 알아냈을까요?",
-      "en": null
+      "kr": "수많은 메세지들이 메아리치는 방에 도착했습니다. 그 속삭임들에게서 몇 가지 정보를 얻어냅니다.",
+      "en": "You have reached a room where countless messages echo. You gather some information from the whispers."
     },
     {
       "key": "evt_desc_1002",
-      "kr": "출처를 모를 마나들이 한데 이루어 빛깥은 무지개처럼 형태는 강물처럼 흐르며 소용돌이를 만들고 있습니다. \\n 그 관경은 황홀하다 못해 이끌려 들어갈 것 같습니다.",
-      "en": null
+      "kr": "무지개빛 마나들이 강물처럼 흘러가는 현상을 목격했습니다.",
+      "en": "You witness a phenomenon where iridescent mana flows like a river."
     },
     {
       "key": "evt_desc_1003",
-      "kr": "끝없는 여정 속에서 휠러들의 수리를 도와주는 수리공 휠러를 만났습니다! \\n 마치 가뭄의 단비같군요. 그 휠러에게 당신은 무얼 부탁할까요?",
-      "en": null
+      "kr": "당신은 목적지로 이동하는 중에 수리공 휠러를 만났습니다!",
+      "en": "While traveling to your destination, you met a mechanic Wheeler!"
     },
     {
       "key": "evt_desc_1004",
-      "kr": "당신의 임무를 수행하며 얻어낸 곳을 정리하는 휘황찬란한 도서관에 도달했습니다. \\n 사서로 보이는 드론이 날아옵니다.",
-      "en": null
+      "kr": "휘황찬란하고 경전한 도서관으로 보이는 공간에 들어섭니다. 사서로 보이는 자가 당신에게 묻습니다.",
+      "en": "You enter a space that looks like a resplendent and reverent library. Someone resembling a librarian asks you a question."
     },
     {
       "key": "evt_desc_1005",
-      "kr": "마술사들의 시험날입니다. 이는 행사처럼 시끌벅적하면서 경건한 날입니다.\\n 당신도 마법을 뽐내던 시절이 있었겠지요?",
-      "en": null
+      "kr": "그 동안 갈고 닦아온 마법을 선보일 시간이 왔습니다!",
+      "en": "The time has come to show off the magic you've honed!"
+    },
+    {
+      "key": "evt_desc_1006",
+      "kr": "오래된 인류 관측소를 발견했습니다. 깜빡이는 모니터에 마지막 기록이 남아 있어보입니다.",
+      "en": "You discovered an old human observatory. A flickering monitor seems to hold a final record."
+    },
+    {
+      "key": "evt_desc_1007",
+      "kr": "당신과 같은 인간의 기억이 있는 휠러를 발견합니다. 그는 수백 년 동안 의식이 교체되지 못했다더군요.",
+      "en": "You discover a Wheeler with human memories just like yours. He says his consciousness hasn't been replaced for centuries."
+    },
+    {
+      "key": "evt_desc_1008",
+      "kr": "주변의 코로니움 광맥이 빛을 뿜으며 반응하기 시작합니다.",
+      "en": "The surrounding Coronium veins begin to react, emitting a bright glow."
+    },
+    {
+      "key": "evt_desc_1009",
+      "kr": "폭포가 아래로 떨어지는게 아닌 하늘로 오르고 솟아오르고 있습니다.",
+      "en": "The waterfall isn't falling downwards; it's surging and rising towards the sky."
+    },
+    {
+      "key": "evt_desc_1010",
+      "kr": "거대한 도시가 있습니다. 그러나 모든 것이 정지해 있습니다. 바람도. 먼지도. 시간도.",
+      "en": "There is a massive city. However, everything is at a standstill. The wind. The dust. Even time itself."
+    },
+    {
+      "key": "evt_desc_1011",
+      "kr": "대지 아래서 규칙적인 진동을 느낍니다. 마치 무언가 살아있는 것 같습니다.",
+      "en": "You feel a rhythmic vibration beneath the earth. It's as if something is alive down there."
     },
     {
       "key": "evt_1001_c1",
-      "kr": "탐사 코인을 50잃고 일렁이는 메아리를 듣는다. (노말 등급 레코드 중 택1)",
-      "en": null
+      "kr": "일렁이는 메아리를 듣는다. (탐사 코인 소모)",
+      "en": "Listen to the shimmering echo. (Consume Explore Coins)"
     },
     {
       "key": "evt_1001_c2",
-      "kr": "레코드를 소비하고 흐릿한 메아리를 듣는다. (레어 등급 레코드 중 택1)",
-      "en": null
+      "kr": "흐릿해지는 메아리를 듣는다. (레코드 한 개 소모)",
+      "en": "Listen to the fading echo. (Consume 1 Record)"
     },
     {
       "key": "evt_1001_c3",
-      "kr": "무시하고 그곳을 떠난다.",
-      "en": null
-    },
-    {
-      "key": "evt_1002_c1",
-      "kr": "이끌림에 따라 자신의 마나를 흘려보낸다. (3회 전투 동안 마나 30% 감소)",
-      "en": null
-    },
-    {
-      "key": "evt_1002_c2",
-      "kr": "소용돌이치는 마나를 돌파한다. (전투 발생)",
-      "en": null
-    },
-    {
-      "key": "evt_1003_c1",
-      "kr": "탐사 코인 20을 지불하고 간단한 수리를 요청한다.  (체력 30% 회복)",
-      "en": null
-    },
-    {
-      "key": "evt_1003_c2",
-      "kr": "탐사 코인 100을 특급 수리를 요청한다. (체력 100% 회복)",
-      "en": null
-    },
-    {
-      "key": "evt_1003_c3",
-      "kr": "인사하고 지나친다.",
-      "en": null
-    },
-    {
-      "key": "evt_1004_c1",
-      "kr": "레코드를 추천받는다. (레코드 10개 중 택1)",
-      "en": null
-    },
-    {
-      "key": "evt_1004_c2",
-      "kr": "랜덤한 기술 레코드를 살펴본다. (스킬 레코드 획득)",
-      "en": null
-    },
-    {
-      "key": "evt_1004_c3",
-      "kr": "자신의 레코드를 기록한다.",
-      "en": null
-    },
-    {
-      "key": "evt_1004_c4",
-      "kr": "기록된 레코드를 살펴본다.",
-      "en": null
-    },
-    {
-      "key": "evt_1005_c1",
-      "kr": "마법을 영창한다. (50% 성공 시 무료 강화, 실패 시 현재 체력의 15% 피해 입음)",
-      "en": null
-    },
-    {
-      "key": "evt_1005_c2",
-      "kr": "다른 이들의 마법을 구경한다. (마나 회복량 상승 버프 획득)",
-      "en": null
+      "kr": "무시하고 떠난다.",
+      "en": "Ignore it and leave."
     },
     {
       "key": "evt_1001_r1",
-      "kr": "그 메아리는 일렁거려서 완전히는 아니지만 의미는 알 수 있었습니다.",
-      "en": null
+      "kr": "그 메아리는 일렁여서 못 알아 들어도 무슨 의미인지는 알죠.",
+      "en": "The echo is distorted, but even if you can't hear it clearly, you know what it means."
     },
     {
       "key": "evt_1001_r2",
-      "kr": "사라져가는 그 소리를 억지를 부려서라도 들어봅니다.",
-      "en": null
+      "kr": "점점 사라져 가는 메아리를 억지를 부려서라도 들어봅니다.",
+      "en": "You force yourself to listen to the fading echo."
     },
     {
       "key": "evt_1001_r3",
       "kr": "메아리를 외면한 채 나아갑니다.",
-      "en": null
+      "en": "You move forward, ignoring the echoes."
+    },
+    {
+      "key": "evt_1002_c1",
+      "kr": "자신의 마나를 흘려 보낸다 (전투 3회 동안 마나 30% 감소)",
+      "en": "Channel your mana. (Mana decreased by 30% for 3 battles)"
+    },
+    {
+      "key": "evt_1002_c2",
+      "kr": "마나의 파도 속을 헤엄친다. (전투 발생)",
+      "en": "Swim through the wave of mana. (Combat triggers)"
     },
     {
       "key": "evt_1002_r1",
-      "kr": "그 황홀한 관경에 흔적을 남기려 마나를 흘려 보냅니다. \\n이런 이상 현상은 정도가 없는게 문제지만요. (전투 3회 동안 마나 30% 감소)",
-      "en": null
+      "kr": "황홀함에 못 이긴 당신은 자신의 마나를 그 마나의 강의 흘려보냅니다. 이런 생각보다 많이 흘려보낸거 같군요.",
+      "en": "Overcome by the mesmerization, you channel your mana into the river of mana. Oh, it seems you channeled more than you thought."
     },
     {
       "key": "evt_1002_r2",
-      "kr": "황홀함 속에 알 수 없는 그림자를 발견합니다.",
-      "en": null
+      "kr": "그 황홀함 속에 무엇이 있을지 궁금합니다.",
+      "en": "You wonder what lies within that mesmerization."
+    },
+    {
+      "key": "evt_1003_c1",
+      "kr": "간단한 수리를 요청한다. (탐사코인 소모 20)",
+      "en": "Request a repair. (Consume Explorere Coin 20)"
+    },
+    {
+      "key": "evt_1003_c2",
+      "kr": "완벽한 수리를 요청한다. (탐사코인 120개 소모)",
+      "en": "Greet and pass by."
+    },
+    {
+      "key": "evt_1003_c3",
+      "kr": "인사하고 지나친다.",
+      "en": "Greet and pass by."
     },
     {
       "key": "evt_1003_r1",
-      "kr": "몸조리 잘해",
-      "en": null
+      "kr": "몸 조리 잘하라고 친구!",
+      "en": "Take care of yourself, friend!"
     },
     {
       "key": "evt_1003_r2",
-      "kr": "어서 다시 인간이 되고 싶네. 너도 그렇지?",
-      "en": null
+      "kr": "완벽하게 고쳐놨네!",
+      "en": "I've got it completely fixed now!"
     },
     {
       "key": "evt_1003_r3",
-      "kr": "만나서 반가웠어!",
-      "en": null
+      "kr": "만나서 반가웠어 조심하게!",
+      "en": "Nice to meet you, take care!"
+    },
+    {
+      "key": "evt_1004_c1",
+      "kr": "추천 레코드를 살핀다.",
+      "en": "Examine recommended Records."
+    },
+    {
+      "key": "evt_1004_c2",
+      "kr": "기술 레코드를 살핀다.",
+      "en": "Examine Skill Records."
+    },
+    {
+      "key": "evt_1004_c3",
+      "kr": "자신의 레코드를 기록한다.",
+      "en": "Archive your own Record."
+    },
+    {
+      "key": "evt_1004_c4",
+      "kr": "자신이 기록한 레코드를 살핀다.",
+      "en": "Examine your archived Records."
     },
     {
       "key": "evt_1004_r1",
-      "kr": "사서는 당신에게 여러 개의 레코드를 추천합니다. \\n훗날에 다 필요한 내용이겠죠?",
-      "en": null
+      "kr": "사서는 당신에게 여러 개의 레코드를 추천해주는 군요. 나중에 다 필요한 내용이겠죠.",
+      "en": "The librarian recommends several Records to you. They'll all be needed later, right?"
     },
     {
       "key": "evt_1004_r2",
-      "kr": "지식이 많은 건 왜 저주일까요?",
-      "en": null
+      "kr": "지식이 많다는건 과연 저주일까요?",
+      "en": "Is having too much knowledge really a curse?"
     },
     {
       "key": "evt_1004_r3",
-      "kr": "다음의 휠러에게 기록을 양도합니다. \\n다음 휠러에게 도움이 되었으면 좋겠네요.",
-      "en": null
+      "kr": "당신은 다음의 휠러에게 기록을 양도합니다. 그분의 탐사에 도움이 되길…",
+      "en": "You transfer your records to the next Wheeler. May it help with their exploration..."
     },
     {
       "key": "evt_1004_r4",
-      "kr": "앞서간 이가 남긴 레코드가 있을까요?\\n앞으로의 여정에 도움이 될만한게 있었으면 좋겠어요.",
-      "en": null
+      "kr": "앞서간 이가 남긴 레코드를 살펴봅니다. 앞으로의 여정에 도움이 될만한게 있을까요?",
+      "en": "You examine the Records left by those who came before. Will there be anything helpful for the journey ahead?"
+    },
+    {
+      "key": "evt_1005_c1",
+      "kr": "마법을 선보인다 (50% 확률)",
+      "en": "Showcase your magic. (50% probability)"
+    },
+    {
+      "key": "evt_1005_c2",
+      "kr": "다른 마법들을 구경한다.",
+      "en": "Watch other magic performances."
     },
     {
       "key": "evt_1005_r1",
-      "kr": "마법 시험에서 갈고닦은 실력을 뽐내며 합격합니다! \\n 그 동안의 노력이 빛을 바라는 순간은 언제나 짜릿하죠.",
-      "en": null
+      "kr": "당신은 마법 시험에서 화려한 마법으로 합격하게 됩니다. 그 동안의 노력이 빛을 바라는 시간이군요!",
+      "en": "You pass the magic trial with flashy magic! It's the time for your hard work to shine!"
     },
     {
       "key": "evt_1005_r2",
-      "kr": "다른 이들은 어떤 마법으로 시험을 볼까요? 참고해서 다음에 도전하죠!",
-      "en": null
+      "kr": "다른 이들이 어떤 마법을 하는지 구경해서 다음의 도전하자구요.",
+      "en": "Let's see what kind of magic others use and try next time."
     },
     {
       "key": "evt_1005_f1",
-      "kr": "이런! 마법을 부리다 실수로 불합격해버렸네요. 하지만 괜찮습니다. 운이 나빴을 뿐이에요. \\n당신의 실력은 이런 곳에선 발휘되지 않나봅니다.",
-      "en": null
+      "kr": "어이쿠, 하지만 너무 의기소침하지마세요. 운이 나빴을 뿐입니다.",
+      "en": "Oops! But don't be too downhearted. It was just bad luck."
+    },
+    {
+      "key": "evt_1006_c1",
+      "kr": "기록을 열람한다.",
+      "en": "Access the record."
+    },
+    {
+      "key": "evt_1006_c2",
+      "kr": "전력을 복구한다.",
+      "en": "Restore the power."
+    },
+    {
+      "key": "evt_1006_c3",
+      "kr": "떠난다.",
+      "en": "Leave."
+    },
+    {
+      "key": "evt_1006_r1",
+      "kr": "인류는 두 분류로 나뉘었습니다. 지구에 잠드는 자들과 우주로 나아가는 부류들로..",
+      "en": "Humanity was divided into two groups: those who fell asleep on Earth, and those who ventured into space..."
+    },
+    {
+      "key": "evt_1006_r2",
+      "kr": "전력을 복구하자 괴이한 지진과 함께 뒤에서 이물같은 것들이 다가오는 소리가 들립니다.",
+      "en": "As you restore the power, a bizarre earthquake occurs, and you hear something strange approaching from behind."
+    },
+    {
+      "key": "evt_1006_r3",
+      "kr": "이 곳에선 얻을 것이 없어보이네요.",
+      "en": "There seems to be nothing to gain here."
+    },
+    {
+      "key": "evt_1007_c1",
+      "kr": "이야기를 나눈다.",
+      "en": "Talk to him."
+    },
+    {
+      "key": "evt_1007_c2",
+      "kr": "동행을 제안한다.",
+      "en": "Propose traveling together."
+    },
+    {
+      "key": "evt_1007_c3",
+      "kr": "기능을 정지시켜준다.",
+      "en": "Shut down his functions."
+    },
+    {
+      "key": "evt_1007_r1",
+      "kr": "나는 임무를 다 했는데도 얼마 지나지 않아 나비들이 다시 날 찾아왔었지. 그러기를 100년쯤.. 그렇게 세월을 보내면서 난 지쳤었지",
+      "en": "Even after I fulfilled my mission, the butterflies came looking for me again shortly after. That went on for about a hundred years... I grew tired as the years passed."
+    },
+    {
+      "key": "evt_1007_r2",
+      "kr": "고맙지만 난 쉬고 싶어. 나비들을 마주치기 싫거든. 대신 힘을 보태줄게.",
+      "en": "Thanks, but I just want to rest. I don't want to face the butterflies. I'll lend you my strength instead."
+    },
+    {
+      "key": "evt_1007_r3",
+      "kr": "잠깐 눈을 감는 거야. 눈을 떴을 땐 너무 길고도 이상한 꿈이었을거야",
+      "en": "Just close your eyes for a moment. When you wake up, it'll all seem like a very long, strange dream."
+    },
+    {
+      "key": "evt_1008_c1",
+      "kr": "코로니움의 에너지를 받아들인다.",
+      "en": "Embrace the energy of the Coronium."
+    },
+    {
+      "key": "evt_1008_c2",
+      "kr": "분석한다.",
+      "en": "Analyze it."
+    },
+    {
+      "key": "evt_1008_c3",
+      "kr": "이상 현상으로부터 벗어난다.",
+      "en": "Escape from the anomaly."
+    },
+    {
+      "key": "evt_1008_r1",
+      "kr": "신비한 에너지가 몸에 스며들어옵니다.",
+      "en": "A mysterious energy permeates your body."
+    },
+    {
+      "key": "evt_1008_r2",
+      "kr": "코로니움은 에너지를 보존하는데 많이 사용되었다고 합니다.",
+      "en": "Coronium is said to have been widely used to preserve energy."
+    },
+    {
+      "key": "evt_1008_r3",
+      "kr": "괜히 잘못 건들었다간 큰 화를 당할 수 있어요.",
+      "en": "You could face a great disaster if you mess with it unnecessarily."
+    },
+    {
+      "key": "evt_1009_c1",
+      "kr": "샘플을 채취한다.",
+      "en": "Collect a sample."
+    },
+    {
+      "key": "evt_1009_c2",
+      "kr": "폭포 속 그림자를 확인한다.",
+      "en": "Check the shadow within the waterfall."
+    },
+    {
+      "key": "evt_1009_c3",
+      "kr": "떠난다.",
+      "en": "Leave."
+    },
+    {
+      "key": "evt_1009_r1",
+      "kr": "물은 하늘을 향해 흐릅니다. 왜 그럴까요?",
+      "en": "The water flows towards the sky. Why is that?"
+    },
+    {
+      "key": "evt_1009_r2",
+      "kr": "위로 흐르는 폭포 속 정체불명의 그림자를 확인합니다. 곧 무언가가 튀어나와 당신을 덮쳐옵니다!",
+      "en": "You check the unidentified shadow inside the reverse waterfall. Soon, something leaps out and lunges at you!"
+    },
+    {
+      "key": "evt_1009_r3",
+      "kr": "물은 하늘을 향해 흐르고 있습니다. 누구도 그 이유를 설명하지 못합니다.",
+      "en": "The water is flowing towards the sky. No one can explain why."
+    },
+    {
+      "key": "evt_1010_c1",
+      "kr": "탐색한다.",
+      "en": "Explore."
+    },
+    {
+      "key": "evt_1010_c2",
+      "kr": "코로니움 반응을 측정한다.",
+      "en": "Measure the Coronium reaction."
+    },
+    {
+      "key": "evt_1010_c3",
+      "kr": "그 곳을 벗어난다.",
+      "en": "Leave the place."
+    },
+    {
+      "key": "evt_1011_c1",
+      "kr": "조사한다.",
+      "en": "Investigate."
+    },
+    {
+      "key": "evt_1011_c2",
+      "kr": "진동을 기록한다.",
+      "en": "Record the vibration."
+    },
+    {
+      "key": "evt_1011_c3",
+      "kr": "벗어난다.",
+      "en": "Escape."
+    },
+    {
+      "key": "evt_1011_r1",
+      "kr": "결국 이 모든 일의 원흉(?)을 발견한게 했습니다.",
+      "en": "In the end, you managed to find the cause(?) of all this."
+    },
+    {
+      "key": "evt_1011_r2",
+      "kr": "마치 생물의 심장처럼 느껴지는 진동을 기록합니다.",
+      "en": "You record the vibration that feels like the heart of a living creature."
+    },
+    {
+      "key": "evt_1011_r3",
+      "kr": "역시 심상치 않은 일은 피하는게 상책이죠.",
+      "en": "As expected, it's best to avoid anything suspicious."
     }
   ]
 }
