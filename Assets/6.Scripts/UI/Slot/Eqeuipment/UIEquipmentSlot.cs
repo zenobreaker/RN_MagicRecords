@@ -11,9 +11,9 @@ public class UIEquipmentSlot : UIItemSlot
         itemImage = itemImage = transform.FindChildByName("Icon").GetComponent<Image>();
     }
 
-    public override void DrawSlot()
+    public override void Refresh()
     {
-        base.DrawSlot();
+        base.Refresh();
 
         if (itemData == null)
             return;

@@ -37,7 +37,6 @@ public class ShopUI : UiBase
 
                 slot.OnClickedSlot -= OnClickedSlot;
                 slot.OnClickedSlot += OnClickedSlot;
-                slot.DrawSlot();
             },
             slot =>
             {

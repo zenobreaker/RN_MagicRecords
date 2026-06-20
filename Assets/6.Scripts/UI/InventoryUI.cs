@@ -54,7 +54,6 @@ public class InventoryUI : UiBase
 
               slot.OnClickedSlot -= ClickSlot;
               slot.OnClickedSlot += ClickSlot;
-              slot.DrawSlot();
           },
           slot =>
           {

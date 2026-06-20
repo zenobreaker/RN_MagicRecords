@@ -27,6 +27,7 @@ public sealed class ExploreManager : MonoBehaviour
     private StageReplacer stageReplacer;
 
     private string chapterBiomeName;
+    public ExplorationRewardManager ExplorationRewardManager { get; private set; }
     public RunStatus RunStatus { get; private set; }
 
     public int Chapter { get; private set; } = 1;
@@ -39,7 +40,6 @@ public sealed class ExploreManager : MonoBehaviour
     public bool AllStageClear => bAllCleared;
 
     [SerializeField] private int maxChapter = 1;
-    private int prevNodeId = 1; 
     private bool bCreate = false;
     private bool bAllCleared = false;
 
@@ -86,6 +86,8 @@ public sealed class ExploreManager : MonoBehaviour
     {
         ResetData();
         Init(true);
+
+        ExplorationRewardManager = new ExplorationRewardManager();
 
         ChangeState(ExploreState.READY);
     }
@@ -217,6 +219,9 @@ public sealed class ExploreManager : MonoBehaviour
         }
 
         SaveExploreMap();
+
+
+        //ExplorationRewardManager.ReceiveReward();
     }
 
 
@@ -332,6 +337,26 @@ public sealed class ExploreManager : MonoBehaviour
     }
 
 
+    // 전투 이벤트 스테이지로 바로 가게 만드는 로직 
+    public void StartEventCombat(EventActionType actionType, EventActionParam actionParam, int actionValue)
+    {
+        if (actionParam == EventActionParam.STAGE)
+        {
+            StageInfo combatData = AppManager.Instance.GetStageInfo(actionValue);
+            GameManager.Instance.EnterStage(combatData);
+        }
+    }
+
+    public void StartEventCombat(EventChoice choice)
+    {
+        if(choice == null) return;
+
+        if (choice.ActionType != EventActionType.STAGE_COMBAT)
+            return;
+
+        StartEventCombat(choice.ActionType, choice.ActionParam, choice.ActionValue);    
+    }
+
     public void ChangeState(ExploreState newState, int stageID = -1)
     {
         if (CurrentState == newState) return;
@@ -384,6 +409,7 @@ public sealed class ExploreManager : MonoBehaviour
     {
         Debug.Log($"Explore Finish");
         OnExploreFinish?.Invoke();
+        ExplorationRewardManager = null;
     }
 
     public void OnReturnedStageSelectScene()

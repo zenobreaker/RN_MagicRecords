@@ -16,9 +16,9 @@ public class UIShopSlot : UIItemSlot
         itemPrice = transform.FindChildByName("Price").GetComponentInChildren<UICurrency>();
     }
 
-    public override void DrawSlot()
+    public override void Refresh()
     {
-        base.DrawSlot();
+        base.Refresh();
 
         if(itemNameTxt != null ) 
         {

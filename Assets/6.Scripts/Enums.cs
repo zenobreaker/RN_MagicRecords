@@ -59,6 +59,8 @@ public enum ItemCategory
     CURRENCY = 1,
     EQUIPMENT = 2,
     INGREDIANT,
+    EXPLORE_POINT = 98, // 탐사 재화
+    CREDIT = 99,
     MAX,
 }
 
@@ -74,16 +76,12 @@ public enum CurrencyType
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Reward
-public enum RewardType
+  public enum RewardType
 {
     NONE,
-    CURRENCY = 1,
     EXP,
-    INGREDIENT,
-    EQUIPMENT,
-
-    EXPLORE_POINT = 98, // 탐사 재화
-    CREDIT = 99,        // 특수 재화
+    ITEM,
+    RECORD, 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -247,45 +245,101 @@ public enum RecordRarity
     MYTH,
 }
 
+public enum RecordRewardMode
+{
+    RandomAll,
+    RandomByRarity,
+    FixedRecord
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // 이벤트 
 public enum EventCostType
 {
     NONE,
-    GOLD,
-    EXPLORE_COIN,
-    HP_PERCENT,
-    RECORD_ANY,
-    RECORD_SAVE,
-    MANA_DEBUFF,
-    COMBAT_ELITE
+
+    CURRENCY,
+
+    HP,
+
+    RECORD,
+
+    ITEM,
 }
 
 // 이벤트 보상
 public enum EventRewardType
 {
-    NONE, // 아무런 보상이 없는 등
+    NONE,
+
     HP_HEAL,
-    HP_HEAL_PERCENT,
-    HP_DAMAGE,  // 고정 데미지 
-    HP_DMG_PERCENT,
+    HP_DAMAGE,
+
     ITEM,
-    RECORD_ONE_OF_ALL,
-    RECORD_ONE_OF_NORMAL,
-    RECORD_ONE_OF_RARE,
-    RECORD_ONE_OF_UNIQUE,
-    RECORD_ONE_OF_LEGEND,
-    RECORD_ONE_OF_MYTH,
-    RECORD_DRAFT, // N개 중 택 1하는 이벤트 
-    RECORD_SKILL_UP, // 스킬 강화 이벤트 
-    MANA_REGEN_BUFF,
+
+    RECORD,
+
+    BUFF,
+
     ARCHIVE_SAVE,
-    ARCHIVE_LOAD,
+    ARCHIVE_LOAD
 
 }
 
+public enum EventActionType
+{
+    NONE,
 
+    STAGE_COMBAT,
+
+    RECORD_DRAFT,
+    RECORD_UP,
+    RECORD_SKILL_UP,
+
+    ARCHIVE_SAVE,
+    ARCHIVE_LOAD,
+
+    APPLY_BUFF,
+    APPLY_DEBUFF,
+
+    OPEN_SHOP,
+}
+
+public enum EventCostParam
+{
+    NONE,
+
+    GOLD,
+    EXPLORE_COIN,
+
+    FIXED,
+    PERCENT,
+
+    ANY,
+    SAVED,
+}
+public enum EventActionParam
+{
+    NONE,
+
+    // Buff
+    MANA_REGEN_UP,
+    ATTACK_UP,
+    DEFENSE_UP,
+
+    // Debuff
+    MANA_REGEN_DOWN,
+    ATTACK_DOWN,
+    DEFENSE_DOWN,
+
+    // Combat
+    STAGE,
+
+    // Shop
+    RECORD_SHOP,
+    CURSE_SHOP,
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Target Position Type 

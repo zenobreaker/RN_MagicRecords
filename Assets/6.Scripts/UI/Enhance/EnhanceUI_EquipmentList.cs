@@ -28,7 +28,6 @@ public class EnhanceUI_EquipmentList : UiBase
 
                 slot.OnClickedSlot -= ClickSlot; 
                 slot.OnClickedSlot += ClickSlot;
-                slot.DrawSlot();
             }, 
             slot =>
             {

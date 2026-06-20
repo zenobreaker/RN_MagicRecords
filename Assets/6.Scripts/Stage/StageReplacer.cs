@@ -53,8 +53,12 @@ public class StageReplacer
                 {
                     // 보스용 스테이지 풀에서 랜덤추출 
                     info.type = StageType.Boss_Combat;
-                    info.contentId = AppManager.Instance.GetRandomBossStageID(currentChapter);
+                    StageInfo bossStage = AppManager.Instance.CreateRandomBossStage(currentChapter);
+                    if (bossStage == null) continue;
+
+                    info.contentId = bossStage.id; 
                     info.mapIndex = -1; // 보스 전용 맵
+                    info.clearRewardId = bossStage.clearRewardId; 
                 }
                 else
                 {
@@ -68,11 +72,15 @@ public class StageReplacer
                     else
                     {
                         info.type = StageType.Combat;
-                        info.contentId = AppManager.Instance.GetRandomStageId(currentChapter); 
+                        StageInfo stage = AppManager.Instance.CreateRandomStage(currentChapter);
+                        if (stage == null) continue;
+
+                        info.contentId = stage.id;
                         info.mapIndex = UnityEngine.Random.Range(0, maxMapCount);
+                        info.clearRewardId = stage.clearRewardId;
                     }
                 }
-
+                
                 nodeToInfo[node.id] = info;
             }
         }
@@ -100,6 +108,6 @@ public class StageReplacer
         if (nodeToInfo.TryGetValue(nodeId, out var info))
             return info;
         else
-            return new MapNodeInfo { nodeId = nodeId, type = StageType.None };
+            return new MapNodeInfo { nodeId = nodeId, type = StageType.None  };
     }
 }

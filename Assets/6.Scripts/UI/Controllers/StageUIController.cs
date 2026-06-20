@@ -39,14 +39,14 @@ public class StageUIController
     {
         // 데이터가 로드 안되어 있다면 강제로 Init 
         var em = AppManager.Instance.GetExploreManager();
-        em?.EnsureInitialized();
+        em.SafeInvoke(v =>v.EnsureInitialized());
         em.OnStageClear += RefreshMainUI;
 
         InitUIMapReplace();
 
         // 배치가 끝났다면 탐사 상태로 변경 
         if (em.CurrentState != ExploreState.ON_EXPLORE)
-            em?.ChangeState(ExploreState.ON_EXPLORE);
+            em.SafeInvoke(v => v.ChangeState(ExploreState.ON_EXPLORE));
     }
 
     protected void OnDisable()

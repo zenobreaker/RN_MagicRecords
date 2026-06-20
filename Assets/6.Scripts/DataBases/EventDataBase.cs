@@ -12,16 +12,35 @@ public class EventChoice
 {
     public int ChoiceIndex;
     public string TextKey;
+    public bool ChoiceIsActive;
+
+    [Header("Cost")]
     public EventCostType CostType;
+    public EventCostParam CostParam; // NEW
     public int CostValue;
+
+    [Header("Action")]
+    public EventActionType ActionType; // NEW
+    public EventActionParam ActionParam; // NEW
+    public int ActionValue; // NEW
+
+    [Header("Reward")]
     public EventRewardType RewardType;
+    public string RewardParam; // NEW (Enum이 없으므로 string 처리)
     public int RewardValue;
+
+    [Header("Result & Probability")]
     public int Probability;
     public string ResultTextKey;
+    public string ResultButtonTextKey;
+
+    [Header("Fail Penalty")]
+    public EventActionType FailActionType; // NEW
+    public EventActionParam FailActionParam; // NEW
     public string FailTextKey;
     public EventRewardType FailType;
+    public string FailParam; // NEW (Enum이 없으므로 string 처리)
     public int FailValue;
-    public bool ChoiceIsActive;
 }
 
 // 💡 JsonLoader의 TJsonRoot 역할을 해줄 최상위 래퍼 클래스
@@ -39,18 +58,36 @@ public class EventInfoJson : InfoJson
     public int chapter;
     public int choiceIndex;
     public string textkey;
+
+    // Cost
     public string costtype;
+    public string costparam; // NEW
     public int costvalue;
+
+    // Action (NEW)
+    public string actiontype;
+    public string actionparam;
+    public int actionvalue;
+
+    // Reward
     public string rewardtype;
+    public string rewardparam; // NEW
     public int rewardvalue;
+
     public int probability;
     public string resulttextkey;
+
+    // Fail
+    public string failactiontype; // NEW
+    public string failactionparam; // NEW
     public string failtextkey;
     public string failtype;
+    public string failparam; // NEW
     public int failvalue;
+
     public string imagekey;
     public int event_is_active;
-    public int choice_is_active; 
+    public int choice_is_active;
 }
 
 [System.Serializable]
@@ -138,23 +175,41 @@ public sealed class EventDataBase : DataBase
                     // 💡 개별 선택지 활성화 여부 저장 (UI 스크립트에서 사용)
                     newChoice.ChoiceIsActive = (row.choice_is_active == 1);
 
-                    // 나머지 데이터 세팅
+                    // 💡 Cost 파싱
                     if (Enum.TryParse(row.costtype, out EventCostType parsedCost))
                         newChoice.CostType = parsedCost;
-
+                    if (Enum.TryParse(row.costparam, out EventCostParam parsedCostParam))
+                        newChoice.CostParam = parsedCostParam;
                     newChoice.CostValue = row.costvalue;
 
+                    // 💡 Action 파싱 (추가됨)
+                    if (Enum.TryParse(row.actiontype, out EventActionType parsedAction))
+                        newChoice.ActionType = parsedAction;
+                    if (Enum.TryParse(row.actionparam, out EventActionParam parsedActionParam))
+                        newChoice.ActionParam = parsedActionParam;
+                    newChoice.ActionValue = row.actionvalue;
+
+                    // 💡 Reward 파싱
                     if (Enum.TryParse(row.rewardtype, out EventRewardType parsedReward))
                         newChoice.RewardType = parsedReward;
-
+                    newChoice.RewardParam = row.rewardparam; // Enum 없음 (string 보관)
                     newChoice.RewardValue = row.rewardvalue;
+
+                    // Result & Probability
                     newChoice.Probability = row.probability == 0 ? 100 : row.probability;
                     newChoice.ResultTextKey = row.resulttextkey;
                     newChoice.FailTextKey = row.failtextkey;
 
-                    if (Enum.TryParse(row.failtype, out EventRewardType parsedFail))
-                        newChoice.FailType = parsedFail;
+                    // 💡 Fail Action 파싱 (추가됨)
+                    if (Enum.TryParse(row.failactiontype, out EventActionType parsedFailAction))
+                        newChoice.FailActionType = parsedFailAction;
+                    if (Enum.TryParse(row.failactionparam, out EventActionParam parsedFailActionParam))
+                        newChoice.FailActionParam = parsedFailActionParam;
 
+                    // 💡 Fail Reward/Damage 파싱
+                    if (Enum.TryParse(row.failtype, out EventRewardType parsedFailType))
+                        newChoice.FailType = parsedFailType;
+                    newChoice.FailParam = row.failparam; // Enum 없음 (string 보관)
                     newChoice.FailValue = row.failvalue;
 
                     eventInfos[currentEventId].eventChoices.Add(newChoice);

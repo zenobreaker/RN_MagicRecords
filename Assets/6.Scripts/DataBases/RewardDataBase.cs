@@ -5,11 +5,14 @@ using UnityEngine;
 public class RewardJsonData
 {
     public int rewardID;
-    public int type;
+    public int rewardType;
+    public int itemCategory;
     public int itemID;
     public int amount;
     public int weight;
-    public int range; 
+    public int range;
+    public int param1;
+    public int param2;
 }
 
 [System.Serializable]
@@ -17,15 +20,20 @@ public class RewardJsonAllData
 {
     public List<RewardJsonData> rewardJsonData;
 }
-
 public class RewardData
 {
     public int id;
-    public ItemCategory type;
+
+    public RewardType rewardType;
+    public ItemCategory itemCategory;
+
     public int itemId;
-    public int amount; 
+    public int amount;
     public int weight;
     public int range;
+
+    public int param1;
+    public int param2;
 }
 
 [System.Serializable]
@@ -73,10 +81,14 @@ public class RewardDataBase : DataBase
             {
                 var rewardData = new RewardData();
                 rewardData.id = json.rewardID;
-                rewardData.type = (ItemCategory)json.type;
+                rewardData.rewardType = (RewardType)json.rewardType;
+                rewardData.itemCategory = (ItemCategory)json.itemCategory;
                 rewardData.itemId = json.itemID;
                 rewardData.amount = json.amount;
                 rewardData.weight = json.weight;
+                rewardData.param1 = json.param1;
+                rewardData.param2 = json.param2;
+
                 return rewardData;
             },
 

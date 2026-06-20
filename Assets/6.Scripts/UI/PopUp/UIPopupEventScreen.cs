@@ -36,13 +36,15 @@ public class UIPopupEventScreen : UIPopUp
     private bool isClosing = false;
     private bool isStageCleared = false;
 
+    private EventExecutionResult currentResult;
+
     public void SetData(EventInfo eventInfo)
     {
         currentEvent = eventInfo;
         isProcessingChoice = false; // 팝업이 열릴 때 초기화
         isClosing = false;
 
-        isStageCleared = false; 
+        isStageCleared = false;
 
         if (AppManager.Instance != null)
         {
@@ -188,54 +190,13 @@ public class UIPopupEventScreen : UIPopUp
 
     private void OnChoiceSelected(EventChoice choice)
     {
-        // 선택지가 이미 처리 중(isProcessingChoice)이라면 연타 무시!
-        if (isTyping || recordManager == null || isProcessingChoice) return;
+        currentResult =
+            EventChoiceExecutor.Execute(choice);
 
-        if (!TryPayCost(choice))
-        {
+        if (currentResult == null)
             return;
-        }
 
-        // 지불에 성공했거나 코스트가 없다면 진행 상태로 잠금
-        isProcessingChoice = true;
-        ProcessRewardAndResult(choice);
-    }
-
-    private bool TryPayCost(EventChoice choice)
-    {
-        if (choice.CostType == EventCostType.NONE) return true;
-
-        if (choice.CostType == EventCostType.RECORD_ANY)
-        {
-            List<RecordData> myRecords = recordManager.GetPossesRecord();
-            if (myRecords == null || myRecords.Count == 0)
-            {
-                Debug.LogWarning("소모할 레코드가 없습니다!");
-                return false;
-            }
-
-            pendingChoice = choice;
-            recordManager.OnCostPaidSuccess -= ResumePendingChoice;
-            recordManager.OnCostPaidSuccess += ResumePendingChoice;
-
-            UIManager.Instance.OpenRecordSelectPopUp(myRecords, false, RecordUIMode.DELETE);
-            return false;
-        }
-
-        if (choice.CostType == EventCostType.GOLD ||
-            choice.CostType == EventCostType.EXPLORE_COIN)
-        {
-            CurrencyType ctype = CurrencyType.GOLD;
-            if (choice.CostType == EventCostType.GOLD)
-                ctype = CurrencyType.GOLD;
-            else if (choice.CostType == EventCostType.EXPLORE_COIN)
-                ctype = CurrencyType.EXPOLORE_GOLD;
-
-            if (CurrencyManager.Instance.SpendCurrency(ctype, choice.CostValue)) return true;
-            return false;
-        }
-
-        return true;
+        ProcessRewardAndResult(currentResult);
     }
 
     private void ResumePendingChoice()
@@ -248,74 +209,76 @@ public class UIPopupEventScreen : UIPopUp
         if (pendingChoice != null)
         {
             isProcessingChoice = true; // 💡 여기서도 락을 걸어줍니다.
-            ProcessRewardAndResult(pendingChoice);
+            ProcessRewardAndResult(currentResult);
             pendingChoice = null;
         }
     }
 
-    private void ProcessRewardAndResult(EventChoice choice)
+    private void ProcessRewardAndResult(
+        EventExecutionResult result)
     {
-        bool isSuccess = UnityEngine.Random.Range(0, 100) < choice.Probability;
+        string resultKey =
+            result.IsSuccess
+            ? result.Choice.ResultTextKey
+            : result.Choice.FailTextKey;
 
-        string resultKey = isSuccess ? choice.ResultTextKey : choice.FailTextKey;
-        if (string.IsNullOrEmpty(resultKey)) resultKey = "ui_event_default_result";
+        string resultText =
+            LocalizationManager.Instance.GetText(resultKey);
 
-        string resultText = LocalizationManager.Instance.GetText(resultKey);
+        ShowResultPhaseAsync(resultText, 
+            result.Choice.ResultButtonTextKey).Forget();
 
-        ShowResultPhaseAsync(resultText).Forget();
-
-        if (choice.RewardType == EventRewardType.RECORD_DRAFT)
+        if (!result.NeedCombat)
         {
-            recordManager.GenerateEventRecords(10, false);
+            if (result.IsSuccess)
+            {
+                EventActionProcessor.Execute(result.Choice);
+                EventRewardProcessor.GiveReward(result.Choice);
+            }
         }
-        else if (choice.RewardType == EventRewardType.ARCHIVE_SAVE)
-        {
-            OpenArchiveRecordUI();
-        }
-        else if (choice.RewardType == EventRewardType.ARCHIVE_LOAD)
-            OpenLastSavedRecordUI();
-        else
-            OpenTargetRarityRecord(choice.RewardType);
     }
 
-    private void OpenTargetRarityRecord(EventRewardType type)
+
+    private void OpenTargetRarityRecord(string rarityParam)
     {
         if (recordManager == null) return;
 
         List<RecordData> records = new List<RecordData>();
 
-        switch (type)
+        // 문자열 파라미터를 RecordRarity Enum으로 변환하여 해당 등급의 리스트를 요청합니다.
+        if (Enum.TryParse(rarityParam, out RecordRarity targetRarity))
         {
-            case EventRewardType.RECORD_ONE_OF_NORMAL:
-                records = recordManager.GetNormalRecordDatas();
-                break;
-            case EventRewardType.RECORD_ONE_OF_RARE:
-                records = recordManager.GetRareRecordDatas();
-                break;
-            case EventRewardType.RECORD_ONE_OF_UNIQUE:
-                records = recordManager.GetUniqueRecordDatas();
-                break;
-            case EventRewardType.RECORD_ONE_OF_LEGEND:
-                records = recordManager.GetLengdaryRecordDatas();
-                break;
-            case EventRewardType.RECORD_ONE_OF_MYTH:
-                records = recordManager.GetMythRecordDatas();
-                break;
-            default:
-                Debug.LogWarning($"[OpenTargetRarityRecord] 처리되지 않은 레코드 보상 타입입니다: {type}");
-                return;
+            // 💡 RecordManager에 GetUnpossessedRecordDatas(RecordRarity) 같은 함수가 
+            // public으로 열려있다고 가정하고 사용합니다.
+            // 만약 없다면, switch문으로 GetRareRecordDatas() 등을 직접 연결하셔도 됩니다.
+
+            switch (targetRarity)
+            {
+                case RecordRarity.NORMAL: records = recordManager.GetNormalRecordDatas(); break;
+                case RecordRarity.RARE: records = recordManager.GetRareRecordDatas(); break;
+                case RecordRarity.UNIQUE: records = recordManager.GetUniqueRecordDatas(); break;
+                case RecordRarity.LEGENDARY: records = recordManager.GetLengdaryRecordDatas(); break;
+                case RecordRarity.MYTH: records = recordManager.GetMythRecordDatas(); break;
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[OpenTargetRarityRecord] 알 수 없는 레코드 등급 파라미터입니다: {rarityParam}");
+            return;
         }
 
         if (records == null || records.Count == 0)
         {
-            Debug.LogWarning($"[{type}] 등급의 레코드가 없거나 모두 소진되었습니다.");
+            Debug.LogWarning($"[{rarityParam}] 등급의 레코드가 없거나 모두 소진되었습니다.");
             records = new List<RecordData> { recordManager.GetEmptyRecord() };
         }
 
+        // 특정 등급의 레코드 창을 띄울 때 몇 개를 띄울지는 기획에 따라 조절하세요 (현재는 리스트 전체를 넘김)
         UIManager.Instance.OpenRecordSelectPopUp(records, false, RecordUIMode.DRAFT);
     }
 
-    private async UniTaskVoid ShowResultPhaseAsync(string resultText)
+    private async UniTaskVoid ShowResultPhaseAsync(string resultText,
+          string buttonTextKey = "ui_btn_leave")
     {
         choiceContainerGroup.alpha = 0f;
         choiceContainer.gameObject.SetActive(false);
@@ -324,7 +287,7 @@ public class UIPopupEventScreen : UIPopUp
             Destroy(child.gameObject);
 
         UIEventChoiceButton closeBtn = Instantiate(choicePrefab, choiceContainer);
-        EventChoice closeChoice = new EventChoice() { TextKey = "ui_btn_leave", CostType = EventCostType.NONE };
+        EventChoice closeChoice = new EventChoice() { TextKey = buttonTextKey, CostType = EventCostType.NONE };
         closeBtn.Setup(closeChoice, _ => ClosePopup());
 
         CancelTypingTask();
@@ -348,6 +311,21 @@ public class UIPopupEventScreen : UIPopUp
         isClosing = true; // 이후 로직 진입 잠금
         CancelTypingTask();
         UIManager.Instance.CloseTopUI();
+        // 💡 팝업이 완전히 닫힐 때, 보류해둔 전투가 있다면 ExploreManager에게 지시합니다!
+        var exploreManager = AppManager.Instance.GetExploreManager();
+        if (exploreManager != null)
+        {
+            if (currentResult != null &&
+                currentResult.NeedCombat)
+            {
+                EventActionProcessor.Execute(currentResult.Choice);
+            }
+            else
+            {
+                exploreManager.ClearStage(true);
+            }
+        }
+
     }
 
     protected override void OnDisable()

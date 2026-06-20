@@ -160,6 +160,12 @@ public static class Extend_List
         if (list.Contains(item)) return;
         list.Add(item);
     }
+
+    public static T Random<T>(this List<T> list)
+    {
+        int idx = UnityEngine.Random.Range(0, list.Count); 
+        return list[idx];
+    }
 }
 
 public static class Extend_Vector3

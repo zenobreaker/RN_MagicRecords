@@ -14,96 +14,30 @@ public class UIEventChoiceButton : MonoBehaviour
 
     private EventChoice choiceData;
     private Action<EventChoice> onClickCallback;
-
-    public void Setup(EventChoice data, Action<EventChoice> callback)
+    public void Setup(
+        EventChoice data,
+        Action<EventChoice> callback)
     {
         choiceData = data;
         onClickCallback = callback;
 
-        // 1. 텍스트 세팅
-        choiceText.text = LocalizationManager.Instance.GetText(data.TextKey);
+        choiceText.text =
+            LocalizationManager.Instance.GetText(data.TextKey);
 
-        // 2. 조건 확인: 이 선택지를 고를 자격(비용)이 충분한가?
-        bool isAvailable = CheckCanAfford(data.CostType, data.CostValue);
+        bool isAvailable =
+            EventCostChecker.CanAfford(data);
 
-        // 3. 버튼 활성화 / 비활성화 
         button.interactable = isAvailable;
 
-        // 4. 시각적 피드백 (비활성화 시 텍스트를 어둡게)
-        if (isAvailable)
-        {
-            choiceText.color = Color.white; // 기본 색상
-            // if (lockIcon != null) lockIcon.SetActive(false);
-        }
-        else
-        {
-            choiceText.color = new Color(0.4f, 0.4f, 0.4f, 1f); // 어두운 회색
+        choiceText.color =
+            isAvailable
+            ? Color.white
+            : new Color(0.4f, 0.4f, 0.4f, 1f);
 
-            // 💡 (꿀팁) 왜 안 되는지 이유를 덧붙여주면 좋습니다. 
-            // choiceText.text += " <color=red>(골드 부족)</color>";
-            // if (lockIcon != null) lockIcon.SetActive(true);
-        }
-
-        // 5. 클릭 이벤트 연결 (활성화 상태일 때만)
         button.onClick.RemoveAllListeners();
+
         if (isAvailable)
-        {
             button.onClick.AddListener(OnClick);
-        }
-    }
-
-    // 💡 실제 게임의 재화 매니저들과 연결하는 곳입니다!
-    private bool CheckCanAfford(EventCostType costType, int costValue)
-    {
-        switch (costType)
-        {
-            case EventCostType.GOLD:
-            case EventCostType.EXPLORE_COIN:
-                CurrencyType ct = costType == EventCostType.GOLD ? CurrencyType.GOLD : CurrencyType.EXPOLORE_GOLD;
-                return CurrencyManager.Instance.GetCurrency(ct) >= costValue;
-
-            case EventCostType.HP_PERCENT:
-                // 예: 현재 체력이 비용(%)으로 깎여도 죽지 않고 살아남을 수 있는가?
-                //int hpCost = PlayerManager.Instance.MaxHP * costValue / 100;
-                //return PlayerManager.Instance.CurrentHP > hpCost;
-                return true;
-
-            case EventCostType.MANA_DEBUFF:
-                {
-                    //TODO : 상태이상 관리자?에게 관련 디버프 걸고 바로 패스 
-                    return true;
-                }
-
-            case EventCostType.RECORD_ANY:
-                // 소지한 레코드가 종류 상관없이 하나라도 있다면 
-                {
-                    var rm = AppManager.Instance.GetRecordManager();
-                    if (rm != null)
-                        return rm.GetPossesRecord().Count >= costValue;
-                    else
-                        return false; 
-                }
-            case EventCostType.RECORD_SAVE:
-                {
-                    // 이전에 전송한 레코드가 있었다면 성공한다.
-                    var rm = AppManager.Instance.GetRecordManager();
-                    if (rm != null)
-                    {
-                        return (rm.GetTransferedRecordIDs().Count > 0);
-                    }
-
-                    return false;
-                }
-            case EventCostType.COMBAT_ELITE:
-                {
-                    // TODO : 바로 스테이지로 이동 후 전투 
-                    return true; 
-                }
-
-            case EventCostType.NONE:
-            default:
-                return true; // 비용이 없으면 무조건 통과
-        }
     }
 
     private void OnClick()

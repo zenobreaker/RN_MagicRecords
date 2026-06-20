@@ -2,14 +2,103 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public interface IReward
+{
+    string Title { get; }
+    string Description { get; }
+    Sprite Icon { get; }
+
+    void Receive();
+}
+
+public class ItemReward : IReward
+{
+    private readonly ItemData itemData;
+
+    public string Title => itemData.name;
+    public string Description => itemData.description;
+    public Sprite Icon => itemData.icon;
+
+    public ItemReward(ItemData itemData)
+    {
+        this.itemData = itemData;
+    }
+
+    public void Receive()
+    {
+        InventoryManager.Instance.SafeInvoke(v => v.AddItem(itemData));
+    }
+}
+
+public class RecordReward : IReward
+{
+    private readonly RecordRewardMode mode;
+
+    private readonly int recordId;
+    private readonly RecordRarity rarity;
+
+    public string Title => "레코드";
+    public string Description => "레코드를 획득합니다.";
+
+    private Sprite recordIcon;
+    public Sprite Icon => recordIcon;
+    public RecordReward(
+        RecordRewardMode mode,
+        int recordId = 0,
+        RecordRarity rarity = RecordRarity.NORMAL)
+    {
+        this.mode = mode;
+        this.recordId = recordId;
+        this.rarity = rarity;
+
+        RecordData record = AppManager.Instance.GetRecordData(recordId);
+        recordIcon = record.icon;
+    }
+
+    public void Receive()
+    {
+        RecordData record = null;
+
+        switch (mode)
+        {
+            case RecordRewardMode.FixedRecord:
+                record = AppManager.Instance.GetRecordData(recordId);
+                break;
+
+            case RecordRewardMode.RandomByRarity:
+                {
+                    var list = AppManager.Instance
+                        .GetRecordByRarity(rarity);
+
+                    record = list.Random();
+                }
+                break;
+
+            case RecordRewardMode.RandomAll:
+                {
+                    var list = AppManager.Instance
+                        .GetAllRecordData();
+
+                    record = list.Random();
+                }
+                break;
+        }
+
+        if (record != null)
+        {
+            AppManager.Instance.SafeInvoke(v=>v.GetRecordManager().SafeInvoke(v=>v.AddRecord(record)));
+        }
+    }
+}
 
 public class RewardManager
     : Singleton<RewardManager>
 {
     public event Action<List<ItemData>> OnAcceptedRewards;
 
-    private List<ItemData> rewards = new();
-    private List<ItemData> viewRewards = new();
+    private readonly Dictionary<int, ItemData> rewardMap = new();
+    private readonly List<ItemData> rewards = new();
+
     private bool bIsRewardPending = false;
 
     protected override void Awake()
@@ -31,16 +120,12 @@ public class RewardManager
                 OnAcceptedRewards += Inventory.AddItems;
             });
         };
-    }
 
-    protected override void SyncDataFromSingleton()
-    {
-        rewards = Instance.rewards;
     }
 
     public void GiveStageReward(int rewardID)
     {
-        var clearRewardData = AppManager.Instance?.GetStageClearRewardData(rewardID);
+        var clearRewardData = AppManager.Instance.SafeInvoke(v => v.GetStageClearRewardData(rewardID)); 
         if (clearRewardData != null)
         {
             foreach (var rewardid in clearRewardData.rewardIds)
@@ -53,37 +138,53 @@ public class RewardManager
 
     public void AddReward(RewardData reward)
     {
-        if (reward == null) return;
+        if (reward == null)
+            return;
 
-        int chance = UnityEngine.Random.Range(0, 101);
+        if (UnityEngine.Random.Range(0, 101) > reward.weight)
+            return;
 
-        if (chance <= reward.weight)
+        int amount = reward.amount;
+
+        if (reward.range > 0)
+            amount += UnityEngine.Random.Range(0, reward.range + 1);
+
+        ItemData item =
+            AppManager.Instance.GetItemData(
+                reward.itemId,
+                reward.itemCategory);
+
+        if (item == null)
+            return;
+
+        if (item.category == ItemCategory.EQUIPMENT)
         {
-            int rangeValue = reward.range == 0 ? 0 : UnityEngine.Random.Range(reward.amount, reward.range + 1);
+            ItemData copy = item.Copy();
 
-            var target = rewards.Find(x => x.id == reward.itemId);
-            if (target == null)
-            {
-                ItemData item = AppManager.Instance.GetItemData(reward.itemId, reward.type);
-                if (item != null)
-                {
-                    item.SetCount(reward.amount);
-                    rewards.Add(item);
-                }
-            }
-            else
-            {
-                if (target.category == ItemCategory.EQUIPMENT)
-                    rewards.Add(target);
-                else
-                {
-                    target.ModifyCount(+reward.amount + rangeValue);
-                }
-            }
+            copy.SetCount(1);
 
-            // 보상을 처리하지 않은 상태에서 이 구분으로 온다면 보상 처리한다.
+            rewards.Add(copy);
+
             bIsRewardPending = true;
+
+            return;
         }
+
+        if (rewardMap.TryGetValue(item.id, out ItemData exist))
+        {
+            exist.ModifyCount(amount);
+        }
+        else
+        {
+            ItemData copy = item.Copy();
+
+            copy.SetCount(amount);
+
+            rewardMap.Add(copy.id, copy);
+            rewards.Add(copy);
+        }
+
+        bIsRewardPending = true;
     }
 
     public void AddReward(ClearRewardData clearData)
@@ -112,7 +213,7 @@ public class RewardManager
 
     private void ReceiveRewards()
     {
-        viewRewards = rewards;
+        //viewRewards = rewards;
         OnAcceptedRewards?.Invoke(rewards);
         rewards.Clear();
     }
@@ -128,6 +229,18 @@ public class RewardManager
 
         bIsRewardPending = false;
     }
+    private List<IReward> ConvertToRewards()
+    {
+        List<IReward> result = new();
+
+        foreach (var item in rewards)
+        {
+            result.Add(new ItemReward(item));
+        }
+
+        return result;
+    }
+
 
     // 이벤트에 의한 처리
     public void OnJoinedLobby()
@@ -142,6 +255,11 @@ public class RewardManager
     {
         if (bIsRewardPending == false) return;
 
-        OpenRewardPopUp();
+        List<IReward> result = ConvertToRewards();
+        if(result.Count == 0) return;
+
+        UIManager.Instance.SafeInvoke(v=>v.OpenRewardCardPopUp(result));
+
+        bIsRewardPending = false;
     }
 }

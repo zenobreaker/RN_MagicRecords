@@ -183,7 +183,7 @@ public class AppManager
         // (RewardManager의 GiveStageReward 함수가 int rewardId를 받도록 수정해야 합니다)
         if (nodeInfo.clearRewardId > 0)
         {
-            rewardManager?.GiveStageReward(nodeInfo.clearRewardId);
+            rewardManager.SafeInvoke(v => v.GiveStageReward(nodeInfo.clearRewardId));
         }
 
         isProcessingReward = false;
@@ -272,6 +272,18 @@ public class AppManager
 
         int stageId = databaseManager.GetRandomBossStageID(chapter);
         return stageId;
+    }
+
+    public StageInfo CreateRandomBossStage(int chapter)
+    {
+        int stageID = GetRandomBossStageID(chapter);
+        return GetBossStageInfo(chapter, stageID);
+    }
+
+    public StageInfo CreateRandomStage(int chapter)
+    {
+        int stageID = GetRandomStageId(chapter);
+        return GetStageInfo(stageID); 
     }
 
     public MonsterData GetMonsterData(int monsterID)
@@ -504,6 +516,11 @@ public class AppManager
     public List<EnhanceStatData> GetEnhanceStatDatas(ItemRank rank)
     {
         return databaseManager.SafeInvoke(v => v.GetEnhanceStatDatas((int)rank));
+    }
+
+    public List<RecordData> GetRecordByRarity(RecordRarity rarity)
+    {
+        return databaseManager.SafeInvoke(v=>v.GetRecordDatas(rarity)); 
     }
 
     public RecordData GetRecordData(int recordID)

@@ -6,7 +6,13 @@ public abstract class UISlot<T> : MonoBehaviour
 {
     public Action<T> OnClickedSlot;
 
-    public abstract void DrawSlot();
+    protected void InvokeClick(T data)
+    {
+        OnClickedSlot?.Invoke(data);
+    }
+
+
+    public abstract void Refresh();
 
     public virtual void OnClick()
     {
@@ -25,9 +31,11 @@ public class UIItemSlot : UISlot<ItemData>
     public virtual void SetItemData(ItemData itemData)
     {
         this.itemData = itemData;
+
+        Refresh();
     }
 
-    public override void DrawSlot()
+    public override void Refresh()
     {
         if (itemImage == null)
             return; 
@@ -43,7 +51,7 @@ public class UIItemSlot : UISlot<ItemData>
 
     public override void OnClick()
     {
-        OnClickedSlot?.Invoke(itemData); 
+        InvokeClick(itemData);
     }
 
 }

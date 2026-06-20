@@ -248,7 +248,6 @@ public class UIManager : Singleton<UIManager>
             T newUI = Instantiate(prefab.gameObject, parent).GetComponent<T>();
             uiInstances[uiType] = newUI;
             newUI.gameObject.SetActive(true);
-
             openedUIs.Push(newUI);
 
             return newUI;
@@ -375,6 +374,15 @@ public class UIManager : Singleton<UIManager>
     public void OpenRewardPopUp(List<ItemData> itemDatas)
     {
         OpenRewardPopUp(itemDatas.ToArray());
+    }
+
+    public void OpenRewardCardPopUp(List<IReward> rewards)
+    {
+        var ui = OpenUI<UIRewardCardPopUp>(true); 
+        if(ui != null && ui.TryGetComponent<UIRewardCardPopUp>(out var target))
+        {
+            target.SetData(rewards); 
+        }
     }
 
     public void OpenShopPopUp(ItemData itemData, int price, CurrencyType currencyType)
