@@ -47,7 +47,7 @@ public static class EventCostChecker
 
             case EventCostType.CURRENCY:
                 CurrencyType ct = (choice.CostParam == EventCostParam.EXPLORE_COIN)
-                                  ? CurrencyType.EXPOLORE_GOLD : CurrencyType.GOLD;
+                                  ? CurrencyType.EXPOLORE_COIN : CurrencyType.GOLD;
                 return CurrencyManager.Instance.GetCurrency(ct) >= choice.CostValue;
 
             case EventCostType.RECORD:
@@ -85,7 +85,7 @@ public static class EventCostProcessor
 
             case EventCostType.CURRENCY:
                 CurrencyType ct = (choice.CostParam == EventCostParam.EXPLORE_COIN)
-                                  ? CurrencyType.EXPOLORE_GOLD : CurrencyType.GOLD;
+                                  ? CurrencyType.EXPOLORE_COIN : CurrencyType.GOLD;
                 CurrencyManager.Instance.SpendCurrency(ct, choice.CostValue);
                 onCostPaid?.Invoke(); // 즉시 지불 완료
                 break;
@@ -141,7 +141,7 @@ public static class EventActionProcessor
             case EventActionType.RECORD_DRAFT:
                 Debug.Log("레코드 드래프트(선택) 창을 엽니다.");
                 var rm = AppManager.Instance.GetRecordManager();
-                rm?.GenerateEventRecords(choice.ActionValue > 0 ? choice.ActionValue : 3, false);
+                rm.SafeInvoke(v => v.GenerateRewardRecords(choice.ActionValue > 0 ? choice.ActionValue : 3, false));
                 break;
 
             case EventActionType.RECORD_SKILL_UP:
@@ -211,7 +211,7 @@ public static class EventRewardProcessor
         if (string.IsNullOrEmpty(param) || param == "NONE" || param == "RANDOM")
         {
             // 특정 등급 명시가 없으면 기본 랜덤 드롭
-            rm.GenerateEventRecords(value > 0 ? value : 3, false);
+            rm.GenerateRewardRecords(value > 0 ? value : 3, false);
         }
         else if (Enum.TryParse(param, out RecordRarity targetRarity))
         {

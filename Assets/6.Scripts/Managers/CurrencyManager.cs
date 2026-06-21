@@ -20,13 +20,19 @@ public class CurrencyManager
         if (inventory == null) return;
 
         currencyInventory = inventory;
+        currencyInventory.OnInventoryChanged += CurrencyInventory_OnInventoryChanged;
+    }
+
+    private void CurrencyInventory_OnInventoryChanged(Inventory obj)
+    {
+        OnUpdatedCurrency?.Invoke();
     }
 
     public void Cheat_AddedCurrenices()
     {
         AddCurrency(CurrencyType.GOLD, 999999);
         AddCurrency(CurrencyType.DIAMOND, 999999);
-        AddCurrency(CurrencyType.EXPOLORE_GOLD, 999999);
+        AddCurrency(CurrencyType.EXPOLORE_COIN, 999999);
     }
 
     protected override void SyncDataFromSingleton()
@@ -34,17 +40,20 @@ public class CurrencyManager
         currencyInventory = Instance.currencyInventory;
     }
 
-    public void AddCurrency(ItemData item)
+    private void AddItem(ItemData item)
     {
         if (item == null || (item is CurrencyItem) == false) return;
 
         CurrencyItem currency = item as CurrencyItem;
-        AddCurrency(currency.Type, currency.GetCount());
+        currencyInventory.AddItem(item);
+        
     }
 
     public void AddCurrency(CurrencyType type, int amount)
     {
-        currencyInventory.AddCurrency(type, amount, OnUpdatedCurrency);
+        CurrencyItem currency = AppManager.Instance.GetCurrencyItemByType(type);
+        currency.SetCount(amount);
+        AddItem(currency);
     }
 
     public bool SpendCurrency(CurrencyType type, int amount)
@@ -53,4 +62,9 @@ public class CurrencyManager
     }
 
     public int GetCurrency(CurrencyType type) => currencyInventory.GetCurrency(type);
+
+    public void ClearExploreCurrency()
+    {
+        currencyInventory.SetCurrency(CurrencyType.EXPOLORE_COIN, 0); 
+    }
 }

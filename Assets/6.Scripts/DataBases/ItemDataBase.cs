@@ -90,7 +90,7 @@ public class ItemDataBase : DataBase
                 {
                     var equipmentData = new EquipmentItem(
                         (int)json.id
-                        , GetSprite(json.imagePath)
+                        , json.imagePath
                         , (string)json.name
                         , (string)json.description
                         , (EquipParts)json.equipParts
@@ -127,8 +127,9 @@ public class ItemDataBase : DataBase
                 {
                     var data = new IngredientItem(
                         (int)json.id
-                        , GetSprite(json.imagePath)
-                        , json.itemCategory
+                        , (json.imagePath)
+                        , (ItemCategory)json.itemCategory,
+                        json.name, json.description
                         );
                     return data;
                 },
@@ -157,8 +158,10 @@ public class ItemDataBase : DataBase
                 {
                     var data = new CurrencyItem(
                         (int)json.id
-                        , GetSprite(json.imagePath)
-                        , (CurrencyType)json.type
+                        
+                        , (json.imagePath)
+                        , (CurrencyType)json.type, 
+                        json.name, json.description
                         );
                     return data;
                 },

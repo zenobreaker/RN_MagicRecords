@@ -14,6 +14,7 @@ public enum RecordUIMode
     SELECT_OWNED,    // 보유 중인 레코드를 선택하는 모드 (아카이브 보관용)
     SELECT_SAVED,   // 지난 회차에 저장한 레코드 선택하는 모드
     DELETE,         // 선택한 레코드를 제거하는 모드
+    VIEW,           // 오로직 보여주기만 하는 모드
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -56,11 +57,9 @@ public enum StageType
 public enum ItemCategory
 {
     NONE,
-    CURRENCY = 1,
-    EQUIPMENT = 2,
-    INGREDIANT,
-    EXPLORE_POINT = 98, // 탐사 재화
-    CREDIT = 99,
+    CURRENCY = 1,       // 화폐
+    EQUIPMENT = 2,      // 장비
+    INGREDIANT,         // 재료 
     MAX,
 }
 
@@ -71,7 +70,7 @@ public enum CurrencyType
     NONE,
     GOLD,
     DIAMOND,
-    EXPOLORE_GOLD,
+    EXPOLORE_COIN,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,9 +78,9 @@ public enum CurrencyType
   public enum RewardType
 {
     NONE,
-    EXP,
     ITEM,
     RECORD, 
+    EXP,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
