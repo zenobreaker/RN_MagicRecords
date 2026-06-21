@@ -5,19 +5,22 @@ public abstract class ItemData
 {
     public int id;
     public string uniqueID;
-    public Sprite icon;
+    public string iconPath;
     public ItemCategory category;
     public ItemRank rank;
 
     public string name;
     public string description;
     protected int itemCount = 0;
+    public Sprite Icon  => ResourceManager.Instance.SafeInvoke(v=>v.GetSprite(iconPath));
 
     public event Action<ItemData> OnChanged;
-    public ItemData(int id, Sprite icon = null)
+    public ItemData(int id, string iconPath, string name = "", string desc = "")
     {
         this.id = id;
-        this.icon = icon;
+        this.iconPath = iconPath;
+        this.name = name;
+        this.description = desc; 
         this.uniqueID = Guid.NewGuid().ToString();
         rank = ItemRank.NONE;
     }
@@ -26,7 +29,7 @@ public abstract class ItemData
     {
         id = other.id;
         uniqueID = other.uniqueID;
-        icon = other.icon;
+        iconPath = other.iconPath;
         category = other.category;
         name = other.name;
         description = other.description;
@@ -89,12 +92,10 @@ public class EquipmentItem : ItemData
     private int enhance; 
     public int Enhance { get { return enhance; } }
 
-    public EquipmentItem(int id, Sprite icon, string name, string description, EquipParts parts,
+    public EquipmentItem(int id, string iconPath, string name, string description, EquipParts parts,
         ItemRank rank, StatusType mainStatus, float mainValue, bool isPercent)
-        :base(id, icon)
+        :base(id, iconPath, name, description)
     {
-        this.name = name;
-        this.description = description;
         this.parts = parts;
         modifier = new StatModifier(mainStatus, mainValue
             , isPercent == true ? ModifierValueType.PERCENT : ModifierValueType.FIXED);
@@ -112,7 +113,7 @@ public class EquipmentItem : ItemData
         // StatModifier도 깊은 복사 (값 복사)
         var newModifier = new StatModifier(modifier.type, modifier.value, modifier.valueType);
 
-        var copy = new EquipmentItem(id, icon, name, description, parts, rank,
+        var copy = new EquipmentItem(id, iconPath, name, description, parts, rank,
             newModifier.type, newModifier.value, newModifier.valueType == ModifierValueType.PERCENT);
 
         copy.owner = owner;
@@ -156,15 +157,16 @@ public class EquipmentItem : ItemData
 public class IngredientItem
     : ItemData
 {
-    public IngredientItem(int id, Sprite icon, int itemCategory) 
-        : base(id, icon)
+    public IngredientItem(int id, string iconPath, int itemCategory) 
+        : base(id, iconPath)
     {
         category = (ItemCategory)itemCategory;
         itemCount = 1; 
     }
 
-    public IngredientItem(int id, Sprite icon, ItemCategory category = ItemCategory.INGREDIANT) 
-        : base(id, icon)
+    public IngredientItem(int id, string iconPath, ItemCategory category = ItemCategory.INGREDIANT
+        , string name = "", string desc = "") 
+        : base(id, iconPath, name, desc)
     {
         this.category = category;
         itemCount = 1; 
@@ -172,7 +174,7 @@ public class IngredientItem
 
     public override ItemData Copy()
     {
-        var copy = new IngredientItem(id, icon, category);
+        var copy = new IngredientItem(id, iconPath, category, name, description);
         copy.uniqueID = uniqueID;
         copy.itemCount = itemCount;
         return copy;
@@ -184,8 +186,8 @@ public class CurrencyItem
 {
     private CurrencyType type;
     public CurrencyType Type { get => type; }
-    public CurrencyItem(int id, Sprite icon, CurrencyType type)
-        : base(id, icon)
+    public CurrencyItem(int id, string iconPath, CurrencyType type, string name = "", string desc = "")
+        : base(id, iconPath, name, desc)
     {
         category = ItemCategory.CURRENCY;
         this.type = type;
@@ -193,7 +195,7 @@ public class CurrencyItem
 
     public override ItemData Copy()
     {
-        var copy = new CurrencyItem(id, icon, Type);
+        var copy = new CurrencyItem(id, iconPath, Type, name ,description);
         copy.uniqueID = uniqueID;
         copy.itemCount = itemCount;
         return copy;
@@ -211,9 +213,9 @@ public class ShopItem : ItemData
     public int Price => price; 
     public ItemData TargetItemData { get; private set; }
 
-    public ShopItem(int id, int targetItemID, Sprite icon = null,
+    public ShopItem(int id, int targetItemID, string iconPath ,
         int price = 0, CurrencyType currencyType = CurrencyType.NONE) 
-        : base(id, icon)
+        : base(id, iconPath)
     {
         this.price = price;
         this.targetItemID = targetItemID;
@@ -246,6 +248,6 @@ public class ShopItem : ItemData
 
     public override ItemData Copy()
     {
-        return new ShopItem(id, targetItemID, icon, price, currencyType);
+        return new ShopItem(id, targetItemID, iconPath, price, currencyType);
     }
 }
