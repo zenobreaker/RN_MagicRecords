@@ -80,4 +80,12 @@ public class RecordCard : MonoBehaviour
 
         lockText.text = myData.isLocked ? "해제" : "잠금";
     }
+
+    public void SetDisabled(bool disabled)
+    {
+        //selectButton.interactable = !disabled;
+
+        // 시각 효과
+        selectFrame.gameObject.SetActive(!disabled);
+    }
 }

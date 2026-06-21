@@ -58,7 +58,10 @@ public sealed class ExploreManager : MonoBehaviour
 
         RecordManager recordManager = AppManager.Instance.SafeInvoke(v => v.GetRecordManager());
         if (recordManager != null)
+        {
             recordManager.ClearExploreRecords();
+            recordManager.ResetReceiveFlag();
+        }
 
         RewardManager.Instance.SafeInvoke(v => v.ClearPendingRewards());
     }

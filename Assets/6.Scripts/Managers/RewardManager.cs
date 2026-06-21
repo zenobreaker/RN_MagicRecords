@@ -1,8 +1,5 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 
 public interface IReward
 {
@@ -169,6 +166,7 @@ public class RecordReward : IReward
         return path;
     }
 }
+
 public class RewardManager
 : Singleton<RewardManager>
 {

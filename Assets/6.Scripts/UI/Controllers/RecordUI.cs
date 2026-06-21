@@ -14,7 +14,9 @@ public class RecordUI : UIPopUp
 
     private RecordUIMode currentMode;
     private RecordCard selectCard;
-    private RecordManager rm; 
+    private RecordManager rm;
+    private List<RecordCard> cards = new();
+
     protected override void Awake()
     {
         base.Awake();
@@ -38,6 +40,7 @@ public class RecordUI : UIPopUp
     public void SetData(List<RecordData> options, bool canReroll, RecordUIMode mode = RecordUIMode.DRAFT)
     {
         currentMode = mode;
+        cards.Clear();
 
         if (AppManager.Instance != null)
             rm = AppManager.Instance.GetRecordManager();
@@ -49,6 +52,7 @@ public class RecordUI : UIPopUp
         SetContentChildObjectsCallback<RecordCard>(card =>
         {
             if (index >= options.Count) return;
+            cards.Add(card);
 
             int currentIndex = index;
             var currentData = options[currentIndex];
@@ -89,12 +93,21 @@ public class RecordUI : UIPopUp
         {
             selectCard.Refresh(false);
             selectCard = null;
+
+            foreach (var c in cards)
+                c.Refresh(false);
         }
         // 이전에 선택한 카드랑 다르거나 선택한게 없고 들어온 정보가 있다면 해당 카드 선택
         else if (selectCard == null || selectCard.Equals(card) == false)
         {
             selectCard = card;
-            card.Refresh(true); 
+            card.Refresh(true);
+
+            foreach (var c in cards)
+            {
+                if (c != selectCard)
+                    c.Refresh(false);
+            }
         }
 
         // 팝업 다시 그림 
