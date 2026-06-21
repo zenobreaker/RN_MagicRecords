@@ -75,7 +75,7 @@ public class RecordTestWindow : EditorWindow
 
         if (GUILayout.Button("UI 강제 호출 (랜덤 3개)", GUILayout.Height(30)))
         {
-            AppManager.Instance.GenerateRecord(3);
+            AppManager.Instance.GenerateRecord_Test(3);
             GameManager.Instance.OnPrecessBattle();
         }
     }
