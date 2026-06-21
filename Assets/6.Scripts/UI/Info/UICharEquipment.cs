@@ -22,7 +22,7 @@ public class UICharEquipment : UiBase
             
             if(equipment != null)
             {
-                charEquipmentsSlots[(int)e].sprite = equipment.icon;
+                charEquipmentsSlots[(int)e].sprite = equipment.Icon;
             }
             else
             {

@@ -26,14 +26,28 @@ public class UIPopUpTwoButton : UIPopUp
 
         if (confirmButton != null)
         {
-            confirmButton.onClick.RemoveAllListeners();
-            confirmButton.onClick.AddListener(onConfirm);
+            if (confirmButton != null)
+            {
+                confirmButton.onClick.RemoveAllListeners();
+
+                if (onConfirm != null)
+                    confirmButton.onClick.AddListener(onConfirm);
+
+                confirmButton.onClick.AddListener(CloseUI);
+            }
         }
 
         if (cancelButton != null)
         {
-            cancelButton.onClick.RemoveAllListeners();
-            cancelButton.onClick.AddListener(onCancel);
+            if (cancelButton != null)
+            {
+                cancelButton.onClick.RemoveAllListeners();
+
+                if (onCancel != null)
+                    cancelButton.onClick.AddListener(onCancel);
+                else
+                    cancelButton.onClick.AddListener(CloseUI);
+            }
         }
 
         ShowPopUp();

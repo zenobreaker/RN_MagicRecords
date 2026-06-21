@@ -45,14 +45,17 @@ public class RecordCard : MonoBehaviour
         // SetRarityColor(data.rarity);
 
         // 4. 잠금 기능 
-        lockButton?.onClick.RemoveAllListeners();
-        lockButton?.onClick.AddListener(() =>
+        if (lockButton != null)
         {
-            onlockAction?.Invoke();
-            DrawLockText();
-        });
+            lockButton.onClick.RemoveAllListeners();
+            lockButton.onClick.AddListener(() =>
+            {
+                onlockAction?.Invoke();
+                DrawLockText();
+            });
 
-        lockButton?.gameObject.SetActive(canReroll);
+            lockButton.gameObject.SetActive(canReroll);
+        }
     }
 
     public void ClearEvent()

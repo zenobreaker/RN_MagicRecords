@@ -13,7 +13,7 @@ public static class RewardFactory
                             rewardData.itemId,
                             rewardData.itemCategory);
 
-                    return new ItemReward(item);
+                    return new ItemReward(item, rewardData.amount);
                 }
             case RewardType.RECORD:
                 {

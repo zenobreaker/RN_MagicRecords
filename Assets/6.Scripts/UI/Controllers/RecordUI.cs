@@ -54,12 +54,12 @@ public class RecordUI : UIPopUp
             var currentData = options[currentIndex];
 
             card.Setup(currentData,
-                () =>
+                onClickAction: () =>
                 {
                     OnCardClicked(currentData);
                     Card_Clicked(card); 
                 },
-                () => OnLockRecord(currentData),
+                onlockAction: () => OnLockRecord(currentData),
                 canReroll);
 
             card.Refresh(false);
@@ -128,8 +128,10 @@ public class RecordUI : UIPopUp
         }
         else if (currentMode == RecordUIMode.DELETE)
         {
-            result = rm.OnCompleteCostDiscard(); 
+            result = rm.OnCompleteCostDiscard();
         }
+        else if (currentMode == RecordUIMode.VIEW)
+            result = true; 
 
         if (result.HasValue && result.Value == true)
         {
@@ -169,7 +171,7 @@ public class RecordUI : UIPopUp
     protected override void DrawPopUp()
     {
         // 선택한 카드가 없으면 결정 버튼 비활성화 
-        if (selectCard == null)
+        if (currentMode != RecordUIMode.VIEW && selectCard == null)
             completeButton.interactable = false;
         else 
             completeButton.interactable = true;

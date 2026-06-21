@@ -37,7 +37,7 @@ public class UIPopUpItem : UIPopUp
         if (item == null) return;
 
         if (itemIconImage != null)
-            itemIconImage.sprite = item.icon;
+            itemIconImage.sprite = item.Icon;
 
         Debug.Assert(LocalizationManager.Instance != null);
         if (itemNameText != null)

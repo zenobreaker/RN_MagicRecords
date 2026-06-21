@@ -35,7 +35,7 @@ public class EnhanceUI_UpgradeTarget : UiBase
         }
 
         if (selcetedItemIcon != null)
-            selcetedItemIcon.sprite = selectedItem.icon;
+            selcetedItemIcon.sprite = selectedItem.Icon;
         if (selcetedItemNameText != null)
             selcetedItemNameText.text = selectedItem.LocalizedName;
 

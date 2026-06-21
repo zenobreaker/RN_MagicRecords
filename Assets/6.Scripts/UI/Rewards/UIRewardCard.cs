@@ -1,5 +1,6 @@
 using System;
 using TMPro;
+using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,7 @@ public sealed class UIRewardCard : UIItemSlot
 
     public event Action<UIRewardCard> OnReceived;
     private IReward reward;
+    private bool received; 
 
     private void Awake()
     {
@@ -37,6 +39,8 @@ public sealed class UIRewardCard : UIItemSlot
 
         if (itemImage != null)
             itemImage.sprite = reward.Icon;
+
+        received = false; 
     }
 
     public override void Refresh()
@@ -52,6 +56,9 @@ public sealed class UIRewardCard : UIItemSlot
 
     private void OnClickReceive()
     {
+        if (received) return;
+        received = true; 
+
         reward?.Receive();
         OnReceived?.Invoke(this);
     }

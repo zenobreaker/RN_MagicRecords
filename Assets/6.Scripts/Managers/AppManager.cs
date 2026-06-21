@@ -1,8 +1,6 @@
-﻿using NUnit.Framework.Constraints;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.LightTransport;
 using UnityEngine.SceneManagement;
 
 public class AppManager
@@ -331,7 +329,7 @@ public class AppManager
         // 탐사 씬 메인으로 오는 경우에도 호출 
         if (recordManager == null) return; 
 
-       recordManager.GenerateStageRecords();
+       recordManager.GenerateChapterStartRecords();
     }
 
     private void HandleInStage(int stageID)
@@ -583,9 +581,9 @@ public class AppManager
 
     
 
-    public void GenerateRecord(int recordCount, bool canReroll = true)
+    public void GenerateRecord_Test(int recordCount, bool canReroll = true)
     {
-        recordManager.SafeInvoke(v => v.GenerateStageRecords(recordCount, canReroll));
+        recordManager.SafeInvoke(v => v.GenerateRewardRecords(recordCount, canReroll));
     }
 
 

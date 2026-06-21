@@ -52,4 +52,11 @@ public sealed class UIRewardCardPopUp : UIPopUp
         if (remainRewardCount <= 0)
             CloseUI();
     }
+
+    public override void CloseUI()
+    {
+        base.CloseUI();
+
+        RewardManager.Instance.SafeInvoke(v => v.ClearPendingRewards());
+    }
 }

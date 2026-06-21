@@ -118,26 +118,26 @@ public sealed class RecordManager : MonoBehaviour
     }
 
 
-    // 💡 1. 스테이지 클리어 / 탐사 시작 시 호출 (중복 방지 플래그 검사 O)
-    public void GenerateStageRecords(int count = 3, bool canReroll = true)
+    // 💡 1. 탐사 시작 시 호출 (중복 방지 플래그 검사 O)
+    public void GenerateChapterStartRecords(int count = 3, bool canReroll = true)
     {
         // 이미 이번 스테이지에서 기본 보상을 받았다면 무시
         if (isReceived || AppManager.Instance == null) return;
 
-        GenerateRecordsInternal(count, canReroll);
+        GenerateDraftRecords(count, canReroll);
     }
 
     // 💡 2. 이벤트 보상 시 호출 (중복 방지 플래그 검사 X - 무조건 지급)
-    public void GenerateEventRecords(int count = 3, bool canReroll = true)
+    public void GenerateRewardRecords(int count = 3, bool canReroll = true)
     {
         if (AppManager.Instance == null) return;
 
         // 플래그를 무시하고 즉시 레코드 선택창을 띄웁니다.
-        GenerateRecordsInternal(count, canReroll);
+        GenerateDraftRecords(count, canReroll);
     }
 
     // 💡 3. 실제 레코드를 뽑고 UI를 띄우는 핵심 내부 로직 (은닉화)
-    private void GenerateRecordsInternal(int count, bool canReroll)
+    private void GenerateDraftRecords(int count, bool canReroll)
     {
         DataBaseManager db = AppManager.Instance.GetDataBaseManager();
         if (db == null) return;
@@ -477,5 +477,10 @@ public sealed class RecordManager : MonoBehaviour
         save.isReceived = isReceived;
         SaveManager.SaveRecordData(save);
         isDirty = false;
+    }
+
+    public void ClearExploreRecords()
+    {
+        recordInventory.ClearAll(); 
     }
 }

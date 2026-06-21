@@ -46,7 +46,7 @@ public class UIItemSlot : UISlot<ItemData>
             return; 
         }
 
-        itemImage.sprite = itemData.icon;
+        itemImage.sprite = itemData.Icon;
     }
 
     public override void OnClick()

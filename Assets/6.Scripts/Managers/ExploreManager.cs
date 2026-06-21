@@ -27,7 +27,6 @@ public sealed class ExploreManager : MonoBehaviour
     private StageReplacer stageReplacer;
 
     private string chapterBiomeName;
-    public ExplorationRewardManager ExplorationRewardManager { get; private set; }
     public RunStatus RunStatus { get; private set; }
 
     public int Chapter { get; private set; } = 1;
@@ -51,6 +50,17 @@ public sealed class ExploreManager : MonoBehaviour
             MapNodeInfo currentNodeInfo = GetReplacedNodeInfo(MapNodeID);
             return currentNodeInfo != null && currentNodeInfo.isCleared;
         }
+    }
+
+    private void ResetExploreProgress()
+    {
+        CurrencyManager.Instance.SafeInvoke(v => v.ClearExploreCurrency());
+
+        RecordManager recordManager = AppManager.Instance.SafeInvoke(v => v.GetRecordManager());
+        if (recordManager != null)
+            recordManager.ClearExploreRecords();
+
+        RewardManager.Instance.SafeInvoke(v => v.ClearPendingRewards());
     }
 
     public void EnsureInitialized()
@@ -84,10 +94,9 @@ public sealed class ExploreManager : MonoBehaviour
 
     public void StartExplore()
     {
+        ResetExploreProgress(); 
         ResetData();
         Init(true);
-
-        ExplorationRewardManager = new ExplorationRewardManager();
 
         ChangeState(ExploreState.READY);
     }
@@ -409,7 +418,6 @@ public sealed class ExploreManager : MonoBehaviour
     {
         Debug.Log($"Explore Finish");
         OnExploreFinish?.Invoke();
-        ExplorationRewardManager = null;
     }
 
     public void OnReturnedStageSelectScene()
@@ -425,12 +433,14 @@ public sealed class ExploreManager : MonoBehaviour
         // 1. 실제 세이브 파일 완전 삭제
         SaveManager.DeleteMapData();
         // 필요하다면 스테이지 노드 정보 파일도 삭제 (SaveManager에 구현된 경우)
-         SaveManager.DeleteStageNodeData(); 
+        SaveManager.DeleteStageNodeData();
 
         // 2. 메모리에 들고 있던 배치 클래스들을 null로 밀어버려 유령 저장을 원천 차단합니다.
+        ResetExploreProgress();
         ResetData();
         mapReplacer = null;
         stageReplacer = null;
+
     }
 
 

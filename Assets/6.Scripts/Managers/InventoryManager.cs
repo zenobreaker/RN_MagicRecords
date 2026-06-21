@@ -144,7 +144,7 @@ public class InventoryManager
     public List<ItemData> GetItems(ItemCategory category)
     {
         if (inventories.TryGetValue(category, out var value))
-            return value.GetItems();
+            return (List<ItemData>)value.GetItems();
         return null;
     }
 

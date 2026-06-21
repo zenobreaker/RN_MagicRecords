@@ -7,11 +7,16 @@ public abstract class Inventory
 {
     protected List<ItemData> items = new();
 
+    protected Dictionary<int, ItemData> itemMap = new();
+
     public event Action<Inventory> OnInventoryChanged;
 
     public virtual void AddItem(ItemData item)
     {
+        if (item == null) return; 
+
         items.Add(item);
+        itemMap[item.id] = item; 
 
         item.OnChanged += HandleItemChanged;
         OnInventoryChanged?.Invoke(this);
@@ -19,16 +24,20 @@ public abstract class Inventory
 
     public virtual void RemoveItem(ItemData item)
     {
+        if (item == null) return; 
+
         item.OnChanged -= HandleItemChanged;
+
         items.Remove(item);
+        itemMap.Remove(item.id); 
 
         OnInventoryChanged?.Invoke(this);
     }
 
     public virtual bool RemoveItem(int itemID, int itemCount)
     {
-        ItemData item = items.Find(x => x.id == itemID);
-        if (item == null) return false;
+        if (itemMap.TryGetValue(itemID, out ItemData item) == false)
+            return false; 
 
         item.ModifyCount(-1 * itemCount);
         if (item.GetCount() <= 0)
@@ -37,14 +46,17 @@ public abstract class Inventory
         return true;
     }
 
-    public virtual List<ItemData> GetItems() => items;
+    public virtual IReadOnlyList<ItemData> GetItems()
+    {
+        return items;
+    }
 
     public virtual ItemData GetItem(int itemID)
     {
-        return items.Find(x => x.id == itemID);
+        return itemMap.TryGetValue(itemID, out var item) ? item : null; 
     }
 
-    public void HandleItemChanged(ItemData item)
+    protected virtual void HandleItemChanged(ItemData item)
     {
         OnInventoryChanged?.Invoke(this);
     }
@@ -57,6 +69,8 @@ public abstract class Inventory
 
 public class EquipmentInventory : Inventory
 {
+    private Dictionary<string, ItemData> equipmentMap = new();
+
     public override void AddItem(ItemData item)
     {
         if (item == null) return;
@@ -83,25 +97,20 @@ public class EquipmentInventory : Inventory
         else
         {
             // 동일한 uniqueID를 가진 항목이 이미 있으면 새로운 복사본을 만들어서 다른 슬롯에 추가하도록 함
-            foreach (var existing in items)
+            if(equipmentMap.TryGetValue(toAdd.uniqueID, out var existing))
             {
-                if (existing != null && existing.category == ItemCategory.EQUIPMENT && existing.uniqueID == toAdd.uniqueID)
-                {
-                    needsCopy = true;
-                    break;
-                }
+                needsCopy = true;
             }
         }
 
         // 전달된 객체와 인벤토리 내 동일 참조가 있으면 복사 필요
-        if (!needsCopy)
+        if (needsCopy == false)
         {
-            foreach (var existing in items)
+            if(equipmentMap.TryGetValue(toAdd.uniqueID, out var existing))
             {
                 if (ReferenceEquals(existing, item))
                 {
                     needsCopy = true;
-                    break;
                 }
             }
         }
@@ -124,7 +133,23 @@ public class EquipmentInventory : Inventory
             }
         }
 
-        base.AddItem(toAdd);
+        equipmentMap[toAdd.uniqueID] = toAdd;
+        base.AddItem(toAdd); 
+    }
+
+    public override void RemoveItem(ItemData item)
+    {
+        if (item == null)
+            return;
+
+        equipmentMap.Remove(item.uniqueID); 
+
+        base.RemoveItem(item);
+    }
+
+    public ItemData GetEquipment(string uniqueID)
+    {
+        return equipmentMap.TryGetValue(uniqueID, out var item) ? item : null;
     }
 }
 
@@ -139,8 +164,7 @@ public class StackableInventory : Inventory
             return;
         }
         // 스택형 아이템은 동일 ID가 있으면 수량만 증가시킨다.
-        var existingItem = items.Find(i => i != null && i.id == item.id);
-        if (existingItem != null)
+        if(itemMap.TryGetValue(item.id, out var existingItem))
         {
             existingItem.ModifyCount(item.GetCount());
         }
@@ -152,55 +176,48 @@ public class StackableInventory : Inventory
     public override void RemoveItem(ItemData item)
     {
         if (item == null) return;
-        var existingItem = items.Find(i => i != null && i.id == item.id);
-        if (existingItem != null)
+        
+        if (itemMap.TryGetValue(item.id, out var existingItem))
         {
             existingItem.ModifyCount(-1 * item.GetCount());
+
             if (existingItem.GetCount() <= 0)
             {
-                items.Remove(existingItem);
+                base.RemoveItem(existingItem);
             }
         }
     }
 
     public int GetItemCount(int itemID)
     {
-        var existingItem = items.Find(i => i != null && i.id == itemID);
-        if (existingItem != null)
-        {
-            return existingItem.GetCount();
-        }
-        return 0;
+        return itemMap.TryGetValue(itemID, out var item) ? item.GetCount() : 0; 
     }
 }
 
 public class CurrencyInventory : Inventory
 {
-    public void AddCurrency(CurrencyType type, int amount, Action updateCurrency = null)
+    private Dictionary<CurrencyType, CurrencyItem> currencyMap = new();
+
+    public override void AddItem(ItemData item)
     {
-        var currencyItem = items.Find(i => (i as CurrencyItem)?.Type == type) as CurrencyItem;
-        if (currencyItem != null)
+        if (item is not CurrencyItem currency)
+            return;
+
+        if (currencyMap.TryGetValue(currency.Type,out var exist))
         {
-            currencyItem.ModifyCount(+amount);
+            exist.ModifyCount(currency.GetCount());
         }
         else
         {
-            var currency = AppManager.Instance?.GetCurrencyItemByType(type);
-            if (currency != null)
-            {
-                currency.SetCount(amount);
-                AddItem(currency);
-            }
-        }
+            currencyMap[currency.Type] = currency;
 
-        updateCurrency?.Invoke();
+            base.AddItem(currency);
+        }
     }
 
     public bool SpendCurrency(CurrencyType type, int amount, Action updatedCurrency = null)
     {
-        var currencyItem = items.Find(i => (i as CurrencyItem)?.Type == type) as CurrencyItem;
-
-        if (currencyItem == null || currencyItem.GetCount() < amount)
+        if (currencyMap.TryGetValue(type, out var currencyItem) == false || currencyItem.GetCount() < amount)
         {
             return false;
         }
@@ -213,15 +230,32 @@ public class CurrencyInventory : Inventory
         return success;
     }
 
+    public override void RemoveItem(ItemData item)
+    {
+        if (item is CurrencyItem currency)
+        {
+            currencyMap.Remove(currency.Type);
+        }
+
+        base.RemoveItem(item);
+    }
+
     public int GetCurrency(CurrencyType type)
     {
-        var currencyItem = items.Find(i => (i as CurrencyItem)?.Type == type) as CurrencyItem;
-        if (currencyItem != null)
+        if (currencyMap.TryGetValue(type, out var currencyItem))
         {
             return currencyItem.GetCount();
         }
 
         return 0;
+    }
+
+    public void SetCurrency(CurrencyType type, int amount)
+    {
+        if(currencyMap.TryGetValue(type, out var currencyItem))
+        {
+            currencyItem.SetCount(amount); 
+        }
     }
 }
 
@@ -230,6 +264,10 @@ public sealed class RecordInventory
 {
     private List<RecordData> records = new();
     private HashSet<int> recordIdSet = new();
+    private Dictionary<string, RecordData> recordUniqueMap = new();
+
+    private Dictionary<int, List<RecordData>> recordIdMap = new();
+
     public event Action<RecordInventory> OnInventoryChanged;
 
     public IReadOnlyList<RecordData> Records => records;
@@ -252,6 +290,17 @@ public sealed class RecordInventory
         }
 
         records.Add(record);
+
+        recordUniqueMap[record.uniqueID] = record;
+
+        if (!recordIdMap.TryGetValue(record.id, out var list))
+        {
+            list = new List<RecordData>();
+            recordIdMap.Add(record.id, list);
+        }
+
+        list.Add(record);
+
         recordIdSet.Add(record.id);
 
         OnInventoryChanged?.Invoke(this);
@@ -259,41 +308,56 @@ public sealed class RecordInventory
 
     public void RemoveRecord(int id)
     {
-        // 리스트에 존재해야 삭제 가능 
-        RecordData target = records.Find(x => x.id == id);
-        if (target != null)
+        if (recordIdMap.TryGetValue(id, out var list))
         {
-            RemoveRecord(target);
+            if (list.Count > 0)
+            {
+                RemoveRecord(list[0]);
+            }
         }
     }
 
     public void RemoveRecord(RecordData target)
     {
-        if (target == null) return;
+        if (target == null)
+            return;
 
-        var finalTarget = records.Find(x => x.uniqueID == target.uniqueID);
-        if (finalTarget != null)
+        if (!recordUniqueMap.TryGetValue(target.uniqueID, out var finalTarget))
+            return;
+
+        records.Remove(finalTarget);
+
+        recordUniqueMap.Remove(finalTarget.uniqueID);
+
+        if (recordIdMap.TryGetValue(finalTarget.id, out var list))
         {
-            records.Remove(finalTarget);
-            if (records.Exists(x => x.id == finalTarget.id) == false)
+            list.Remove(finalTarget);
+
+            if (list.Count == 0)
             {
+                recordIdMap.Remove(finalTarget.id);
                 recordIdSet.Remove(finalTarget.id);
             }
-
-            OnInventoryChanged?.Invoke(this);
         }
 
+        OnInventoryChanged?.Invoke(this);
     }
 
     public void ClearAll()
     {
         records.Clear();
+
         recordIdSet.Clear();
+
+        recordUniqueMap.Clear();
+
+        recordIdMap.Clear();
+
         OnInventoryChanged?.Invoke(this);
     }
 
     public RecordData GetRecord(string uniqueID)
     {
-        return records.FirstOrDefault(x => x.uniqueID == uniqueID);
+        return recordUniqueMap.TryGetValue(uniqueID, out var value) ? value : null; 
     }
 }

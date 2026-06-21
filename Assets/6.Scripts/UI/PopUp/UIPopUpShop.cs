@@ -79,7 +79,7 @@ public class UIPopUpShop : UIPopUp
         Debug.Assert(LocalizationManager.Instance != null, $"LocalizationManager가 필요");
 
         if (itemIconImage != null)
-            itemIconImage.sprite = item.icon;
+            itemIconImage.sprite = item.Icon;
 
         if (itemNameText != null)
             itemNameText.text = LocalizationManager.Instance.GetText(item.name);
