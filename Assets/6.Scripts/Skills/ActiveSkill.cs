@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Rendering.Universal;
 
 
 public enum SkillPhase
@@ -16,28 +13,53 @@ public enum SkillPhase
     MAX,
 }
 
-//// 방법 A: 자주 쓰는 변수는 명시적 변수로 빼두기
-//public class SkillBlackboard
-//{
-//    public bool isCrit;
-//    public float chargeAmount;
-//    // ... 필요한 것들만
-//}
+public sealed class SkillRuntimeContext
+{
+    // 레코드가 더해줄 추가 수치들 (이전에 만든 것)
+    public int PatternCountAdd = 0;
+    public float DamageMultiplier = 1.0f;
 
-//// 방법 B: 정수/실수/불리언을 담는 전용 구조체 사용
-//public struct BlackboardValue
-//{
-//    public float floatVal;
-//    public bool boolVal;
-//    // 이렇게 하면 object(참조형)를 안 써서 박싱이 안 일어납니다.
-//}
+    // 💡 패턴 모듈이 세팅해 줄 '기본값(Base)' 변수 추가!
+    public int BasePatternCount = 1;
+    public float BasePatternAngle = 0f;
 
+    public float ChargedTime;
+    public bool IsCritical;
+
+    public int PatternCount;
+    public float PatternAngle;
+
+    public float SearchRadius;
+    public int ChainCount;
+
+    public Vector3 TargetPosition;
+    public List<Vector3> TargetPositions = new List<Vector3>();
+
+    public void Reset()
+    {
+        PatternCountAdd = 0;
+        DamageMultiplier = 1.0f;
+        BasePatternCount = 1;
+        BasePatternAngle = 0f;
+
+        TargetPositions.Clear(); 
+    }
+}
 
 [System.Serializable]
 public abstract class ActiveSkill
     : Skill
     , ICooldownable
 {
+    [Header("Skill Action")]
+    public ActionData actionData;
+
+    [Header("Damage Data")]
+    public DamageData damageData;
+
+    [Header("Option List")]
+    public List<int> bonusOptionList;
+
     protected int phaseIndex;
     protected List<PhaseSkill> phaseList;
     protected PhaseSkill phaseSkill;
@@ -71,7 +93,7 @@ public abstract class ActiveSkill
     public bool IsCasting { get => isCasting; set => isCasting = value; }
     public float CurrentCooldown { get => currentCooldown; }
     public float MaxCooldown { get => maxCooldown; }
-    public Dictionary<string, object> Blackboard;
+    public SkillRuntimeContext Runtime { get; private set; } = new SkillRuntimeContext();
     public int MaxPhaseCount
     {
         get
@@ -89,21 +111,51 @@ public abstract class ActiveSkill
     protected CancellationTokenSource phaseCts;
     public CancellationToken PhaseToken => phaseCts?.Token ?? default;
 
+    protected readonly ActiveSkillData activeSkillData;
+
     public ActiveSkill(SO_SkillData skillData)
         : base(skillData)
     {
-        Blackboard = new();
+        
         if (skillData is SO_ActiveSkillData activeSkillData)
         {
-            this.range = activeSkillData.range;
             phaseList = activeSkillData.phaseList;
-            this.limitCooldown = activeSkillData.limitCooldown;
-            this.maxCooldown = activeSkillData.cooldown;
-            this.castingTime = activeSkillData.castingTime;
             this.isConcurrentSkill = activeSkillData.isConcurrentSkill;
+            LevelDatas = activeSkillData.levelDatas;
+
+            int index = Mathf.Min(skillLevel - 1, LevelDatas.Count - 1);
+
+            ApplyLevelData(LevelDatas[index]);
         }
     }
 
+    public override void SetLevel(int level)
+    {
+        base.SetLevel(level);
+
+        int index = Mathf.Min(skillLevel - 1, LevelDatas.Count - 1);
+
+        ApplyLevelData(LevelDatas[index]);
+    }
+
+    protected virtual void ApplyLevelData(SkillLevelData levelData)
+    {
+        int overLevel = Mathf.Max(0, skillLevel - LevelDatas.Count - 1);
+
+        range = levelData.range;
+
+        limitCooldown = levelData.limitMinCooldown;
+        maxCooldown = levelData.cooldown;
+        castingTime = levelData.castingTime;
+
+        damageData = levelData.damageData.Clone();
+        // TODO : 레벨이 초과된 상태라면 데미지를 추가부여할지 ... 
+        //damageData.baseDamage = damageData.baseDamage * (1f + overLevel * 0.1f);
+        //damageData.statCoefficient = damageData.statCoefficient + overLevel * 0.05f;
+
+
+        bonusOptionList = levelData.bonusOptionList;
+    }
 
     public virtual void SetOwner(GameObject gameObject)
     {
@@ -118,10 +170,7 @@ public abstract class ActiveSkill
 
         skillComponent = ownerObject.GetComponent<SkillComponent>();
 
-        foreach (var phase in phaseList)
-        {
-            phase.actionData?.Initialize();
-        }
+        actionData?.Initialize();
 
         CacheActionDataFlags();
     }
@@ -146,7 +195,7 @@ public abstract class ActiveSkill
 
         if (phase.isInstant) return false;
 
-        if (phase.actionData != null && !string.IsNullOrEmpty(phase.actionData.SubStateName))
+        if (actionData != null && !string.IsNullOrEmpty(actionData.SubStateName))
             return true;
 
         if (phase.modules != null)
@@ -181,6 +230,10 @@ public abstract class ActiveSkill
 
     public void InitializedData()
     {
+        int index = Mathf.Min(skillLevel - 1, LevelDatas.Count - 1);
+
+        ApplyLevelData(LevelDatas[index]);
+
         maxCooldown = initCooldown = limitCooldown;
         currentCastingTime = castingTime;
     }
@@ -259,7 +312,7 @@ public abstract class ActiveSkill
             // 💡 [핵심] 몇 초나 모았는지 계산해서 블랙보드에 저장! 
             // (나중에 투사체 모듈이 이 값을 보고 데미지나 크기를 키울 수 있습니다)
             float chargedTime = Time.time - chargeStartTime;
-            Blackboard["ChargedTime"] = chargedTime;
+            Runtime.ChargedTime = chargedTime;
 
             // 차징을 끝내고 발사 페이즈(1페이즈)로 강제로 넘깁니다!
             EndPhaseAndNext();
@@ -350,16 +403,16 @@ public abstract class ActiveSkill
     public virtual void Begin_JudgeAttack(AnimationEvent e)
     {
         if (ownerCharacter != null)
-            ownerCharacter.BroadcastAttack(phaseList[phaseIndex].actionData, ownerCharacter);
+            ownerCharacter.BroadcastAttack(actionData, ownerCharacter);
     }
     public virtual void End_JudgeAttack(AnimationEvent e) { }
 
     public virtual void Play_Sound()
     {
-        phaseSkill?.actionData?.Play_Sound();
+        actionData?.Play_Sound();
     }
     public virtual void Play_CameraShake()
     {
-        phaseSkill?.actionData?.Play_CameraShake();
+        actionData?.Play_CameraShake();
     }
 }

@@ -22,13 +22,13 @@ public class Module_LookAtTarget : SkillModule
     {
         Vector3 targetPos;
 
-        if (useBlackboardPos && skill.Blackboard.ContainsKey(Constants.TargetPos))
+        if (useBlackboardPos)
         {
-            targetPos = skill.Blackboard.GetValue<Vector3>(Constants.TargetPos);
+            targetPos = skill.Runtime.TargetPosition;
         }
         else
         {
-            var target = perception?.GetTarget();
+            var target = perception.SafeInvoke(v=>v.GetTarget());
             if (target == null) return;
             targetPos = target.transform.position;
         }

@@ -1,5 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+
+[Serializable]
+public class SkillLevelData
+{
+    //[Header("Cost")]
+    //public int requiredGold;
+    //public int requiredSkillPoint;
+    public float range;
+
+    public float limitMinCooldown; 
+    public float cooldown;
+    public float castingTime = -1.0f; 
+    public DamageData  damageData;
+    public List<int> bonusOptionList;
+
+    public int spawnCount;
+    public float angle;
+}
 
 [CreateAssetMenu(fileName = "SO_SkillData", menuName = "Scriptable Objects/SO_SkillData")]
 public class SO_SkillData : ScriptableObject
@@ -17,5 +37,15 @@ public class SO_SkillData : ScriptableObject
     [Header("Skill Leading Skill ID's")]
     public List<int> leadingSkillList;
 
+    [Header("Skill Level ")]
+    public List<SkillLevelData> levelDatas;
+
     public virtual Skill CreateSkill() { return SkillFactory.CreateSkill(this); }
+
+    public float GetCooldown()
+    {
+        if(levelDatas.Count <= 0) return 0.0f;
+
+        return levelDatas.First().cooldown;
+    }
 }

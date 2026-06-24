@@ -18,7 +18,7 @@ public class Module_SetPatternData : SkillModule
     public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         // 아주 심플하게 블랙보드에 값만 올려두고 끝납니다.
-        skill.Blackboard.SetValue(Constants.PatternCount, spawnCount);
-        skill.Blackboard.SetValue(Constants.PatternAngle, angleBetween);
+        skill.Runtime.BasePatternCount = spawnCount;
+        skill.Runtime.BasePatternAngle = angleBetween;
     }
 }

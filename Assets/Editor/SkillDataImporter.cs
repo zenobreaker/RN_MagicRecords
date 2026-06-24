@@ -292,10 +292,10 @@ namespace UserEditor
                     soSkill.skillDescription = GetSkillDecKeycode(data.skillKeycode);
                     soSkill.skillName = GetSkillNameKeycode(data.skillKeycode);
                     soSkill.maxLevel = data.maxLevel;
-                    soSkill.cooldown = data.cooldown;
-                    soSkill.limitCooldown = data.limitCooldown;
-                    soSkill.castingTime = data.castingTime;
-                    soSkill.cost = data.cost;
+                    //soSkill.cooldown = data.cooldown;
+                    //soSkill.limitCooldown = data.limitCooldown;
+                    //soSkill.castingTime = data.castingTime;
+                    //soSkill.cost = data.cost;
 
                     //leading Skill
                     soSkill.leadingSkillList = stringTointList(data.leadingSkillList);
@@ -304,7 +304,7 @@ namespace UserEditor
                     foreach (PhaseSkillData phaseSkill in phaseList)
                     {
                         PhaseSkill phase = new PhaseSkill();
-                        phase.SetDamageData(phaseSkill.baseDamage, phaseSkill.coefficient);
+                        //phase.SetDamageData(phaseSkill.baseDamage, phaseSkill.coefficient);
                         //phase.baseDamage = phaseSkill.baseDamage;
                         //phase.confficient = phaseSkill.coefficient;
                         //phase.hitDelay = phaseSkill.hitDelay;

@@ -7,6 +7,7 @@ public class SO_ActiveSkillDataEditor : Editor
     private static bool showSkillInfo = true;
     private static bool showLeadingIds = false;
     private static bool showSettings = true;
+    private static bool showDatas= true;
     private static bool showPhases = true;
 
     public override void OnInspectorGUI()
@@ -59,10 +60,27 @@ public class SO_ActiveSkillDataEditor : Editor
         {
             using (new EditorGUI.IndentLevelScope())
             {
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("cost"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("cooldown"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("limitCooldown"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("castingTime"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("levelDatas"));
+                //EditorGUILayout.PropertyField(serializedObject.FindProperty("cost"));
+                //EditorGUILayout.PropertyField(serializedObject.FindProperty("cooldown"));
+                //EditorGUILayout.PropertyField(serializedObject.FindProperty("limitCooldown"));
+                //EditorGUILayout.PropertyField(serializedObject.FindProperty("castingTime"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("isConcurrentSkill"));
+            }
+            EditorGUILayout.Space(10);
+        }
+
+
+        showDatas = EditorGUILayout.BeginFoldoutHeaderGroup(showDatas, "▣ Skill Datas");
+        EditorGUILayout.EndFoldoutHeaderGroup();
+
+        if (showDatas)
+        {
+            using (new EditorGUI.IndentLevelScope())
+            {
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("actionData"));
+                //EditorGUILayout.PropertyField(serializedObject.FindProperty("damageData"));
+                //EditorGUILayout.PropertyField(serializedObject.FindProperty("bonusOptionList"));
             }
             EditorGUILayout.Space(10);
         }

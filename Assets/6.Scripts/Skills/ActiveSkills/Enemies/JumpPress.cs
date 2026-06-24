@@ -60,7 +60,7 @@ public class JumpPress
     protected override void ExecutePhase(int phaseIndex)
     {
         SetCurrentPhaseSkill(phaseIndex);
-        if (phaseSkill == null || phaseSkill.actionData == null)
+        if (phaseSkill == null || actionData == null)
             return;
 
         if (phaseIndex == 0)
@@ -68,10 +68,10 @@ public class JumpPress
         else if (phaseIndex == 1)
             ExecutePhase_1();
 
-        if (string.IsNullOrEmpty(phaseSkill?.actionData?.StateName) == false)
+        if (string.IsNullOrEmpty(actionData?.StateName) == false)
         {
-            ownerCharacter?.PlayAction(phaseSkill?.actionData);
-            weaponController?.DoAction(phaseSkill?.actionData);
+            ownerCharacter.SafeInvoke(v => v.PlayAction(actionData));
+            weaponController.SafeInvoke(v => v.DoAction(actionData));
         }
     }
 
@@ -196,7 +196,7 @@ public class JumpPress
             if (other.TryGetComponent<IDamagable>(out var damage))
             {
                 damage.OnDamage(ownerObject, null, other.transform.position,
-                    phaseSkill.damageData.GetMyDamageEvent(ownerObject));
+                    damageData.GetMyDamageEvent(ownerObject));
             }
         }
     }

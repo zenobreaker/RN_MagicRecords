@@ -15,8 +15,8 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
     public bool isSetTargetPos = false;
 
     [Header("Multi-Spawn Settings")]
-    public int spawnCount = 1;
-    public float angleBetween = 0f;
+    public int fallbackSpawnCount = 1;
+    public float fallbackAngleBetween = 0f;
     public float startAngleOffset = 0f;
 
     // --- Circle 전용 ---
@@ -40,22 +40,21 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
     public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         // 값을 결정합니다 (인스펙터 값 쓸래? 블랙보드 값 쓸래?)
-        int finalSpawnCount = useBlackboardPattern
-            ? skill.Blackboard.GetValue<int>(Constants.PatternCount, 1)
-            : this.spawnCount;
+        int baseCount = skill.Runtime.BasePatternCount > 0 ? skill.Runtime.BasePatternCount : fallbackSpawnCount;
+        int finalSpawnCount = baseCount + skill.Runtime.PatternCountAdd;
 
-        float finalAngleBetween = useBlackboardPattern
-            ? skill.Blackboard.GetValue<float>(Constants.PatternAngle, 0f)
-            : this.angleBetween;
+
+        float finalAngleBetween = skill.Runtime.BasePatternCount > 0 ? skill.Runtime.BasePatternAngle : 
+            fallbackAngleBetween;
 
         //  만약 내가 인스펙터 값을 썼다면, 다음 페이즈를 위해 블랙보드에 갱신
         if (!useBlackboardPattern)
         {
-            skill.Blackboard.SetValue(Constants.PatternCount, finalSpawnCount);
-            skill.Blackboard.SetValue(Constants.PatternAngle, finalAngleBetween);
+            skill.Runtime.PatternCount = finalSpawnCount;
+            skill.Runtime.PatternAngle = finalAngleBetween;
         }
 
-        Vector3 basePosition = skill.Blackboard.GetValue<Vector3>(Constants.TargetPos);
+        Vector3 basePosition = skill.Runtime.TargetPosition;
         if (isSetTargetPos == false)
             basePosition = owner.transform.position;
 
@@ -64,11 +63,12 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
         // 여러 개의 장판 중 몇 개가 끝나는지 카운팅하기 위한 변수
         int finishedCount = 0;
 
-        for (int i = 0; i < spawnCount; i++)
+        for (int i = 0; i < finalSpawnCount; i++)
         {
             // 1. 각도 계산 
             // EX) 3개고 간격이 30도라면 -> -30, 0, 30 도 회전
-            Quaternion rotation = PositionHelpers.GetDirection(owner.transform, i, spawnCount, angleBetween, 0f);
+            Quaternion rotation = PositionHelpers.GetDirection
+                (owner.transform, i, finalSpawnCount, finalAngleBetween, 0f);
 
             // 2. 생성 
             WarningSign sign = ObjectPooler.DeferredSpawnFromPool<WarningSign>(GetSignName(),
@@ -80,7 +80,7 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
             sign.OnEndSign = () =>
             {
                 finishedCount++;
-                if (finishedCount >= spawnCount)
+                if (finishedCount >= finalSpawnCount)
                     skill.EndPhaseAndNext();
             };
 

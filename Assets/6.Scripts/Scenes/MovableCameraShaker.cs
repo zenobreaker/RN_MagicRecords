@@ -31,10 +31,10 @@ public class MovableCameraShaker : MonoBehaviour
 
     public virtual void Play_Impulse(ActionData data)
     {
-        if (impulse == null || data == null)
+        if (impulse == null || data == null || data.csp == null)
             return;
 
-        Play_Impulse(data.settings);
+        Play_Impulse(data.csp.settings);
     }
 
     public void Play_Impulse(NoiseSettings settings)

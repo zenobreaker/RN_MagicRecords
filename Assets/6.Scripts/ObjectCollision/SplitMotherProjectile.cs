@@ -62,7 +62,7 @@ public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
             bLauncher = damageData.bLauncher,
             SoundName = damageData.SoundName,
             impulseDirection = damageData.impulseDirection,
-            settings = damageData.settings,
+            csp = damageData.csp,
             hitData = damageData.hitData
         };
 

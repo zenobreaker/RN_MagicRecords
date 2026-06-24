@@ -41,6 +41,6 @@ public class Module_SetTargetByPerception : SkillModule
             finalPos = owner.transform.position + owner.transform.forward * defaultDistance;
         }
 
-        skill.Blackboard.SetValue("Target_Pos", finalPos);
+        skill.Runtime.TargetPosition =  finalPos;
     }
 }

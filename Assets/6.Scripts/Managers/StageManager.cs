@@ -74,6 +74,9 @@ public sealed class StageManager : MonoBehaviour
     {
         try
         {
+            if (currentStage == null)
+                return new StageResult(); 
+
             stageState = StageState.Preparing;
             int currentWave = 1;
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Skill 
@@ -10,6 +11,8 @@ public abstract class Skill
     public string Description { get { return skillDescription; } }
     protected int skillLevel;
     public int SkillLevel { get { return skillLevel; } }
+
+    public List<SkillLevelData> LevelDatas { get; protected set; }
 
     public Sprite Icon { get; private set; }
 
@@ -29,8 +32,11 @@ public abstract class Skill
     public Skill(SO_SkillData skillData)
         : this(skillData.id, skillData.skillName, skillData.skillDescription, skillData.skillImage)
     {
-
+        LevelDatas = skillData.levelDatas;
     }
 
-    public void SetLevel(int level) { skillLevel = level; }
+    public virtual void SetLevel(int level) 
+    {
+        skillLevel = level;
+    }
 }

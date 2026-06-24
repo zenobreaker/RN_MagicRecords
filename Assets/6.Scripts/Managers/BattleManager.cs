@@ -103,7 +103,7 @@ public class BattleManager
 
     public void OutBattle()
     {
-        battleTable.Clear();
+        battleTable?.Clear();
 
         bInBattle = false; 
     }

@@ -17,9 +17,6 @@ public class Module_CalcTargetPosition : SkillModule
     [Tooltip("CasterForward일 때 시전자로부터 얼마나 떨어질 것인가?")]
     public float forwardDistance = 5f;
 
-    [Tooltip("블랙보드에 저장할 키 이름")]
-    public string blackboardKey = "TargetPosition";
-
     [Tooltip("지정된 특정 좌표값")]
     public Vector3 fixedLocalOffset;
 
@@ -51,7 +48,7 @@ public class Module_CalcTargetPosition : SkillModule
 
             case TargetPositionType.NearestEnemy:
                 finalTargetPos = GetNearestEnemyPosition(owner, owner.transform.position);
-                skill.Blackboard.SetValue(blackboardKey, finalTargetPos);
+                skill.Runtime.TargetPosition = finalTargetPos;
                 break;
 
             case TargetPositionType.MultipleEnemies:
@@ -60,18 +57,18 @@ public class Module_CalcTargetPosition : SkillModule
 
                 if (targetList.Count > 0)
                 {
-                    skill.Blackboard.SetValue(blackboardKey + "_List", targetList);
+                    skill.Runtime.TargetPositions = targetList;
                     // 💡 보너스: 찾은 적의 숫자를 패턴 카운트로 자동 설정해줄 수도 있습니다!
-                    skill.Blackboard.SetValue(Constants.PatternCount, targetList.Count);
+                    skill.Runtime.PatternCount = targetList.Count;
                     // 첫 번째 타겟 위치는 기본값으로 저장
                     finalTargetPos = targetList[0];
-                    skill.Blackboard.SetValue(blackboardKey, finalTargetPos);
+                    skill.Runtime.TargetPosition = finalTargetPos;
                 }
                 break;
         }
 
         // 💡 계산이 끝난 최종 좌표를 블랙보드에 "TargetPosition"이라는 이름으로 예쁘게 올려둡니다.
-        skill.Blackboard.SetValue(blackboardKey, finalTargetPos);
+        skill.Runtime.TargetPosition = finalTargetPos;
     }
 
     // 🎯 가장 가까운 적 찾기 로직

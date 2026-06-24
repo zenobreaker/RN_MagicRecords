@@ -190,7 +190,7 @@ public class AIController : MonoBehaviour
             {
                 type = PatternConditionType.Cooldown,
                 ctype = ComparisonType.GreaterThanOrEqual,
-                value = equippedSkill.cooldown
+                value = equippedSkill.GetCooldown()
             };
             dynamicPattern.conditions.Add(cooldownCondition);
 

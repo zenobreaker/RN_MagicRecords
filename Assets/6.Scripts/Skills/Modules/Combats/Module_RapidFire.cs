@@ -62,7 +62,7 @@ public class Module_RapidFire : SkillModule
     private async UniTaskVoid RapidFireAsync(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill, CancellationToken token)
     {
         DamageData finalDamageData = GetEffectiveDamageData(phaseSkill);
-        bool isCrit = skill != null && skill.Blackboard.GetValue<bool>("isCrit", false);
+        bool isCrit = skill != null && skill.Runtime.IsCritical ==  false;
 
         UnityEngine.AI.NavMeshAgent agent = owner.GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (agent != null && agent.isActiveAndEnabled)

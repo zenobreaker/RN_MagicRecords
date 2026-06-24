@@ -1,7 +1,7 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using Unity.Cinemachine;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
@@ -67,7 +67,7 @@ public class DamageData
     [Header("Camera Shake")]
     public Vector3 impulseDirection;
 
-    public Unity.Cinemachine.NoiseSettings settings;
+    public SO_CameraShakePreset csp;
 
     [Header("Hit")]
     public HitData hitData;
@@ -104,7 +104,7 @@ public class DamageData
         clone.bLauncher = bLauncher;
         clone.SoundName = SoundName;
         clone.impulseDirection = impulseDirection;
-        clone.settings = settings;
+        clone.csp = csp;
         clone.hitData = this.hitData.Clone();
         return clone; 
     }
@@ -161,7 +161,7 @@ public class ActionData
     [Header("Camera Shake")]
     public Vector3 impulseDirection;
 
-    public Unity.Cinemachine.NoiseSettings settings;
+    public SO_CameraShakePreset csp;
 
     [Header("ETC")]
     public bool bCanMove;
@@ -173,7 +173,7 @@ public class ActionData
         Initialize();
         actionData = (ActionData)MemberwiseClone();
         actionData.droneReactionType = droneReactionType;
-        actionData.settings = settings;
+        actionData.csp = csp;
         return actionData;
     }
 
@@ -194,8 +194,8 @@ public class ActionData
 
     public void Play_CameraShake()
     {
-        if (MovableCameraShaker.Instance != null)
-            MovableCameraShaker.Instance.Play_Impulse(settings);
+        if (MovableCameraShaker.Instance != null && csp != null)
+            MovableCameraShaker.Instance.Play_Impulse(csp.settings);
     }
 }
 

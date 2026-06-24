@@ -18,7 +18,7 @@ public class SpikeShot
     protected override void ExecutePhase(int phaseIndex)
     {
         SetCurrentPhaseSkill(phaseIndex);
-        if (phaseSkill == null || phaseSkill.actionData == null)
+        if (phaseSkill == null || actionData == null)
             return;
 
         Vector3 pos = ownerObject.transform.position;
@@ -34,11 +34,11 @@ public class SpikeShot
     public void OnEndSign()
     {
         // 💡 [방어선 1] 만약 스킬이 이미 취소되어서 장판 연결이 끊겼다면 무시합니다!
-        if (phaseSkill == null || phaseSkill.actionData == null || rectSign == null)
+        if (actionData == null || rectSign == null)
             return;
 
-        ownerCharacter.SafeInvoke(v => v.PlayAction(phaseSkill?.actionData));
-        weaponController.SafeInvoke(v => v.DoAction(phaseSkill?.actionData));
+        ownerCharacter.SafeInvoke(v => v.PlayAction(actionData));
+        weaponController.SafeInvoke(v => v.DoAction(actionData));
     }
 
 
@@ -81,7 +81,7 @@ public class SpikeShot
         GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
         if (obj.TryGetComponent<ISkillEffect>(out var projectile))
         {
-            projectile.SetDamageInfo(ownerObject, phaseSkill.damageData);
+            projectile.SetDamageInfo(ownerObject, damageData);
             projectile.AddIgnore(ownerObject);
         }
     }
@@ -91,7 +91,7 @@ public class SpikeShot
         if (phaseSkill == null) return;
         base.Play_Sound();
 
-        phaseSkill.actionData.Play_Sound();
+        actionData.Play_Sound();
     }
 
     public override void Play_CameraShake()
@@ -99,6 +99,6 @@ public class SpikeShot
         if (phaseSkill == null) return;
         base.Play_CameraShake();
 
-        phaseSkill.actionData.Play_CameraShake();
+        actionData.Play_CameraShake();
     }
 }

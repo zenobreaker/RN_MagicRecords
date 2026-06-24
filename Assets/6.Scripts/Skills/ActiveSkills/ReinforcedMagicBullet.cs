@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 [ModuleCategory("Special/MagicBulletConsum")]
@@ -20,7 +19,7 @@ public class Module_MagicBulletConsum : SkillModule
      
         bool isCrit = false; 
         provider?.TryConsumBullet(out isCrit);
-        skill.Blackboard["isCrit"] = isCrit;
+        skill.Runtime.IsCritical = isCrit;
     }
 }
 
@@ -44,11 +43,11 @@ public class ReinforcedMagicBullet
     protected override void ExecutePhase(int phaseIndex)
     {
         SetCurrentPhaseSkill(phaseIndex);
-        if (phaseSkill == null || phaseSkill.actionData == null)
+        if (phaseSkill == null || actionData == null)
             return;
 
-        ownerCharacter?.PlayAction(phaseSkill?.actionData);
-        weaponController?.DoAction(phaseSkill?.actionData);
+        ownerCharacter.SafeInvoke(v => v.PlayAction(actionData));
+        weaponController.SafeInvoke(v => v.DoAction(actionData));
     }
 
 
@@ -83,7 +82,7 @@ public class ReinforcedMagicBullet
         GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
         if (obj.TryGetComponent<ISkillEffect>(out var projectile))
         {
-            projectile.SetDamageInfo(ownerObject, phaseSkill.damageData, isCrit);
+            projectile.SetDamageInfo(ownerObject, damageData, isCrit);
             projectile.AddIgnore(ownerObject);
         }
     }
