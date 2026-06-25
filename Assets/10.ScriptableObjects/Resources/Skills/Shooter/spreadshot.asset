@@ -20,27 +20,20 @@ MonoBehaviour:
   skillUpgradeCost: 
   skillImage: {fileID: 21300000, guid: 5e40623f8ecd7bb4cac98243868a34f6, type: 3}
   leadingSkillList: 
-  cost: 10
-  cooldown: 12
-  limitCooldown: 2
-  castingTime: -1
-  isConcurrentSkill: 0
-  phaseList:
-  - phaseName: 
-    isInstant: 0
-    modules:
-    - rid: 8682830518195847350
-    - rid: 8682830518195847364
-    - rid: 25348276825882839
+  levelDatas:
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 14
+    castingTime: -1
     damageData:
       damageType: 0
       baseDamage: 10
-      statCoefficient: 0
+      statCoefficient: 0.75
       bDownable: 0
       bLauncher: 0
       SoundName: 
       impulseDirection: {x: 0, y: 0, z: 0}
-      settings: {fileID: 0}
+      csp: {fileID: 0}
       hitData:
         DamageType: 0
         Distance: 0
@@ -50,20 +43,141 @@ MonoBehaviour:
         HitSoundName: 
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-        HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
     bonusOptionList: 
-    skillObject: {fileID: 0}
-    objectName: SpreadBullet
-    actionData:
-      subStateName: 
-      stateName: 
-      layerName: 
-      actionSpeed: 1
-      weaponActionName: 
+    spawnCount: 3
+    angle: 15
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 14
+    castingTime: -1
+    damageData:
+      damageType: 0
+      baseDamage: 14
+      statCoefficient: 0.75
+      bDownable: 0
+      bLauncher: 0
       SoundName: 
       impulseDirection: {x: 0, y: 0, z: 0}
-      settings: {fileID: 0}
-      bCanMove: 0
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 4
+    angle: 13.5
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 14
+    castingTime: -1
+    damageData:
+      damageType: 0
+      baseDamage: 17
+      statCoefficient: 0.75
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 4
+    angle: 13.5
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 14
+    castingTime: -1
+    damageData:
+      damageType: 0
+      baseDamage: 19
+      statCoefficient: 0.75
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 5
+    angle: 10
+  - range: 0
+    limitMinCooldown: 0
+    cooldown: 0
+    castingTime: 0
+    damageData:
+      damageType: 0
+      baseDamage: 20
+      statCoefficient: 0.75
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 5
+    angle: 10
+  range: -1
+  cost: 10
+  cooldown: 12
+  limitCooldown: 2
+  castingTime: -1
+  isConcurrentSkill: 0
+  actionData:
+    subStateName: Skill01
+    stateName: Skill
+    layerName: 
+    actionSpeed: 1.5
+    droneReactionType: 1
+    weaponActionName: Action
+    SoundName: Gun_Normal2
+    impulseDirection: {x: 0, y: 0, z: 0}
+    csp: {fileID: 0}
+    bCanMove: 0
+  phaseList:
+  - phaseName: 
+    isInstant: 0
+    modules:
+    - rid: 25348695005331456
+    - rid: 8682830518195847350
+    - rid: 8682830518195847364
+    - rid: 25348276825882839
+    skillObject: {fileID: 0}
+    objectName: SpreadBullet
     soundName: 
     spawnPosition: {x: 0, y: 0, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
@@ -75,6 +189,12 @@ MonoBehaviour:
       data:
         triggerTime: 4
         soundName: Gun_Normal2
+    - rid: 25348695005331456
+      type: {class: Module_SetPatternData, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        spawnCount: 3
+        angleBetween: 15
     - rid: 8682830518195847350
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
@@ -84,10 +204,11 @@ MonoBehaviour:
           stateName: Skill
           layerName: 
           actionSpeed: 1.5
+          droneReactionType: 1
           weaponActionName: Action
           SoundName: Gun_Normal2
           impulseDirection: {x: 0, y: 0, z: 0}
-          settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
+          csp: {fileID: 0}
           bCanMove: 0
     - rid: 8682830518195847364
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
@@ -103,7 +224,7 @@ MonoBehaviour:
           bLauncher: 0
           SoundName: 
           impulseDirection: {x: 0, y: 0, z: 0}
-          settings: {fileID: 0}
+          csp: {fileID: 0}
           hitData:
             DamageType: 0
             Distance: 0
@@ -117,10 +238,9 @@ MonoBehaviour:
         spawnPosition: {x: 0, y: 1, z: 0}
         spawnRotation: {x: 0, y: 0, z: 0}
         patternType: 0
+        baseSpawnCount: 1
+        baseAngleBetween: 0
         spawnObj: {fileID: 0}
         objectName: ReinForcedMagicBullet
         baseLifeTime: -1
-        useBlackboardPattern: 0
-        spawnCount: 4
-        angleBetween: 15
-        multiplierBlackboardKey: DamageMultiplier
+        useBlackboardPattern: 1

@@ -20,26 +20,20 @@ MonoBehaviour:
   skillUpgradeCost: 
   skillImage: {fileID: 21300000, guid: 38c23e410f444a94ebd02c4b43beb1fe, type: 3}
   leadingSkillList: 
-  range: -1
-  cost: 10
-  cooldown: 12
-  limitCooldown: 2
-  castingTime: -1
-  isConcurrentSkill: 0
-  phaseList:
-  - phaseName: "\uBC1C\uC0AC"
-    isInstant: 0
-    modules:
-    - rid: 8682830572024496210
+  levelDatas:
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 15
+    castingTime: -1
     damageData:
       damageType: 0
-      baseDamage: 10
-      statCoefficient: 0
+      baseDamage: 15
+      statCoefficient: 0.9
       bDownable: 0
       bLauncher: 0
       SoundName: 
       impulseDirection: {x: 0, y: 0, z: 0}
-      settings: {fileID: 0}
+      csp: {fileID: 0}
       hitData:
         DamageType: 0
         Distance: 0
@@ -49,21 +43,134 @@ MonoBehaviour:
         HitSoundName: 
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-        HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
     bonusOptionList: 
-    skillObject: {fileID: 0}
-    objectName: Consecutive
-    actionData:
-      subStateName: 
-      stateName: 
-      layerName: 
-      actionSpeed: 1
-      droneReactionType: 1
-      weaponActionName: 
+    spawnCount: 1
+    angle: 0
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 15
+    castingTime: -1
+    damageData:
+      damageType: 0
+      baseDamage: 17
+      statCoefficient: 0.9
+      bDownable: 0
+      bLauncher: 0
       SoundName: 
       impulseDirection: {x: 0, y: 0, z: 0}
-      settings: {fileID: 0}
-      bCanMove: 0
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 1
+    angle: 0
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 15
+    castingTime: -1
+    damageData:
+      damageType: 0
+      baseDamage: 22
+      statCoefficient: 0.9
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 1
+    angle: 0
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 15
+    castingTime: -1
+    damageData:
+      damageType: 0
+      baseDamage: 25
+      statCoefficient: 0.9
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 1
+    angle: 0
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 15
+    castingTime: -1
+    damageData:
+      damageType: 0
+      baseDamage: 29
+      statCoefficient: 0.9
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 1
+    angle: 0
+  range: -1
+  isConcurrentSkill: 0
+  actionData:
+    subStateName: Skill01
+    stateName: Skill
+    layerName: 
+    actionSpeed: 1
+    droneReactionType: 1
+    weaponActionName: Action
+    SoundName: 
+    impulseDirection: {x: 0, y: 0, z: 0}
+    csp: {fileID: 11400000, guid: ac75165bfa711bd468435c407c1bf2f7, type: 2}
+    bCanMove: 0
+  phaseList:
+  - phaseName: "\uBC1C\uC0AC"
+    isInstant: 0
+    modules:
+    - rid: 8682830572024496210
+    skillObject: {fileID: 0}
+    objectName: Consecutive
     soundName: 
     spawnPosition: {x: 0, y: 0, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
@@ -87,7 +194,7 @@ MonoBehaviour:
           weaponActionName: Action
           SoundName: 
           impulseDirection: {x: 0, y: 0, z: 0}
-          settings: {fileID: 0}
+          csp: {fileID: 0}
           bCanMove: 0
         syncAnimSpeed: 1
         damageApplyType: 0
@@ -100,7 +207,7 @@ MonoBehaviour:
           bLauncher: 0
           SoundName: 
           impulseDirection: {x: 0, y: 0, z: 0}
-          settings: {fileID: 0}
+          csp: {fileID: 0}
           hitData:
             DamageType: 0
             Distance: 0

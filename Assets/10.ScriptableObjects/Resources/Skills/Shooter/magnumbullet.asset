@@ -20,23 +20,46 @@ MonoBehaviour:
   skillUpgradeCost: 
   skillImage: {fileID: 21300000, guid: dc937855e711f5d49807d8273320b969, type: 3}
   leadingSkillList: 
-  cost: 10
-  cooldown: 10
-  limitCooldown: 2
-  castingTime: -1
-  phaseList:
-  - phaseName: 
-    isInstant: 0
-    modules: []
+  levelDatas:
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 12
+    castingTime: -1
     damageData:
       damageType: 0
-      baseDamage: 15
-      statCoefficient: 1.2
+      baseDamage: 12
+      statCoefficient: 0.8
       bDownable: 0
       bLauncher: 0
       SoundName: 
       impulseDirection: {x: 0, y: 0, z: 0}
-      settings: {fileID: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 100
+        HeightValue: 0
+        StopFrame: 2
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 1
+    angle: 0
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 10
+    castingTime: -1
+    damageData:
+      damageType: 0
+      baseDamage: 15
+      statCoefficient: 0.8
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
       hitData:
         DamageType: 0
         Distance: 0
@@ -46,20 +69,107 @@ MonoBehaviour:
         HitSoundName: 
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-        HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
     bonusOptionList: 
+    spawnCount: 1
+    angle: 0
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 8.5
+    castingTime: -1
+    damageData:
+      damageType: 0
+      baseDamage: 17
+      statCoefficient: 0.8
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 1
+    angle: 0
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 7
+    castingTime: -1
+    damageData:
+      damageType: 0
+      baseDamage: 19
+      statCoefficient: 0.8
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 1
+    angle: 0
+  - range: 0
+    limitMinCooldown: 2
+    cooldown: 5
+    castingTime: -1
+    damageData:
+      damageType: 0
+      baseDamage: 21
+      statCoefficient: 0.8
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 7
+        HeightValue: 0
+        StopFrame: 2
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 1
+    angle: 0
+  range: -1
+  isConcurrentSkill: 0
+  actionData:
+    subStateName: Skill01
+    stateName: Skill
+    layerName: 
+    actionSpeed: 1.5
+    droneReactionType: 1
+    weaponActionName: Action
+    SoundName: Gun_Normal2
+    impulseDirection: {x: 0, y: 0, z: 0}
+    csp: {fileID: 0}
+    bCanMove: 0
+  phaseList:
+  - phaseName: 
+    isInstant: 0
+    modules: []
     skillObject: {fileID: 0}
     objectName: ReinForcedMagicBullet
-    actionData:
-      subStateName: Skill01
-      stateName: Skill
-      layerName: 
-      actionSpeed: 1.5
-      weaponActionName: Action
-      SoundName: Gun_Normal2
-      impulseDirection: {x: 0, y: 0, z: 0}
-      settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
-      bCanMove: 0
     soundName: Gun_Normal2
     spawnPosition: {x: 0, y: 1, z: 1}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
