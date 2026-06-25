@@ -8,12 +8,12 @@ public class Module_MagicBulletConsum : SkillModule
 {
     private IMagicBulletProvider provider; 
 
-    public override void Init(GameObject owner)
+    public override void Init(Character owner)
     {
-        provider = owner.GetComponent<SkillComponent>()?.GetCapability<IMagicBulletProvider>();
+        provider = owner.GetComponent<SkillComponent>().SafeInvoke(v => v.GetCapability<IMagicBulletProvider>());
     }
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         if (skill == null) return;
      
@@ -82,7 +82,7 @@ public class ReinforcedMagicBullet
         GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
         if (obj.TryGetComponent<ISkillEffect>(out var projectile))
         {
-            projectile.SetDamageInfo(ownerObject, damageData, isCrit);
+            projectile.SetDamageInfo(ownerCharacter, damageData, isCrit);
             projectile.AddIgnore(ownerObject);
         }
     }

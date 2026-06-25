@@ -31,7 +31,6 @@ public class Passive_ContemptuousWoe : PassiveSkill
     private void OnTargetHit(GameObject attacker, GameObject target, DamageEvent evt)
     {
         // 잃은 체력에 비례한 추가 피해를 준다.
-        evt.IsMissingHPRatio = true;
         evt.MissingHPRatio = woeRatio;
     }
 }

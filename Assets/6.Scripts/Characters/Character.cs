@@ -22,6 +22,7 @@ public class Character
     protected StateComponent state;
     protected HealthPointComponent healthPoint;
     protected StatusComponent status;
+    public StatusComponent Status => status;
 
     protected bool bInAction = false;
     public virtual bool InAction { get { return bInAction; } protected set { bInAction = value; } }
@@ -30,7 +31,7 @@ public class Character
     private CancellationTokenSource slowCts;
 
     #region ACTION
-    public event Action<ActionData, GameObject> OnAttackExecuted; 
+    public event Action<ActionData, Character> OnAttackExecuted; 
     public Action OnBeginDoAction;
     public Action OnEndDoAction;
     public Action<Character> OnDead;
@@ -175,7 +176,7 @@ public class Character
     protected virtual void Dead() { }
 
 
-    public void BroadcastAttack(ActionData actionData, GameObject attacker)
+    public void BroadcastAttack(ActionData actionData, Character attacker)
     {
         OnAttackExecuted?.Invoke(actionData, attacker);    
     }

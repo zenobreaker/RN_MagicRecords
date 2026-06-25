@@ -15,7 +15,7 @@ public class Module_SetPatternData : SkillModule
     // 필요하다면 타겟팅 관련 값도 여기서 한 번에 세팅 가능
     // public TargetPositionType targetType = TargetPositionType.CasterForward;
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         // 아주 심플하게 블랙보드에 값만 올려두고 끝납니다.
         skill.Runtime.BasePatternCount = spawnCount;

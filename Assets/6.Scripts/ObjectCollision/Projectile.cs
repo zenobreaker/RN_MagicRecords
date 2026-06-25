@@ -85,8 +85,6 @@ public class Projectile
 
         OnProjectileHit?.Invoke(collider, other, transform.position);
 
-        this.gameObject.SetActive(false);
-
         if(string.IsNullOrEmpty(bombEffectName) == false)
         {
             ObjectPooler.SpawnFromPool(bombEffectName, this.transform.position);
@@ -98,12 +96,14 @@ public class Projectile
         }
 
         // Damage 
-        IDamagable damage = other.GetComponent<IDamagable>();
-        if (damage != null)
+        if (other.TryGetComponent<IDamagable>(out var damage))
         {
             Vector3 hitPoint = collider.ClosestPoint(other.transform.position);
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
             damage?.OnDamage(ownerObject, null, hitPoint, damageEvent);
         }
+
+
+        this.gameObject.SetActive(false);
     }
 }

@@ -64,7 +64,7 @@ public class MetorProjectile
         // 2. 광역 데미지 판정 
         if(explosion != null && explosion.TryGetComponent<ISkillEffect>(out var skillEffect))
         {
-            skillEffect.SetDamageInfo(ownerObject, damageData, false, cachedMultiplier);
+            skillEffect.SetDamageInfo(owner, damageData, false, cachedMultiplier);
             skillEffect.AddIgnore(ownerObject); 
         }
 

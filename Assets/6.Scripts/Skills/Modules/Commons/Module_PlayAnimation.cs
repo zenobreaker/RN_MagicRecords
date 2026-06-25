@@ -11,7 +11,7 @@ public class Module_PlayAnimation : SkillModule
     private Character ownerCharacter;
     private WeaponController weaponController;
 
-    public override void Init(GameObject owner)
+    public override void Init(Character owner)
     {
         actionData.Initialize();
         ownerCharacter = owner.GetComponent<Character>();
@@ -19,7 +19,7 @@ public class Module_PlayAnimation : SkillModule
         weaponController = owner.GetComponent<IWeaponUser>()?.GetWeaponController();
     }
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         if (ownerCharacter != null)
             ownerCharacter.PlayAction(actionData);

@@ -44,30 +44,30 @@ public static class DamageCalculator
         if (status == null || damageEvent == null)  
             return 0.0f;
 
-        float value = damageEvent.value;
+        float resultDamage = damageEvent.BaseDamage;
         float defense = status.GetStatusValue(StatusType.DEFENSE);
         float multiplier = 1.0f; // 데미지 증폭
         if( damageEvent.DamageAmp > 0.0f)
             multiplier *= damageEvent.DamageAmp;
 
         // 잃은 체력 비례 데미지
-        if( damageEvent.IsMissingHPRatio)
+        if( damageEvent.MissingHPRatio > 0.0f)
         {
             float mx = status.GetMaxHP();
             float curhp = status.GetCurrentHP();
             float missingHP =  mx - curhp;
-            value += missingHP * damageEvent.MissingHPRatio;
+            resultDamage += missingHP * damageEvent.MissingHPRatio;
         }
 
         // 최대 체력 비례 데미지 
-        if(damageEvent.IsMaxHPPercent)
+        if(damageEvent.MissingHPRatio > 0.0f)
         {
-            value += status.GetMaxHP() * damageEvent.MaxHPRatio; 
+            resultDamage += status.GetMaxHP() * damageEvent.MaxHPRatio; 
         }
 
         // 방어 무시 
         if (damageEvent.IgnoreDefense)
-            return value * multiplier;
+            return resultDamage * multiplier;
 
         //최소 방어력 제한
         defense = Mathf.Max(defense, -1.0f * CONST_DEFNSE + 0.001f);
@@ -76,6 +76,6 @@ public static class DamageCalculator
         // 피해 감소율 = 피격자 방어력 / (방어 상수 + 피격자 방어력)
         float ratio = defense / (CONST_DEFNSE + defense);
 
-        return  (value * (1 - ratio)) * multiplier;
+        return  (resultDamage * (1 - ratio)) * multiplier;
     }
 }

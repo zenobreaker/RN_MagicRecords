@@ -30,23 +30,20 @@ public class ApplyDamageAction
         switch(type)
         {
             case DamageType.DOT_POISON:
-                evt.IsMaxHPPercent = true;
                 evt.IgnoreDefense = true;
                 evt.MaxHPRatio = (finalPower * stackCount ) * 0.01f;
                 break;
             case DamageType.DOT_BURN:
-                evt.IsMaxHPPercent = false;
                 evt.IgnoreDefense = false;
-                evt.value = finalPower * stackCount;
+                evt.BaseDamage = finalPower * stackCount;
                 break;
             case DamageType.DOT_BLEED:
                 evt.IgnoreDefense = true; 
-                evt.value = finalPower * stackCount; 
+                evt.BaseDamage = finalPower * stackCount; 
                 break;
             case DamageType.DOT_HATERD:
-                evt.IsMaxHPPercent = false;
                 evt.IgnoreDefense = true;
-                evt.value = finalPower * stackCount;
+                evt.BaseDamage = finalPower * stackCount;
                 break; 
         }
 

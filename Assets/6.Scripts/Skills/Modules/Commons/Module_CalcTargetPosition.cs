@@ -20,7 +20,7 @@ public class Module_CalcTargetPosition : SkillModule
     [Tooltip("지정된 특정 좌표값")]
     public Vector3 fixedLocalOffset;
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         Vector3 finalTargetPos = owner.transform.position; // 기본값은 시전자 위치
 
@@ -72,7 +72,7 @@ public class Module_CalcTargetPosition : SkillModule
     }
 
     // 🎯 가장 가까운 적 찾기 로직
-    private Vector3 GetNearestEnemyPosition(GameObject owner, Vector3 origin)
+    private Vector3 GetNearestEnemyPosition(Character owner, Vector3 origin)
     {
         Collider[] cols = Physics.OverlapSphere(origin, scanRadius, enemyLayer);
 
@@ -103,7 +103,7 @@ public class Module_CalcTargetPosition : SkillModule
     }
 
     // 🎯 범위 내 다수의 적 리스트 찾기 로직
-    private List<Vector3> GetMultipleEnemyPositions(GameObject owner, Vector3 origin)
+    private List<Vector3> GetMultipleEnemyPositions(Character owner, Vector3 origin)
     {
         Collider[] cols = Physics.OverlapSphere(origin, scanRadius, enemyLayer);
         ITeamAgent teamAgent = owner.GetComponent<ITeamAgent>();

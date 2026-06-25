@@ -196,7 +196,7 @@ public class JumpPress
             if (other.TryGetComponent<IDamagable>(out var damage))
             {
                 damage.OnDamage(ownerObject, null, other.transform.position,
-                    damageData.GetMyDamageEvent(ownerObject));
+                    damageData.GetMyDamageEvent(ownerCharacter.Status));
             }
         }
     }

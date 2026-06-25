@@ -12,7 +12,7 @@ public class Module_CameraShake : SkillModule
     [Tooltip("Cinemachine NoiseSettings asset")]
     public Unity.Cinemachine.NoiseSettings settings;
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         if (MovableCameraShaker.Instance != null)
             MovableCameraShaker.Instance.Play_Impulse(settings);

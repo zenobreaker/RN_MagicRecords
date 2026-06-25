@@ -39,7 +39,7 @@ public class DamageText : MonoBehaviour
     
     public void DrawDamage(Vector3 position, DamageEvent damageEvent)
     {
-        DrawDamage(position, damageEvent.value, damageEvent.isCrit);
+        DrawDamage(position, damageEvent.BaseDamage, damageEvent.isCrit);
     }
 
     public void DrawDamage(Vector3 position, float value, bool isCrit = false)

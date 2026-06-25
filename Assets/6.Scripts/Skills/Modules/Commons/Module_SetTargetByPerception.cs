@@ -11,13 +11,13 @@ public class Module_SetTargetByPerception : SkillModule
 
     private PerceptionComponent perception;
 
-    public override void Init(GameObject owner)
+    public override void Init(Character owner)
     {
         base.Init(owner);
         perception = owner.GetComponent<PerceptionComponent>();
     }
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         Vector3 finalPos;
 
@@ -28,7 +28,7 @@ public class Module_SetTargetByPerception : SkillModule
             // 감지에서 타겟이 없다면 이전에 타겟을 기록했는지 확인해서 그것으로 대체 
             if (target == null)
             {
-                target = owner.GetComponent<AIBehaviourComponent>()?.GetTarget();
+                target = owner.GetComponent<AIBehaviourComponent>().SafeInvoke(v => v.GetTarget());
             }
             // 타겟이 있으면 타겟 위치, 없으면 앞방향 기본 거리
             finalPos = (target != null)

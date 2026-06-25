@@ -50,7 +50,7 @@ public class DamageData
 {
     [Header("Power Settings")]
     public DamageType damageType;
-    
+
     [Tooltip("스킬 고유의 기본 데미지 (깡뎀)")]
     public float baseDamage = 10.0f;
 
@@ -72,26 +72,27 @@ public class DamageData
     [Header("Hit")]
     public HitData hitData;
 
-    public DamageEvent GetMyDamageEvent(GameObject attacker,
-        bool bFirstHit = false, bool bExtraCrit = false, 
-        float multiplier = 1.0f)
-    {
-        return GetMyDamageEvent(attacker, 
-            attacker.GetComponent<StatusComponent>(), bFirstHit,
-            bExtraCrit, multiplier);
-    }
+    //public DamageEvent GetMyDamageEvent(GameObject attacker,
+    //    bool bFirstHit = false, bool bExtraCrit = false,
+    //    float multiplier = 1.0f)
+    //{
+    //    return GetMyDamageEvent(attacker.GetComponent<StatusComponent>(), bFirstHit,
+    //        bExtraCrit, multiplier);
+    //}
 
-    public DamageEvent GetMyDamageEvent(GameObject attacker, StatusComponent status, 
-        bool bFirstHit = false, bool bExtraCrit = false, float multiplier = 1.0f)
+    public DamageEvent GetMyDamageEvent(
+        StatusComponent attackerStatus,
+        bool isFirstHit = false,
+        bool extraCrit = false,
+        float multiplier = 1f)
     {
-        return DamageCalculator.GetMyDamageEvent(status, this, bFirstHit, bExtraCrit, multiplier);
+        return DamageCalculator.GetMyDamageEvent(attackerStatus, this,isFirstHit,extraCrit, multiplier);
     }
-
     public void PlayHitSound()
     {
         if (hitData == null) return;
-        
-        hitData.PlayHitSound(); 
+
+        hitData.PlayHitSound();
     }
 
     public DamageData Clone()
@@ -106,7 +107,7 @@ public class DamageData
         clone.impulseDirection = impulseDirection;
         clone.csp = csp;
         clone.hitData = this.hitData.Clone();
-        return clone; 
+        return clone;
     }
 }
 
@@ -133,11 +134,11 @@ public class ActionData
     [SerializeField]
     private string layerName;
     public string LayerName { get => layerName; }
-    
+
     [SerializeField] private float actionSpeed = 1.0f;
     public float ActionSpeed { get => actionSpeed; set => actionSpeed = value; }
 
-    public DroneAttackType droneReactionType  = DroneAttackType.Normal;
+    public DroneAttackType droneReactionType = DroneAttackType.Normal;
 
     // StateName을 해시 값으로 저장
     private int actionSpeedHash = -1;
@@ -152,7 +153,7 @@ public class ActionData
     }
 
     [SerializeField]
-    private string weaponActionName; 
+    private string weaponActionName;
     public string WeaponActionName { get => weaponActionName; }
 
     [Header("Sound")]
@@ -213,7 +214,7 @@ public class ActionData
 
 public class DamageEvent
 {
-    public float value;
+    public float BaseDamage;
     public bool isCrit;
     public bool isFisrtHit;
 
@@ -221,24 +222,20 @@ public class DamageEvent
 
     //TODO : 잃은 체력 비례 데미지의 대한 상한 조건이 서로 상이할 경우 사용
     //public List<MissingHPDamageModifier> MissingHPModifiers { get; } = new List<MissingHPDamageModifier>();
-    public bool IsMissingHPRatio; // 잃은 체력 비례 데미지
-    public float MissingHPRatio; 
+    public float MissingHPRatio; // 잃은 체력 비례 데미지
     public bool IgnoreDefense;  // 방어력 무시 데미지
-    public bool IsMaxHPPercent; // 최대 체력 비례 데미지 
-    public float MaxHPRatio;
-    public float DamageAmp; 
+    public float MaxHPRatio; // 최대 체력 비례 데미지 
+    public float DamageAmp;
 
     public int AttackInstanceID { get; set; }
 
     public DamageEvent(float value, bool isCrit = false, bool isFisrtHit = false, HitData hitData = null)
     {
-        this.value = value;
+        this.BaseDamage = value;
         this.isCrit = isCrit;
         this.isFisrtHit = isFisrtHit;
-        IsMissingHPRatio = false;
-        MissingHPRatio = 0f; 
+        MissingHPRatio = 0f;
         IgnoreDefense = false;
-        IsMaxHPPercent = false;
         MaxHPRatio = 0f;
         DamageAmp = 0f;
 
@@ -250,7 +247,7 @@ public class DamageEvent
 
     public bool IsDOTEffect()
     {
-        if (hitData == null) return false; 
+        if (hitData == null) return false;
         return hitData.IsDOTEffect();
     }
 }
@@ -287,7 +284,7 @@ public class Weapon : MonoBehaviour
     protected StatusComponent status;
     protected MovementComponent moving;
 
-    public event Action<GameObject> OnLastAttackExecuted; 
+    public event Action<GameObject> OnLastAttackExecuted;
 
     protected virtual void Awake()
     {

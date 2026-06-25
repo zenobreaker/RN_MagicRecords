@@ -11,14 +11,14 @@ public class Module_LookAtTarget : SkillModule
     public float turnSpeed = 0f;
 
     private PerceptionComponent perception;
-    public override void Init(GameObject owner)
+    public override void Init(Character owner)
     {
         base.Init(owner);
         perception = owner.GetComponent<PerceptionComponent>();
     }
 
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         Vector3 targetPos;
 

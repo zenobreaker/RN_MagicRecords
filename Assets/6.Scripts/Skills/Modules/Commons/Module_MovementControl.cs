@@ -19,7 +19,7 @@ public class Module_MovementControl : SkillModule
     [Tooltip("ModifySpeed일 때 적용할 배율 (0.5 = 50% 속도로 느려짐)")]
     public float speedMultiplier = 0.5f;
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         NavMeshAgent agent = owner.GetComponent<NavMeshAgent>();
         MovementComponent move = owner.GetComponent<MovementComponent>();

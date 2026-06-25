@@ -38,7 +38,7 @@ public class GenericActiveSkill
         {
             if (module == null) continue; 
 
-            module.Init(ownerObject); 
+            module.Init(ownerCharacter); 
             timingCache[module.triggerTime].Add(module);
         }
 
@@ -54,7 +54,7 @@ public class GenericActiveSkill
             if(timingCache.TryGetValue(timing, out var modules))
             {
                 foreach(var module in modules)
-                    module.OnNotify(ownerObject, this, phaseSkill); 
+                    module.OnNotify(ownerCharacter, this, phaseSkill); 
             }
         }
     }

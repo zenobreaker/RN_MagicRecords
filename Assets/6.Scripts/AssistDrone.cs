@@ -41,7 +41,7 @@ public class AssistDrone
         return muzzles;
     }
 
-    public void HandlePlayerAttack(ActionData actionData, GameObject attacker)
+    public void HandlePlayerAttack(ActionData actionData, Character attacker)
     {
         cts?.Cancel();
         cts = new CancellationTokenSource();
@@ -71,7 +71,7 @@ public class AssistDrone
     // ⬇️ 드론 전용 비동기 공격 로직들 (UniTask)
     // ==========================================
 
-    private async UniTaskVoid DroneNormalAttackAsync(ActionData data, GameObject attacker, CancellationToken token)
+    private async UniTaskVoid DroneNormalAttackAsync(ActionData data, Character attacker, CancellationToken token)
     {
         // 드론만의 선딜레이 0.1초
         await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: token);
@@ -87,7 +87,7 @@ public class AssistDrone
         }
     }
 
-    private async UniTaskVoid DroneRapidFireAsync(ActionData data, GameObject attacker, CancellationToken token)
+    private async UniTaskVoid DroneRapidFireAsync(ActionData data, Character attacker, CancellationToken token)
     {
         try
         {
@@ -114,7 +114,7 @@ public class AssistDrone
         }
     }
 
-    private async UniTaskVoid DroneLaserAttackAsync(ActionData data, GameObject attacker, CancellationToken token)
+    private async UniTaskVoid DroneLaserAttackAsync(ActionData data, Character attacker, CancellationToken token)
     {
         // 레이저 발사 기믹 (예: LineRenderer 켜기, 이펙트 활성화 등)
 
@@ -132,7 +132,7 @@ public class AssistDrone
         Debug.Log("드론 레이저 출력 종료.");
     }
 
-    private async UniTaskVoid DroneHyperLaserAttackAsync(ActionData data, GameObject attacker, CancellationToken token)
+    private async UniTaskVoid DroneHyperLaserAttackAsync(ActionData data, Character attacker, CancellationToken token)
     {
         // 레이저 발사 기믹 (예: LineRenderer 켜기, 이펙트 활성화 등)
 
@@ -151,7 +151,7 @@ public class AssistDrone
     }
 
     // 헬퍼 함수: 투사체 스폰 및 데미지 세팅
-    private void SpawnProjectile(string projName, Transform muzzle, GameObject attacker)
+    private void SpawnProjectile(string projName, Transform muzzle, Character attacker)
     {
         GameObject obj = ObjectPooler.DeferredSpawnFromPool(projName, muzzle.position, muzzle.rotation);
         if (obj != null && obj.TryGetComponent<ISkillEffect>(out var projectile))

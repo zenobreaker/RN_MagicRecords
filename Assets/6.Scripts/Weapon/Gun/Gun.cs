@@ -90,7 +90,7 @@ public class Gun : Weapon_Combo
         GameObject obj = ObjectPooler.SpawnFromPool(bulletName, muzzle.position, muzzle.rotation);
         if (obj.TryGetComponent<Projectile>(out var projectile))
         {
-            projectile.SetDamageInfo(rootObject, damageDatas[index]);
+            projectile.SetDamageInfo(ownerCharacter, damageDatas[index]);
             projectile.AddIgnore(rootObject);
             projectile.OnProjectileHit -= OnProjectileHit;
             projectile.OnProjectileHit += OnProjectileHit;

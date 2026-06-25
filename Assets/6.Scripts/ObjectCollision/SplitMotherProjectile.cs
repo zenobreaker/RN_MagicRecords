@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 [RequireComponent(typeof(Rigidbody))]
 public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
@@ -26,6 +27,7 @@ public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
     private new Collider collider;
 
     private GameObject ownerObject;
+    private Character owner; 
     private bool isCrit;
 
     // 💡 [최적화] Update문 안에서 'new'로 데미지 데이터를 계속 생성하면 렉 유발!
@@ -44,11 +46,12 @@ public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
     // =======================================================
     // 💡 ISkillEffect 인터페이스 구현부
     // =======================================================
-    public void SetDamageInfo(GameObject attacker, DamageData damageData
+    public void SetDamageInfo(Character attacker, DamageData damageData
         , bool bExtraCrit = false, float mulitplier = 1.0f)
     {
         if (attacker == null || damageData == null) return;
 
+        owner = attacker;
         ownerObject = attacker;
         isCrit = bExtraCrit;
 
@@ -137,7 +140,7 @@ public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
             if (childObj != null && childObj.TryGetComponent<ISkillEffect>(out var childEffect))
             {
                 // 캐싱된 데미지 데이터를 전달하므로 매 프레임 수십 개씩 쏴도 힙 메모리가 깨끗합니다.
-                childEffect.SetDamageInfo(ownerObject, cachedChildDamageData, isCrit, cachedMultiplier);
+                childEffect.SetDamageInfo(owner, cachedChildDamageData, isCrit, cachedMultiplier);
                 childEffect.AddIgnore(ownerObject);
             }
         }

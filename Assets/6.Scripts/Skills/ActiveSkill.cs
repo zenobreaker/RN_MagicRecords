@@ -81,7 +81,6 @@ public abstract class ActiveSkill
 
     public bool IsOnCooldown => currentCooldown > 0;
     protected float limitCooldown;
-    protected float initCooldown;
     protected float maxCooldown;
     protected float castingTime;
     protected float currentCastingTime;
@@ -123,9 +122,7 @@ public abstract class ActiveSkill
             this.isConcurrentSkill = activeSkillData.isConcurrentSkill;
             LevelDatas = activeSkillData.levelDatas;
 
-            int index = Mathf.Min(skillLevel - 1, LevelDatas.Count - 1);
-
-            ApplyLevelData(LevelDatas[index]);
+            ApplyLevelData(LevelDatas[0]);
         }
     }
 
@@ -234,13 +231,16 @@ public abstract class ActiveSkill
 
         ApplyLevelData(LevelDatas[index]);
 
-        maxCooldown = initCooldown = limitCooldown;
+        maxCooldown = LevelDatas[index].cooldown;
+        limitCooldown = LevelDatas[index].limitMinCooldown;
+
         currentCastingTime = castingTime;
     }
 
-    public void SetCooldown(float cooldown)
+    private void SetCooldown()
     {
-        initCooldown = cooldown;
+        //TODO : Runtime에 있는 cooldown 감소량 반영
+        currentCooldown = Mathf.Max(limitCooldown, MaxCooldown);
     }
 
     public void Update_Cooldown(float deltaTime)
@@ -281,7 +281,7 @@ public abstract class ActiveSkill
         }
 
         // 쿨타임 
-        currentCooldown = initCooldown;
+        SetCooldown();
 
     }
 

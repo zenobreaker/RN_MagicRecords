@@ -25,12 +25,13 @@ public class ParabolicProjectile
     private float cachedMultiplier = 1f;
     private bool cachedCrit;
 
-    public override  void SetDamageInfo(GameObject attacker, DamageData damageData
+    public override  void SetDamageInfo(Character attacker, DamageData damageData
         , bool bExtraCrit = false, float multiplier = 1.0f)
     {
         base.SetDamageInfo(attacker, damageData , bExtraCrit , multiplier); 
 
         ownerObject = attacker;
+        owner = attacker;
         cachedMultiplier = multiplier;
         cachedDamageData = damageData;
         cachedCrit = bExtraCrit;
@@ -90,7 +91,7 @@ public class ParabolicProjectile
         GameObject explosion = ObjectPooler.DeferredSpawnFromPool(explosionEffectName, transform);
         if (explosion != null && explosion.TryGetComponent<ISkillEffect>(out var effect))
         {
-            effect.SetDamageInfo(ownerObject, cachedDamageData, cachedCrit, cachedMultiplier);
+            effect.SetDamageInfo(owner, cachedDamageData, cachedCrit, cachedMultiplier);
             effect.AddIgnore(ownerObject); 
         }
 

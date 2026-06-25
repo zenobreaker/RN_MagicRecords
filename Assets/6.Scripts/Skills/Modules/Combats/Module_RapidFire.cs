@@ -37,7 +37,7 @@ public class Module_RapidFire : SkillModule
     private float originalAnimSpeed = 1f;
     private ActionData runtimeActionData;
 
-    public override void Init(GameObject owner)
+    public override void Init(  Character owner)
     {
         base.Init(owner);
 
@@ -53,13 +53,13 @@ public class Module_RapidFire : SkillModule
             runtimeActionData = actionData.Clone();
     }
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         CancellationToken token = owner.GetCancellationTokenOnDestroy();
         RapidFireAsync(owner, skill, phaseSkill, token).Forget();
     }
 
-    private async UniTaskVoid RapidFireAsync(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill, CancellationToken token)
+    private async UniTaskVoid RapidFireAsync(Character owner, ActiveSkill skill, PhaseSkill phaseSkill, CancellationToken token)
     {
         DamageData finalDamageData = GetEffectiveDamageData(phaseSkill);
         bool isCrit = skill != null && skill.Runtime.IsCritical ==  false;
@@ -78,7 +78,7 @@ public class Module_RapidFire : SkillModule
         {
             for (int i = 0; i < totalShots; i++)
             {
-                if (token.IsCancellationRequested || owner == null || !owner.activeInHierarchy)
+                if (token.IsCancellationRequested || owner == null || !owner.gameObject.activeInHierarchy)
                     return;
 
                 if (isCharacterComp && ownerChar != null)

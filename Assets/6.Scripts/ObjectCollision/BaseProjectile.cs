@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class BaseProjectile : MonoBehaviour, ISkillEffect
 {
     protected GameObject ownerObject;
+    protected Character owner; 
     protected DamageEvent damageEvent;
 
     // 피아식별용 공통 변수
@@ -14,12 +15,13 @@ public abstract class BaseProjectile : MonoBehaviour, ISkillEffect
     // ==========================================
     // 1. ISkillEffect 공통 구현부 (자식들은 안 써도 됨!)
     // ==========================================
-    public virtual void SetDamageInfo(GameObject attacker, DamageData damageData, bool bExtraCrit = false, float multiplier = 1.0f)
+    public virtual void SetDamageInfo(Character attacker, DamageData damageData, bool bExtraCrit = false, float multiplier = 1.0f)
     {
         if (attacker == null || damageData == null) return;
 
         ownerObject = attacker;
-        damageEvent = damageData.GetMyDamageEvent(attacker, false, bExtraCrit, multiplier);
+        owner = attacker;
+        damageEvent = damageData.GetMyDamageEvent(attacker.Status, false, bExtraCrit, multiplier);
 
         // 부모가 알아서 쏜 사람의 팀 ID를 캐싱해 둡니다.
         myTeamId = TeamUtility.GetTeamId(attacker);
@@ -52,4 +54,6 @@ public abstract class BaseProjectile : MonoBehaviour, ISkillEffect
         myTeamId = GenenricTeamId.NoTeamId; // 풀에 들어갈 때 소속 초기화
         ownerObject = null;
     }
+
+  
 }

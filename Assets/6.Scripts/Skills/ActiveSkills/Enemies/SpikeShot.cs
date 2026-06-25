@@ -81,7 +81,7 @@ public class SpikeShot
         GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
         if (obj.TryGetComponent<ISkillEffect>(out var projectile))
         {
-            projectile.SetDamageInfo(ownerObject, damageData);
+            projectile.SetDamageInfo(ownerCharacter, damageData);
             projectile.AddIgnore(ownerObject);
         }
     }

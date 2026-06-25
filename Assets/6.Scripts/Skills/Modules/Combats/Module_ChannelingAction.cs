@@ -15,13 +15,13 @@ public class Module_Channeling : SkillModule
     [Header("Damage Settings")]
     public DamageData damageData;
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         CancellationToken token = owner.GetCancellationTokenOnDestroy();
         ExecuteChannelingAsync(owner, skill, token).Forget();
     }
 
-    private async UniTaskVoid ExecuteChannelingAsync(GameObject owner, ActiveSkill skill, CancellationToken token)
+    private async UniTaskVoid ExecuteChannelingAsync(Character owner, ActiveSkill skill, CancellationToken token)
     {
         Character playerChar = owner.GetComponent<Character>();
 

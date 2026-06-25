@@ -10,7 +10,7 @@ public class Module_ChargeWait : SkillModule
     [Tooltip("최대 충전 시간")]
     public float maxChargeTime = 3.0f;
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         if (skill == null) return;
 

@@ -37,7 +37,7 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
     public float FanAngle => fanAngle;
     public float FanRadius => fanRadius;
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         // 값을 결정합니다 (인스펙터 값 쓸래? 블랙보드 값 쓸래?)
         int baseCount = skill.Runtime.BasePatternCount > 0 ? skill.Runtime.BasePatternCount : fallbackSpawnCount;

@@ -18,7 +18,7 @@ public class Module_SpawnWeaponVFX : SkillModule
     [Tooltip("useAllMuzzles가 꺼져있을 때 작동합니다. (예: 0 넣으면 첫 번째 총구, 0과 1 넣으면 두 개)")]
     public int[] specificMuzzleIndices;
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         if (owner.TryGetComponent<WeaponComponent>(out var weaponComp))
         {

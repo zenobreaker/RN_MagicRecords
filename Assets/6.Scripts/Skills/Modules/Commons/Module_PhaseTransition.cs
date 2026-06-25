@@ -23,7 +23,7 @@ public class Module_PhaseTransition : SkillModule
     [Tooltip("모듈 실행 후 몇 초 뒤에 페이즈를 넘길 것인가? (0이면 즉시)")]
     public float delayTime = 0f;
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         if (skill == null) return;
 

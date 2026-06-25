@@ -69,7 +69,7 @@ public class GameManager
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Stage" || scene.name == "UnitTest")
+        if (scene.name == "Stage")
         {
             RunStageAsync().Forget();
         }

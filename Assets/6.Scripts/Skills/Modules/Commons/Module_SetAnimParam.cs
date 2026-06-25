@@ -17,7 +17,7 @@ public class Module_SetAnimParam : SkillModule
     public float floatValue;
     public int intValue;
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         if (string.IsNullOrEmpty(parameterName)) return;
 

@@ -45,7 +45,7 @@ public class Module_SpawnObject : SkillModule
     [Tooltip("체크하면 인스펙터 값 대신 블랙보드의 값을 강제로 가져와서 씁니다.")]
     public bool useBlackboardPattern = true;
 
-    public override void OnNotify(GameObject owner, ActiveSkill skill, PhaseSkill phaseSkill)
+    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         // 1. 스폰 위치 계산 (로컬 -> 월드 좌표)
         Vector3 basePosition = owner.transform.TransformPoint(spawnPosition);
