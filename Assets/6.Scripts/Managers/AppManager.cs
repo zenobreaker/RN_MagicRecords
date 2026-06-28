@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class AppManager
     : Singleton<AppManager>
@@ -431,19 +432,19 @@ public class AppManager
         passiveSystem.Remove(jobID, passiveSkill);
     }
 
-    public void OnApplyStaticEffct(int jobID, GameObject ownerObj)
+    public void OnApplyStaticEffct(int jobID, Character owner)
     {
-        passiveSystem?.OnApplyStaticEffect(jobID, ownerObj);
+        passiveSystem?.OnApplyStaticEffect(jobID, owner);
     }
 
-    public void OnAcquire(int jobID, GameObject ownerObj)
+    public void OnAcquire(int jobID, Character owner)
     {
-        passiveSystem?.OnAcquire(jobID, ownerObj);
+        passiveSystem?.OnAcquire(jobID, owner);
     }
 
-    public void OnLose(int jobID, GameObject ownerObj)
+    public void OnLose(int jobID, Character owner)
     {
-        passiveSystem?.OnLose(jobID, ownerObj);
+        passiveSystem?.OnLose(jobID, owner);
     }
 
     public void OnUpdate(float dt)

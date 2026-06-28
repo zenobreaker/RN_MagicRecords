@@ -98,16 +98,13 @@ public class PassiveSystem
     //}
 
     // 패시브 추가 스탯 적용
-    public void OnApplyStaticEffect(int jobID, GameObject ownerObj)
+    public void OnApplyStaticEffect(int jobID, Character owner)
     {
-        if (passiveSkillList.ContainsKey(jobID) == false || ownerObj == null) return;
-
-        StatusComponent status = ownerObj.GetComponent<StatusComponent>();
-        if (status == null) return;
+        if (passiveSkillList.ContainsKey(jobID) == false || owner == null) return;
 
         foreach (PassiveSkill skill in passiveSkillList[jobID])
         {
-            skill.OnApplyStaticEffect(status);
+            skill.OnApplyStaticEffect(owner.Status);
         }
     }
 
@@ -151,7 +148,7 @@ public class PassiveSystem
         }
     }
 
-    public void RefreshParyEffects(List<GameObject> partyMembers)
+    public void RefreshPartyEffects(List<GameObject> partyMembers)
     {
         foreach (var member in partyMembers)
         {

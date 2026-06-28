@@ -32,8 +32,8 @@ public class Passive_ForbiddenCurse : PassiveSkill
     public override void OnApplyStaticEffect(StatusComponent status)
     {
         this.status = status;
-        status?.ApplyBuff(atkModifier = new StatModifier(StatusType.ATTACK, atkBonus, ModifierValueType.FIXED));
-        status?.ApplyBuff(critModifier = new StatModifier(StatusType.CRIT_RATIO, critRateBonus, ModifierValueType.FIXED));
+        status.SafeInvoke(v=>v.ApplyBuff(atkModifier = new StatModifier(StatusType.ATTACK, atkBonus, ModifierValueType.FIXED)));
+        status.SafeInvoke(v=>v.ApplyBuff(critModifier = new StatModifier(StatusType.CRIT_RATIO, critRateBonus, ModifierValueType.FIXED)));
         Debug.Log($" Attack {status?.GetStatusValue(StatusType.ATTACK)} Crit Ratio : {status?.GetStatusValue(StatusType.CRIT_RATIO)}");
     }
 

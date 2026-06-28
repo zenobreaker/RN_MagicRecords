@@ -40,21 +40,21 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         // 값을 결정합니다 (인스펙터 값 쓸래? 블랙보드 값 쓸래?)
-        int baseCount = skill.Runtime.BasePatternCount > 0 ? skill.Runtime.BasePatternCount : fallbackSpawnCount;
-        int finalSpawnCount = baseCount + skill.Runtime.PatternCountAdd;
+        int baseCount = skill.Runtime.Base.PatternCount > 0 ? skill.Runtime.Base.PatternCount : fallbackSpawnCount;
+        int finalSpawnCount = baseCount + skill.Runtime.Combat.PatternCountBonus;
 
 
-        float finalAngleBetween = skill.Runtime.BasePatternCount > 0 ? skill.Runtime.BasePatternAngle : 
+        float finalAngleBetween = skill.Runtime.Base.PatternAngle > 0 ? skill.Runtime.Base.PatternAngle : 
             fallbackAngleBetween;
 
         //  만약 내가 인스펙터 값을 썼다면, 다음 페이즈를 위해 블랙보드에 갱신
         if (!useBlackboardPattern)
         {
-            skill.Runtime.PatternCount = finalSpawnCount;
-            skill.Runtime.PatternAngle = finalAngleBetween;
+            skill.Runtime.Base.PatternCount = finalSpawnCount;
+            skill.Runtime.Base.PatternAngle = finalAngleBetween;
         }
 
-        Vector3 basePosition = skill.Runtime.TargetPosition;
+        Vector3 basePosition = skill.Runtime.Spawn.TargetPosition;
         if (isSetTargetPos == false)
             basePosition = owner.transform.position;
 

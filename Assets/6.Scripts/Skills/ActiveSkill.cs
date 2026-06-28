@@ -13,39 +13,6 @@ public enum SkillPhase
     MAX,
 }
 
-public sealed class SkillRuntimeContext
-{
-    // 레코드가 더해줄 추가 수치들 (이전에 만든 것)
-    public int PatternCountAdd = 0;
-    public float DamageMultiplier = 1.0f;
-
-    // 💡 패턴 모듈이 세팅해 줄 '기본값(Base)' 변수 추가!
-    public int BasePatternCount = 1;
-    public float BasePatternAngle = 0f;
-
-    public float ChargedTime;
-    public bool IsCritical;
-
-    public int PatternCount;
-    public float PatternAngle;
-
-    public float SearchRadius;
-    public int ChainCount;
-
-    public Vector3 TargetPosition;
-    public List<Vector3> TargetPositions = new List<Vector3>();
-
-    public void Reset()
-    {
-        PatternCountAdd = 0;
-        DamageMultiplier = 1.0f;
-        BasePatternCount = 1;
-        BasePatternAngle = 0f;
-
-        TargetPositions.Clear(); 
-    }
-}
-
 [System.Serializable]
 public abstract class ActiveSkill
     : Skill
@@ -122,7 +89,7 @@ public abstract class ActiveSkill
             this.isConcurrentSkill = activeSkillData.isConcurrentSkill;
             LevelDatas = activeSkillData.levelDatas;
 
-            ApplyLevelData(LevelDatas[0]);
+            ApplyLevelData(LevelDatas[0]);  
         }
     }
 
@@ -130,9 +97,10 @@ public abstract class ActiveSkill
     {
         base.SetLevel(level);
 
-        int index = Mathf.Min(skillLevel - 1, LevelDatas.Count - 1);
+        int index = GetSkillLevel();
 
-        ApplyLevelData(LevelDatas[index]);
+        if(LevelDatas.Count > 0 )
+            ApplyLevelData(LevelDatas[index]);
     }
 
     protected virtual void ApplyLevelData(SkillLevelData levelData)
@@ -227,7 +195,8 @@ public abstract class ActiveSkill
 
     public void InitializedData()
     {
-        int index = Mathf.Min(skillLevel - 1, LevelDatas.Count - 1);
+        int index = GetSkillLevel();
+        if (LevelDatas.Count <= 0) return;
 
         ApplyLevelData(LevelDatas[index]);
 
@@ -258,6 +227,9 @@ public abstract class ActiveSkill
         phaseCts?.Dispose();
         phaseCts = new CancellationTokenSource();
 
+
+        SetRunTimeContext(); 
+
         isCasting = true;
         isWaitingForRelease = false;
         chargeStartTime = Time.time;
@@ -283,6 +255,54 @@ public abstract class ActiveSkill
         // 쿨타임 
         SetCooldown();
 
+    }
+
+    private void SetRunTimeContext()
+    {
+        int index = GetSkillLevel();
+
+        Runtime = new SkillRuntimeContext();
+
+        // Base
+        Runtime.Base = new BaseValues
+        {
+            PatternCount = LevelDatas[index].spawnCount,
+            PatternAngle = LevelDatas[index].angle,
+
+            Damage = LevelDatas[index].damageData,
+            Range = LevelDatas[index].range,
+            Cooldown = LevelDatas[index].cooldown,
+        };
+
+        // Cast
+        Runtime.Cast = new CastContext
+        {
+            CastingTime = LevelDatas[index].castingTime,
+        };
+
+        // Spawn
+        Runtime.Spawn = new SpawnContext
+        {
+            SearchRadius = 0f,
+            ChainCount = 0,
+            ExplosionRadius = 0f,
+            Lifetime = 0f,
+            TargetPositions = new List<Vector3>(),
+        };
+
+        // Combat
+        Runtime.Combat = new CombatContext
+        {
+            PatternCountBonus = 0,
+            PatternAngleBonus = 0f,
+            BonusMultipiler = 1.0f,
+            CriticalDamageMultiplier = 1.5f,
+            IsCritical = false,
+        };
+
+        Runtime.Modifier = new ModifierContext();
+
+        Runtime.Actions.Clear();
     }
 
     public virtual void Update(float deltaTime) { }
@@ -312,7 +332,7 @@ public abstract class ActiveSkill
             // 💡 [핵심] 몇 초나 모았는지 계산해서 블랙보드에 저장! 
             // (나중에 투사체 모듈이 이 값을 보고 데미지나 크기를 키울 수 있습니다)
             float chargedTime = Time.time - chargeStartTime;
-            Runtime.ChargedTime = chargedTime;
+            Runtime.Cast.ChargedTime = chargedTime;
 
             // 차징을 끝내고 발사 페이즈(1페이즈)로 강제로 넘깁니다!
             EndPhaseAndNext();

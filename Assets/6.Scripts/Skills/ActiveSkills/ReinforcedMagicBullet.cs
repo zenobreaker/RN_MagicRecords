@@ -19,7 +19,7 @@ public class Module_MagicBulletConsum : SkillModule
      
         bool isCrit = false; 
         provider?.TryConsumBullet(out isCrit);
-        skill.Runtime.IsCritical = isCrit;
+        skill.Runtime.Combat.IsCritical = isCrit;
     }
 }
 

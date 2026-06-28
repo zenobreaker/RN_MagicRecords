@@ -41,6 +41,6 @@ public class Module_SetTargetByPerception : SkillModule
             finalPos = owner.transform.position + owner.transform.forward * defaultDistance;
         }
 
-        skill.Runtime.TargetPosition =  finalPos;
+        skill.Runtime.Spawn.TargetPosition =  finalPos;
     }
 }

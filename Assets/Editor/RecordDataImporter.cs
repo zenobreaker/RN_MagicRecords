@@ -1,14 +1,12 @@
+ï»¿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEditor;
-using UnityEditor.Graphs;
 using UnityEngine;
-using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
 
 namespace UserEditor
 {
-    // JSON ±×·ì µ¥ÀÌÅÍ¸¦ ´ã±â À§ÇÑ ·¡ÆÛ Å¬·¡½º
+    // JSON ê·¸ë£¹ ë°ì´í„°ë¥¼ ë‹´ê¸° ìœ„í•œ ë˜í¼ í´ë˜ìŠ¤
     [System.Serializable]
     public class RecordDataAllData
     {
@@ -30,7 +28,6 @@ namespace UserEditor
         private void OnGUI()
         {
             GUILayout.Label("Record Data Importer", EditorStyles.boldLabel);
-
             infoFilePath = EditorGUILayout.TextField("Info JSON Path", infoFilePath);
             dataFilePath = EditorGUILayout.TextField("Data JSON Path", dataFilePath);
             saveFolderName = EditorGUILayout.TextField("Save Folder Name", saveFolderName);
@@ -47,66 +44,109 @@ namespace UserEditor
         {
             if (!File.Exists(infoFilePath) || !File.Exists(dataFilePath))
             {
-                Debug.LogError("[Importer] JSON ÆÄÀÏ °æ·Î¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+                Debug.LogError("[Importer] JSON íŒŒì¼ ê²½ë¡œë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
                 return;
             }
 
-            // 1. JSON ÀĞ±â
+            // 1. JSON ì½ê¸°
             string infoRaw = File.ReadAllText(infoFilePath);
             string dataRaw = File.ReadAllText(dataFilePath);
 
-            // 2. DTO ¿ªÁ÷·ÄÈ­
             RecordInfoAllData infoGroup = JsonUtility.FromJson<RecordInfoAllData>(infoRaw);
             RecordDataAllData dataGroup = JsonUtility.FromJson<RecordDataAllData>(dataRaw);
 
             if (infoGroup == null || infoGroup.recordInfoJson == null || dataGroup == null || dataGroup.recordDataJson == null)
             {
-                Debug.LogError("[Importer] JSON µ¥ÀÌÅÍ ÆÄ½Ì¿¡ ½ÇÆĞÇß½À´Ï´Ù.");
+                Debug.LogError("[Importer] JSON ë°ì´í„° íŒŒì‹±ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤.");
                 return;
             }
 
-            // 3. Æú´õ »ı¼º
+            // 3. í´ë” ìƒì„±
             CreateFolder(saveFolderName);
 
             int importCount = 0;
 
-            // 4. µ¥ÀÌÅÍ °áÇÕ ¹× SO »ı¼º
+            // 4. ë°ì´í„° ê²°í•© ë° SO ìƒì„±
             foreach (var info in infoGroup.recordInfoJson)
             {
-                // ID ÀÏÄ¡ ¿©ºÎ È®ÀÎ
                 var data = dataGroup.recordDataJson.Find(d => d.id == info.id);
-                if (data == null)
-                {
-                    Debug.LogWarning($"[Importer] ID {info.id}¿¡ ÇØ´çÇÏ´Â µ¥ÀÌÅÍ°¡ DataJson¿¡ ¾ø¾î °Ç³Ê¶İ´Ï´Ù.");
-                    continue;
-                }
+                if (data == null) continue;
 
-                // ScriptableObject ÀÎ½ºÅÏ½º »ı¼º
+                // ScriptableObject ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
                 SO_RecordData so = CreateInstance<SO_RecordData>();
 
-                // --- Info µ¥ÀÌÅÍ ÇÒ´ç ---
+                // --- Info ë°ì´í„° í• ë‹¹ ---
                 so.id = info.id;
                 so.recordName = info.namekeycode;
                 so.description = info.description;
-                // so.icon = Resources.Load<Sprite>(info.iconPath); // ÇÊ¿ä ½Ã È°¼ºÈ­
 
-                // --- Data µ¥ÀÌÅÍ ÇÒ´ç (Enum Ä³½ºÆÃ Æ÷ÇÔ) ---
-                // recordType°ú calcTypeÀº int·Î µé¾î¿À¹Ç·Î Á÷Á¢ Ä³½ºÆÃ
+                // --- Data ë°ì´í„° í• ë‹¹ ---
                 so.type = (RecordType)data.recordType;
-                so.valueType = (ModifierValueType)data.calcType;
                 so.rarity = (RecordRarity)data.rarity;
-                so.effectValue = data.value;
-                so.className = data.className;
+                // TargetFilter ì²˜ë¦¬ ìƒëµ (í•„ìš” ì‹œ Enum íŒŒì‹± ì¶”ê°€)
 
-                // stat°ú targetFilter´Â stringÀ¸·Î µé¾î¿Ã ¼ö ÀÖÀ¸¹Ç·Î Enum.TryParse È°¿ë
-                if (System.Enum.TryParse(data.stat, out StatusType sType)) so.status = sType;
-                if (System.Enum.TryParse(data.targetFilter, out TargetFilterType tFilter)) so.targetFilter = tFilter;
+                // ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™” (SO ë®ì–´ì“°ê¸° ë²„ê·¸ ë°©ì§€)
+                so.Stats = new List<RecordStatData>();
+                so.Skills = new List<RecordSkillData>();
+                so.Triggers = new List<RecordTriggerData>();
 
-                // 5. ¿¡¼Â ÀúÀå °æ·Î ¼³Á¤
+                // ğŸ’¡ [í•µì‹¬ ìˆ˜ì •] stats íŒŒì‹±
+                if (data.stats != null)
+                {
+                    foreach (var stat in data.stats)
+                    {
+                        if (Enum.TryParse(stat.stat, out StatusType parsedStat))
+                        {
+                            so.Stats.Add(new RecordStatData
+                            {
+                                Status = parsedStat,
+                                ValueType = (ModifierValueType)stat.calcType,
+                                Value = stat.value
+                            });
+                        }
+                    }
+                }
+
+                // ğŸ’¡ [í•µì‹¬ ìˆ˜ì •] skills íŒŒì‹±
+                if (data.skills != null)
+                {
+                    foreach (var skill in data.skills)
+                    {
+                        if (Enum.TryParse(skill.modifier, out SkillModifierType parsedMod) &&
+                            Enum.TryParse(skill.operation, out ModifierOperation parsedOp))
+                        {
+                            so.Skills.Add(new RecordSkillData
+                            {
+                                SkillID = skill.skillID,
+                                Modifier = parsedMod,
+                                Operation = parsedOp,
+                                Value = skill.value
+                            });
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"[Importer] ID {info.id}ì˜ ìŠ¤í‚¬ ëª¨ë””íŒŒì´ì–´ íŒŒì‹± ì‹¤íŒ¨ (ì˜¤íƒ€ í™•ì¸ í•„ìš”)");
+                        }
+                    }
+                }
+
+                // ğŸ’¡ [í•µì‹¬ ìˆ˜ì •] triggers íŒŒì‹±
+                if (data.triggers != null)
+                {
+                    foreach (var trigger in data.triggers)
+                    {
+                        so.Triggers.Add(new RecordTriggerData
+                        {
+                            TriggerEvent = trigger.triggerEvent,
+                            ClassName = trigger.className
+                        });
+                    }
+                }
+
+                // 5. ì—ì…‹ ì €ì¥
                 string fileName = $"{info.id}_{info.namekeycode}.asset";
                 string fullPath = $"Assets/10.ScriptableObjects/{saveFolderName}/{fileName}";
 
-                // ±âÁ¸ ¿¡¼Â Á¸Àç ½Ã ±³Ã¼
                 SO_RecordData existingAsset = AssetDatabase.LoadAssetAtPath<SO_RecordData>(fullPath);
                 if (existingAsset != null)
                 {
@@ -122,13 +162,13 @@ namespace UserEditor
             }
 
             AssetDatabase.Refresh();
-            Debug.Log($"[Importer] ÃÑ {importCount}°³ÀÇ ·¹ÄÚµå µ¥ÀÌÅÍ ÀÓÆ÷Æ® ¿Ï·á!");
+            Debug.Log($"[Importer] ì´ {importCount}ê°œì˜ ë ˆì½”ë“œ ë°ì´í„° ì„í¬íŠ¸ ì™„ë£Œ!");
         }
 
         public void CreateFolder(string path)
         {
-            string folderPath = "10.ScriptableObjects/Resources/Skills/" + path;
-            string currentPath = "Assets";
+            string folderPath = path; // ìˆ˜ì •: ì…ë ¥ë°›ì€ í´ë”ëª… ê·¸ëŒ€ë¡œ ìƒì„±
+            string currentPath = "Assets/10.ScriptableObjects";
 
             foreach (string folder in folderPath.Split('/'))
             {

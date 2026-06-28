@@ -9,10 +9,10 @@ public class Module_CalculateChargeMultiplier : SkillModule
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         float chargeTime = 0f;
-        chargeTime = (float)(skill?.Runtime.ChargedTime);
+        chargeTime = (float)(skill?.Runtime.Cast.ChargedTime);
 
         // 커브로 배율 계산
         float multiplier = damageCurve.Evaluate(chargeTime);
-        skill.Runtime.DamageMultiplier = multiplier;
+        skill.Runtime.Combat.BonusMultipiler = multiplier;
     }
 }

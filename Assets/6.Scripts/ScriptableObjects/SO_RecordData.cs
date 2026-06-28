@@ -1,26 +1,58 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+
+
+public class RecordStatData
+{
+    public StatusType Status;
+
+    public ModifierValueType ValueType;
+
+    public float Value;
+}
+
+public class RecordSkillData
+{
+    public int SkillID;
+
+    public SkillModifierType Modifier;
+
+    public ModifierOperation Operation;
+
+    public float Value;
+}
+
+public class RecordTriggerData
+{
+    public string TriggerEvent;
+
+    public string ClassName;
+}
 
 [System.Serializable]
 public class RecordData
 {
     public int id;
-    public string uniqueID; 
+    public string uniqueID;
     public string recordName;
     public string description;
     public Sprite icon;
 
-    public TargetFilterType targetFilter; 
+    public TargetFilterType targetFilter;
     public RecordType type;
     public RecordRarity rarity;
-    public StatusType status; 
-    public ModifierValueType valueType; 
-    public float effectValue;
 
-    public string triggerEvent;
-    public string className;
+    public bool isLocked = false;
 
-    public bool isLocked = false; 
+
+    public List<RecordStatData> Stats = new();
+
+    public List<RecordSkillData> Skills = new();
+
+    public List<RecordTriggerData> Triggers = new();
 
     public RecordData()
     {
@@ -42,11 +74,12 @@ public class RecordData
         temp.icon = icon;
         temp.targetFilter = targetFilter;
         temp.type = type;
-        temp.rarity = rarity;   
-        temp.status = status;
-        temp.valueType = valueType;
-        temp.effectValue = effectValue;
-        temp.triggerEvent = triggerEvent;
+        temp.rarity = rarity;
+
+        temp.Stats = new List<RecordStatData>(Stats);
+        temp.Skills = new List<RecordSkillData>(Skills);
+        temp.Triggers = new List<RecordTriggerData>(Triggers);
+
         return temp;
     }
 }
@@ -62,20 +95,20 @@ public class SO_RecordData : ScriptableObject
     public TargetFilterType targetFilter;
     public RecordType type;
     public RecordRarity rarity;
-    public StatusType status;
-    public ModifierValueType valueType;
-    public float effectValue;
 
-    public string triggerEvent;
-    public string className;
 
+    public List<RecordStatData> Stats = new();
+
+    public List<RecordSkillData> Skills = new();
+
+    public List<RecordTriggerData> Triggers = new();
     public RecordPassive CreateRecord()
     {
         return RecordFactory.CreateRecordPassive(this);
     }
 
     public RecordData GetRecordData()
-    { 
+    {
         RecordData recordData = new RecordData();
         recordData.id = id;
         recordData.recordName = recordName;
@@ -84,11 +117,30 @@ public class SO_RecordData : ScriptableObject
         recordData.targetFilter = targetFilter;
         recordData.type = type;
         recordData.rarity = rarity;
-        recordData.status = status;
-        recordData.valueType = valueType;
-        recordData.effectValue = effectValue;
-        recordData.triggerEvent = triggerEvent;
-        recordData.className = className;
+
+        recordData.Stats = Stats
+            .Select(x => new RecordStatData
+            {
+                Status = x.Status,
+                ValueType = x.ValueType,
+                Value = x.Value
+            }).ToList();
+
+        recordData.Skills = Skills
+            .Select(x => new RecordSkillData
+            {
+                SkillID = x.SkillID,
+                Modifier = x.Modifier,
+                Operation = x.Operation,
+                Value = x.Value
+            }).ToList();
+
+        recordData.Triggers = Triggers
+            .Select(x => new RecordTriggerData
+            {
+                TriggerEvent = x.TriggerEvent,
+                ClassName = x.ClassName
+            }).ToList();
 
         return recordData.GetData();
     }

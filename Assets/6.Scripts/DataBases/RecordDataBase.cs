@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-
+// JSON 매핑용 DTO 클래스들
 [System.Serializable]
 public class RecordInfoJson
 {
@@ -18,18 +19,40 @@ public class RecordInfoAllData
     public List<RecordInfoJson> recordInfoJson;
 }
 
-[System.Serializable]
+[Serializable]
+public class RecordStatJson
+{
+    public string stat;
+    public int calcType;
+    public float value;
+}
+
+[Serializable]
+public class RecordSkillJson
+{
+    public int skillID;
+    public string modifier; // 💡 JSON에서 문자열로 넘어오므로 string으로 받아서 파싱
+    public string operation; // 💡 JSON에서 문자열로 넘어오므로 string으로 받아서 파싱
+    public float value;
+}
+
+[Serializable]
+public class RecordTriggerJson
+{
+    public string triggerEvent;
+    public string className;
+}
+
+[Serializable]
 public class RecordDataJson
 {
     public int id;
-    public int recordType;
-    public string stat;
-    public string targetFilter;
-    public int calcType;
-    public int value;
-    public string triggerEvent;
-    public string className;
+    public List<RecordStatJson> stats = new();
+    public List<RecordSkillJson> skills = new();
+    public List<RecordTriggerJson> triggers = new();
     public int rarity;
+    public int recordType;
+    public string targetFilter;
 }
 
 [System.Serializable]
@@ -41,13 +64,12 @@ public class RecordDataJsonAllData
 
 public class RecordDataBase : DataBase
 {
-
     [SerializeField] private TextAsset recordDataJsonAsset;
     [SerializeField] private Dictionary<int, RecordData> recordDatas = new();
     private List<RecordData> recordDataList;
     private RecordData emptyRecordTemplate;
 
-    // 💡 1. 미완성이었던 딕셔너리 선언 완료 및 초기화
+    // 미완성이었던 딕셔너리 선언 완료 및 초기화
     private Dictionary<RecordRarity, List<RecordData>> recordDataByRarity = new();
 
     public override void Initialize()
@@ -56,35 +78,33 @@ public class RecordDataBase : DataBase
 
         Debug.Log("Record Database Init");
         recordDataList = new();
-        recordDataByRarity.Clear(); // 💡 재초기화를 대비해 클리어
+        recordDataByRarity.Clear();
 
+        // 1. Info 파싱
         JsonLoader.LoadJsonList<RecordInfoAllData, RecordInfoJson, RecordData>
             (
             jsonAsset,
             root => root.recordInfoJson,
-
             json =>
             {
                 RecordData recordData = new RecordData();
                 recordData.id = json.id;
                 recordData.description = json.description;
                 recordData.recordName = json.namekeycode;
-                //recordData.icon =  json.IconPath;
-
+                // recordData.icon = GetSprite(json.iconPath); // Addressable 등 사용 시 연동
                 return recordData;
             },
-
             record =>
             {
                 recordDatas.Add(record.id, record);
             }
             );
 
+        // 2. Data 파싱 및 병합
         JsonLoader.LoadJsonList<RecordDataJsonAllData, RecordDataJson, RecordData>
             (
                 recordDataJsonAsset,
                 root => root.recordDataJson,
-
                 json =>
                 {
                     if (recordDatas.TryGetValue(json.id, out RecordData recordData))
@@ -92,23 +112,48 @@ public class RecordDataBase : DataBase
                         recordData.targetFilter = GetTargetFilterType(json.targetFilter);
                         recordData.type = (RecordType)json.recordType;
                         recordData.rarity = (RecordRarity)json.rarity;
-                        recordData.status = GetStatusType(json.stat);
-                        recordData.valueType = (ModifierValueType)json.calcType;
-                        recordData.effectValue = json.value;
-                        recordData.triggerEvent = json.triggerEvent;
-                        recordData.className = json.className;
+
+                        // 💡 리스트 형태 데이터 파싱 (Null 방어)
+                        if (json.stats != null)
+                        {
+                            recordData.Stats = json.stats.Select(s => new RecordStatData
+                            {
+                                Status = GetStatusType(s.stat),
+                                ValueType = (ModifierValueType)s.calcType,
+                                Value = s.value
+                            }).ToList();
+                        }
+
+                        if (json.skills != null)
+                        {
+                            recordData.Skills = json.skills.Select(s => new RecordSkillData
+                            {
+                                SkillID = s.skillID,
+                                Modifier = Enum.Parse<SkillModifierType>(s.modifier),
+                                Operation = Enum.Parse<ModifierOperation>(s.operation),
+                                Value = s.value
+                            }).ToList();
+                        }
+
+                        if (json.triggers != null)
+                        {
+                            recordData.Triggers = json.triggers.Select(t => new RecordTriggerData
+                            {
+                                TriggerEvent = t.triggerEvent,
+                                ClassName = t.className
+                            }).ToList();
+                        }
 
                         return recordData;
                     }
                     return null;
                 },
-
                 record =>
                 {
                     recordDatas[record.id] = record;
                     recordDataList.Add(record);
 
-                    // 💡 2. 파싱이 끝난 레코드를 타입별 딕셔너리에 분류해서 넣기
+                    // 파싱이 끝난 레코드를 타입별 딕셔너리에 분류
                     if (!recordDataByRarity.ContainsKey(record.rarity))
                     {
                         recordDataByRarity[record.rarity] = new List<RecordData>();
@@ -130,49 +175,28 @@ public class RecordDataBase : DataBase
             rarity = RecordRarity.NORMAL,
             targetFilter = TargetFilterType.ALL,
             type = RecordType.EMPTY,
-            effectValue = 0,
-            triggerEvent = "",
-            className = string.Empty,
         };
     }
 
-    public RecordData GetEmptyRecord()
-    {
-        return emptyRecordTemplate.GetData();
-    }
-
-    public RecordData GetRecordData(int recordID)
-    {
-        return recordDatas.TryGetValue(recordID, out RecordData recordData) ? recordData.GetData() : null;
-    }
-
+    public RecordData GetEmptyRecord() => emptyRecordTemplate.GetData();
+    public RecordData GetRecordData(int recordID) => recordDatas.TryGetValue(recordID, out RecordData recordData) ? recordData.GetData() : null;
     public List<RecordData> GetAllRecordData() => recordDataList.ToList();
 
-    // 💡 3. 특정 타입의 레코드 리스트를 반환하는 함수 구현
     public List<RecordData> GetRecordDatas(RecordRarity rarity)
     {
         if (recordDataByRarity.TryGetValue(rarity, out List<RecordData> list))
-        {
-            // 외부에서 이 리스트를 수정하더라도 원본 DB가 훼손되지 않도록 ToList()로 복사본 반환
             return list.ToList();
-        }
-
-        // 해당 타입이 아예 없을 경우 에러 대신 빈 리스트 반환
         return new List<RecordData>();
     }
 
     private TargetFilterType GetTargetFilterType(string targetFilter)
     {
-        if (targetFilter == null) return TargetFilterType.ALL;
-
-        if (targetFilter.Equals("ALL")) return TargetFilterType.ALL;
+        if (string.IsNullOrEmpty(targetFilter) || targetFilter.Equals("ALL")) return TargetFilterType.ALL;
         else if (targetFilter.Equals("Shooter")) return TargetFilterType.Shooter;
-
         return TargetFilterType.ALL;
     }
 
-
-    private StatusType GetStatusType(string statusType)
+    public StatusType GetStatusType(string statusType)
     {
         switch (statusType)
         {
@@ -185,7 +209,6 @@ public class RecordDataBase : DataBase
             case "HP": return StatusType.HEALTH;
             case "HP_REGEN": return StatusType.HEALTH_REGEN;
         }
-
         return StatusType.NONE;
     }
 }

@@ -24,7 +24,7 @@ public class Module_LookAtTarget : SkillModule
 
         if (useBlackboardPos)
         {
-            targetPos = skill.Runtime.TargetPosition;
+            targetPos = skill.Runtime.Spawn.TargetPosition;
         }
         else
         {

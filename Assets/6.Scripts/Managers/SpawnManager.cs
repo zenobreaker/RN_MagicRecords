@@ -86,7 +86,7 @@ public sealed class SpawnManager : MonoBehaviour
                 player.JobID = jobID;
 
                 // Passive 등록한 이력 처리
-                AppManager.Instance.SafeInvoke(v => v.OnAcquire(jobID, playerGO));
+                AppManager.Instance.SafeInvoke(v => v.OnAcquire(jobID, player));
 
                 // Setting Skills
                 player.SetActiveSkills();
@@ -95,8 +95,8 @@ public sealed class SpawnManager : MonoBehaviour
                 player.SetStatus();
 
                 // Setting Passive Status 
-                AppManager.Instance.SafeInvoke(v=> v.OnApplyStaticEffct(jobID, playerGO));
-                AppManager.Instance.SafeInvoke(v => v.OnApplyStaticEffct(Constants.GLOBAL_RECORD_JOB_ID, playerGO));
+                AppManager.Instance.SafeInvoke(v=> v.OnApplyStaticEffct(jobID, player));
+                AppManager.Instance.SafeInvoke(v => v.OnApplyStaticEffct(Constants.GLOBAL_RECORD_JOB_ID, player));
 
                 // Setting Equipment 
                 player.SetEquipments();

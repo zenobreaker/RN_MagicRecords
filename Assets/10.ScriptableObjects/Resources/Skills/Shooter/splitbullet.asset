@@ -20,11 +20,138 @@ MonoBehaviour:
   skillUpgradeCost: 
   skillImage: {fileID: 21300000, guid: e57473e2f622282428d5907e7510d19b, type: 3}
   leadingSkillList: 
+  levelDatas:
+  - range: 0
+    limitMinCooldown: 5
+    cooldown: 30
+    castingTime: 0
+    damageData:
+      damageType: 0
+      baseDamage: 12
+      statCoefficient: 0.75
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 1
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 1
+    angle: 0
+  - range: 0
+    limitMinCooldown: 5
+    cooldown: 25
+    castingTime: 0
+    damageData:
+      damageType: 0
+      baseDamage: 15
+      statCoefficient: 0.75
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 1
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 1
+    angle: 0
+  - range: 0
+    limitMinCooldown: 5
+    cooldown: 20
+    castingTime: 0
+    damageData:
+      damageType: 0
+      baseDamage: 18
+      statCoefficient: 0.75
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 1
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 1
+    angle: 0
+  - range: 0
+    limitMinCooldown: 5
+    cooldown: 15
+    castingTime: 0
+    damageData:
+      damageType: 0
+      baseDamage: 21
+      statCoefficient: 0.75
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 1
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 1
+    angle: 0
+  - range: 0
+    limitMinCooldown: 5
+    cooldown: 10
+    castingTime: 0
+    damageData:
+      damageType: 0
+      baseDamage: 24
+      statCoefficient: 0.75
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 1
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+    bonusOptionList: 
+    spawnCount: 1
+    angle: 0
   range: -1
-  cost: 10
-  cooldown: 15
-  limitCooldown: 2
-  castingTime: -1
   isConcurrentSkill: 0
   actionData:
     subStateName: Skill01
@@ -37,26 +164,6 @@ MonoBehaviour:
     impulseDirection: {x: 0, y: 0, z: 0}
     csp: {fileID: 0}
     bCanMove: 0
-  damageData:
-    damageType: 0
-    baseDamage: 10
-    statCoefficient: 0
-    bDownable: 0
-    bLauncher: 0
-    SoundName: 
-    impulseDirection: {x: 0, y: 0, z: 0}
-    csp: {fileID: 11400000, guid: ac75165bfa711bd468435c407c1bf2f7, type: 2}
-    hitData:
-      DamageType: 0
-      Distance: 0
-      HeightValue: 0
-      StopFrame: 0
-      HitImpactIndex: 0
-      HitSoundName: 
-      HitParticle: {fileID: 0}
-      HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-      HitParticleScaleOffset: {x: 1, y: 1, z: 1}
-  bonusOptionList: 
   phaseList:
   - phaseName: 
     isInstant: 0

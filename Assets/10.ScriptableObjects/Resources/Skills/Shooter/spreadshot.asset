@@ -152,10 +152,6 @@ MonoBehaviour:
     spawnCount: 5
     angle: 10
   range: -1
-  cost: 10
-  cooldown: 12
-  limitCooldown: 2
-  castingTime: -1
   isConcurrentSkill: 0
   actionData:
     subStateName: Skill01
@@ -172,7 +168,6 @@ MonoBehaviour:
   - phaseName: 
     isInstant: 0
     modules:
-    - rid: 25348695005331456
     - rid: 8682830518195847350
     - rid: 8682830518195847364
     - rid: 25348276825882839
@@ -189,12 +184,6 @@ MonoBehaviour:
       data:
         triggerTime: 4
         soundName: Gun_Normal2
-    - rid: 25348695005331456
-      type: {class: Module_SetPatternData, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 0
-        spawnCount: 3
-        angleBetween: 15
     - rid: 8682830518195847350
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:

@@ -52,18 +52,17 @@ public class Module_SpawnObject : SkillModule
 
         // 2. 💡 강타입 컨텍스트(Runtime)를 이용한 최종 수치 계산
         // [개수] Base 값이 세팅 안 되어있으면 내 Fallback 값 사용 + 레코드가 추가한 Add 값 더하기
-        int baseCount = skill.Runtime.BasePatternCount > 0 ? skill.Runtime.BasePatternCount : baseSpawnCount;
-        int finalSpawnCount = baseCount + skill.Runtime.PatternCountAdd;
+        int finalSpawnCount = skill.Runtime.PatternCount > 0 ? skill.Runtime.PatternCount : baseSpawnCount;
 
         // [각도] Base 값이 세팅 안 되어있으면 내 Fallback 각도 사용
-        float finalAngleBetween = skill.Runtime.BasePatternCount > 0 ? skill.Runtime.BasePatternAngle : baseAngleBetween;
+        float finalAngleBetween = skill.Runtime.PatternAngle > 0 ? skill.Runtime.PatternAngle : baseAngleBetween;
 
         // [데미지 배율] 내 기본 배율 * 레코드가 뻥튀기 시켜준 배율
-        float finalDamageMultiplier = this.damageMultiplier * skill.Runtime.DamageMultiplier;
+        float finalDamageMultiplier = skill.Runtime.DamageMultiplier;
 
         // [기타 수치들]
         float finalLifeTime = this.baseLifeTime; // 필요시 Runtime.LifeTimeAdd 등을 추가하여 연동 가능
-        bool isCrit = skill.Runtime.IsCritical;
+        bool isCrit = skill.Runtime.Combat.IsCritical;
 
         // 3. 최종 데미지 데이터 확정 (계산된 최종 데미지 배율을 넘겨줍니다)
         DamageData finalDamageData = GetEffectiveDamageData(skill, finalDamageMultiplier);
@@ -112,7 +111,7 @@ public class Module_SpawnObject : SkillModule
                 if (obj.TryGetComponent<ITargetableEffect>(out var targetable))
                 {
                     // 💡 컨텍스트에 추가해둔 TargetPosition을 바로 가져옵니다.
-                    targetable.SetTargetPosition(skill.Runtime.TargetPosition);
+                    targetable.SetTargetPosition(skill.Runtime.Spawn.TargetPosition);
                 }
 
                 if (finalLifeTime > 0f && obj.TryGetComponent<ILifetimeSetup>(out var lifetimeObj))
@@ -167,7 +166,7 @@ public class Module_SpawnObject : SkillModule
             default:
                 if (skill != null && skill.damageData != null)
                 {
-                    return damageData;
+                    return skill.damageData;
                 }
                 break;
         }
