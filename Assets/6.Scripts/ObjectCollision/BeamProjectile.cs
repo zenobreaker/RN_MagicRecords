@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class BeamProjectile 
+public class BeamProjectile
     : BaseProjectile
 {
     [Header("Beam Settings")]
@@ -32,7 +32,7 @@ public class BeamProjectile
         // 빔이 켜질 때마다 초기화
         hitTargets.Clear();
         tickTimer = 0f;
-        
+
         isBeamActive = false;
 
         // 타이머 초기화 
@@ -46,7 +46,7 @@ public class BeamProjectile
         }
     }
 
-    protected override void  OnDisable()
+    protected override void OnDisable()
     {
         base.OnDisable();
         ObjectPooler.ReturnToPool(gameObject);    // 한 객체에 한번만 
@@ -56,18 +56,18 @@ public class BeamProjectile
     private void Update()
     {
         // 1. 수명 관리
-        if(currentLifeTimer > 0f)
+        if (currentLifeTimer > 0f)
         {
-            currentLifeTimer -= Time.deltaTime; 
-            if(currentLifeTimer <= 0f)
+            currentLifeTimer -= Time.deltaTime;
+            if (currentLifeTimer <= 0f)
             {
                 this.gameObject.SetActive(false);
-                return; 
+                return;
             }
         }
 
         // 2. 딜레이 관리 
-        if(!isBeamActive)
+        if (!isBeamActive)
         {
             currentDelayTimer -= Time.deltaTime;
             if (currentDelayTimer <= 0f)
@@ -76,7 +76,7 @@ public class BeamProjectile
             }
         }
         // 3. 빔이 활성화된 상태 
-        else if (isMultiHit )
+        else if (isMultiHit)
         {
             tickTimer -= Time.deltaTime;
             if (tickTimer <= 0f)
@@ -89,15 +89,15 @@ public class BeamProjectile
 
     private void ActivateBeam()
     {
-        isBeamActive = true; 
+        isBeamActive = true;
 
-        if(!isMultiHit)
+        if (!isMultiHit)
         {
             FireBeamCast();
         }
         else
         {
-            tickTimer = 0f; 
+            tickTimer = 0f;
         }
     }
 
@@ -125,24 +125,18 @@ public class BeamProjectile
             // Play Sound
             {
                 SoundManager.Instance.SafeInvoke(v => v.PlaySFX(impactSoundName));
-            }   
+            }
 
             // Damage 처리
-            IDamagable damageTarget = hit.collider.GetComponent<IDamagable>();
-            if (damageTarget != null)
+            Vector3 localHitPoint = hit.collider.transform.InverseTransformPoint(hit.point);
+            DealDamage(hit.collider.gameObject, localHitPoint);
+
+            // 단발용: 맞은 적 기록
+            if (!isMultiHit)
             {
-                // 정확한 피격 위치 계산
-                Vector3 localHitPoint = hit.collider.transform.InverseTransformPoint(hit.point);
-
-                // 데미지 전달
-                damageTarget.OnDamage(ownerObject, null, localHitPoint, damageEvent);
-
-                // 단발용: 맞은 적 기록
-                if (!isMultiHit)
-                {
-                    hitTargets.Add(hit.collider);
-                }
+                hitTargets.Add(hit.collider);
             }
+
         }
     }
 

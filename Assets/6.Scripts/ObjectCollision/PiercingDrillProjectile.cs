@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PiercingDrillProjectile 
+public class PiercingDrillProjectile
     : BaseProjectile
     , ISkillEffect
 {
@@ -32,13 +32,17 @@ public class PiercingDrillProjectile
     private Vector3 normalVelocity;
     private bool isVelocityCaptured = false;
 
+    //public event Action<Collider> OnTriggerEnterAction;
+    public event Action<Collider, Collider, Vector3> OnProjectileHit;
+
+
     private void Awake()
     {
         rigid = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
     }
 
-    
+
     // =======================================================
     // 🔄 생명주기 및 물리 이동 로직
     // =======================================================
@@ -55,7 +59,7 @@ public class PiercingDrillProjectile
         isVelocityCaptured = false;
     }
 
-    protected override  void OnDisable()
+    protected override void OnDisable()
     {
         base.OnDisable();
 
@@ -91,7 +95,8 @@ public class PiercingDrillProjectile
                 tickTimer = 0f;
                 foreach (Collider target in currentTargets)
                 {
-                    ApplyDamage(target);
+                    if (target == null) continue;
+                    DealDamage(target.gameObject, target.transform.position);
                 }
             }
         }
@@ -129,10 +134,19 @@ public class PiercingDrillProjectile
         if (IsFriendlyFire(other.gameObject))
             return;
 
+        //OnTriggerEnterAction?.Invoke(other);
+        OnProjectileHit?.Invoke(collider, other, transform.position);
+
         // 관통 시작: 목록에 추가하고 즉시 1타 데미지
         if (currentTargets.Add(other))
         {
-            ApplyDamage(other);
+            //Damage 
+            {
+                Vector3 hitPoint = collider.ClosestPoint(other.transform.position);
+                hitPoint = other.transform.InverseTransformPoint(hitPoint);
+                DealDamage(owner, hitPoint);
+
+            }
 
             // Play Sound
             {
@@ -156,18 +170,6 @@ public class PiercingDrillProjectile
         if (currentTargets.Contains(other))
         {
             currentTargets.Remove(other);
-        }
-    }
-
-    private void ApplyDamage(Collider target)
-    {
-        IDamagable damage = target.GetComponent<IDamagable>();
-        if (damage != null)
-        {
-            Vector3 hitPoint = collider.ClosestPoint(target.transform.position);
-            hitPoint = target.transform.InverseTransformPoint(hitPoint);
-
-            damage.OnDamage(ownerObject, null, hitPoint, damageEvent);
         }
     }
 }

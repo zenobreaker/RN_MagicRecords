@@ -79,13 +79,9 @@ public class AoEProjectile
 
             if (!isMultiHit && hitTargets.Contains(hitCollider)) continue;
 
-            IDamagable damageTarget = hitCollider.GetComponent<IDamagable>();
-            if (damageTarget != null)
-            {
-                damageTarget.OnDamage(ownerObject, null, hitCollider.transform.position, damageEvent);
-
-                if (!isMultiHit) hitTargets.Add(hitCollider);
-            }
+            DealDamage(hitCollider.gameObject, hitCollider.transform.position);
+            
+            if (!isMultiHit) hitTargets.Add(hitCollider);
         }
     }
 

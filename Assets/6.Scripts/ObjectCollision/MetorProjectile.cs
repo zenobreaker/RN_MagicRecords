@@ -44,7 +44,7 @@ public class MetorProjectile
         if (isExploded) return; 
 
         // 1. 목표 지점을 향해 사선으로 이동 
-        transform.position =Vector3.MoveTowards(transform.position, 
+        transform.position = Vector3.MoveTowards(transform.position, 
             targetPosition, 
             fallSpeed *Time.deltaTime);
 

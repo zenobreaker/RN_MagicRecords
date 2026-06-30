@@ -254,7 +254,6 @@ public abstract class ActiveSkill
 
         // 쿨타임 
         SetCooldown();
-
     }
 
     private void SetRunTimeContext()
@@ -301,8 +300,6 @@ public abstract class ActiveSkill
         };
 
         Runtime.Modifier = new ModifierContext();
-
-        Runtime.Actions.Clear();
     }
 
     public virtual void Update(float deltaTime) { }

@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent (typeof(Rigidbody))]
 public class Projectile 
     : BaseProjectile
-    , ISkillEffect
+    , IProjectile
 {
     [Header("Projectile Settings")]
     [SerializeField] private float force = 1000.0f;
@@ -21,10 +21,12 @@ public class Projectile
     private int index; 
     public int Index { get { return index; }  set {  index = value; } }
 
+    public int PierceCount { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
     private new Rigidbody rigidbody;
     private new Collider collider; 
 
-    public event Action<Collider> OnTriggerEnterAction;
+    //public event Action<Collider> OnTriggerEnterAction;
     public event Action<Collider, Collider, Vector3> OnProjectileHit;
 
 
@@ -70,7 +72,7 @@ public class Projectile
         }
     }
 
-    protected virtual void OnTriggerEnter(Collider other)
+    protected void OnTriggerEnter(Collider other)
     {
         if (ignores.Contains(other.gameObject))
             return;
@@ -80,8 +82,6 @@ public class Projectile
 
         if (IsFriendlyFire(other.gameObject))
             return;
-
-        OnTriggerEnterAction?.Invoke(other);
 
         OnProjectileHit?.Invoke(collider, other, transform.position);
 
@@ -96,14 +96,10 @@ public class Projectile
         }
 
         // Damage 
-        if (other.TryGetComponent<IDamagable>(out var damage))
-        {
-            Vector3 hitPoint = collider.ClosestPoint(other.transform.position);
-            hitPoint = other.transform.InverseTransformPoint(hitPoint);
-            damage?.OnDamage(ownerObject, null, hitPoint, damageEvent);
-        }
-
-
+        Vector3 hitPoint = collider.ClosestPoint(other.transform.position);
+        hitPoint = other.transform.InverseTransformPoint(hitPoint);
+        DealDamage(other.gameObject, hitPoint);
+        
         this.gameObject.SetActive(false);
     }
 }
