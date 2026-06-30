@@ -108,11 +108,6 @@ public sealed class CombatContext
 }
 
 
-public interface ISkillAction
-{
-    void Apply(SkillRuntimeContext context);
-}
-
 public sealed class SkillRuntimeContext
 {
     public BaseValues Base = new();
@@ -120,7 +115,6 @@ public sealed class SkillRuntimeContext
     public SpawnContext Spawn = new();
     public ModifierContext Modifier = new();
     public CombatContext Combat = new();
-    public List<ISkillAction> Actions = new();
 
     public int PatternCount
     {
@@ -146,5 +140,6 @@ public sealed class SkillRuntimeContext
         }
     }
 }
+
 
 

@@ -39,7 +39,7 @@ public abstract class PassiveSkill
     public virtual void OnDamaged(DamageData damageData) { }
     public virtual void OnKill(GameObject target) { }
 
-    public virtual void OnSkillCast(SkillUseEvent evt) { }
+    public virtual void OnSkillCast(SkillUseEvent evt, SkillRuntimeContext context) { }
     public virtual void OnSkillJudge(SkillUseEvent evt) { }
     public virtual void OnSkillEnd(SkillUseEvent evt) { }
 

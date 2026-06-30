@@ -31,6 +31,6 @@ public class Record_FinalEffort : RecordPassive
     public override void OnLose()
     {
         base.OnLose();
-        status?.RemoveBuff(modifier);   
+        status.SafeInvoke(v => v.RemoveBuff(modifier));
     }
 }

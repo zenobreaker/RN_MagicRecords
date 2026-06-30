@@ -14,6 +14,11 @@ public interface ISkillEffect
     void AddIgnore(GameObject ignore);
 }
 
+public interface IProjectile : ISkillEffect
+{
+    int PierceCount { get; set; }
+}
+
 public interface ILifetimeSetup
 {
     // 모듈이 생성 직후 이 함수를 호출해서 수명을 세팅해 줄 겁니다.
@@ -24,6 +29,7 @@ public interface ITargetableEffect
 {
     void SetTargetPosition(Vector3 targetPosition);
 }
+
 public enum DamageApplyType
 {
     Inherit,    // 부모 데이터 그대로 사용
