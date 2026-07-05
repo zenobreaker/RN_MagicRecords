@@ -12,7 +12,7 @@ public sealed class Module_Passive_RemovePierce : PassiveModule
         triggerTime = PassiveTriggerTime.OnSpawnObject;
     }
 
-    public override void OnSpawnObject(ISkillEffect spawnedObject)
+    public override void OnSpawnObject(ISkillEffect spawnedObject, ActiveSkill activeSkill)
     {
         if (spawnedObject is IProjectile proj)
         {

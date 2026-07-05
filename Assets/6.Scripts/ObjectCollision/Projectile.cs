@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-[RequireComponent (typeof(Rigidbody))]
-public class Projectile 
+[RequireComponent(typeof(Rigidbody))]
+public class Projectile
     : BaseProjectile
     , IProjectile
 {
@@ -14,17 +14,27 @@ public class Projectile
     [SerializeField] private LayerMask ignoreLayer;
 
     [SerializeField] private string bombEffectName = "";
-    [SerializeField] private string impactSoundName = ""; 
+    [SerializeField] private string impactSoundName = "";
+
+    [Header("Pierce Settings")]
+    [Tooltip("0이면 1명 맞고 소멸, 1이면 1명 관통")]
+    [SerializeField] private int basePierceCount = 0;
+
+    // 💡 날아가는 동안 깎일 실제 관통 횟수 (프로퍼티와 연결)
+    private int currentPierceCount;
 
     private float curLife = 0f;
+    private int index;
+    public int Index { get { return index; } set { index = value; } }
 
-    private int index; 
-    public int Index { get { return index; }  set {  index = value; } }
-
-    public int PierceCount { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public int PierceCount
+    {
+        get => currentPierceCount;
+        set => currentPierceCount = value;
+    }
 
     private new Rigidbody rigidbody;
-    private new Collider collider; 
+    private new Collider collider;
 
     //public event Action<Collider> OnTriggerEnterAction;
     public event Action<Collider, Collider, Vector3> OnProjectileHit;
@@ -42,11 +52,13 @@ public class Projectile
     {
         if (rigidbody == null)
             return;
-        
+
         // #. Unity6 기준 프로퍼티 명이 달라짐
         rigidbody.linearVelocity = Vector3.zero;
         rigidbody.AddForce(transform.forward * force);
         curLife = life;
+
+        currentPierceCount = basePierceCount;
     }
 
 
@@ -64,7 +76,7 @@ public class Projectile
 
     protected virtual void Update()
     {
-        if(life != -1)
+        if (life != -1)
         {
             curLife -= Time.deltaTime;
             if (curLife <= 0f)
@@ -83,9 +95,10 @@ public class Projectile
         if (IsFriendlyFire(other.gameObject))
             return;
 
+        AddIgnore(other.gameObject);
         OnProjectileHit?.Invoke(collider, other, transform.position);
 
-        if(string.IsNullOrEmpty(bombEffectName) == false)
+        if (string.IsNullOrEmpty(bombEffectName) == false)
         {
             ObjectPooler.SpawnFromPool(bombEffectName, this.transform.position);
         }
@@ -99,7 +112,13 @@ public class Projectile
         Vector3 hitPoint = collider.ClosestPoint(other.transform.position);
         hitPoint = other.transform.InverseTransformPoint(hitPoint);
         DealDamage(other.gameObject, hitPoint);
+
+        if (currentPierceCount > 0)
+        {
+            currentPierceCount--;
+        }
+        else 
+            this.gameObject.SetActive(false);
         
-        this.gameObject.SetActive(false);
     }
 }

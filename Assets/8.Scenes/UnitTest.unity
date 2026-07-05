@@ -2874,7 +2874,7 @@ GameObject:
   - component: {fileID: 995872100}
   - component: {fileID: 995872099}
   - component: {fileID: 995872098}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4668,6 +4668,7 @@ GameObject:
   - component: {fileID: 2704754255299735238}
   - component: {fileID: 7909426983919096592}
   - component: {fileID: 626277244181622539}
+  - component: {fileID: 8962975015275012106}
   m_Layer: 3
   m_Name: Namsaengyi_Test
   m_TagString: Player
@@ -4794,7 +4795,7 @@ GameObject:
   - component: {fileID: 6508187346610945044}
   - component: {fileID: 6800675313680278777}
   - component: {fileID: 7275567668088497080}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5476,7 +5477,7 @@ GameObject:
   - component: {fileID: 5409684720668322245}
   - component: {fileID: 2659018532693365689}
   - component: {fileID: 323580571710532811}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6608,7 +6609,7 @@ GameObject:
   - component: {fileID: 3149766035995865193}
   - component: {fileID: 7242169586961932010}
   - component: {fileID: 6561697321400534354}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_Back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8298,7 +8299,7 @@ GameObject:
   - component: {fileID: 7894484460357268701}
   - component: {fileID: 3991317922937427446}
   - component: {fileID: 4531027714080001470}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9564,7 +9565,7 @@ GameObject:
   - component: {fileID: 3615992141167738542}
   - component: {fileID: 5917220623257145158}
   - component: {fileID: 4539920289910022947}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_Front
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9584,6 +9585,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dmgFontOffsetY: 1.5
+--- !u!114 &8962975015275012106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 877220993117259683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb4ed7ed95f83cc45b39d1c0a5adfebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8973307234841707273
 MonoBehaviour:
   m_ObjectHideFlags: 0

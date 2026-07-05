@@ -33,9 +33,7 @@ public class RecordPassive : PassiveSkill
                 status.ApplyBuff(statMod);
                 statModifiers.Add(statMod);
             }
-        }
-
-        
+        } 
     }
 
     public override void OnLose()

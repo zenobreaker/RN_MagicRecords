@@ -21,7 +21,6 @@ public class ParabolicProjectile
     private bool isFired = false;
 
     // 데미지 정보를 다음 폭발(AoE)로 토스하기 위한 캐싱 변수들
-    private DamageData cachedDamageData;
     private float cachedMultiplier = 1f;
     private bool cachedCrit;
 

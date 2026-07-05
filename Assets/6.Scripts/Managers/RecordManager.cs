@@ -255,16 +255,17 @@ public sealed class RecordManager : MonoBehaviour
                 SelectedRecords.RemoveAt(0);
             }
             SelectedRecords.Add(data);
+            Debug.Log($"Record Select : {data.recordName}");
         }
         else
             SelectedRecords.Remove(data);
 
     }
 
-    public RecordPassive GetRecordPassive(int id)
+    public PassiveSkill GetRecordPassive(int id)
     {
         if (recordsDict.ContainsKey(id))
-            return (RecordPassive)recordsDict[id].CreateRecord();
+            return recordsDict[id].CreatePassiveSkill();
 
         return null;
     }
@@ -367,8 +368,8 @@ public sealed class RecordManager : MonoBehaviour
             recordInventory.RemoveRecord(data);
 
             // (필요하다면 패시브 시스템에서도 제거하는 로직 추가)
-            // var ps = AppManager.Instance.GetPassiveSystem();
-            // ps?.Remove(9999, GetRecordPassive(data.id));
+             var ps = AppManager.Instance.GetPassiveSystem();
+             ps?.Remove(9999, GetRecordPassive(data.id));
 
             Debug.Log($"[{data.recordName}] 레코드를 비용으로 소모했습니다.");
         }
@@ -390,6 +391,7 @@ public sealed class RecordManager : MonoBehaviour
         List<RecordData> selectedRecords = SelectedRecords;
         if (selectedRecords.Count <= 0)
             return false;
+
         var ps = AppManager.Instance.GetPassiveSystem();
         if (ps == null) return false;
 

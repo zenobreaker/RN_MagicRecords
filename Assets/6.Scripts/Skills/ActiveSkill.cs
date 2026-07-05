@@ -230,14 +230,26 @@ public abstract class ActiveSkill
 
         SetRunTimeContext(); 
 
+        if(phaseIndex == 0)
+        {
+            SkillUseEvent evt = new SkillUseEvent 
+            { 
+                SkillName = this.skillName,
+                Owner = this.ownerCharacter
+            };
+
+            PassiveSystem ps = AppManager.Instance.SafeInvoke(v => v.GetPassiveSystem());
+            if (ps != null)
+                ps.BroadcastOnSkillCast(evt, this.Runtime);
+        }
+
         isCasting = true;
         isWaitingForRelease = false;
         chargeStartTime = Time.time;
 
         if (!isConcurrentSkill)
         {
-            NavMeshAgent agent = ownerObject?.GetComponent<NavMeshAgent>();
-            if (agent != null && agent.isActiveAndEnabled)
+            if (ownerObject.TryGetComponent<NavMeshAgent>(out var agent) && agent.isActiveAndEnabled)
             {
                 agent.updateRotation = false;
                 agent.isStopped = true;

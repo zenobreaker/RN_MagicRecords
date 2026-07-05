@@ -18,7 +18,6 @@ public class ParabolicProjectile_UniTask
     [SerializeField] private string explosionEffectName = "VFX_Explosion";
     [SerializeField] private string impactSoundName = "";
 
-    private DamageData cachedDamageData;
     private float cachedMultiplier = 1.0f;
     private bool cachedCrit;
 

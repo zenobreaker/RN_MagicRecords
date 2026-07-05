@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework.Constraints;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 public static class SkillFactory
 {
@@ -21,7 +22,7 @@ public static class SkillFactory
         {
             return activeData.id switch
             {
-                1 => new ReinforcedMagicBullet(activeData),
+                //1 => new ReinforcedMagicBullet(activeData),
                 //1001 => new JumpPress(activeData),
                 //1002 => new SpikeShot(activeData),
                 _ => new GenericActiveSkill(activeData)

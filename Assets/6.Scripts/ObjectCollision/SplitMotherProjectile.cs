@@ -76,6 +76,10 @@ public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
     {
         ignores.Add(ignore);
     }
+    public void SetIgnores(HashSet<GameObject> ignores)
+    {
+        this.ignores = ignores;
+    }
 
     // =======================================================
     // 🔄 생명주기 및 주기적 발사 관리

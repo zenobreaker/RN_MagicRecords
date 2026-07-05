@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a45f9791fc77e874c9cfd4fd8604a80c, type: 3}
   m_Name: magnumbullet
   m_EditorClassIdentifier: 
-  id: 1
+  id: 1001
   skillName: skill_name_magnumbullet
   skillDescription: skill_desc_magnumbullet
   learnableLevel: 0
@@ -165,14 +165,78 @@ MonoBehaviour:
     csp: {fileID: 0}
     bCanMove: 0
   phaseList:
-  - phaseName: 
+  - phaseName: "\uC0AC\uACA9"
     isInstant: 0
-    modules: []
+    modules:
+    - rid: 7840629605693390968
+    - rid: 7840629605693390969
+    - rid: 7840629605693390967
+    - rid: 7840629605693390966
     skillObject: {fileID: 0}
     objectName: ReinForcedMagicBullet
     soundName: Gun_Normal2
-    spawnPosition: {x: 0, y: 1, z: 1}
+    spawnPosition: {x: 0, y: 0, z: 0}
     spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 7840629605693390966
+      type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 2
+        damageApplyType: 0
+        damageMultiplier: 1
+        damageData:
+          damageType: 0
+          baseDamage: 10
+          statCoefficient: 0
+          bDownable: 0
+          bLauncher: 0
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          csp: {fileID: 0}
+          hitData:
+            DamageType: 0
+            Distance: 0
+            HeightValue: 0
+            StopFrame: 0
+            HitImpactIndex: 0
+            HitSoundName: 
+            HitParticle: {fileID: 0}
+            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+        spawnPosition: {x: 0, y: 1, z: 1}
+        spawnRotation: {x: 0, y: 0, z: 0}
+        patternType: 0
+        baseSpawnCount: 1
+        baseAngleBetween: 0
+        spawnObj: {fileID: 0}
+        objectName: ReinForcedMagicBullet
+        baseLifeTime: -1
+        useBlackboardPattern: 1
+    - rid: 7840629605693390967
+      type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        actionData:
+          subStateName: Skill01
+          stateName: Skill
+          layerName: 
+          actionSpeed: 1
+          droneReactionType: 1
+          weaponActionName: Action
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          csp: {fileID: 0}
+          bCanMove: 0
+    - rid: 7840629605693390968
+      type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 5
+        impulseDirection: {x: 0, y: 0, z: 0}
+        settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
+    - rid: 7840629605693390969
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        soundName: Gun_Normal2

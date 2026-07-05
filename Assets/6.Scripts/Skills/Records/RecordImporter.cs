@@ -16,6 +16,13 @@ public class RecordImporter : MonoBehaviour
     public static void AddRecordDirectly(RecordData data)
     {
         if (!Application.isPlaying) return;
+
+        var rm = AppManager.Instance.SafeInvoke(v => v.GetRecordManager());
+        if(rm != null)
+        {
+            rm.OnCompleteSelctRecords(); 
+        }
+
         instance.ExecuteRecord();
     }
 

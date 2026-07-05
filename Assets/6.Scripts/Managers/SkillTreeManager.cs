@@ -227,7 +227,7 @@ public class SkillTreeManager
         if (data.template is SO_PassiveSkillData so_passive)
         {
             //앱매니저에게 해당 스킬이 레벨업되었다고 알림
-            AppManager.Instance?.OnChangedLevelPassiveSkill(so_passive.jobID, data);
+            AppManager.Instance.SafeInvoke(v => v.OnChangedLevelPassiveSkill(so_passive.jobID, data));
         }
     }
 

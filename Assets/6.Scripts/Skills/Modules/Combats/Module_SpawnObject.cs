@@ -102,10 +102,15 @@ public class Module_SpawnObject : SkillModule
             // 5. 생성된 오브젝트 공통 셋업
             if (obj != null)
             {
+                // 💡 패시브 시스템에 던져줄 ISkillEffect 캐싱용 변수
+                ISkillEffect spawnedEffect = null;
+
                 if (obj.TryGetComponent<ISkillEffect>(out var projectile))
                 {
                     projectile.SetDamageInfo(owner, finalDamageData, isCrit, finalDamageMultiplier);
                     projectile.AddIgnore(owner);
+
+                    spawnedEffect = projectile;
                 }
 
                 if (obj.TryGetComponent<ITargetableEffect>(out var targetable))
@@ -123,6 +128,11 @@ public class Module_SpawnObject : SkillModule
                 {
                     ownerSetup.SetupOwner(owner);
                 }
+
+                // 패시브 개입 
+                if(spawnedEffect != null)
+                    AppManager.Instance.SafeInvoke(v=>v.GetPassiveSystem()?.BroadcastOnSpawnObject(spawnedEffect, skill));
+
 
                 if (isPooled)
                 {

@@ -48,8 +48,6 @@ public class RecordDataJson
 {
     public int id;
     public List<RecordStatJson> stats = new();
-    public List<RecordSkillJson> skills = new();
-    public List<RecordTriggerJson> triggers = new();
     public int rarity;
     public int recordType;
     public string targetFilter;
@@ -121,26 +119,6 @@ public class RecordDataBase : DataBase
                                 Status = GetStatusType(s.stat),
                                 ValueType = (ModifierValueType)s.calcType,
                                 Value = s.value
-                            }).ToList();
-                        }
-
-                        if (json.skills != null)
-                        {
-                            recordData.Skills = json.skills.Select(s => new RecordSkillData
-                            {
-                                SkillID = s.skillID,
-                                Modifier = Enum.Parse<SkillModifierType>(s.modifier),
-                                Operation = Enum.Parse<ModifierOperation>(s.operation),
-                                Value = s.value
-                            }).ToList();
-                        }
-
-                        if (json.triggers != null)
-                        {
-                            recordData.Triggers = json.triggers.Select(t => new RecordTriggerData
-                            {
-                                TriggerEvent = t.triggerEvent,
-                                ClassName = t.className
                             }).ToList();
                         }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 // 패시브가 발동될 타이밍 정의
 public enum PassiveTriggerTime
 {
+    OnApplyStaticEffect,
     OnAcquire,
     OnSkillCast,       // 스킬 시전 시 (컨텍스트 조작)
     OnSpawnObject,     // 투사체 생성 시 (투사체 조작)
@@ -19,8 +20,10 @@ public abstract class PassiveModule
     public PassiveTriggerTime triggerTime;
 
     // 💡 각 타이밍에 맞춰 오버라이드할 수 있는 가상 함수들!
+    public virtual void OnApplyStaticEffect(StatusComponent status) { }
+    public virtual void OnLose() { } // 패시브가 지워질 때 롤백용
     public virtual void OnSkillCast(SkillUseEvent evt, SkillRuntimeContext context) { }
-    public virtual void OnSpawnObject(ISkillEffect spawnedObject) { }
+    public virtual void OnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill) { }
     public virtual void OnHit(GameObject target, DamageData damageData) { }
 }
 
@@ -51,11 +54,34 @@ public class GenericPassiveSkill : PassiveSkill
     }
 
     // (새로 추가할) 투사체 생성 이벤트
-    public void OnSpawnObject(ISkillEffect spawnedObject)
+    public void OnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill)
     {
         if (moduleCache.TryGetValue(PassiveTriggerTime.OnSpawnObject, out var modules))
         {
-            foreach (var mod in modules) mod.OnSpawnObject(spawnedObject);
+            foreach (var mod in modules) mod.OnSpawnObject(spawnedObject, casterSkill);
         }
     }
+
+    //public override void OnApplyStaticEffect(StatusComponent status)
+    //{
+    //    if (!status.IsSameJob(recordData.targetFilter))
+    //        return;
+
+    //    if (status != null)
+    //    {
+    //        foreach (var modifier in recordData.Stats)
+    //        {
+    //            var statMod = ModifierFactory.CreateStatModifier(
+    //                modifier.Status, modifier.Value, modifier.ValueType);
+    //            status.ApplyBuff(statMod);
+    //            statModifiers.Add(statMod);
+    //        }
+    //    }
+    //}
+
+    //public override void OnLose()
+    //{
+    //    foreach (var modifier in statModifiers)
+    //        status.SafeInvoke(v => v.RemoveBuff(modifier));
+    //}
 }

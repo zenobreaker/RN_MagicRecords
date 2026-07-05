@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ public interface ISkillEffect
     void SetDamageInfo(Character attacker, DamageData damageData, bool bExtraCrit = false, 
         float multiplier = 1.0f);
     void AddIgnore(GameObject ignore);
+    void SetIgnores(HashSet<GameObject> ignores);
 }
 
 public interface IProjectile : ISkillEffect

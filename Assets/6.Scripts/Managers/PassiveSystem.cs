@@ -161,4 +161,33 @@ public class PassiveSystem
             }
         }
     }
+
+    // 💡 1. 누군가 스킬을 시전했을 때 (Context 조작용)
+    public void BroadcastOnSkillCast(SkillUseEvent evt, SkillRuntimeContext context)
+    {
+        // 등록된 모든 패시브를 순회하며 OnSkillCast 실행
+        foreach (var passiveList in passiveSkillList.Values)
+        {
+            foreach (var passive in passiveList)
+            {
+                passive.OnSkillCast(evt, context);
+            }
+        }
+    }
+
+    // 💡 2. 누군가 투사체를 생성했을 때 (관통 제거, 분열탄 적용용)
+    public void BroadcastOnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill)
+    {
+        // 액티브 스킬 모듈이 투사체를 만들었다고 알려오면, 모든 패시브에게 전달!
+        foreach (var passiveList in passiveSkillList.Values)
+        {
+            foreach (var passive in passiveList)
+            {
+                if (passive is GenericPassiveSkill gps)
+                {
+                    gps.OnSpawnObject(spawnedObject, casterSkill);
+                }
+            }
+        }
+    }
 }

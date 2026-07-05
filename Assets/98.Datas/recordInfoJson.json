@@ -1,45 +1,213 @@
-﻿{
+{
   "recordInfoJson": [
     {
       "id": "1",
-      "namekeycode": "name_lackofsleep",
-      "description": "공격력 증가 5%,",
+      "namekeycode": "record_name_stat_atk_inc",
+      "description": "record_desc_stat_atk_inc",
       "iconPath": null
     },
     {
       "id": "2",
-      "namekeycode": "name_bumpertobumper",
-      "description": "방어력 증가 5%,",
+      "namekeycode": "record_name_stat_def_inc",
+      "description": "record_desc_stat_def_inc",
       "iconPath": null
     },
     {
       "id": "3",
-      "namekeycode": "name_overconsumption",
-      "description": "이동속도 증가 1%",
+      "namekeycode": "record_name_stat_spd_inc",
+      "description": "record_desc_stat_spd_inc",
       "iconPath": null
     },
     {
       "id": "4",
-      "namekeycode": "name_kindguidance",
-      "description": "공격속도 증가 5%",
+      "namekeycode": "record_name_stat_atkspeed_inc",
+      "description": "record_desc_stat_atkspeed_inc",
       "iconPath": null
     },
     {
       "id": "5",
-      "namekeycode": "name_boost",
-      "description": "크리티컬 확률 증가 5%",
+      "namekeycode": "record_name_stat_crit_inc",
+      "description": "record_desc_stat_crit_inc",
       "iconPath": null
     },
     {
       "id": "6",
-      "namekeycode": "name_crime",
-      "description": "마법탄 장전 - 오토 리로드 : 일정 시간 마다 마법탄환 장전",
+      "namekeycode": "record_name_skill_auto_reload",
+      "description": "record_desc_skill_auto_reload",
       "iconPath": null
     },
     {
       "id": "7",
-      "namekeycode": "name_fianleffort",
-      "description": "최후의 저력 - 체력이 30% 이하로 떨어질 때 공격속도 50% 증가",
+      "namekeycode": "record_name_stat_final_effort",
+      "description": "record_desc_stat_final_effort",
+      "iconPath": null
+    },
+    {
+      "id": "8",
+      "namekeycode": "record_name_stat_atk_atkspeed_inc",
+      "description": "record_desc_stat_atk_atkspeed_inc",
+      "iconPath": null
+    },
+    {
+      "id": "9",
+      "namekeycode": "record_name_stat_def_maxhp_inc",
+      "description": "record_desc_stat_def_maxhp_inc",
+      "iconPath": null
+    },
+    {
+      "id": "1001",
+      "namekeycode": "record_name_modify_plasmaray_1",
+      "description": "record_desc_modify_plasmaray_1",
+      "iconPath": null
+    },
+    {
+      "id": "1002",
+      "namekeycode": "name_modify_plasmaray_1",
+      "description": "desc_modify_plasmaray_1",
+      "iconPath": null
+    },
+    {
+      "id": "1003",
+      "namekeycode": "record_name_modify_hyperbeam_1",
+      "description": "record_desc_modify_hyperbeam_1",
+      "iconPath": null
+    },
+    {
+      "id": "1004",
+      "namekeycode": "record_name_modify_spreadshot_1",
+      "description": "record_desc_modify_spreadshot_1",
+      "iconPath": null
+    },
+    {
+      "id": "1005",
+      "namekeycode": "record_name_modify_consecutiveshot_1",
+      "description": "record_desc_modify_consecutiveshot_1",
+      "iconPath": null
+    },
+    {
+      "id": "1006",
+      "namekeycode": "record_name_modify_spiralshot_1",
+      "description": "record_desc_modify_spiralshot_1",
+      "iconPath": null
+    },
+    {
+      "id": "1007",
+      "namekeycode": "record_name_modify_extreambullet_1",
+      "description": "record_desc_modify_extreambullet_1",
+      "iconPath": null
+    },
+    {
+      "id": "1008",
+      "namekeycode": "record_name_modify_bulletrain_1",
+      "description": "record_desc_modify_bulletrain_1",
+      "iconPath": null
+    },
+    {
+      "id": "1009",
+      "namekeycode": "record_name_modify_extreambullet_1",
+      "description": "record_desc_modify_extreambullet_1",
+      "iconPath": null
+    },
+    {
+      "id": "1010",
+      "namekeycode": "record_name_modify_assistweapon_1",
+      "description": "record_desc_modify_assistweapon_1",
+      "iconPath": null
+    },
+    {
+      "id": "1011",
+      "namekeycode": "record_name_modify_magnum_hollowpoint",
+      "description": "record_desc_modify_magnum_hollowpoint",
+      "iconPath": null
+    },
+    {
+      "id": "1012",
+      "namekeycode": "record_name_modify_magnum_fullpiercing",
+      "description": "record_desc_modify_magnum_fullpiercing",
+      "iconPath": null
+    },
+    {
+      "id": "1013",
+      "namekeycode": "record_name_modify_plasmaray_overcharge",
+      "description": "record_desc_modify_plasmaray_overcharge",
+      "iconPath": null
+    },
+    {
+      "id": "1014",
+      "namekeycode": "record_name_modify_plasmaray_cuttingray",
+      "description": "record_desc_modify_plasmaray_cuttingray",
+      "iconPath": null
+    },
+    {
+      "id": "1015",
+      "namekeycode": "record_name_modify_hyperbeam_nocharge",
+      "description": "record_desc_modify_hyperbeam_nocharge",
+      "iconPath": null
+    },
+    {
+      "id": "1016",
+      "namekeycode": "record_name_modify_hyperbeam_overdrive",
+      "description": "record_desc_modify_hyperbeam_overdrive",
+      "iconPath": null
+    },
+    {
+      "id": "1017",
+      "namekeycode": "record_name_modify_spreadshot_dragonbreath",
+      "description": "record_desc_modify_spreadshot_dragonbreath",
+      "iconPath": null
+    },
+    {
+      "id": "1018",
+      "namekeycode": "record_name_modify_spreadshot_closefire",
+      "description": "record_desc_modify_spreadshot_closefire",
+      "iconPath": null
+    },
+    {
+      "id": "1019",
+      "namekeycode": "record_name_modify_spiralshot_cohesion",
+      "description": "record_desc_modify_spiralshot_cohesion",
+      "iconPath": null
+    },
+    {
+      "id": "1020",
+      "namekeycode": "record_name_modify_spiralshot_lastpunisher",
+      "description": "record_desc_modify_spiralshot_lastpunisher",
+      "iconPath": null
+    },
+    {
+      "id": "1021",
+      "namekeycode": "record_name_modify_extreambullet_blackhole",
+      "description": "record_desc_modify_extreambullet_blackhole",
+      "iconPath": null
+    },
+    {
+      "id": "1022",
+      "namekeycode": "record_name_modify_extreambullet_fusion",
+      "description": "record_desc_modify_extreambullet_fusion",
+      "iconPath": null
+    },
+    {
+      "id": "1023",
+      "namekeycode": "record_name_modify_bulletrain_apbomb",
+      "description": "record_desc_modify_bulletrain_apbomb",
+      "iconPath": null
+    },
+    {
+      "id": "1024",
+      "namekeycode": "record_name_modify_bulletrain_condensedmana",
+      "description": "record_desc_modify_bulletrain_condensedmana",
+      "iconPath": null
+    },
+    {
+      "id": "1025",
+      "namekeycode": "record_name_modify_assistweapon_chaser",
+      "description": "record_desc_modify_assistweapon_chaser",
+      "iconPath": null
+    },
+    {
+      "id": "1026",
+      "namekeycode": "record_name_modify_assistweapon_appiercing",
+      "description": "record_desc_modify_assistweapon_appiercing",
       "iconPath": null
     }
   ]

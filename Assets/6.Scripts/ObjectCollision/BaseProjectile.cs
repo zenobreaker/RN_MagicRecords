@@ -11,9 +11,14 @@ public abstract class BaseProjectile
     protected Character owner; 
     protected DamageEvent damageEvent;
 
+    protected DamageData cachedDamageData; 
+    public Character Owner => owner;
+    public DamageData DamageData => cachedDamageData;
+
     // 피아식별용 공통 변수
     protected GenenricTeamId myTeamId = GenenricTeamId.NoTeamId;
     protected HashSet<GameObject> ignores = new HashSet<GameObject>();
+    public HashSet<GameObject> Ignores => ignores;
 
     public event Action<GameObject, Vector3>  OnTargetHitEvent;
 
@@ -26,6 +31,7 @@ public abstract class BaseProjectile
 
         ownerObject = attacker;
         owner = attacker;
+        cachedDamageData = damageData;
         damageEvent = damageData.GetMyDamageEvent(attacker.Status, false, bExtraCrit, multiplier);
 
         // 부모가 알아서 쏜 사람의 팀 ID를 캐싱해 둡니다.
@@ -35,6 +41,11 @@ public abstract class BaseProjectile
     public virtual void AddIgnore(GameObject ignore)
     {
         if (ignore != null) ignores.Add(ignore);
+    }
+
+    public void SetIgnores(HashSet<GameObject> ignores)
+    {
+        this.ignores = ignores;
     }
 
     // ==========================================

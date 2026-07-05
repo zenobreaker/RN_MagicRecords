@@ -87,8 +87,6 @@ namespace UserEditor
 
                 // 리스트 초기화 (SO 덮어쓰기 버그 방지)
                 so.Stats = new List<RecordStatData>();
-                so.Skills = new List<RecordSkillData>();
-                so.Triggers = new List<RecordTriggerData>();
 
                 // 💡 [핵심 수정] stats 파싱
                 if (data.stats != null)
@@ -107,42 +105,7 @@ namespace UserEditor
                     }
                 }
 
-                // 💡 [핵심 수정] skills 파싱
-                if (data.skills != null)
-                {
-                    foreach (var skill in data.skills)
-                    {
-                        if (Enum.TryParse(skill.modifier, out SkillModifierType parsedMod) &&
-                            Enum.TryParse(skill.operation, out ModifierOperation parsedOp))
-                        {
-                            so.Skills.Add(new RecordSkillData
-                            {
-                                SkillID = skill.skillID,
-                                Modifier = parsedMod,
-                                Operation = parsedOp,
-                                Value = skill.value
-                            });
-                        }
-                        else
-                        {
-                            Debug.LogWarning($"[Importer] ID {info.id}의 스킬 모디파이어 파싱 실패 (오타 확인 필요)");
-                        }
-                    }
-                }
-
-                // 💡 [핵심 수정] triggers 파싱
-                if (data.triggers != null)
-                {
-                    foreach (var trigger in data.triggers)
-                    {
-                        so.Triggers.Add(new RecordTriggerData
-                        {
-                            TriggerEvent = trigger.triggerEvent,
-                            ClassName = trigger.className
-                        });
-                    }
-                }
-
+             
                 // 5. 에셋 저장
                 string fileName = $"{info.id}_{info.namekeycode}.asset";
                 string fullPath = $"Assets/10.ScriptableObjects/{saveFolderName}/{fileName}";
