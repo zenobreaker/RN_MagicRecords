@@ -24,17 +24,52 @@ public class BeamProjectile
     private float tickTimer = 0f;
     private bool isBeamActive = false;
 
+
+    // =========================================================
+    // 💡 1. 풀링 복구를 위한 '원본(Base)' 데이터 저장용 변수 추가
+    // =========================================================
+    private float baseBeamRadius;
+    private Vector3 baseScale;
+
+    // =========================================================
+    // 💡 2. 프로퍼티 수정: 값이 바뀔 때 오브젝트 스케일도 같이 키움!
+    // =========================================================
+    public float BeamRadius
+    {
+        get => beamRadius;
+        set
+        {
+            if (beamRadius <= 0) return; // 0 나누기 방지
+
+            // 기존 두께 대비 얼마나 커졌는지 비율 계산 (예: 1.5 -> 3.0 이면 2배)
+            float ratio = value / beamRadius;
+
+            beamRadius = value;
+
+            // 시각적 크기(Scale) 적용!
+            // 레이저의 길이(Z축)는 놔두고, 두께(X, Y축)만 뻥튀기합니다.
+            transform.localScale = new Vector3(
+                transform.localScale.x * ratio,
+                transform.localScale.y * ratio,
+                transform.localScale.z
+            );
+        }
+    }
+
     // 💡 단발 모드일 때 한 번 맞은 적이 또 맞는 걸 방지하는 리스트
     private HashSet<Collider> hitTargets = new HashSet<Collider>();
-
+    private void Awake()
+    {
+        // 💡 3. 최초 생성 시, 인스펙터에 입력된 원본 두께와 스케일을 기억해 둡니다.
+        baseBeamRadius = beamRadius;
+        baseScale = transform.localScale;
+    }
     private void OnEnable()
     {
         // 빔이 켜질 때마다 초기화
         hitTargets.Clear();
         tickTimer = 0f;
-
         isBeamActive = false;
-
         // 타이머 초기화 
         currentDelayTimer = hitDelay;
         currentLifeTimer = lifeTime;
@@ -50,6 +85,11 @@ public class BeamProjectile
     {
         base.OnDisable();
         ObjectPooler.ReturnToPool(gameObject);    // 한 객체에 한번만 
+
+        // 💡 4. 풀에서 넣을 때, 이전 생애(다른 스킬)에서 커졌던 크기를 원래대로 세탁합니다.
+        beamRadius = baseBeamRadius;
+        transform.localScale = baseScale;
+
         CancelInvoke();    // Monobehaviour에 Invoke가 있다면 
     }
 

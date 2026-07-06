@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b10d0a553238744b0cd87f519edeba, type: 3}
-  m_Name: hollowpoint
+  m_Name: plasmaray-overcharge
   m_EditorClassIdentifier: 
-  id: 10011
-  skillName: name_hollowpoint
+  id: 10021
+  skillName: name_plasmaray-overcharge
   skillDescription: 
   learnableLevel: 0
   maxLevel: 1
@@ -23,22 +23,13 @@ MonoBehaviour:
   levelDatas: []
   jobID: 1
   Modules:
-  - rid: 7840629569373339648
-  - rid: 7840629569373339649
+  - rid: 7840629657124995211
   references:
     version: 2
     RefIds:
-    - rid: 7840629569373339648
-      type: {class: Module_Passive_RemovePierce, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 2
-        targetSkillID: 1001
-    - rid: 7840629569373339649
-      type: {class: Module_Passive_SplitProjectile, ns: , asm: Assembly-CSharp}
+    - rid: 7840629657124995211
+      type: {class: Module_Passive_IncreaseBeamRadius, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
-        targetSkillID: 1001
-        splitCount: 6
-        splitPrefabName: PierceBullet
-        splitPrefab: {fileID: 0}
-        bonusPos: {x: 0, y: 0, z: 0}
+        targetSkillID: 1002
+        bonusRadius: 1

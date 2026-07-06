@@ -102,7 +102,7 @@ public class HealthPointComponent : MonoBehaviour
 
         if (GetComponent<Player>() != null)
         {
-            handler?.OnInitValue_HP(currentHealthPoint);
+            handler.SafeInvoke(v => v.OnInitValue_HP(currentHealthPoint));
         }
     }
 
@@ -122,12 +122,12 @@ public class HealthPointComponent : MonoBehaviour
 
         if (isEnemy == false)
         {
-            handler?.OnChangeValue_HP(currentHealthPoint, maxHealthPoint);
+            handler.SafeInvoke(v => v.OnChangeValue_HP(currentHealthPoint, maxHealthPoint));
         }
 
         if(isEnemy && isBoss)
         {
-            handler?.OnChangedValue_BossHP(ownerChar, currentHealthPoint, maxHealthPoint);
+            handler.SafeInvoke(v => v.OnChangedValue_BossHP(ownerChar, currentHealthPoint, maxHealthPoint));
         }
 
         if (hpGauge != null)
@@ -136,7 +136,7 @@ public class HealthPointComponent : MonoBehaviour
             currentHideTime = hideTime;
 
             hpGauge.fillAmount = currentHealthPoint / maxHealthPoint;
-            uiEnemyCanvas?.gameObject.SetActive(true);
+            uiEnemyCanvas.SafeInvoke(v => v.gameObject.SetActive(true));
         }
 
         OnChangedHP_TwoParam?.Invoke(currentHealthPoint, maxHealthPoint);

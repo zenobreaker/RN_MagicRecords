@@ -24,7 +24,7 @@ public static class DamageCalculator
         result *= multiplier;
         
         crit = bExtraCrit;
-        if (bExtraCrit)
+        if (!bExtraCrit)
         {
             float v = Random.Range(0.0f, 1.0f);
             if (v <= critRatio)
@@ -36,6 +36,8 @@ public static class DamageCalculator
 
         DamageEvent evt = new DamageEvent(result, crit, bFirstHit, data.hitData);
         evt.AttackInstanceID = GetNextAttackInstanceID();
+        
+        evt.IgnoreDefenseRate = data.ignoreDefenseRate;
         return evt;
     }
 
@@ -60,17 +62,23 @@ public static class DamageCalculator
         }
 
         // 최대 체력 비례 데미지 
-        if(damageEvent.MissingHPRatio > 0.0f)
+        if(damageEvent.MaxHPRatio > 0.0f)
         {
             resultDamage += status.GetMaxHP() * damageEvent.MaxHPRatio; 
         }
 
         // 방어 무시 
-        if (damageEvent.IgnoreDefense)
-            return resultDamage * multiplier;
+        if (damageEvent.IgnoreDefenseRate > 0f)
+        {
+            defense *= (1.0f - damageEvent.IgnoreDefenseRate);
+        }
 
         //최소 방어력 제한
+        // 💡 [비율 관통 적용] 방어력 무시 비율만큼 피격자의 방어력을 깎아버립니다. (0.0 ~1.0)
         defense = Mathf.Max(defense, -1.0f * CONST_DEFNSE + 0.001f);
+
+        if (damageEvent.IgnoreDefenseRate >= 1.0f)
+            return resultDamage * multiplier;
 
         // 데미지 계산 공식 
         // 피해 감소율 = 피격자 방어력 / (방어 상수 + 피격자 방어력)

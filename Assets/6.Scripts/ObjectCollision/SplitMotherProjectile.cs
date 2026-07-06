@@ -3,13 +3,9 @@ using UnityEngine;
 using static UnityEngine.UI.GridLayoutGroup;
 
 [RequireComponent(typeof(Rigidbody))]
-public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
+public class SplitMotherProjectile 
+    : AbstractProjectile
 {
-    [Header("Mother Projectile Settings")]
-    [SerializeField] private float force = 1200.0f;
-    [SerializeField] private float life = 4.0f;
-    [SerializeField] private LayerMask ignoreLayer;
-
     [Header("Split (Child) Settings")]
     [Tooltip("분열되어 퍼질 자탄의 프리팹 이름")]
     [SerializeField] private string childObjectName = "Projectile_Normal";
@@ -20,14 +16,7 @@ public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
     [Tooltip("자탄이 가질 데미지 배율 (0.3 = 모탄 데미지의 30%)")]
     [SerializeField] private float childDamageMultiplier = 0.3f;
 
-    private float curLife = 0f;
     private float fireTimer = 0f;
-
-    private Rigidbody rigid;
-    private new Collider collider;
-
-    private GameObject ownerObject;
-    private Character owner; 
     private bool isCrit;
 
     // 💡 [최적화] Update문 안에서 'new'로 데미지 데이터를 계속 생성하면 렉 유발!
@@ -35,24 +24,14 @@ public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
     private DamageData cachedChildDamageData;
     private float cachedMultiplier = 1.0f;
 
-    private HashSet<GameObject> ignores = new HashSet<GameObject>();
-
-    private void Awake()
-    {
-        rigid = GetComponent<Rigidbody>();
-        collider = GetComponent<Collider>();
-    }
-
     // =======================================================
     // 💡 ISkillEffect 인터페이스 구현부
     // =======================================================
-    public void SetDamageInfo(Character attacker, DamageData damageData
+    public override void SetDamageInfo(Character attacker, DamageData damageData
         , bool bExtraCrit = false, float mulitplier = 1.0f)
     {
+        base.SetDamageInfo(attacker, damageData, bExtraCrit, mulitplier);
         if (attacker == null || damageData == null) return;
-
-        owner = attacker;
-        ownerObject = attacker;
         isCrit = bExtraCrit;
 
         // 💡 여기서 자탄용 데미지 데이터를 미리 1번만 계산해서 생성해 둡니다. (GC 할당 제로화)
@@ -72,55 +51,19 @@ public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
         cachedMultiplier = mulitplier;
     }
 
-    public void AddIgnore(GameObject ignore)
+    protected override void OnProjectileSpawned()
     {
-        ignores.Add(ignore);
-    }
-    public void SetIgnores(HashSet<GameObject> ignores)
-    {
-        this.ignores = ignores;
+        fireTimer = 0f;
     }
 
-    // =======================================================
-    // 🔄 생명주기 및 주기적 발사 관리
-    // =======================================================
-    private void OnEnable()
+    protected override void OnProjectileUpdate()
     {
-        if (rigid == null) return;
-
-        rigid.linearVelocity = Vector3.zero;
-        rigid.angularVelocity = Vector3.zero;
-        rigid.AddForce(transform.forward * force);
-
-        curLife = life;
-        fireTimer = 0f; // 타이머 초기화
-    }
-
-    private void OnDisable()
-    {
-        ObjectPooler.ReturnToPool(this.gameObject);
-        ignores.Clear();
-    }
-
-    private void Update()
-    {
-        // 1. 수명 관리
-        if (life != -1)
-        {
-            curLife -= Time.deltaTime;
-            if (curLife <= 0f)
-            {
-                this.gameObject.SetActive(false);
-                return;
-            }
-        }
-
-        // 💡 2. [핵심] 날아가면서 주기적으로 자탄 살포!
+        // 💡 잡다한 수명 계산은 부모가 알아서 하니, 나는 살포 타이머만 신경 쓴다!
         fireTimer += Time.deltaTime;
         if (fireTimer >= fireInterval)
         {
             fireTimer = 0f;
-            SpawnChildSpread();
+            SpawnChildSpread(); // (자탄 360도 스폰 로직 동일)
         }
     }
 
@@ -150,14 +93,9 @@ public class SplitMotherProjectile : MonoBehaviour, ISkillEffect
         }
     }
 
-    // 벽이나 적에 부딪혔을 때의 처리 (관통하게 할 거라면 이 함수를 통째로 지우셔도 됩니다)
-    private void OnTriggerEnter(Collider other)
+    protected override void ProcessHit(Collider other)
     {
-        if (ignores.Contains(other.gameObject)) return;
-        if (ignoreLayer.Contains(other.gameObject)) return;
-
-        // 예를 들어 벽(Environment) 레이어에 부딪히면 모탄 소멸
-        // (적을 만났을 땐 뚫고 지나가면서 계속 뿌려야 제맛이므로 레이어 검사를 켜두는 게 좋습니다)
+        // 벽에 부딪히면 파괴 (적은 관통)
         this.gameObject.SetActive(false);
     }
 }

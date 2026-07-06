@@ -4,16 +4,8 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PiercingDrillProjectile
-    : BaseProjectile
-    , ISkillEffect
+    : AbstractProjectile
 {
-    [Header("Projectile Settings")]
-    [SerializeField] private float force = 1000.0f;
-    [SerializeField] private float life = 5.0f;
-    [SerializeField] private LayerMask ignoreLayer;
-    [SerializeField] private string bombEffectName = "";
-    [SerializeField] private string impactSoundName = "";
-
     [Header("Piercing Drill Settings")]
     [Tooltip("관통 중일 때의 속도 배율 (0.2 = 평소 속도의 20%로 감속)")]
     [SerializeField] private float drillingSpeedRatio = 0.2f;
@@ -21,72 +13,30 @@ public class PiercingDrillProjectile
     [SerializeField] private float tickInterval = 0.2f;
 
     // --- 내부 변수 ---
-    private float curLife = 0f;
-    private Rigidbody rigid;
-    private new Collider collider;
-
-
     // 드릴 상태 추적
     private HashSet<Collider> currentTargets = new HashSet<Collider>();
     private float tickTimer = 0f;
     private Vector3 normalVelocity;
     private bool isVelocityCaptured = false;
 
-    //public event Action<Collider> OnTriggerEnterAction;
-    public event Action<Collider, Collider, Vector3> OnProjectileHit;
 
-
-    private void Awake()
+    protected override void OnProjectileSpawned()
     {
-        rigid = GetComponent<Rigidbody>();
-        collider = GetComponent<Collider>();
-    }
-
-
-    // =======================================================
-    // 🔄 생명주기 및 물리 이동 로직
-    // =======================================================
-    private void OnEnable()
-    {
-        if (rigid == null) return;
-
-        rigid.linearVelocity = Vector3.zero;
-        rigid.AddForce(transform.forward * force);
-        curLife = life;
-
+        // 총알이 깨어날 때 드릴 전용 변수만 초기화 (리지드바디 속도 등은 부모가 해줌)
         currentTargets.Clear();
         tickTimer = 0f;
         isVelocityCaptured = false;
     }
 
-    protected override void OnDisable()
+    protected override void OnProjectileDespawned()
     {
-        base.OnDisable();
-
-        ObjectPooler.ReturnToPool(this.gameObject);
+        // 풀로 돌아갈 때 리스트 청소
         currentTargets.Clear();
-
-        if (rigid != null)
-        {
-            rigid.linearVelocity = Vector3.zero;
-            rigid.angularVelocity = Vector3.zero;
-        }
     }
 
-    private void Update()
+    protected override void OnProjectileUpdate()
     {
-        // 1. 수명 관리
-        if (life != -1)
-        {
-            curLife -= Time.deltaTime;
-            if (curLife <= 0f)
-            {
-                this.gameObject.SetActive(false);
-                return;
-            }
-        }
-
-        // 2. 다단 히트 (Tick) 로직
+        // 1. 다단 히트 (Tick) 로직 (수명 깎는 건 부모가 해줌)
         if (currentTargets.Count > 0)
         {
             tickTimer += Time.deltaTime;
@@ -95,12 +45,27 @@ public class PiercingDrillProjectile
                 tickTimer = 0f;
                 foreach (Collider target in currentTargets)
                 {
-                    if (target == null) continue;
+                    if (target == null || !target.gameObject.activeInHierarchy) continue;
                     DealDamage(target.gameObject, target.transform.position);
                 }
             }
         }
     }
+
+    protected override void ProcessHit(Collider other)
+    {
+        // 2. 관통 시작: 목록에 추가하고 즉시 1타 데미지
+        // (참고: 사운드 재생, 폭발 이펙트 생성, 무시 목록 추가는 이미 부모 클래스의 OnTriggerEnter에서 알아서 다 해줬습니다!)
+        if (currentTargets.Add(other))
+        {
+            Vector3 hitPoint = collider.ClosestPoint(other.transform.position);
+            hitPoint = other.transform.InverseTransformPoint(hitPoint);
+
+            // 🚨 원본 코드에 있던 치명적인 버그(owner를 때리는 현상) 수정 완료!
+            DealDamage(other.gameObject, hitPoint);
+        }
+    }
+
 
     private void FixedUpdate()
     {
@@ -124,43 +89,7 @@ public class PiercingDrillProjectile
         }
     }
 
-    // =======================================================
-    // ⚔️ 충돌 및 데미지 로직
-    // =======================================================
-    private void OnTriggerEnter(Collider other)
-    {
-        if (ignores.Contains(other.gameObject)) return;
-        if (ignoreLayer.Contains(other.gameObject)) return;
-        if (IsFriendlyFire(other.gameObject))
-            return;
-
-        //OnTriggerEnterAction?.Invoke(other);
-        OnProjectileHit?.Invoke(collider, other, transform.position);
-
-        // 관통 시작: 목록에 추가하고 즉시 1타 데미지
-        if (currentTargets.Add(other))
-        {
-            //Damage 
-            {
-                Vector3 hitPoint = collider.ClosestPoint(other.transform.position);
-                hitPoint = other.transform.InverseTransformPoint(hitPoint);
-                DealDamage(owner, hitPoint);
-
-            }
-
-            // Play Sound
-            {
-                SoundManager.Instance.SafeInvoke(v => v.PlaySFX(impactSoundName));
-            }
-
-            // 관통 이펙트 재생 (필요시)
-            if (!string.IsNullOrEmpty(bombEffectName))
-            {
-                ObjectPooler.SpawnFromPool(bombEffectName, transform.position);
-            }
-        }
-    }
-
+    
     private void OnTriggerExit(Collider other)
     {
         if (IsFriendlyFire(other.gameObject))

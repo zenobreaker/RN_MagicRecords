@@ -72,6 +72,8 @@ public class DamageData
     [Header("Hit")]
     public HitData hitData;
 
+    public float ignoreDefenseRate = 0.0f;
+
     //public DamageEvent GetMyDamageEvent(GameObject attacker,
     //    bool bFirstHit = false, bool bExtraCrit = false,
     //    float multiplier = 1.0f)
@@ -107,6 +109,7 @@ public class DamageData
         clone.impulseDirection = impulseDirection;
         clone.csp = csp;
         clone.hitData = this.hitData.Clone();
+        clone.ignoreDefenseRate = this.ignoreDefenseRate;
         return clone;
     }
 }
@@ -223,7 +226,7 @@ public class DamageEvent
     //TODO : 잃은 체력 비례 데미지의 대한 상한 조건이 서로 상이할 경우 사용
     //public List<MissingHPDamageModifier> MissingHPModifiers { get; } = new List<MissingHPDamageModifier>();
     public float MissingHPRatio; // 잃은 체력 비례 데미지
-    public bool IgnoreDefense;  // 방어력 무시 데미지
+    public float IgnoreDefenseRate;  // 방어력 무시 데미지
     public float MaxHPRatio; // 최대 체력 비례 데미지 
     public float DamageAmp;
 
@@ -235,7 +238,7 @@ public class DamageEvent
         this.isCrit = isCrit;
         this.isFisrtHit = isFisrtHit;
         MissingHPRatio = 0f;
-        IgnoreDefense = false;
+        IgnoreDefenseRate = 0f;
         MaxHPRatio = 0f;
         DamageAmp = 0f;
 
