@@ -4888,12 +4888,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1679290798759979152}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 839d79f719c205e4c986593cab47c5da, type: 3}
+  m_Script: {fileID: 11500000, guid: 50a1f24d6887b394c94280228b82fd1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   flightTime: 1
   arcHeight: 5
-  explosionEffectName: ParabolicShell_AOE
+  explosionEffectName: VFX_Explosion
+  impactSoundName: 
 --- !u!1 &6562717556797354981
 GameObject:
   m_ObjectHideFlags: 0

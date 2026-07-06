@@ -4921,7 +4921,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 778522503676302637}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0eb561ccfc639ee459cfcf904a13b4c7, type: 3}
+  m_Script: {fileID: 11500000, guid: bddc8a94e7c99c443b075159611bd869, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   fallSpeed: 20
@@ -4929,7 +4929,8 @@ MonoBehaviour:
   collisionLayer:
     serializedVersion: 2
     m_Bits: 128
-  explosionEffectName: StarFall_Hit
+  explosionEffectName: 
+  impactSoundName: 
   trail: {fileID: 0}
 --- !u!1 &6279093600025080916
 GameObject:

@@ -4914,18 +4914,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 2006234525802268607}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8cb48e7f0a54d45a82d15684e9ae0a, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ab12b9f8a609aa48bc24b9d9aa419af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   force: 1200
-  life: 3
+  life: 4
   ignoreLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
-  childObjectName: Bullet
-  childCount: 8
+    m_Bits: 392
+  childObjectName: Projectile_Normal
+  childCount: 6
   fireInterval: 0.3
-  childDamageMultiplier: 0.5
+  childDamageMultiplier: 0.3
 --- !u!1 &2683768127548605020
 GameObject:
   m_ObjectHideFlags: 0

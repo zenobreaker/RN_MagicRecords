@@ -148,9 +148,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 43770051327573451}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff11d82dcfe148d4ba7726f18f9a0ee1, type: 3}
+  m_Script: {fileID: 11500000, guid: 8bc4484a0e9b6e74c9f181d0a24a6b12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 1000
+  force: 25
   life: 10
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 64
   bombEffectName: 
+  impactSoundName: 
+  basePierceCount: 0

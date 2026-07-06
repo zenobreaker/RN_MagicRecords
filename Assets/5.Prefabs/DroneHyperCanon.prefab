@@ -19721,16 +19721,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 5904922040541714445}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d8ebb28387e51d4e90d454e9d31550a, type: 3}
+  m_Script: {fileID: 11500000, guid: cd6237066f82dc0459ac943057f7d054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  beamRadius: 2
-  beamLength: 23
+  beamRadius: 1.2
+  beamLength: 24
   hitLayer:
     serializedVersion: 2
-    m_Bits: 265
-  hitDelay: 0.1
+    m_Bits: 72
+  hitDelay: 0.2
   lifeTime: 1
   isMultiHit: 1
-  tickRate: 0.35
-  impactSoundName: Gun_Impact
+  tickRate: 0.2
+  impactSoundName: 

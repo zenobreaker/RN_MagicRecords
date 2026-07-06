@@ -48,17 +48,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 36369754381117536}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a34ac4045070254689986a8016f6253, type: 3}
+  m_Script: {fileID: 11500000, guid: fc4fe6e4da086bf4a895dd0738a8c28b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   explosionRadius: 3
   lifeTime: 1
   hitLayer:
     serializedVersion: 2
-    m_Bits: 9
+    m_Bits: 264
   isMultiHit: 0
   tickRate: 0.5
-  impactSoundName: Gun_Impact
+  impactSoundName: 
 --- !u!1 &655268843709950522
 GameObject:
   m_ObjectHideFlags: 0
