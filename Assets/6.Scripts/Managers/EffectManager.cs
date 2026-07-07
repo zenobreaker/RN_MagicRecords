@@ -114,4 +114,16 @@ public class EffectManager : Singleton<EffectManager>
         RegisterEffect(target, appliedBy, effect);
     }
 
+
+    // 💡 추가할 통합 메서드 (Burn, Bleed, Poison 모두 이 함수 하나로 처리 가능!)
+    public void RegisterDotEffect(string effectID, GameObject target, GameObject appliedBy, float duration, float basePower)
+    {
+        if (!effectsDict.TryGetValue(effectID, out var effectObj))
+            return;
+
+        float tick = effectObj.tickInterval;
+        BaseEffect effect = EffectFactory.CreateDotStatusEffect(effectID, "", duration, effectObj, tick, basePower);
+
+        RegisterEffect(target, appliedBy, effect);
+    }
 }

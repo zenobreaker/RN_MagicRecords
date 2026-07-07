@@ -234,6 +234,7 @@ public abstract class ActiveSkill
         {
             SkillUseEvent evt = new SkillUseEvent 
             { 
+                SkillID = this.skillID,
                 SkillName = this.skillName,
                 Owner = this.ownerCharacter
             };

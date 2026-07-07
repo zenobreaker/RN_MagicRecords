@@ -10,28 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b10d0a553238744b0cd87f519edeba, type: 3}
-  m_Name: renovated-bullet
+  m_Name: plasmaray-cutting
   m_EditorClassIdentifier: 
-  id: 10041
-  skillName: name_dragonbreath
-  skillDescription: desc_name_dragonbreath
+  id: 10022
+  skillName: name_plasmaray-cutting
+  skillDescription: 
   learnableLevel: 0
-  maxLevel: 3
+  maxLevel: 1
   skillUpgradeCost: 
-  skillImage: {fileID: 0}
+  skillImage: {fileID: 21300000, guid: f6bc750ca0c021b4ca958ebcb321b617, type: 3}
   leadingSkillList: 
   levelDatas: []
   jobID: 1
   Modules:
-  - rid: 7840629681519329371
+  - rid: 7840629669724160000
   references:
     version: 2
     RefIds:
-    - rid: 7840629681519329371
-      type: {class: Module_Passive_StatusEffectBullet, ns: , asm: Assembly-CSharp}
+    - rid: 7840629669724160000
+      type: {class: Module_Passive_IgnoreDefense, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
-        targetSkillID: 1004
-        effectID: Burn
-        duration: 3
-        power: 5
+        targetSkillID: 1002
+        ignoreRate: 0.8

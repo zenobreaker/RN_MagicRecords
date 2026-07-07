@@ -3557,6 +3557,38 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3337285038975108788, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: classSkillTreeList.Array.data[0].allSkills.Array.size
+      value: 19
+      objectReference: {fileID: 0}
+    - target: {fileID: 3337285038975108788, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: 'classSkillTreeList.Array.data[0].allSkills.Array.data[16]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 37f233e5baeef7a459b8903ae840b240, type: 2}
+    - target: {fileID: 3337285038975108788, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: 'classSkillTreeList.Array.data[0].allSkills.Array.data[17]'
+      value: 
+      objectReference: {fileID: 11400000, guid: ca3d8ee5aa5e8d1438e18e73a5486751, type: 2}
+    - target: {fileID: 3337285038975108788, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: 'classSkillTreeList.Array.data[0].allSkills.Array.data[18]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 038f439d53536d546b570561b0264f1c, type: 2}
+    - target: {fileID: 3806654061284044991, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: records.Array.size
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 3806654061284044991, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: 'records.Array.data[8]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 75474d97e5ae5ee429d3d8ea3506d38e, type: 2}
+    - target: {fileID: 3806654061284044991, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: 'records.Array.data[9]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 6b1cee363e1ce194db8341870d186e95, type: 2}
+    - target: {fileID: 3806654061284044991, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: 'records.Array.data[10]'
+      value: 
+      objectReference: {fileID: 11400000, guid: b2c46062d44e8104aba46cac5a7c1735, type: 2}
     - target: {fileID: 6372159647807091890, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: m_Name
       value: AppManager_Instance

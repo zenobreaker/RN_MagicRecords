@@ -3,6 +3,7 @@
 // 스킬 사용 시 처리 이벤트 
 public class SkillUseEvent
 {
+    public int SkillID;
     public string SkillName;
     public GameObject Owner; 
 }
