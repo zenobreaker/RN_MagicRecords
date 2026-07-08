@@ -10,19 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b10d0a553238744b0cd87f519edeba, type: 3}
-  m_Name: renovated-bullet
+  m_Name: spreadshot-focusedfire
   m_EditorClassIdentifier: 
-  id: 14
-  skillName: name_renovated-bullet
-  skillDescription: desc_renovated-bullet
+  id: 10042
+  skillName: name_focusedfire
+  skillDescription: desc_focusedfire
   learnableLevel: 0
-  maxLevel: 3
+  maxLevel: 1
   skillUpgradeCost: 
   skillImage: {fileID: 0}
   leadingSkillList: 
   levelDatas: []
   jobID: 1
-  Modules: []
+  Modules:
+  - rid: 7840629692888514560
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 7840629692888514560
+      type: {class: Module_Passive_FocusedFire, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 2
+        targetSkillID: 1004
+        bonusPatternCount: 2
+        bonusPatternAngle: -5

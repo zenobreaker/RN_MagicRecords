@@ -6,7 +6,6 @@ using UnityEngine;
 /// https://docs.google.com/spreadsheets/d/1eG1U6iAh0-rkmFyIxXJ1lbkmK_2W9qiF3SJ7JvjummA/edit?gid=0#gid=0
 /// </summary>
 
-public enum MonsterGrade { NONE = 0, NORMAL = 1, ELITE, BOSS };
 
 // json으로 이루어진 데이터를 가공하는 용도의 클래스 
 [System.Serializable]

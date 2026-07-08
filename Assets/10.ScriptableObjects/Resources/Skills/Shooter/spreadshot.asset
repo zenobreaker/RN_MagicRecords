@@ -44,6 +44,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 3
     angle: 15
@@ -70,6 +71,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 4
     angle: 13.5
@@ -96,6 +98,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 4
     angle: 13.5
@@ -122,12 +125,13 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 5
     angle: 10
   - range: 0
-    limitMinCooldown: 0
-    cooldown: 0
+    limitMinCooldown: 2
+    cooldown: 12
     castingTime: 0
     damageData:
       damageType: 0
@@ -148,6 +152,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 5
     angle: 10
@@ -224,6 +229,7 @@ MonoBehaviour:
             HitParticle: {fileID: 0}
             HitParticlePositionOffset: {x: 0, y: 0, z: 0}
             HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+          ignoreDefenseRate: 0
         spawnPosition: {x: 0, y: 1, z: 0}
         spawnRotation: {x: 0, y: 0, z: 0}
         patternType: 0

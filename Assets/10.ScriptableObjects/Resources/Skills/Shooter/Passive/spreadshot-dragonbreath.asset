@@ -10,19 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b10d0a553238744b0cd87f519edeba, type: 3}
-  m_Name: renovated-bullet
+  m_Name: spreadshot-dragonbreath
   m_EditorClassIdentifier: 
-  id: 14
-  skillName: name_renovated-bullet
-  skillDescription: desc_renovated-bullet
+  id: 10041
+  skillName: name_dragonbreath
+  skillDescription: desc_name_dragonbreath
   learnableLevel: 0
-  maxLevel: 3
+  maxLevel: 1
   skillUpgradeCost: 
   skillImage: {fileID: 0}
   leadingSkillList: 
   levelDatas: []
   jobID: 1
-  Modules: []
+  Modules:
+  - rid: 7840629681519329371
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 7840629681519329371
+      type: {class: Module_Passive_StatusEffectBullet, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        targetSkillID: 1004
+        effectID: Burn
+        duration: 3
+        power: 5
