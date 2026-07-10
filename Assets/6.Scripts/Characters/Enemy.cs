@@ -30,7 +30,6 @@ public class Enemy
     protected SkillComponent skill;
     protected WeaponComponent weapon;
 
-    private MonsterGrade grade;
 
     protected override void Awake()
     {
@@ -248,14 +247,14 @@ public class Enemy
     }
 
 
-    public void SetGrade(MonsterGrade monsterGrade)
+    public override void SetGrade(MonsterGrade monsterGrade)
     {
         grade = monsterGrade;
         if (grade == MonsterGrade.BOSS)
             isBoss = true;
     }
 
-    public void SetGrade(MonsterData data)
+    public override void SetGrade(MonsterData data)
     {
         if (data != null)
             SetGrade(data.monsterGrade);

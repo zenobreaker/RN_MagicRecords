@@ -154,6 +154,7 @@ public sealed class CharacterVisual : MonoBehaviour
 
         float finalSpeed = actionData.ActionSpeed * statSpeedMultiplier;
         Animator.SetFloat(actionData.ActionSpeedHash, finalSpeed);
+        Debug.Log($"{actionData.StateName} play anim");
         Animator.CrossFade(actionData.StateName, 0.1f, layer);
     }
 

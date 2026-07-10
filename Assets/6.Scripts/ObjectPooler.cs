@@ -328,15 +328,15 @@ public partial class ObjectPooler : MonoBehaviour
         // 💡 3. [Auto-Expand] 큐를 다 뒤졌는데도 전부 날아가고 있거나 비어있다면 새로 만듭니다!
         if (!foundInactive || poolQueue.Count <= 0)
         {
-            Pool pool = pools.Find(x => x.tag == tag);
-            if (pool == null) throw new Exception($"Pool settings for {tag} not found.");
-
+            Pool pool = pools.Find(x => x.tag == tag) ?? throw new Exception($"Pool settings for {tag} not found.");
             GameObject newObj = CreateNewObjectSetParent(pool.tag, pool.prefab);
             newObj.SetActive(false); // 혹시 켜져서 나올까 봐 확실히 꺼둠
-            ArrangePool(tag, newObj);
+            ArrangePool(pool.parentTransform, tag, newObj);
+            
+            poolQueue.Enqueue(newObj);
 
             // ArrangePool이 새 객체를 큐 맨 뒤에 넣었을 테니, 맨 앞으로 가져옵니다.
-            while (poolQueue.Peek() != newObj)
+            while (poolQueue.Count > 0 && poolQueue.Peek() != newObj)
             {
                 poolQueue.Enqueue(poolQueue.Dequeue());
             }

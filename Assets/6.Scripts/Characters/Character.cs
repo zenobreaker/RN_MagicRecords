@@ -11,6 +11,8 @@ public class Character
     , ISlowable
     , ITeamAgent
 {
+
+    protected MonsterGrade grade;
     protected GenenricTeamId genericTeamId;
 
     protected new Rigidbody rigidbody;
@@ -80,8 +82,17 @@ public class Character
 
     public virtual void End_Damaged() { bInAction = false; }
 
+
+    #region Team ID 
     public void SetGenericTeamId(GenenricTeamId id) { genericTeamId = id; }
     public GenenricTeamId GetGeneriTeamId() { return genericTeamId; }
+    #endregion
+
+    #region Set Grade
+    public virtual void SetGrade(MonsterGrade monsterGrade) { }
+    public virtual void SetGrade(MonsterData data) { }
+    public virtual MonsterGrade GetGrade() => grade;
+    #endregion
 
     #region AnimationEvent
     // 🚨 주의: 애니메이터가 자식(Model)으로 이동했으므로, Unity Animation Event는 Visual 스크립트를 때리게 됩니다.
