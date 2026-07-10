@@ -79,7 +79,7 @@ MonoBehaviour:
     prefab: {fileID: 1208751775541016116, guid: 8c1ad0e1b85b4664490ca2145f267774, type: 3}
     size: 5
     parentTransform: {fileID: 0}
-  - tag: HyperCanon
+  - tag: HyperBeam
     prefab: {fileID: 5904922040541714445, guid: 4d08b90daa2f6e646b2a16a1baee277c, type: 3}
     size: 5
     parentTransform: {fileID: 0}
@@ -121,5 +121,9 @@ MonoBehaviour:
     parentTransform: {fileID: 0}
   - tag: HitImpact01
     prefab: {fileID: 3492691017000508022, guid: 2487b6872f1800e4582019293a0b2c04, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: HyperBeamOrb
+    prefab: {fileID: 2045266228294697758, guid: e5fdb2499ad65624fbfab8b7f5da4c12, type: 3}
     size: 5
     parentTransform: {fileID: 0}

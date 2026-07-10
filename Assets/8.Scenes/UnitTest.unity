@@ -3567,11 +3567,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3337285038975108788, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: classSkillTreeList.Array.data[0].allSkills.Array.size
-      value: 21
+      value: 23
       objectReference: {fileID: 0}
     - target: {fileID: 3337285038975108788, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: classSkillTreeList.Array.data[1].allSkills.Array.size
-      value: 20
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 3337285038975108788, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: 'classSkillTreeList.Array.data[1].allSkills.Array.data[0]'
@@ -3634,6 +3634,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 5bc9f5b521e6e74458dcdf248b65b9b7, type: 2}
     - target: {fileID: 3337285038975108788, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: 'classSkillTreeList.Array.data[0].allSkills.Array.data[21]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 9e2d8597a7d1566468df6ca86cdfbad1, type: 2}
+    - target: {fileID: 3337285038975108788, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: 'classSkillTreeList.Array.data[0].allSkills.Array.data[22]'
+      value: 
+      objectReference: {fileID: 11400000, guid: b0109654271a20b46853301b2adc7e69, type: 2}
+    - target: {fileID: 3337285038975108788, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: 'classSkillTreeList.Array.data[1].allSkills.Array.data[10]'
       value: 
       objectReference: {fileID: 11400000, guid: 36a0b4b219f6f1c49a8816f1a7f7d89f, type: 2}
@@ -3672,10 +3680,10 @@ PrefabInstance:
     - target: {fileID: 3337285038975108788, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: 'classSkillTreeList.Array.data[1].allSkills.Array.data[19]'
       value: 
-      objectReference: {fileID: 11400000, guid: 038f439d53536d546b570561b0264f1c, type: 2}
+      objectReference: {fileID: 11400000, guid: c15d1bc701d8fc0438b9065c7eac5ff0, type: 2}
     - target: {fileID: 3806654061284044991, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: records.Array.size
-      value: 13
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 3806654061284044991, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: 'records.Array.data[8]'
@@ -3697,6 +3705,14 @@ PrefabInstance:
       propertyPath: 'records.Array.data[12]'
       value: 
       objectReference: {fileID: 11400000, guid: 709b52238fb72664d8e16b0600a729d2, type: 2}
+    - target: {fileID: 3806654061284044991, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: 'records.Array.data[13]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 6a722e913d6b5b34ab4d51ddfa301646, type: 2}
+    - target: {fileID: 3806654061284044991, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: 'records.Array.data[14]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 8c45814945e3a614ab008f762900cf81, type: 2}
     - target: {fileID: 6372159647807091890, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: m_Name
       value: AppManager_Instance
