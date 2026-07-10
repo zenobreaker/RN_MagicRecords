@@ -55,9 +55,8 @@ public class Module_PhaseTransition : SkillModule
                 skill.JumpToPhase(targetPhaseIndex);
                 break;
             case PhaseTransitionType.EndSkill:
-                if (character != null)
-                    character.End_DoAction(); 
-                //skill.End_DoAction(); // 스킬 종료 함수 호출
+                skill.End_DoAction(); // 스킬 종료 함수 호출
+                character.SafeInvoke(v => v.End_DoAction());
                 break;
         }
     }

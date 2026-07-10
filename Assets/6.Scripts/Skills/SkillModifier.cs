@@ -76,6 +76,11 @@ public sealed class CastContext
     public float CastingTime;
     public float ChargedTime;
 
+    public float MaxCastingTime; 
+    public float MaxChargeTime;        
+    public bool AutoFireOnMaxCharge = false;  
+    public bool IsInstantCast = false;        
+
     public Quaternion Direction;
 }
 
@@ -92,6 +97,7 @@ public sealed class SpawnContext
 
     public Vector3 TargetPosition;
     public List<Vector3> TargetPositions;
+    public string OverridePrefabName = string.Empty; 
 }
 
 [Serializable]

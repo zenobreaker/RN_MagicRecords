@@ -89,9 +89,15 @@ public class Module_SpawnObject : SkillModule
             bool isPooled = false;
 
             // [생성 분기] 풀링 vs Instantiate
-            if (!string.IsNullOrEmpty(objectName))
+            string finalName = "";
+            if (!string.IsNullOrEmpty(skill.Runtime.Spawn.OverridePrefabName))
+                finalName = skill.Runtime.Spawn.OverridePrefabName;
+            else
+                finalName = objectName;
+
+            if (!string.IsNullOrEmpty(finalName))
             {
-                obj = ObjectPooler.DeferredSpawnFromPool(objectName, basePosition, finalRotation);
+                obj = ObjectPooler.DeferredSpawnFromPool(finalName, basePosition, finalRotation);
                 isPooled = true;
             }
             else if (spawnObj != null)

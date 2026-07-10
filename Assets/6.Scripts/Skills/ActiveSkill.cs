@@ -240,8 +240,7 @@ public abstract class ActiveSkill
             };
 
             PassiveSystem ps = AppManager.Instance.SafeInvoke(v => v.GetPassiveSystem());
-            if (ps != null)
-                ps.BroadcastOnSkillCast(evt, this.Runtime);
+            ps?.BroadcastOnSkillCast(evt, this.Runtime);
         }
 
         isCasting = true;
@@ -289,7 +288,8 @@ public abstract class ActiveSkill
         // Cast
         Runtime.Cast = new CastContext
         {
-            CastingTime = LevelDatas[index].castingTime,
+            MaxCastingTime = LevelDatas[index].castingTime,
+            MaxChargeTime = LevelDatas[index].chargeTime,
         };
 
         // Spawn
@@ -315,7 +315,23 @@ public abstract class ActiveSkill
         Runtime.Modifier = new ModifierContext();
     }
 
-    public virtual void Update(float deltaTime) { }
+    public virtual void Update(float deltaTime)
+    {
+        if (isWaitingForRelease)
+        {
+            // 현재까지 누르고 있는 시간 계산
+            Runtime.Cast.ChargedTime += deltaTime;
+
+            if (Runtime.Cast.IsInstantCast ||
+               (Runtime.Cast.AutoFireOnMaxCharge &&
+               Runtime.Cast.ChargedTime >= Runtime.Cast.MaxChargeTime))
+            {
+                // 플레이어가 물리적으로 마우스를 떼지 않았어도, 내부적으로 뗀 것으로 간주하고 강제 실행!
+                Debug.Log($"Active skill released by runtime");
+                OnReleaseKey();
+            }
+        }
+    }
     public virtual void EndPhaseAndNext() { }   // 페이즈를 종료 후 넘기는 처리 
 
     public void JumpToPhase(int index)
@@ -326,6 +342,7 @@ public abstract class ActiveSkill
     protected virtual void ExecutePhase(int phaseIndex)
     {
         expectedAnimEventPhaseIndex = phaseIndex;
+        Debug.Log($"{this.SkillID} : execute phase {phaseIndex}");
     }
 
     protected abstract void ApplyEffects();     // 개별 효과 적용 
@@ -339,12 +356,13 @@ public abstract class ActiveSkill
         {
             isWaitingForRelease = false;
 
-            // 💡 [핵심] 몇 초나 모았는지 계산해서 블랙보드에 저장! 
-            // (나중에 투사체 모듈이 이 값을 보고 데미지나 크기를 키울 수 있습니다)
-            float chargedTime = Time.time - chargeStartTime;
-            Runtime.Cast.ChargedTime = chargedTime;
+            // 💡 즉발(Instant) 모듈이 켜졌을 때만 '풀차징' 보너스를 강제로 줍니다.
+            if (Runtime.Cast.IsInstantCast)
+            {
+                Runtime.Cast.ChargedTime = Runtime.Cast.MaxChargeTime;
+            }
+            // (즉발이 아니라면 Update에서 누적된 ChargedTime이 그대로 유지되므로 아무것도 안 해도 됨!)
 
-            // 차징을 끝내고 발사 페이즈(1페이즈)로 강제로 넘깁니다!
             EndPhaseAndNext();
         }
     }

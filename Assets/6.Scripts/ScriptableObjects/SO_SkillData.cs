@@ -13,7 +13,8 @@ public class SkillLevelData
 
     public float limitMinCooldown; 
     public float cooldown;
-    public float castingTime = -1.0f; 
+    public float castingTime = -1.0f;
+    public float chargeTime = 0.0f; 
     public DamageData  damageData;
     public List<int> bonusOptionList;
 

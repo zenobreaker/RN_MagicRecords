@@ -68,7 +68,7 @@ public class GenericActiveSkill
         if (isCasting == false) return; 
 
         int nextPhase = phaseIndex + 1;
-
+        
         // 다음 페이즈가 정상적으로 남아있으면 실행
         if (nextPhase < phaseList.Count)
         {
