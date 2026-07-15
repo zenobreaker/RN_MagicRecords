@@ -18,10 +18,7 @@ public class DamageText : MonoBehaviour
         text = GetComponent<TextMeshProUGUI>();
     }
 
-    private void OnDisable()
-    {
-        ObjectPooler.ReturnToPool(gameObject);
-    }
+  
 
     private void LateUpdate()
     {

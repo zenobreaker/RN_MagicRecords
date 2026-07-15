@@ -44,8 +44,10 @@ public class ParabolicProjectile
         isFired = true; // 세팅 완료! 발사!
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
+
         isFired = false;
         progress = 0f;
     }
@@ -56,8 +58,10 @@ public class ParabolicProjectile
         ObjectPooler.ReturnToPool(gameObject); 
     }
 
-    private void Update()
+    protected override void Update()
     {
+        base.Update();  
+
         if (!isFired) return;
 
         // 1. 진행도 (t) 계산 : 0에서 시작해서 도착하면 1이됨.

@@ -16,7 +16,6 @@ public class MetorProjectile
     [SerializeField] private TrailRenderer trail;
 
     private Vector3 targetPosition;
-    private DamageData damageData;
     private float cachedMultiplier = 1f;
     private bool isExploded = false;
 
@@ -27,8 +26,9 @@ public class MetorProjectile
         transform.LookAt(targetPosition);
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
         isExploded = false; 
         if(trail != null) trail.Clear(); 
     }
@@ -39,8 +39,10 @@ public class MetorProjectile
         ObjectPooler.ReturnToPool(this.gameObject);
     }
 
-    private void Update()
+    protected override void Update()
     {
+        base.Update();
+
         if (isExploded) return; 
 
         // 1. 목표 지점을 향해 사선으로 이동 
@@ -64,7 +66,7 @@ public class MetorProjectile
         // 2. 광역 데미지 판정 
         if(explosion != null && explosion.TryGetComponent<ISkillEffect>(out var skillEffect))
         {
-            skillEffect.SetDamageInfo(owner, damageData, false, cachedMultiplier);
+            skillEffect.SetDamageInfo(owner, cachedDamageData, false, cachedMultiplier);
             skillEffect.AddIgnore(ownerObject); 
         }
 

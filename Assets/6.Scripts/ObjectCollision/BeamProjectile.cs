@@ -64,8 +64,10 @@ public class BeamProjectile
         baseBeamRadius = beamRadius;
         baseScale = transform.localScale;
     }
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
+
         // 빔이 켜질 때마다 초기화
         hitTargets.Clear();
         tickTimer = 0f;
@@ -93,8 +95,10 @@ public class BeamProjectile
         CancelInvoke();    // Monobehaviour에 Invoke가 있다면 
     }
 
-    private void Update()
+    protected override void Update()
     {
+        base.Update();
+
         // 1. 수명 관리
         if (currentLifeTimer > 0f)
         {
@@ -141,7 +145,7 @@ public class BeamProjectile
         }
     }
 
-    // 💡 핵심 충돌 판정 로직
+    // 핵심 충돌 판정 로직
     private void FireBeamCast()
     {
         // 두꺼운 빔(SphereCast)을 쏴서 경로에 있는 모든 대상(All)을 긁어옵니다.

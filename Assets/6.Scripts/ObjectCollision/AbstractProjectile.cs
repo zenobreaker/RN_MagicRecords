@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public abstract class AbstractProjectile : BaseProjectile, ISkillEffect
+public abstract class AbstractProjectile 
+    : BaseProjectile
+    , ISkillEffect
 {
     [Header("Base Projectile Settings")]
     [SerializeField] protected float force = 20.0f;
@@ -26,10 +28,11 @@ public abstract class AbstractProjectile : BaseProjectile, ISkillEffect
     }
 
     // 💡 [핵심] 공통 생명주기 처리는 부모가 알아서 다 합니다.
-    protected virtual void OnEnable()
+    protected override void OnEnable()
     {
         if (rigid == null) return;
-
+        base.OnEnable();
+        
         // 1. 공통 물리 / 수명 초기화
         rigid.linearVelocity = transform.forward * force;
         curLife = life;
@@ -53,8 +56,10 @@ public abstract class AbstractProjectile : BaseProjectile, ISkillEffect
         OnProjectileDespawned();
     }
 
-    protected virtual void Update()
+    protected override void Update()
     {
+        base.Update(); 
+
         if (life != -1)
         {
             curLife -= Time.deltaTime;

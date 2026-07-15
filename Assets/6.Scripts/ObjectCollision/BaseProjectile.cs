@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static Unity.Collections.Unicode;
 
 // 💡 추상 클래스로 선언하여 직접 생성을 막고, 공통 기능만 물려줍니다.
 public abstract class BaseProjectile
     : MonoBehaviour
     , ISkillEffect
 {
+    protected List<IOnSpawnRunner> spawnRunners = new List<IOnSpawnRunner>();
+    protected List<IOnHitRunner> hitRunners = new List<IOnHitRunner>();
+    protected List<IOnUpdateRunner> updateRunners = new List<IOnUpdateRunner>();
+    protected List<IOnDestroyRunner> destroyRunners = new List<IOnDestroyRunner>();
+
     protected GameObject ownerObject;
     protected Character owner; 
     protected DamageEvent damageEvent;
@@ -49,7 +55,7 @@ public abstract class BaseProjectile
     }
 
     // ==========================================
-    // 2. 자식들이 꿀 빨게 될 마법의 공통 함수 🍯
+    // 2. 자식들이 꿀 빨게 될 마법의 공통 함수 
     // ==========================================
     protected bool IsFriendlyFire(GameObject target)
     {
@@ -64,6 +70,21 @@ public abstract class BaseProjectile
     // ==========================================
     // 3. 풀링 초기화 공통 로직
     // ==========================================
+    protected virtual void Update()
+    {
+        float dt = Time.deltaTime;
+        foreach (var update in updateRunners)
+        {
+            update.OnUpdate(this, dt);
+        }
+    }
+
+    protected virtual void OnEnable()
+    {
+        foreach (var spawn in spawnRunners)
+            spawn.OnSpawn(this); 
+    }
+
     protected virtual void OnDisable()
     {
         ignores.Clear();
@@ -71,6 +92,23 @@ public abstract class BaseProjectile
         ownerObject = null;
 
         OnTargetHitEvent = null; // 메모리 누수 방지
+
+        foreach (var destroy in destroyRunners)
+        {
+            destroy.OnDestroy(this);
+        }
+        destroyRunners.Clear();
+        spawnRunners.Clear();
+        hitRunners.Clear();
+        updateRunners.Clear();
+    }
+
+    public virtual void NotifyHit(GameObject target, Vector3 hitPos)
+    {
+        foreach (var hit in hitRunners)
+        {
+            hit.OnHit(this, target);
+        }
     }
 
     protected void DealDamage(GameObject target, Vector3 hitPoint)
@@ -79,6 +117,8 @@ public abstract class BaseProjectile
         {
             damage?.OnDamage(ownerObject, null, hitPoint, damageEvent);
         }
+
+        NotifyHit(target, hitPoint);
 
         OnTargetHitEvent?.Invoke(target, hitPoint);
     }

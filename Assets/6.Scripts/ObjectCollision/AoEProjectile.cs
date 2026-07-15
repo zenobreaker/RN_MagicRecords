@@ -21,8 +21,10 @@ public class AoEProjectile
     private HashSet<Collider> hitTargets = new HashSet<Collider>();
 
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
+
         hitTargets.Clear();
         lifeTimer = lifeTime;
         tickTimer = 0f; // 켜지자마자 바로 1회 타격 들어가도록 0으로 셋팅
@@ -40,8 +42,10 @@ public class AoEProjectile
         ObjectPooler.ReturnToPool(this.gameObject);
     }
 
-    private void Update()
+    protected override void Update()
     {
+        base.Update();  
+
         // 1. 수명 관리 (시간 다 되면 꺼짐)
         if (lifeTimer > 0f)
         {

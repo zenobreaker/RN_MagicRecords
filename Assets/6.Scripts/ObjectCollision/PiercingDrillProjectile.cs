@@ -55,13 +55,11 @@ public class PiercingDrillProjectile
     protected override void ProcessHit(Collider other)
     {
         // 2. 관통 시작: 목록에 추가하고 즉시 1타 데미지
-        // (참고: 사운드 재생, 폭발 이펙트 생성, 무시 목록 추가는 이미 부모 클래스의 OnTriggerEnter에서 알아서 다 해줬습니다!)
         if (currentTargets.Add(other))
         {
             Vector3 hitPoint = collider.ClosestPoint(other.transform.position);
             hitPoint = other.transform.InverseTransformPoint(hitPoint);
 
-            // 🚨 원본 코드에 있던 치명적인 버그(owner를 때리는 현상) 수정 완료!
             DealDamage(other.gameObject, hitPoint);
         }
     }

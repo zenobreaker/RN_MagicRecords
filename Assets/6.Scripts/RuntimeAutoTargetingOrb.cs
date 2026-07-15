@@ -24,7 +24,7 @@ public class RuntimeAutoTargetingOrb
     private GenenricTeamId myTeamId = GenenricTeamId.NoTeamId;
     private HashSet<GameObject> ignores = new HashSet<GameObject>();
     private float multiplier = 1.0f; 
-    private bool isExtraCrit = false; 
+    private bool isExtraCrit = false;
 
     // 💡 풀링 환경에서 비동기 작업을 안전하게 취소하기 위한 토큰
     private CancellationTokenSource cancelTokenSource;
