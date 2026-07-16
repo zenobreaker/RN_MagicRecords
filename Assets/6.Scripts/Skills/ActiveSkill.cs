@@ -34,9 +34,12 @@ public abstract class ActiveSkill
 
     protected GameObject ownerObject;
     protected Character ownerCharacter;
+    public Character Owner {  get { return ownerCharacter; } }
     protected WeaponController weaponController;
     protected SkillComponent skillComponent;
     protected StateComponent state;
+    protected StatusComponent status; 
+    public StatusComponent Status {  get { return status; } }
 
     protected List<GameObject> trackedEffects = new List<GameObject>();
 
@@ -127,6 +130,7 @@ public abstract class ActiveSkill
         ownerObject = gameObject;
         ownerCharacter = gameObject.GetComponent<Character>();
         state = gameObject.GetComponent<StateComponent>();
+        status = gameObject.GetComponent<StatusComponent>();
 
         if (ownerObject.TryGetComponent(out IWeaponUser user))
         {

@@ -2,31 +2,24 @@
 
 using UnityEngine;
 
-public interface ISkillEffectBehavior
+
+
+public interface IProjectileOnSpawnRunner
 {
-    void OnSpawn(ISkillEffect projectile);    
-    void OnHit(ISkillEffect effect, GameObject target, Vector3 hitPos);
-    void OnUpdate(ISkillEffect effect, float dt);
-    void OnDespawn(ISkillEffect projectile);
+    void OnSpawn(BaseProjectile projectile);
 }
 
-
-public interface IOnSpawnRunner
+public interface IPorjectileOnHitRunner
 {
-    void OnSpawn(ISkillEffect effect);
+    void OnHit(BaseProjectile projectile, GameObject target);
 }
 
-public interface IOnHitRunner
+public interface IProjectileOnUpdateRunner
 {
-    void OnHit(ISkillEffect effect, GameObject target);
+    void OnUpdate(BaseProjectile projectile, float dt);
 }
 
-public interface IOnUpdateRunner
+public interface IProjectileOnDestroyRunner
 {
-    void OnUpdate(ISkillEffect effect, float dt);
-}
-
-public interface IOnDestroyRunner
-{
-    void OnDestroy(ISkillEffect effect);
+    void OnDestroy(BaseProjectile projectile);
 }

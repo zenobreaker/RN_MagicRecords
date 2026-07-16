@@ -8,16 +8,16 @@ public abstract class BaseProjectile
     : MonoBehaviour
     , ISkillEffect
 {
-    protected List<IOnSpawnRunner> spawnRunners = new List<IOnSpawnRunner>();
-    protected List<IOnHitRunner> hitRunners = new List<IOnHitRunner>();
-    protected List<IOnUpdateRunner> updateRunners = new List<IOnUpdateRunner>();
-    protected List<IOnDestroyRunner> destroyRunners = new List<IOnDestroyRunner>();
+    protected List<IProjectileOnSpawnRunner> spawnRunners = new List<IProjectileOnSpawnRunner>();
+    protected List<IPorjectileOnHitRunner> hitRunners = new List<IPorjectileOnHitRunner>();
+    protected List<IProjectileOnUpdateRunner> updateRunners = new List<IProjectileOnUpdateRunner>();
+    protected List<IProjectileOnDestroyRunner> destroyRunners = new List<IProjectileOnDestroyRunner>();
 
     protected GameObject ownerObject;
-    protected Character owner; 
+    protected Character owner;
     protected DamageEvent damageEvent;
 
-    protected DamageData cachedDamageData; 
+    protected DamageData cachedDamageData;
     public Character Owner => owner;
     public DamageData DamageData => cachedDamageData;
 
@@ -26,7 +26,7 @@ public abstract class BaseProjectile
     protected HashSet<GameObject> ignores = new HashSet<GameObject>();
     public HashSet<GameObject> Ignores => ignores;
 
-    public event Action<GameObject, Vector3>  OnTargetHitEvent;
+    public event Action<GameObject, Vector3> OnTargetHitEvent;
 
     // ==========================================
     // 1. ISkillEffect 공통 구현부 (자식들은 안 써도 됨!)
@@ -82,7 +82,7 @@ public abstract class BaseProjectile
     protected virtual void OnEnable()
     {
         foreach (var spawn in spawnRunners)
-            spawn.OnSpawn(this); 
+            spawn.OnSpawn(this);
     }
 
     protected virtual void OnDisable()
@@ -121,5 +121,25 @@ public abstract class BaseProjectile
         NotifyHit(target, hitPoint);
 
         OnTargetHitEvent?.Invoke(target, hitPoint);
+    }
+
+    public void AddSpawnRunner(IProjectileOnSpawnRunner spawn)
+    {
+        spawnRunners.Unique(spawn);
+    }
+
+    public void AddHitRunner(IPorjectileOnHitRunner hit)
+    {
+        hitRunners.Unique(hit);
+    }
+
+    public void AddDestroyRunner(IProjectileOnDestroyRunner destroy)
+    {
+        destroyRunners.Unique(destroy);
+    }
+
+    public void AddUpdateRunner(IProjectileOnUpdateRunner update)
+    {
+        updateRunners.Unique(update);
     }
 }

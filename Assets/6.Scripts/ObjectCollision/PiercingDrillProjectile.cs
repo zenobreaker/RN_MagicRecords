@@ -99,4 +99,9 @@ public class PiercingDrillProjectile
             currentTargets.Remove(other);
         }
     }
+
+    public void SetDrilingSpeedRatio(float ratio)
+    {
+        drillingSpeedRatio = ratio; 
+    }
 }
