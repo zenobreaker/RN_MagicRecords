@@ -10,16 +10,21 @@ public class RuntimeHomingBehaviour : MonoBehaviour
 
     private Rigidbody rb;
     private Transform targetEnemy;
+    private Transform targetSearchOrigin;
     private float currentSpeed;
+    private bool prioritizeHighestGrade;
     private bool isInitialized = false;
 
     // 💡 패시브 모듈이 풀에서 꺼낼 때마다 호출해주는 초기화 함수
-    public void Setup(float radius, float turnSpeed, LayerMask enemyLayer, HashSet<GameObject> ignores)
+    public void Setup(float radius, float turnSpeed, LayerMask enemyLayer, HashSet<GameObject> ignores,
+        Transform targetSearchOrigin = null, bool prioritizeHighestGrade = false)
     {
         this.radius = radius;
         this.turnSpeed = turnSpeed;
         this.enemyLayer = enemyLayer;
         this.ignores = ignores; // 부모 투사체의 실시간 무시 목록 참조
+        this.targetSearchOrigin = targetSearchOrigin;
+        this.prioritizeHighestGrade = prioritizeHighestGrade;
 
         if (rb == null) rb = GetComponent<Rigidbody>();
 
@@ -75,8 +80,12 @@ public class RuntimeHomingBehaviour : MonoBehaviour
 
     private void FindClosestEnemy()
     {
-        Collider[] cols = Physics.OverlapSphere(transform.position, radius, enemyLayer);
+        Vector3 searchOrigin = targetSearchOrigin != null
+            ? targetSearchOrigin.position
+            : transform.position;
+        Collider[] cols = Physics.OverlapSphere(searchOrigin, radius, enemyLayer);
         float closestDist = float.MaxValue;
+        MonsterGrade highestGrade = MonsterGrade.NONE;
         Transform closest = null;
 
         foreach (var col in cols)
@@ -84,11 +93,25 @@ public class RuntimeHomingBehaviour : MonoBehaviour
             // 무시 목록에 있는 녀석은 탐색 대상에서 원천 제외
             if (ignores != null && ignores.Contains(col.gameObject)) continue;
 
-            float dist = Vector3.Distance(transform.position, col.transform.position);
-            if (dist < closestDist)
+            Transform candidate = col.transform;
+            MonsterGrade grade = MonsterGrade.NONE;
+            if (prioritizeHighestGrade)
+            {
+                Character character = col.GetComponentInParent<Character>();
+                if (character == null) continue;
+
+                candidate = character.transform;
+                grade = character.GetGrade();
+            }
+
+            float dist = Vector3.Distance(searchOrigin, candidate.position);
+            if ((!prioritizeHighestGrade && dist < closestDist) ||
+                (prioritizeHighestGrade &&
+                 (grade > highestGrade || (grade == highestGrade && dist < closestDist))))
             {
                 closestDist = dist;
-                closest = col.transform;
+                highestGrade = grade;
+                closest = candidate;
             }
         }
 
@@ -100,6 +123,7 @@ public class RuntimeHomingBehaviour : MonoBehaviour
     {
         isInitialized = false;
         targetEnemy = null;
+        targetSearchOrigin = null;
         ignores = null; // 참조 해제
     }
 }

@@ -283,6 +283,7 @@ public abstract class ActiveSkill
         {
             PatternCount = LevelDatas[index].spawnCount,
             PatternAngle = LevelDatas[index].angle,
+            TotalShots = 0,
 
             Damage = LevelDatas[index].damageData,
             Range = LevelDatas[index].range,
@@ -311,6 +312,8 @@ public abstract class ActiveSkill
         {
             PatternCountBonus = 0,
             PatternAngleBonus = 0f,
+            TotalShotsBonus = 0,
+            FireIntervalMultiplier = 1.0f,
             BonusMultipiler = 1.0f,
             CriticalDamageMultiplier = 1.5f,
             IsCritical = false,

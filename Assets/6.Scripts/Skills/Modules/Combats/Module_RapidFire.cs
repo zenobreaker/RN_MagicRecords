@@ -19,6 +19,10 @@ public class Module_RapidFire : SkillModule
     [Tooltip("발사 간격 (초)")]
     [SerializeField] private float fireInterval = 0.1f;
 
+    [Header("Pattern Settings")]
+    [Tooltip("한 번의 연사에서 동시에 발사되는 탄환 사이의 기본 벌어짐 각도입니다. 패시브의 각도 보정값이 이 값에 더해집니다.")]
+    [SerializeField] private float angleBetween = 0f;
+
     [Header("Animation Settings")]
     [Tooltip("연사 시 재생할 단타 애니메이션의 상태")]
     [SerializeField] private ActionData actionData; // 애니메이터 창에 있는 노드 이름
@@ -61,8 +65,25 @@ public class Module_RapidFire : SkillModule
 
     private async UniTaskVoid RapidFireAsync(Character owner, ActiveSkill skill, PhaseSkill phaseSkill, CancellationToken token)
     {
+        float finalFireInterval = Mathf.Max(
+            0.01f,
+            fireInterval * (skill != null ? skill.Runtime.FireIntervalMultiplier : 1.0f));
+        int patternCountBonus = skill != null ? skill.Runtime.Combat.PatternCountBonus : 0;
+        float patternAngleBonus = skill != null ? skill.Runtime.Combat.PatternAngleBonus : 0f;
+        if (skill != null && skill.Runtime.Base.TotalShots <= 0)
+            skill.Runtime.Base.TotalShots = totalShots;
+
+        int finalTotalShots = skill != null
+            ? Mathf.Max(1, skill.Runtime.TotalShots)
+            : totalShots;
+        int finalProjectileCount = Mathf.Max(1, 1 + patternCountBonus);
+        float finalAngleBetween = angleBetween + patternAngleBonus;
+        string finalObjectName = !string.IsNullOrEmpty(skill?.Runtime.Spawn.OverridePrefabName)
+            ? skill.Runtime.Spawn.OverridePrefabName
+            : objectName;
+
         DamageData finalDamageData = GetEffectiveDamageData(phaseSkill);
-        bool isCrit = skill != null && skill.Runtime.Combat.IsCritical ==  false;
+        bool isCrit = (skill != null && skill.Runtime.Combat.IsCritical);
 
         UnityEngine.AI.NavMeshAgent agent = owner.GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (agent != null && agent.isActiveAndEnabled)
@@ -72,11 +93,11 @@ public class Module_RapidFire : SkillModule
             agent.velocity = Vector3.zero;
         }
 
-        SetAnimSpeed();
+        SetAnimSpeed(finalFireInterval);
 
         try
         {
-            for (int i = 0; i < totalShots; i++)
+            for (int i = 0; i < finalTotalShots; i++)
             {
                 if (token.IsCancellationRequested || owner == null || !owner.gameObject.activeInHierarchy)
                     return;
@@ -90,16 +111,24 @@ public class Module_RapidFire : SkillModule
 
                 // 1. 탄환 발사 처리
                 Vector3 basePosition = owner.transform.TransformPoint(spawnPosition);
-                Quaternion finalRotation = owner.transform.rotation;
-
-                GameObject obj = ObjectPooler.DeferredSpawnFromPool(objectName, basePosition, finalRotation);
-                if (obj != null && obj.TryGetComponent<ISkillEffect>(out var projectile))
+                for (int projectileIndex = 0; projectileIndex < finalProjectileCount; projectileIndex++)
                 {
-                    projectile.SetDamageInfo(owner, finalDamageData, isCrit);
-                    projectile.AddIgnore(owner);
-                }
+                    Quaternion finalRotation = PositionHelpers.GetDirection(
+                        owner.transform,
+                        projectileIndex,
+                        finalProjectileCount,
+                        finalAngleBetween,
+                        0f);
 
-                ObjectPooler.FinishSpawn(obj);
+                    GameObject obj = ObjectPooler.DeferredSpawnFromPool(finalObjectName, basePosition, finalRotation);
+                    if (obj != null && obj.TryGetComponent<ISkillEffect>(out var projectile))
+                    {
+                        projectile.SetDamageInfo(owner, finalDamageData, isCrit);
+                        projectile.AddIgnore(owner);
+                    }
+
+                    ObjectPooler.FinishSpawn(obj);
+                }
 
                 if (isCharacterComp && ownerChar != null)
                 {
@@ -124,10 +153,10 @@ public class Module_RapidFire : SkillModule
                     anim.Play(runtimeActionData.StateName, 0, 0f);
 
                 // 3. 발사 간격 대기
-                if (i < totalShots - 1)
+                if (i < finalTotalShots - 1)
                 {
                     // 다음 총알을 쏘기 전까지 대기
-                    await UniTask.Delay(TimeSpan.FromSeconds(fireInterval), cancellationToken: token);
+                    await UniTask.Delay(TimeSpan.FromSeconds(finalFireInterval), cancellationToken: token);
                 }
                 else
                 {
@@ -165,12 +194,12 @@ public class Module_RapidFire : SkillModule
         }
     }
 
-    private void SetAnimSpeed()
+    private void SetAnimSpeed(float interval)
     {
         if (syncAnimSpeed)
         {
             originalAnimSpeed = runtimeActionData.ActionSpeed;
-            runtimeActionData.ActionSpeed = 1f / fireInterval;
+            runtimeActionData.ActionSpeed = 1f / interval;
         }
 
         // 애니메이션 배속 동기화 (선택사항)
@@ -179,7 +208,7 @@ public class Module_RapidFire : SkillModule
             originalAnimSpeed = anim.speed;
             // 0.1초 간격이면 10배속, 0.2초면 5배속 등 연사 속도에 맞춰 허우적거리는 속도를 보정합니다.
             // (기본 애니메이션 길이가 1초라고 가정했을 때의 대략적인 보정값)
-            anim.speed = 1f / fireInterval;
+            anim.speed = 1f / interval;
         }
     }
 

@@ -1,156 +1,162 @@
-﻿using UnityEngine;
-using UnityEditor;
+using System;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
 
 public class SkillTestWindow : EditorWindow
 {
-    private SO_SkillData selectedSkill;
+    private const string SkillFolder = "Assets/10.ScriptableObjects/Resources/Skills";
+    private const float LeftPanelWidth = 270f;
+    private const float GridItemWidth = 84f;
 
+    private readonly List<SO_SkillData> skills = new();
+    private SO_SkillData selectedSkill;
     private SkillSlot selectedSlot = SkillSlot.SLOT1;
-    private string[] slotNames;
-    private int testSkilLevel = 1; 
+    private int testSkillLevel = 1;
+    private Vector2 scrollPos;
 
     [MenuItem("Tools/Skill Tester")]
     public static void ShowWindow()
     {
-        GetWindow<SkillTestWindow>("Skill Tester");
+        SkillTestWindow window = GetWindow<SkillTestWindow>("Skill Tester");
+        window.minSize = new Vector2(860f, 520f);
+        window.Show();
     }
 
     private void OnEnable()
     {
-        slotNames = System.Enum.GetNames(typeof(SkillSlot));
+        minSize = new Vector2(860f, 520f);
+        RefreshSkills();
     }
-    
 
-    private Vector2 scrollPos;
-
-    private void DrawSkillGrid()
+    private void RefreshSkills()
     {
-        string[] guids = AssetDatabase.FindAssets("t:SO_SkillData",
-            new[] { "Assets/10.ScriptableObjects/Resources/Skills" });
-
-        List<SO_SkillData> skills = new List<SO_SkillData>();
-        foreach(string guid in guids)
+        skills.Clear();
+        foreach (string guid in AssetDatabase.FindAssets("t:SO_SkillData", new[] { SkillFolder }))
         {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            SO_SkillData skill = AssetDatabase.LoadAssetAtPath<SO_SkillData>(path);
-            if(skill != null)
+            SO_SkillData skill = AssetDatabase.LoadAssetAtPath<SO_SkillData>(AssetDatabase.GUIDToAssetPath(guid));
+            if (skill != null)
                 skills.Add(skill);
         }
-
-        skills.Sort((a,b)=> a.id.CompareTo(b.id));  
-
-
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Height(300));
-
-        int columns = 4;
-        int count = 0;
-
-        EditorGUILayout.BeginHorizontal();
-
-        foreach(var skill in skills)
-        {
-            if (count % columns == 0)
-            {
-                EditorGUILayout.EndHorizontal();
-                EditorGUILayout.BeginHorizontal();
-            }
-
-            GUILayout.BeginVertical(GUILayout.Width(80));
-
-            Texture2D icon = skill.skillImage != null ? skill.skillImage.texture : null;
-
-            if (GUILayout.Button(icon, GUILayout.Width(64), GUILayout.Height(64)))
-            {
-                selectedSkill = skill;
-            }
-
-            GUILayout.Label(skill.skillName, GUILayout.Width(80));
-
-            GUILayout.EndVertical();
-
-            count++;
-        }
-
-        EditorGUILayout.EndHorizontal();
-        EditorGUILayout.EndScrollView();
+        skills.Sort((left, right) => left.id.CompareTo(right.id));
     }
-
 
     private void OnGUI()
     {
-        GUILayout.Label("스킬 테스터", EditorStyles.boldLabel);
-        GUILayout.Space(10);
+        EditorGUILayout.LabelField("스킬 테스터", EditorStyles.boldLabel);
+        EditorGUILayout.Space(4f);
+        EditorGUILayout.BeginHorizontal();
+        DrawLeftPanel();
+        EditorGUILayout.Space(6f);
+        DrawSkillList();
+        EditorGUILayout.EndHorizontal();
+    }
 
-        // 슬롯 선택
-        GUILayout.Label("스킬 슬롯 선택");
-        //selectedSlot = (SkillSlot)EditorGUILayout.EnumPopup("스킬 슬롯", selectedSlot); 
-        selectedSlot = (SkillSlot)EditorGUILayout.Popup((int)selectedSlot, slotNames); 
-        GUILayout.Space(10);
-
-        GUILayout.Label("스킬 선택");
-        // --- 선택한 스킬 요약 표시 영역 ---
-        if (selectedSkill != null)
+    private void DrawLeftPanel()
+    {
+        EditorGUILayout.BeginVertical("box", GUILayout.Width(LeftPanelWidth), GUILayout.ExpandHeight(true));
+        EditorGUILayout.LabelField("선택한 스킬", EditorStyles.boldLabel);
+        if (selectedSkill == null)
         {
-            GUILayout.BeginVertical("box");
-            GUILayout.Label("선택된 스킬 미리보기", EditorStyles.boldLabel);
-
-            // 아이콘 표시
+            EditorGUILayout.HelpBox("오른쪽 목록에서 테스트할 스킬을 선택하세요.", MessageType.Info);
+        }
+        else
+        {
             Texture2D icon = selectedSkill.skillImage != null ? selectedSkill.skillImage.texture : null;
-            GUILayout.Label(icon, GUILayout.Width(64), GUILayout.Height(64));
-
-            // 스킬 기본 정보
-            GUILayout.Label($"이름 : {selectedSkill.skillName}");
-            GUILayout.Label($"ID : {selectedSkill.id}");
-            
-
-            // 스킬 레벨 선택 
-            GUILayout.Space(5);
-
-            GUILayout.Label("테스트용 스킬 레벨");
-            testSkilLevel = EditorGUILayout.IntSlider(testSkilLevel, 1, selectedSkill.maxLevel);
-
-
-            // 스킬 해제 버튼 
-            GUILayout.Space(5);
-            EditorGUI.BeginDisabledGroup(Application.isPlaying == false);
-            if (GUILayout.Button("스킬 해제"))
-            {
-                SkillTestInvoker.UndoSkill(selectedSlot, selectedSkill); 
-            }
-            EditorGUI.EndDisabledGroup();
-
-            // 선택 취소 버튼
-            GUILayout.Space(5);
-
-            if (GUILayout.Button("선택 해제"))
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label(icon, GUILayout.Width(64f), GUILayout.Height(64f));
+            EditorGUILayout.BeginVertical();
+            EditorGUILayout.LabelField(selectedSkill.skillName, EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"ID : {selectedSkill.id}", EditorStyles.miniLabel);
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space(4f);
+            EditorGUILayout.LabelField("테스트용 스킬 레벨");
+            testSkillLevel = EditorGUILayout.IntSlider(testSkillLevel, 1, Mathf.Max(1, selectedSkill.maxLevel));
+            if (GUILayout.Button("스킬 선택 해제"))
                 selectedSkill = null;
-
-            GUILayout.EndVertical();
         }
 
-        GUILayout.Space(5);
-        EditorGUI.BeginDisabledGroup(selectedSkill == null);
-        if (GUILayout.Button("스킬 장착"))
-        {
-            if (Application.isPlaying == false)
-            {
-                Debug.Log($"Application이 실행 중이 아닙니다");
-                return;
-            }
-
-            //var skill = skillList[selectedSkillIndex];
+        EditorGUILayout.Space(12f);
+        EditorGUILayout.LabelField("스킬 슬롯", EditorStyles.boldLabel);
+        DrawSlotButtons();
+        EditorGUILayout.Space(8f);
+        EditorGUI.BeginDisabledGroup(selectedSkill == null || !Application.isPlaying);
+        if (GUILayout.Button("스킬 장착", GUILayout.Height(28f)))
             SendSkillTestCommand(selectedSkill);
-        }
+        if (GUILayout.Button("선택 스킬 해제"))
+            SkillTestInvoker.UndoSkill(selectedSlot, selectedSkill);
         EditorGUI.EndDisabledGroup();
+        if (!Application.isPlaying)
+            EditorGUILayout.HelpBox("스킬 장착과 해제는 플레이 모드에서만 가능합니다.", MessageType.Warning);
+        EditorGUILayout.EndVertical();
+    }
 
-        GUILayout.Space(10);
-        DrawSkillGrid();
+    private void DrawSlotButtons()
+    {
+        const int columns = 2;
+        int buttonIndex = 0;
+        foreach (SkillSlot slot in Enum.GetValues(typeof(SkillSlot)))
+        {
+            if (slot == SkillSlot.MAX)
+                continue;
+            if (buttonIndex % columns == 0)
+                EditorGUILayout.BeginHorizontal();
+            Color previousColor = GUI.backgroundColor;
+            if (slot == selectedSlot)
+                GUI.backgroundColor = new Color(0.45f, 0.75f, 1f);
+            if (GUILayout.Button(slot.ToString(), GUILayout.Height(28f)))
+                selectedSlot = slot;
+            GUI.backgroundColor = previousColor;
+            buttonIndex++;
+            if (buttonIndex % columns == 0)
+                EditorGUILayout.EndHorizontal();
+        }
+        if (buttonIndex % columns != 0)
+            EditorGUILayout.EndHorizontal();
+    }
+
+    private void DrawSkillList()
+    {
+        EditorGUILayout.BeginVertical("box", GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField($"스킬 목록 ({skills.Count})", EditorStyles.boldLabel);
+        if (GUILayout.Button("새로고침", GUILayout.Width(70f)))
+            RefreshSkills();
+        EditorGUILayout.EndHorizontal();
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
+        int columns = Mathf.Max(1, Mathf.FloorToInt((position.width - LeftPanelWidth - 40f) / GridItemWidth));
+        int index = 0;
+        foreach (SO_SkillData skill in skills)
+        {
+            if (index % columns == 0)
+                EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginVertical(GUILayout.Width(GridItemWidth - 4f));
+            Texture2D icon = skill.skillImage != null ? skill.skillImage.texture : null;
+            Color previousColor = GUI.backgroundColor;
+            if (skill == selectedSkill)
+                GUI.backgroundColor = new Color(0.45f, 0.75f, 1f);
+            if (GUILayout.Button(icon, GUILayout.Width(64f), GUILayout.Height(64f)))
+            {
+                selectedSkill = skill;
+                testSkillLevel = Mathf.Clamp(testSkillLevel, 1, Mathf.Max(1, skill.maxLevel));
+            }
+            GUI.backgroundColor = previousColor;
+            EditorGUILayout.LabelField(skill.skillName, EditorStyles.miniLabel, GUILayout.Width(GridItemWidth - 4f));
+            EditorGUILayout.EndVertical();
+            index++;
+            if (index % columns == 0)
+                EditorGUILayout.EndHorizontal();
+        }
+        if (index % columns != 0)
+            EditorGUILayout.EndHorizontal();
+        EditorGUILayout.EndScrollView();
+        EditorGUILayout.EndVertical();
     }
 
     private void SendSkillTestCommand(SO_SkillData skill)
     {
-        SkillTestInvoker.ReceiveSkillForTest(selectedSlot, skill, testSkilLevel);
+        SkillTestInvoker.ReceiveSkillForTest(selectedSlot, skill, testSkillLevel);
         Debug.Log($"Skill Test : {skill.skillName} 실행 요청 전송");
     }
 }

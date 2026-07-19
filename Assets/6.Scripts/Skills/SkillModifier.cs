@@ -37,6 +37,7 @@ public sealed class BaseValues
 {
     public int PatternCount;
     public float PatternAngle;
+    public int TotalShots;
 
     public DamageData Damage;
     public float Range;
@@ -106,6 +107,8 @@ public sealed class CombatContext
     public int PatternCountBonus;
 
     public float PatternAngleBonus;
+    public int TotalShotsBonus;
+    public float FireIntervalMultiplier = 1.0f;
     public float BonusMultipiler = 1.0f;
 
     public float CriticalDamageMultiplier;
@@ -135,6 +138,22 @@ public sealed class SkillRuntimeContext
         get
         {
             return Base.PatternAngle + Combat.PatternAngleBonus;
+        }
+    }
+
+    public int TotalShots
+    {
+        get
+        {
+            return Base.TotalShots + Combat.TotalShotsBonus;
+        }
+    }
+
+    public float FireIntervalMultiplier
+    {
+        get
+        {
+            return Mathf.Max(0.01f, Combat.FireIntervalMultiplier);
         }
     }
 
