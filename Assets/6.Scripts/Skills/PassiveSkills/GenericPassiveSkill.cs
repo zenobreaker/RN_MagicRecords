@@ -24,6 +24,7 @@ public abstract class PassiveModule
     public virtual void OnLose() { } // 패시브가 지워질 때 롤백용
     public virtual void OnSkillCast(SkillUseEvent evt, SkillRuntimeContext context) { }
     public virtual void OnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill) { }
+    public virtual void OnAssistDroneNormalProjectile(ISkillEffect spawnedObject, Character owner) { }
     public virtual void OnHit(GameObject target, DamageData damageData) { }
 }
 
@@ -59,6 +60,15 @@ public class GenericPassiveSkill : PassiveSkill
         if (moduleCache.TryGetValue(PassiveTriggerTime.OnSpawnObject, out var modules))
         {
             foreach (var mod in modules) mod.OnSpawnObject(spawnedObject, casterSkill);
+        }
+    }
+
+    public void OnAssistDroneNormalProjectile(ISkillEffect spawnedObject, Character owner)
+    {
+        if (moduleCache.TryGetValue(PassiveTriggerTime.OnSpawnObject, out var modules))
+        {
+            foreach (var mod in modules)
+                mod.OnAssistDroneNormalProjectile(spawnedObject, owner);
         }
     }
 

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: rapidfire
   m_EditorClassIdentifier: 
   id: 1005
-  skillName: skill_name_consecutiveshot
-  skillDescription: skill_desc_consecutiveshot
+  skillName: skill_name_rapidfire
+  skillDescription: skill_desc_rapidfire
   learnableLevel: 0
   maxLevel: 10
   skillUpgradeCost: 
@@ -25,6 +25,7 @@ MonoBehaviour:
     limitMinCooldown: 2
     cooldown: 15
     castingTime: -1
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 15
@@ -44,6 +45,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
@@ -51,6 +53,7 @@ MonoBehaviour:
     limitMinCooldown: 2
     cooldown: 15
     castingTime: -1
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 17
@@ -70,6 +73,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
@@ -77,6 +81,7 @@ MonoBehaviour:
     limitMinCooldown: 2
     cooldown: 15
     castingTime: -1
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 22
@@ -96,6 +101,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
@@ -103,6 +109,7 @@ MonoBehaviour:
     limitMinCooldown: 2
     cooldown: 15
     castingTime: -1
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 25
@@ -122,6 +129,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
@@ -129,6 +137,7 @@ MonoBehaviour:
     limitMinCooldown: 2
     cooldown: 15
     castingTime: -1
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 29
@@ -148,6 +157,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
@@ -185,6 +195,7 @@ MonoBehaviour:
         spawnPosition: {x: 0, y: 1, z: 1}
         totalShots: 5
         fireInterval: 0.25
+        angleBetween: 0
         actionData:
           subStateName: Skill01
           stateName: Skill
@@ -218,3 +229,4 @@ MonoBehaviour:
             HitParticle: {fileID: 0}
             HitParticlePositionOffset: {x: 0, y: 0, z: 0}
             HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+          ignoreDefenseRate: 0

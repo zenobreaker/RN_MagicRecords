@@ -58,8 +58,10 @@ public class SplitMotherProjectile
         cachedMultiplier = mulitplier;
     }
 
-    protected override void OnProjectileSpawned()
+    protected override void OnDisable()
     {
+        base.OnDisable();
+
         fireTimer = 0f;
         currentSpreadRotation = 0f;
         motherSpeedMultiplier = 1f;
@@ -70,8 +72,7 @@ public class SplitMotherProjectile
     public void SetMotherSpeedMultiplier(float multiplier)
     {
         motherSpeedMultiplier = Mathf.Max(0.01f, multiplier);
-        if (rigid != null)
-            rigid.linearVelocity = transform.forward * force * motherSpeedMultiplier;
+        force *= motherSpeedMultiplier;                                                                 
     }
 
     public void EnableChildHoming(float searchRadius, float turnSpeed, LayerMask enemyLayer,

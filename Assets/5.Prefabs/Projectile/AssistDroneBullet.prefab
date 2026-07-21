@@ -4880,10 +4880,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   force: 20
-  life: 10
+  life: 5
   ignoreLayer:
     serializedVersion: 2
-    m_Bits: 392
+    m_Bits: 64
   bombEffectName: 
   impactSoundName: 
   basePierceCount: 0
@@ -4906,7 +4906,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.44
+  m_Radius: 0.63
   m_Height: 1.57
   m_Direction: 2
   m_Center: {x: 0, y: 0, z: 0.24828535}

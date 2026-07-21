@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b10d0a553238744b0cd87f519edeba, type: 3}
-  m_Name: rapidfire-fastest
+  m_Name: assistweapon-chaser
   m_EditorClassIdentifier: 
-  id: 10052
-  skillName: name_fastest
-  skillDescription: desc_spreadmodule
+  id: 100101
+  skillName: name_chaser
+  skillDescription: desc_chaser
   learnableLevel: 0
   maxLevel: 1
   skillUpgradeCost: 
@@ -23,14 +23,16 @@ MonoBehaviour:
   levelDatas: []
   jobID: 1
   Modules:
-  - rid: 7840629952483688528
+  - rid: 7840629999140864090
   references:
     version: 2
     RefIds:
-    - rid: 7840629952483688528
-      type: {class: Module_Passive_RapidFireRush, ns: , asm: Assembly-CSharp}
+    - rid: 7840629999140864090
+      type: {class: Module_Passive_AssistDroneHoming, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 2
-        targetSkillID: 1005
-        fireIntervalMultiplier: 0.7
-        totalShotsReduction: 2
+        triggerTime: 3
+        searchRadius: 7
+        turnSpeed: 10
+        enemyLayer:
+          serializedVersion: 2
+          m_Bits: 256

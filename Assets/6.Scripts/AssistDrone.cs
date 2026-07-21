@@ -83,7 +83,7 @@ public class AssistDrone
         // 좌우 포신에서 평타 1발씩 일제 사격
         foreach (var muzzle in muzzles)
         {
-            SpawnProjectile(droneNormalProj, muzzle, attacker);
+            SpawnProjectile(droneNormalProj, muzzle, attacker, isNormalProjectile: true);
         }
     }
 
@@ -101,7 +101,7 @@ public class AssistDrone
 
                 foreach (var muzzle in muzzles)
                 {
-                    SpawnProjectile(droneNormalProj, muzzle, attacker);
+                    SpawnProjectile(droneNormalProj, muzzle, attacker, isNormalProjectile: true);
                 }
 
                 // 0.1초 간격 연사
@@ -124,7 +124,7 @@ public class AssistDrone
 
         foreach (var muzzle in muzzles)
         {
-            SpawnProjectile(droneBeamProj, muzzle, attacker);
+            SpawnProjectile(droneBeamProj, muzzle, attacker, isNormalProjectile: false);
         }
 
         // 레이저 유지 시간 대기 후 종료
@@ -142,7 +142,7 @@ public class AssistDrone
 
         foreach (var muzzle in muzzles)
         {
-            SpawnProjectile(droneHyperBeamProj, muzzle, attacker);
+            SpawnProjectile(droneHyperBeamProj, muzzle, attacker, isNormalProjectile: false);
         }
 
         // 레이저 유지 시간 대기 후 종료
@@ -151,7 +151,7 @@ public class AssistDrone
     }
 
     // 헬퍼 함수: 투사체 스폰 및 데미지 세팅
-    private void SpawnProjectile(string projName, Transform muzzle, Character attacker)
+    private void SpawnProjectile(string projName, Transform muzzle, Character attacker, bool isNormalProjectile)
     {
         GameObject obj = ObjectPooler.DeferredSpawnFromPool(projName, muzzle.position, muzzle.rotation);
         if (obj != null && obj.TryGetComponent<ISkillEffect>(out var projectile))
@@ -159,6 +159,10 @@ public class AssistDrone
             projectile.SetDamageInfo(attacker, new DamageData(), false);
             projectile.AddIgnore(attacker);
             projectile.AddIgnore(this.gameObject);
+
+            if (isNormalProjectile)
+                AppManager.Instance.SafeInvoke(v => v.GetPassiveSystem()
+                    ?.BroadcastOnAssistDroneNormalProjectile(projectile, attacker));
         }
 
         ObjectPooler.FinishSpawn(obj); 

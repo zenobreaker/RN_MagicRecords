@@ -75,7 +75,7 @@ public class Module_RapidFire : SkillModule
 
         int finalTotalShots = skill != null
             ? Mathf.Max(1, skill.Runtime.TotalShots)
-            : totalShots;
+            : totalShots;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
         int finalProjectileCount = Mathf.Max(1, 1 + patternCountBonus);
         float finalAngleBetween = angleBetween + patternAngleBonus;
         string finalObjectName = !string.IsNullOrEmpty(skill?.Runtime.Spawn.OverridePrefabName)

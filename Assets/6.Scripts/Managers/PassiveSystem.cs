@@ -175,7 +175,7 @@ public class PassiveSystem
         }
     }
 
-    // 💡 2. 누군가 투사체를 생성했을 때 (관통 제거, 분열탄 적용용)
+    //  2. 누군가 투사체를 생성했을 때 (관통 제거, 분열탄 적용용)
     public void BroadcastOnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill)
     {
         // 액티브 스킬 모듈이 투사체를 만들었다고 알려오면, 모든 패시브에게 전달!
@@ -187,6 +187,19 @@ public class PassiveSystem
                 {
                     gps.OnSpawnObject(spawnedObject, casterSkill);
                 }
+            }
+        }
+    }
+
+    // 어시스트 드론의 일반탄 전용 알림입니다. 레이저 계열 발사체는 이 경로를 호출하지 않습니다.
+    public void BroadcastOnAssistDroneNormalProjectile(ISkillEffect spawnedObject, Character owner)
+    {
+        foreach (var passiveList in passiveSkillList.Values)
+        {
+            foreach (var passive in passiveList)
+            {
+                if (passive is GenericPassiveSkill gps)
+                    gps.OnAssistDroneNormalProjectile(spawnedObject, owner);
             }
         }
     }

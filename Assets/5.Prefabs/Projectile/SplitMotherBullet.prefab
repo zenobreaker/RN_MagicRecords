@@ -4917,15 +4917,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ab12b9f8a609aa48bc24b9d9aa419af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 1200
+  force: 20
   life: 4
   ignoreLayer:
     serializedVersion: 2
     m_Bits: 392
-  childObjectName: Projectile_Normal
-  childCount: 6
+  bombEffectName: 
+  impactSoundName: 
+  childObjectName: PierceBullet
+  childCount: 9
   fireInterval: 0.3
   childDamageMultiplier: 0.3
+  spreadRotationPerShot: 30
 --- !u!1 &2683768127548605020
 GameObject:
   m_ObjectHideFlags: 0
