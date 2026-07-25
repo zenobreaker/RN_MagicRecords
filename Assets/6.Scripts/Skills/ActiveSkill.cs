@@ -34,12 +34,12 @@ public abstract class ActiveSkill
 
     protected GameObject ownerObject;
     protected Character ownerCharacter;
-    public Character Owner {  get { return ownerCharacter; } }
+    public Character Owner { get { return ownerCharacter; } }
     protected WeaponController weaponController;
     protected SkillComponent skillComponent;
     protected StateComponent state;
-    protected StatusComponent status; 
-    public StatusComponent Status {  get { return status; } }
+    protected StatusComponent status;
+    public StatusComponent Status { get { return status; } }
 
     protected List<GameObject> trackedEffects = new List<GameObject>();
 
@@ -85,14 +85,15 @@ public abstract class ActiveSkill
     public ActiveSkill(SO_SkillData skillData)
         : base(skillData)
     {
-        
+
         if (skillData is SO_ActiveSkillData activeSkillData)
         {
             phaseList = activeSkillData.phaseList;
             this.isConcurrentSkill = activeSkillData.isConcurrentSkill;
             LevelDatas = activeSkillData.levelDatas;
 
-            ApplyLevelData(LevelDatas[0]);  
+            if (LevelDatas.Count > 0)
+                ApplyLevelData(LevelDatas[0]);
         }
     }
 
@@ -102,7 +103,7 @@ public abstract class ActiveSkill
 
         int index = GetSkillLevel();
 
-        if(LevelDatas.Count > 0 )
+        if (LevelDatas.Count > 0)
             ApplyLevelData(LevelDatas[index]);
     }
 
@@ -232,12 +233,12 @@ public abstract class ActiveSkill
         phaseCts = new CancellationTokenSource();
 
 
-        SetRunTimeContext(); 
+        SetRunTimeContext();
 
-        if(phaseIndex == 0)
+        if (phaseIndex == 0)
         {
-            SkillUseEvent evt = new SkillUseEvent 
-            { 
+            SkillUseEvent evt = new SkillUseEvent
+            {
                 SkillID = this.skillID,
                 SkillName = this.skillName,
                 Owner = this.ownerCharacter
@@ -278,24 +279,27 @@ public abstract class ActiveSkill
 
         Runtime = new SkillRuntimeContext();
 
-        // Base
-        Runtime.Base = new BaseValues
+        if (LevelDatas.Count > 0)
         {
-            PatternCount = LevelDatas[index].spawnCount,
-            PatternAngle = LevelDatas[index].angle,
-            TotalShots = 0,
+            // Base
+            Runtime.Base = new BaseValues
+            {
+                PatternCount = LevelDatas[index].spawnCount,
+                PatternAngle = LevelDatas[index].angle,
+                TotalShots = 0,
 
-            Damage = LevelDatas[index].damageData,
-            Range = LevelDatas[index].range,
-            Cooldown = LevelDatas[index].cooldown,
-        };
+                Damage = LevelDatas[index].damageData,
+                Range = LevelDatas[index].range,
+                Cooldown = LevelDatas[index].cooldown,
+            };
 
-        // Cast
-        Runtime.Cast = new CastContext
-        {
-            MaxCastingTime = LevelDatas[index].castingTime,
-            MaxChargeTime = LevelDatas[index].chargeTime,
-        };
+            // Cast
+            Runtime.Cast = new CastContext
+            {
+                MaxCastingTime = LevelDatas[index].castingTime,
+                MaxChargeTime = LevelDatas[index].chargeTime,
+            };
+        }
 
         // Spawn
         Runtime.Spawn = new SpawnContext

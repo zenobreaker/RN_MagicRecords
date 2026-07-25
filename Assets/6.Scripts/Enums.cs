@@ -234,7 +234,6 @@ public enum RecordType
     PASSIVE,
     AUGMENT, // 증강 (수치 강화) 
     MODIFY,  // 변형 (기믹 변형 : 관통 제거 등등) 
-    UNIQUE, // 독자적 (완전히 새로운 행동) 
 }
 
 // 필터링을 위한 Enum (시트의 TargetFilter와 맞춤)

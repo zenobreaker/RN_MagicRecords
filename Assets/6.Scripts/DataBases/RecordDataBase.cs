@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 // JSON 매핑용 DTO 클래스들
 [System.Serializable]
@@ -62,6 +64,10 @@ public class RecordDataJsonAllData
 
 public class RecordDataBase : DataBase
 {
+    [Header("Addressables Settings")]
+    [Tooltip("어드레서블에서 긁어올 라벨 이름")]
+    [SerializeField] private string recordLabel = "RecordData";
+
     [SerializeField] private TextAsset recordDataJsonAsset;
     [SerializeField] private Dictionary<int, RecordData> recordDatas = new();
     private List<RecordData> recordDataList;
@@ -69,15 +75,69 @@ public class RecordDataBase : DataBase
 
     // 미완성이었던 딕셔너리 선언 완료 및 초기화
     private Dictionary<RecordRarity, List<RecordData>> recordDataByRarity = new();
+    private Dictionary<RecordType, List<int>> recordIDByType = new(); 
 
     public override void Initialize()
     {
         if (jsonAsset == null) return;
 
-        Debug.Log("Record Database Init");
         recordDataList = new();
         recordDataByRarity.Clear();
 
+        Debug.Log("Record Database Init - Addressables Start");
+
+        CreateEmptyRecordTemplate();
+
+        // 비동기 로드 시작
+        LoadRecordsFromAddressablesAsync().Forget();
+    }
+
+    private async UniTaskVoid LoadRecordsFromAddressablesAsync()
+    {
+        recordDatas.Clear();
+        recordDataList.Clear();
+        recordDataByRarity.Clear();
+
+        try
+        {
+            // 1. 해당 라벨(RecordData)이 달린 모든 에셋을 메모리에 로드합니다.
+            // (에셋이 많아도 렉이 걸리지 않도록 await로 비동기 대기)
+            IList<SO_RecordData> loadedRecords = await Addressables.LoadAssetsAsync<SO_RecordData>(recordLabel, null);
+
+            // 2. 로드된 에셋들을 순회하며 딕셔너리에 세팅
+            foreach (var recordSO in loadedRecords)
+            {
+                if (recordSO == null) continue;
+
+                // SO 내부의 실제 데이터 추출
+                RecordData recordData = recordSO.GetRecordData();
+
+                // 리스트와 딕셔너리에 쏙쏙 집어넣기
+                recordDatas[recordData.id] = recordData;
+                recordDataList.Add(recordData);
+
+                if (!recordDataByRarity.ContainsKey(recordData.rarity))
+                {
+                    recordDataByRarity[recordData.rarity] = new List<RecordData>();
+                }
+                recordDataByRarity[recordData.rarity].Add(recordData);
+
+                if (!recordIDByType.ContainsKey(recordData.type))
+                    recordIDByType[recordData.type] = new List<int>();
+                recordIDByType[recordData.type].Add(recordData.id); 
+            }
+
+            Debug.Log($"[RecordDataBase] {loadedRecords.Count}개의 레코드 데이터 로드 완료!");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[RecordDataBase] 어드레서블 로드 실패: {e.Message}");
+        }
+    }
+    private void OldJson()
+    {
+
+        Debug.Log("Record Database Init");
         // 1. Info 파싱
         JsonLoader.LoadJsonList<RecordInfoAllData, RecordInfoJson, RecordData>
             (
@@ -140,7 +200,6 @@ public class RecordDataBase : DataBase
                 }
             );
 
-        CreateEmptyRecordTemplate();
     }
 
     private void CreateEmptyRecordTemplate()
