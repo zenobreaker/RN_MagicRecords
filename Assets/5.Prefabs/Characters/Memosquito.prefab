@@ -244,7 +244,7 @@ Transform:
   m_GameObject: {fileID: 5192783409750939822}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.446}
+  m_LocalPosition: {x: 0, y: -0.5, z: 1.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -293,7 +293,7 @@ Transform:
   m_GameObject: {fileID: 6491759678581496317}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 3.88}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -589,7 +589,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
   originPrefabs:
-  - {fileID: 3126351601299179236, guid: 8cfc0c45a1c83ff43a11659c75050798, type: 3}
+  - {fileID: 3126351601299179236, guid: 4f742ae19609b434fa361ca3152a3264, type: 3}
   initType: 3
 --- !u!114 &1715502760156841046
 MonoBehaviour:
