@@ -91,7 +91,7 @@ public class DataBaseManager : MonoBehaviour
 
     public MonsterData GetMonsterData(int monsterID)
     {
-        return monsterDataBase?.GetMonsterData(monsterID);
+        return monsterDataBase.SafeInvoke(v => v.GetMonsterData(monsterID));
     }
 
     public MonsterGroupData GetMonsterGroupData(int groupID)
@@ -109,32 +109,32 @@ public class DataBaseManager : MonoBehaviour
 
     public EquipmentItem GetEquipmentItem(int itemId)
     {
-        return itemDataBase?.GetEquipmentItemData(itemId);
+        return itemDataBase.SafeInvoke(v => v.GetEquipmentItemData(itemId));
     }
 
     public IngredientItem GetIngredientItem(int itemId)
     {
-        return itemDataBase?.GetIngredientItemData(itemId);
+        return itemDataBase.SafeInvoke(v => v.GetIngredientItemData(itemId));
     }
 
     public CurrencyItem GetCurrencyItem(int itemId)
     {
-        return itemDataBase?.GetCurrencyItemData(itemId);
+        return itemDataBase.SafeInvoke(v => v.GetCurrencyItemData(itemId));
     }
 
     public CurrencyItem GetCurrencyItemByType(CurrencyType type)
     {
-        return itemDataBase?.GetCurrencyItemByType(type);
+        return itemDataBase.SafeInvoke(v => v.GetCurrencyItemByType(type));
     }
 
     public RewardData GetRewardData(int rewardId)
     {
-        return rewardDataBase?.GetReward(rewardId);
+        return rewardDataBase.SafeInvoke(v => v.GetReward(rewardId));
     }
 
     private ClearRewardData GetClearRewardData(int clearRewardId)
     {
-        return rewardDataBase?.GetClearReward(clearRewardId);
+        return rewardDataBase.SafeInvoke(v => v.GetClearReward(clearRewardId));
     }
 
     public ClearRewardData GetStageClearReward(int clearedStageId)
@@ -227,12 +227,12 @@ public class DataBaseManager : MonoBehaviour
 
     public Sprite GetStageIcon(StageType type)
     {
-        return stageIconDb?.GetIcon(type);
+        return stageIconDb.SafeInvoke(v => v.GetIcon(type));
     }
 
     public EventInfo GetEventInfo(int eventID)
     {
-        return eventDataBase?.GetEventInfo(eventID);
+        return eventDataBase.SafeInvoke(v => v.GetEventInfo(eventID));
     }
 
     public int GetRandomEventID(int chapter)

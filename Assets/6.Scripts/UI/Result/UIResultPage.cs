@@ -58,7 +58,7 @@ public class UIResultPage : UiBase
     {
         // 일반적인 스테이지 클리어로 인한 퇴장 
         // 스테이지 선택 씬으로 이동 
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("StageSelectScene");
 
         UIManager.Instance?.CloseTopUI();
     }

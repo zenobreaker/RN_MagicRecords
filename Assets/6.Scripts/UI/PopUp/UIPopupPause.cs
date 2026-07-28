@@ -19,7 +19,7 @@ public class UIPopUpPause : UIPopUp
         {
             exitButton.onClick.AddListener(() =>
             {
-                SceneManager.LoadScene(1);
+                SceneManager.LoadScene("StageSelectScene");
             });
         }
 

@@ -8,6 +8,10 @@ public class PlayerManager :
     public SO_JobData jobdata;
 
     private List<int> characterIds = new List<int>();
+    public List<int> CharIds
+    {
+        get { return characterIds; }
+    }
     // key : char id
     private Dictionary<int, CharStatusData> charStatusDatas = new();
     private Dictionary<int, int> charClass = new();

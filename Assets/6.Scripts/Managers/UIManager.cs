@@ -476,6 +476,16 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
+    public void OpenExplorationSetupPopUp()
+    {
+        UIExplorationSetup ui = OpenUI<UIExplorationSetup>(true);
+        if (ui != null && ui.TryGetComponent<UIExplorationSetup>(out UIExplorationSetup target))
+        {
+
+        }
+    }
+
+
     public void OpenTwoButtonPopUp(string title, string message, string confirmText, string cancelText,
         UnityAction onConfirm, UnityAction onCancel)
     {

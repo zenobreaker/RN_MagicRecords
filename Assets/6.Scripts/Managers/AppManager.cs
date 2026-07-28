@@ -209,13 +209,13 @@ public class AppManager
 
         skillManager.SafeInvoke(v => v.ResetRunData());
 
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("StageSelectScene");
     }
 
     public void ContinueExplorationProcess()
     {
         // 그러면 ExploreManager.EnsureInitialized()가 씬 로드 후 알아서 Init(false)를 호출하여 로드할 것입니다.
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("StageSelectScene");
     }
 
     public bool HasSavedExploration()
@@ -602,7 +602,7 @@ public class AppManager
     public void MoveToNextNodeScene()
     {
         // 탐사 맵 씬으로 이동
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("StageSelectScene");
     }
 
     // 총 결산창에서 [로비로 돌아가기] 버튼 클릭 시
@@ -612,7 +612,7 @@ public class AppManager
         // 탐사 데이터 완전 초기화
         //ResetData();
         // 로비 씬으로 이동
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("Lobby");
     }
     #endregion
 

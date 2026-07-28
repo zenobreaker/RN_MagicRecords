@@ -98,7 +98,7 @@ public class StageUIController
     {
         AppManager.Instance.SaveExploreMap();
 
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("Lobby");
     }
 
     public void OnRecordInvenButton()

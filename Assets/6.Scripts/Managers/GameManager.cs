@@ -110,6 +110,6 @@ public class GameManager
 
         state = GameState.NONE;
         stageManager.SetEnteredStage(info);
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene("Stage");
     }
 }

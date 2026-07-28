@@ -42,6 +42,17 @@ public class CharacterInfoController : UiBase
         selectedCharEquipment = PlayerManager.Instance.GetCharEquipmentData(1);
     }
 
+    public void UpdateCharacterInfo(int charId)
+    {
+        if (PlayerManager.Instance == null) return;
+
+        selectedCharStatus = PlayerManager.Instance.SafeInvoke(v => v.GetCharacterStatus(charId));
+        selectedCharEquipment = PlayerManager.Instance.SafeInvoke(v=>v.GetCharEquipmentData(charId));
+
+        DrawnCharInfo?.Invoke(selectedCharStatus, selectedCharEquipment);
+        DrawenCharEquipment?.Invoke(selectedCharEquipment);
+    }
+
     public void HideUI()
     {
         gameObject.SetActive(false);

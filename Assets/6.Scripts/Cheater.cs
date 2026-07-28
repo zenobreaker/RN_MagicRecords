@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -29,12 +30,6 @@ public class Cheater
 
     private void Update()
     {
-        // 오브젝트 풀러 테스트
-        if (Input.GetKeyDown(KeyCode.Alpha8))
-        {
-            ObjectPooler.SpawnFromPool("Bullet", Vector2.up);
-        }
-
         // 스턴 테스트 
         if (Input.GetKeyDown(KeyCode.Keypad7))
             Test_Stun();
@@ -52,29 +47,40 @@ public class Cheater
             Test_PlayerInvicible();
         }
 
-        // 플레이어 공격력 버프 온
+        //// 플레이어 공격력 버프 온
+        //if (Input.GetKeyDown(KeyCode.Keypad4))
+        //{
+        //    //Test_PlayerAttackBuff();
+        //    Test_PlayerAddBurn();
+        //}
+
+        //if (Input.GetKeyDown(KeyCode.Alpha9))
+        //{
+        //    Test_SetSkill();
+        //}
+
+        //if (Input.GetKeyDown(KeyCode.Keypad5))
+        //    Test_PlayerRemoveBuff();
+
+        //if (Input.GetKeyDown(KeyCode.Keypad1))
+        //    Test_RewardPopUp();
+
+        //if (Input.GetKeyDown(KeyCode.Keypad2))
+        //    Test_AddItem();
+
+        //if (Input.GetKeyDown(KeyCode.Keypad3))
+        //    Test_AddCurrencies();
+
         if (Input.GetKeyDown(KeyCode.Keypad4))
         {
-            //Test_PlayerAttackBuff();
-            Test_PlayerAddBurn();
+            Test_UI();
         }
+        
+    }
 
-        if (Input.GetKeyDown(KeyCode.Alpha9))
-        {
-            Test_SetSkill();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Keypad5))
-            Test_PlayerRemoveBuff();
-
-        if (Input.GetKeyDown(KeyCode.Keypad1))
-            Test_RewardPopUp();
-
-        if (Input.GetKeyDown(KeyCode.Keypad2))
-            Test_AddItem();
-
-        if (Input.GetKeyDown(KeyCode.Keypad3))
-            Test_AddCurrencies();
+    private void Test_UI()
+    {
+        UIManager.Instance.SafeInvoke(v => v.OpenExplorationSetupPopUp()); 
     }
 
     private void Test_AddCurrencies()

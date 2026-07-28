@@ -377,6 +377,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7294319910728065777}
   - component: {fileID: 4365347191935307929}
+  - component: {fileID: 6585806949818284945}
   m_Layer: 5
   m_Name: RecordCardSelectUI
   m_TagString: Untagged
@@ -422,6 +423,18 @@ MonoBehaviour:
   rerollButton: {fileID: 8900839017307309558}
   rerollText: {fileID: 1883754339267775901}
   completeButton: {fileID: 8678858253852399612}
+--- !u!225 &6585806949818284945
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2790534832238401073}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3521119330243203945
 GameObject:
   m_ObjectHideFlags: 0
