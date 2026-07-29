@@ -18,7 +18,7 @@ public class UICharStatus : UiBase
             // 2. 키값을 통해 번역된 이름 가져오기 (예: "stat_health" -> "체력")
             string localizedName = LocalizationManager.Instance.GetText(textKey);
 
-            // 3. 값 포맷팅 (크리티컬 확률 같은 것들은 뒤에 %를 붙여주면 훨씬 보기 좋습니다)
+            // 3. 값 포맷팅 
             string valueStr = finalValue.ToString("F0");
             if (type == StatusType.CRIT_RATIO || type == StatusType.CRIT_DMG)
             {

@@ -163,6 +163,15 @@ public class PlayerManager :
         return jobdata.GetJobInfo(jobID);
     }
 
+    public List<JobInfo> GetAvailableJobs(int charId)
+    {
+        List<JobInfo> result = new List<JobInfo>();
+
+
+
+        return result;
+    }
+
     public void SaveIfDirty()
     {
         if (isDirty == false) return;
