@@ -9,7 +9,7 @@ public class UICharStatus : UiBase
     {
         if (status == null) return;
 
-        // 💡 [핵심] 중복되는 코드를 줄이고 번역까지 처리해 주는 내부 헬퍼 함수
+        // 중복되는 코드를 줄이고 번역까지 처리해 주는 내부 헬퍼 함수
         void UpdateStatRow(int rowIndex, StatusType type, string textKey)
         {
             // 1. 최종 스탯 계산
@@ -18,11 +18,15 @@ public class UICharStatus : UiBase
             // 2. 키값을 통해 번역된 이름 가져오기 (예: "stat_health" -> "체력")
             string localizedName = LocalizationManager.Instance.GetText(textKey);
 
-            // 3. 값 포맷팅 
-            string valueStr = finalValue.ToString("F0");
+            // 3. 크리티컬 수치는 배율(1.0 = 100%)로 저장하므로 UI에서는 백분율로 변환합니다.
+            string valueStr;
             if (type == StatusType.CRIT_RATIO || type == StatusType.CRIT_DMG)
             {
-                valueStr += "%";
+                valueStr = (finalValue * 100f).ToString("F0") + "%";
+            }
+            else
+            {
+                valueStr = finalValue.ToString("F0");
             }
 
             // 4. UI 갱신

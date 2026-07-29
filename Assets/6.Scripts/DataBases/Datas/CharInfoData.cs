@@ -25,42 +25,48 @@ public class StatGrowth
 }
 
 
-[System.Serializable]
-public class CharStatusData
+[System.Flags]
+public enum CharacterJobMask
 {
-    public int id;
-    public int level;
-
-    public StatGrowth hp;
-    public StatGrowth attack;
-    public StatGrowth defense;
-    public StatGrowth attackSpeed;
-    public StatGrowth moveSpeed;
-    public StatGrowth critical;
-    public StatGrowth critDamage;
-
-    public virtual float GetStatusValue(StatusType type) { return 0.0f; }
+    None = 0,
+    BulletShooter = 1 << 0,
+    MagicSwordsman = 1 << 1,
+    Summoner = 1 << 2,
+    All = ~0,
 }
 
-public class TurtleInfoData
-    : CharStatusData
+/// <summary>
+/// Character base-stat data authored as a ScriptableObject asset.
+/// Job IDs are mapped to mask bits as (jobId - 1), so job ID 1 maps to BulletShooter.
+/// </summary>
+[CreateAssetMenu(fileName = "CharInfoData", menuName = "Scriptable Objects/Character/Char Info Data")]
+public class CharStatusData : ScriptableObject
 {
-    public TurtleInfoData(int id, int level) : base()
+    public int id;
+    public int level = 1;
+
+    [Tooltip("Select every job this character can use. Job ID 1 maps to the first flag, job ID 2 to the second, and so on.")]
+    public CharacterJobMask availableJobs = CharacterJobMask.All;
+
+    public StatGrowth hp = new();
+    public StatGrowth attack = new();
+    public StatGrowth defense = new();
+    public StatGrowth attackSpeed = new();
+    public StatGrowth moveSpeed = new();
+    public StatGrowth critical = new();
+    public StatGrowth critDamage = new(1.0f);
+
+    public bool CanUseJob(int jobId)
     {
-        this.id = id;
-        this.level = level;
-        hp = new StatGrowth(100, 1.0f, 1.5f, 1.0f);
-        attack = new StatGrowth(10, 1.0f, 1.5f, 1.0f);
-        defense = new StatGrowth(10, 1.0f, 1.5f, 1.0f);
-        attackSpeed = new StatGrowth(1.0f);
-        moveSpeed = new StatGrowth(1.0f);
-        critical = new StatGrowth();
-        critDamage = new StatGrowth(1.5f);
+        if (jobId <= 0 || jobId > 32)
+            return false;
+
+        int jobBit = 1 << (jobId - 1);
+        return ((int)availableJobs & jobBit) != 0;
     }
 
-    public override float GetStatusValue(StatusType type)
+    public float GetStatusValue(StatusType type)
     {
-        float value = 0.0f;
         return type switch
         {
             StatusType.ATTACK => attack.GetValue(level),
@@ -70,7 +76,7 @@ public class TurtleInfoData
             StatusType.CRIT_RATIO => critical.GetValue(level),
             StatusType.CRIT_DMG => critDamage.GetValue(level),
             StatusType.HEALTH => hp.GetValue(level),
-            _ => value,
+            _ => 0.0f,
         };
     }
 }

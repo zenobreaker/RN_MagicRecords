@@ -6,6 +6,8 @@ public class PlayerManager :
 {
     public SO_PlayerObjects playerObjects; 
     public SO_JobData jobdata;
+    [Tooltip("Character base-stat ScriptableObjects. Add every playable character here.")]
+    public List<CharStatusData> charInfoDataList = new();
 
     private List<int> characterIds = new List<int>();
     public List<int> CharIds
@@ -55,7 +57,18 @@ public class PlayerManager :
     public void OnInit()
     {
         charStatusDatas.Clear();
-        charStatusDatas.Add(1, new TurtleInfoData(1, 1));
+        foreach (CharStatusData charInfoData in charInfoDataList)
+        {
+            if (charInfoData == null)
+                continue;
+
+            if (charStatusDatas.ContainsKey(charInfoData.id))
+            {
+                Debug.LogWarning($"Duplicate character info ID: {charInfoData.id}. The last asset in PlayerManager will be used.");
+            }
+
+            charStatusDatas[charInfoData.id] = charInfoData;
+        }
 
         charClass.Clear();
         characterIds.Clear();
@@ -130,6 +143,27 @@ public class PlayerManager :
     {
         charStatusDatas.TryGetValue(charId, out CharStatusData ce);
         return ce;
+    }
+
+    public bool CanCharacterUseJob(int charId, int jobId)
+    {
+        return charStatusDatas.TryGetValue(charId, out CharStatusData charInfoData)
+            && charInfoData.CanUseJob(jobId);
+    }
+
+    public List<JobInfo> GetAvailableJobs(int charId)
+    {
+        List<JobInfo> availableJobs = new();
+        if (jobdata == null || !charStatusDatas.TryGetValue(charId, out CharStatusData charInfoData))
+            return availableJobs;
+
+        foreach (JobInfo job in jobdata.list)
+        {
+            if (charInfoData.CanUseJob(job.id))
+                availableJobs.Add(job);
+        }
+
+        return availableJobs;
     }
 
     private CharEquipmentData CreateCharEquipmentData(int charId, List<string> equipementIds)
