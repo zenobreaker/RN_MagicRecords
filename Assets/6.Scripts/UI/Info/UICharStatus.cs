@@ -18,11 +18,15 @@ public class UICharStatus : UiBase
             // 2. 키값을 통해 번역된 이름 가져오기 (예: "stat_health" -> "체력")
             string localizedName = LocalizationManager.Instance.GetText(textKey);
 
-            // 3. 값 포맷팅 (크리티컬 확률 같은 것들은 뒤에 %를 붙여주면 훨씬 보기 좋습니다)
-            string valueStr = finalValue.ToString("F0");
+            // 3. 크리티컬 수치는 배율(1.0 = 100%)로 저장하므로 UI에서는 백분율로 변환합니다.
+            string valueStr;
             if (type == StatusType.CRIT_RATIO || type == StatusType.CRIT_DMG)
             {
-                valueStr += "%";
+                valueStr = (finalValue * 100f).ToString("F0") + "%";
+            }
+            else
+            {
+                valueStr = finalValue.ToString("F0");
             }
 
             // 4. UI 갱신
