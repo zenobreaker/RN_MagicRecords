@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public enum ExplorationStep
 {
     Character = 0,
     Skill = 1,
-    Record = 2
+    Final = Skill,
 }
 
 public class UIExplorationSetup : UIPopUp
@@ -14,7 +15,6 @@ public class UIExplorationSetup : UIPopUp
     [Header("UI Pages (Inspector에서 할당)")]
     [SerializeField] private GameObject characterPageObj;
     [SerializeField] private GameObject skillPageObj;
-    [SerializeField] private GameObject recordPageObj;
 
     [Header("Navigation Buttons")]
     [SerializeField] private Button nextButton;
@@ -34,7 +34,6 @@ public class UIExplorationSetup : UIPopUp
         // 페이지 객체 매핑
         pageObjects[ExplorationStep.Character] = characterPageObj;
         pageObjects[ExplorationStep.Skill] = skillPageObj;
-        pageObjects[ExplorationStep.Record] = recordPageObj;
 
         // 인터페이스 캐싱
         foreach (var kvp in pageObjects)
@@ -100,7 +99,7 @@ public class UIExplorationSetup : UIPopUp
 
         prevButton.SafeInvoke(v => v.gameObject.SetActive(currentStep != ExplorationStep.Character));
 
-        if (currentStep == ExplorationStep.Record) // 마지막 단계
+        if (currentStep == ExplorationStep.Final) // 마지막 단계
         {
 
             if (nextButton != null)
@@ -124,10 +123,25 @@ public class UIExplorationSetup : UIPopUp
                 startButton.gameObject.SetActive(false);
         }
     }
+    private void ForceProceedToNextStep()
+    {
+        if (currentStep < ExplorationStep.Final)
+            ChangeStep(currentStep + 1);
+    }
 
     private void OnClickNext()
     {
-        if (currentStep < ExplorationStep.Record)
+        if (pageObjects[currentStep] != null 
+            & pageObjects[currentStep].TryGetComponent<SkillSelectUI>(
+                out var skillpage))
+        {
+            bool isValid 
+                = skillpage.CheckSkillSlotValidation(ForceProceedToNextStep);
+
+            if (isValid)
+                ForceProceedToNextStep();
+        }
+        else  if (currentStep < ExplorationStep.Final)
             ChangeStep(currentStep + 1);
     }
 
@@ -141,10 +155,9 @@ public class UIExplorationSetup : UIPopUp
     {
         if (!pages[currentStep].IsReadyToProceed()) return;
 
-        // TODO: 완성된 setupContext 데이터를 기반으로 탐사 시작 로직 호출
-        // GameManager.Instance.StartExploration(setupContext);
-
         CloseUI();
+
+        SceneManager.LoadScene("StageSelectScene");
     }
 
 }

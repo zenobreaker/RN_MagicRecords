@@ -36,13 +36,13 @@ public class SkillTreeController : UiBase
             if (uiSkillDetail != null)
             {
                 uiSkillTree.OnDrawedDetail += uiSkillDetail.OnDrawSkillDetail;
-                uiSkillDetail.HideDetail();
+                //uiSkillDetail.HideDetail();
             }
         }
 
         if (uiSkillReplace != null)
         {
-            uiSkillReplace.HideUI();
+            //uiSkillReplace.HideUI();
             uiSkillReplace.SetSkillTreeManager(skillTreeManager);
             uiSkillDetail.OnDrawEquipUI += uiSkillReplace.ShowUI;
         }

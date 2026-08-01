@@ -2566,6 +2566,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerObjects: {fileID: 11400000, guid: a761f4fddefcc1e4d86c46c115789591, type: 2}
   jobdata: {fileID: 11400000, guid: 429705e8327b7db4a92e0e61e7e76876, type: 2}
+  charInfoDataList:
+  - {fileID: 11400000, guid: 95c4939556cb5f44fa7f1a3a8ba16545, type: 2}
 --- !u!114 &1125104943671024952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3516,6 +3518,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jsonAsset: {fileID: 4900000, guid: 0a32fec89b88a694ea6f33cf1eaa3a55, type: 3}
+  recordLabel: RecordData
   recordDataJsonAsset: {fileID: 4900000, guid: 0ddfaef4a7c0c2142a4269e0f29ae4ad, type: 3}
 --- !u!114 &2228637529235428537
 MonoBehaviour:

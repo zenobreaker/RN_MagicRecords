@@ -209,7 +209,9 @@ public class AppManager
 
         skillManager.SafeInvoke(v => v.ResetRunData());
 
-        SceneManager.LoadScene("StageSelectScene");
+        // SceneManager.LoadScene("StageSelectScene");
+
+        UIManager.Instance.SafeInvoke(v => v.OpenExplorationSetupPopUp());
     }
 
     public void ContinueExplorationProcess()

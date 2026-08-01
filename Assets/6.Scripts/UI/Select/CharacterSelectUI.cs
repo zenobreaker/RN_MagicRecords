@@ -128,7 +128,7 @@ public class CharacterSelectUI
                 // 이벤트 연결
                 slot.OnClickedSlot -= OnCharacterSlotClicked;
                 slot.OnClickedSlot += OnCharacterSlotClicked;
-
+                slot.gameObject.SetActive(true);
                 slot.SetSelected(charId == selectedCharacter);
             }
         }
