@@ -98,7 +98,7 @@ public class SkillTreeController : UiBase
             category == Skill_Category.COMMON_PASSIVE)
             treeCategroy = SkillTreeManager.SkillTreeCategory.Common;
 
-
+        // 해당 직업의 전용 스킬트리를 가져옴 
         SkillTree skilltree = skillTreeManager.GetSkillTree(treeCategroy, jobID);
 
         uiSkillTree.DrawSkillTree(skilltree, category);
