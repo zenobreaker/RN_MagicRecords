@@ -4377,6 +4377,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5360620584534484074, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: charInfoDataList.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5360620584534484074, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
+      propertyPath: 'charInfoDataList.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 95c4939556cb5f44fa7f1a3a8ba16545, type: 2}
     - target: {fileID: 6372159647807091890, guid: f8e96c623e33da449ad69ae0b1deafb5, type: 3}
       propertyPath: m_Name
       value: AppManager_Instance

@@ -16,7 +16,7 @@ public class SkillTreeController : UiBase
         COMMON_PASSIVE,
     };
     private Skill_Category category;
-    private int classID = 1;
+    private int jobID = 1;
 
     protected override void Awake()
     {
@@ -57,6 +57,11 @@ public class SkillTreeController : UiBase
         RefreshUI();
     }
 
+    public void SetJobID(int jobID)
+    {
+        this.jobID = jobID;
+    }
+
     public override void RefreshUI()
     {
         DrawSkillTree();
@@ -94,7 +99,7 @@ public class SkillTreeController : UiBase
             treeCategroy = SkillTreeManager.SkillTreeCategory.Common;
 
 
-        SkillTree skilltree = skillTreeManager.GetSkillTree(treeCategroy, classID);
+        SkillTree skilltree = skillTreeManager.GetSkillTree(treeCategroy, jobID);
 
         uiSkillTree.DrawSkillTree(skilltree, category);
     }

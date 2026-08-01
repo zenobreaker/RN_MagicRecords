@@ -25,11 +25,11 @@ public static class StatusCalculator
                 if (item.modifier.valueType == ModifierValueType.FIXED)
                     flatTotal += item.modifier.value;
                 else if (item.modifier.valueType == ModifierValueType.PERCENT)
-                    percentTotal *= (1f + item.modifier.value);
+                    percentTotal += item.modifier.value;
             }
         }
 
-        float finalValue = (baseValue + flatTotal) * (1f + percentTotal);
+        float finalValue = (baseValue + flatTotal) * (1.0f + percentTotal);
         return finalValue;
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ExplorationSetupData
 {
@@ -24,13 +26,35 @@ public interface IExplorationSetupPage
     bool IsReadyToProceed();
 }
 
+[Serializable]
+public class JobButton
+{
+    public int jobID;
+    public GameObject jobButtonObj;
+    public Button jobButton;
+    public event Action<int> OnJobButtonClicked;
+
+    public void SetButtonEvent()
+    {
+        if(jobButton != null)
+        {
+            jobButton.onClick.RemoveAllListeners();
+            jobButton.onClick.AddListener(() => OnJobButtonClicked.Invoke(jobID));
+        }
+    }
+}
+
 public class CharacterSelectUI 
     : SelectBaseUI
     , IExplorationSetupPage
 {
     [Header("References")]
     [SerializeField] private CharacterInfoController infoController; // 우측 정보창
+
+    [Header("Components")]
     [SerializeField] private Transform classButtonContainer; // 하단 직업 버튼들이 모여있는 부모 객체
+    [SerializeField] private List<JobButton> jobButtons;
+    [SerializeField] private Image selectJobImage;
 
     private ExplorationSetupData currentContext;
     private int selectedCharacter = -1;
@@ -38,7 +62,6 @@ public class CharacterSelectUI
 
     private List<int> characterList = new();
 
-    public event Action OnSelectionChanged;
 
     protected override void Awake()
     {
@@ -52,11 +75,6 @@ public class CharacterSelectUI
     {
         base.OnEnable();
 
-
-    }
- 
-    protected override void OnCompleteSelect()
-    {
 
     }
 
@@ -139,7 +157,7 @@ public class CharacterSelectUI
         // 2. 하단 직업 목록 갱신 및 초기화
         UpdateClassList(charId);
 
-        OnSelectionChanged?.Invoke();
+        SelectionChanged();
     }
 
     //모든 슬롯을 순회하며 선택된 ID만 테두리를 켜고, 나머지는 끕니다.
@@ -162,32 +180,101 @@ public class CharacterSelectUI
 
     private void UpdateClassList(int charId)
     {
-        // TODO: PlayerManager나 AppManager를 통해 해당 캐릭터가 가질 수 있는 직업 리스트 로드
-        // List<JobInfo> availableJobs = PlayerManager.Instance.GetAvailableJobs(charId);
+        List<JobInfo> availableJobs = PlayerManager.Instance.GetAvailableJobs(charId);
+
+        foreach (var btn in jobButtons)
+        {
+            if (btn.jobButtonObj!= null)
+                btn.jobButtonObj.SetActive(false);
+        }
 
         // 가져온 직업 데이터를 바탕으로 하단의 UI 버튼들의 아이콘과 이벤트를 세팅합니다.
-        // 세팅된 하단 직업 버튼이 클릭되면 SelectClass(jobId) 함수가 호출되도록 연결하세요.
+        if (jobButtons.Count > 0 && availableJobs.Count > 0)
+        {
+            foreach(var job in availableJobs)
+            {
+                var targetButton = jobButtons.FirstOrDefault(b => b.jobID == job.id);
+
+                if (targetButton != null && targetButton.jobButtonObj!= null)
+                {
+                    // 3. 컨테이너(classButtonContainer)의 자식으로 붙여줍니다. (false는 로컬 스케일 유지용)
+                    targetButton.jobButtonObj.transform.SetParent(classButtonContainer, false);
+
+                    // 4. 컨테이너 내에서 리스트 순서대로 예쁘게 정렬되도록 하이라키 맨 아래로 보냅니다.
+                    targetButton.jobButtonObj.transform.SetAsLastSibling();
+
+                    // 5. 버튼 활성화
+                    targetButton.jobButtonObj.SetActive(true);
+
+                    targetButton.OnJobButtonClicked -= SelectClass;
+                    targetButton.OnJobButtonClicked += SelectClass;
+                    targetButton.SetButtonEvent(); 
+                }
+            }
+        }
+
 
         // 캐릭터가 바뀌었으니 직업 선택 상태는 강제로 초기화
         selectedClass = -1;
         currentContext.SelectedClassId = -1;
+
+        RefreshJobSlotSelectionUI();
     }
 
     // 하단 직업 버튼을 눌렀을 때
     public void SelectClass(int classId)
     {
-        selectedClass = classId;
-        currentContext.SelectedClassId = classId;
+        if (selectedClass != -1)
+            selectedClass  = selectedClass == classId ? -1 : classId;
+        else 
+            selectedClass = classId;
+        
+        currentContext.SelectedClassId = selectedClass;
 
-        // TODO: 클릭된 직업 버튼 시각적 강조 (외곽선 켜기 등)
+        RefreshJobSlotSelectionUI();
 
-        OnSelectionChanged?.Invoke();
+        SelectionChanged();
     }
 
     // 하단 '선택(다음)' 버튼이 활성화될 수 있는 조건
     public bool IsReadyToProceed()
     {
-        // 💡 캐릭터와 직업을 모두 골라야만 다음 페이지(스킬 선택)로 넘어갈 수 있습니다.
         return selectedCharacter != -1 && selectedClass != -1;
     }
+
+    // 선택된 직업 버튼으로 selectJobImage를 이동시키는 함수
+    private void RefreshJobSlotSelectionUI()
+    {
+        if (selectJobImage == null) return;
+
+        // 선택된 직업이 없다면 프레임을 숨깁니다 (캐릭터를 막 바꿨을 때)
+        if (selectedClass == -1)
+        {
+            selectJobImage.gameObject.SetActive(false);
+            return;
+        }
+
+        // 현재 선택된 직업 버튼 정보를 찾습니다.
+        var targetButton = jobButtons.FirstOrDefault(b => b.jobID == selectedClass);
+
+        if (targetButton != null && targetButton.jobButtonObj != null)
+        {
+            // 1. 프레임 이미지를 선택된 버튼의 자식으로 옮깁니다. (false로 스케일 찌그러짐 방지)
+            selectJobImage.transform.SetParent(targetButton.jobButtonObj.transform, false);
+
+            // 2. 부모(버튼)의 정중앙에 위치하도록 좌표를 0으로 초기화합니다.
+            if (selectJobImage.TryGetComponent<RectTransform>(out var rt))
+            {
+                rt.anchoredPosition = Vector2.zero;
+            }
+
+            // 3. 버튼의 아이콘보다 위에(앞에) 그려지도록 하이라키 맨 아래로 내립니다.
+            selectJobImage.transform.SetAsLastSibling();
+
+            // 4. 프레임을 켭니다.
+            selectJobImage.gameObject.SetActive(true);
+        }
+    }
+
+
 }

@@ -40,7 +40,14 @@ public class UIExplorationSetup : UIPopUp
         foreach (var kvp in pageObjects)
         {
             if (kvp.Value != null)
+            {
                 pages[kvp.Key] = kvp.Value.GetComponent<IExplorationSetupPage>();
+                if (kvp.Value.TryGetComponent<SelectBaseUI>(out var selectBase))
+                {
+                    selectBase.OnSelectionChanged -= RefreshNavigationButtons;
+                    selectBase.OnSelectionChanged += RefreshNavigationButtons;
+                }
+            }
         }
 
         if (nextButton != null)
@@ -74,7 +81,7 @@ public class UIExplorationSetup : UIPopUp
         // 1. 모든 페이지 끄기
         foreach (var obj in pageObjects.Values)
         {
-            if(obj != null)
+            if (obj != null)
                 obj.SetActive(false);
         }
 
@@ -91,12 +98,12 @@ public class UIExplorationSetup : UIPopUp
     {
         bool isReady = pages[currentStep].IsReadyToProceed();
 
-        prevButton.SafeInvoke(v=>v.gameObject.SetActive(currentStep != ExplorationStep.Character));
+        prevButton.SafeInvoke(v => v.gameObject.SetActive(currentStep != ExplorationStep.Character));
 
         if (currentStep == ExplorationStep.Record) // 마지막 단계
         {
 
-            if(nextButton != null)
+            if (nextButton != null)
                 nextButton.gameObject.SetActive(false);
 
             if (startButton != null)
@@ -113,7 +120,7 @@ public class UIExplorationSetup : UIPopUp
                 nextButton.interactable = isReady;
             }
 
-            if(startButton != null)
+            if (startButton != null)
                 startButton.gameObject.SetActive(false);
         }
     }

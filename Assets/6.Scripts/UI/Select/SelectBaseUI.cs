@@ -1,18 +1,16 @@
 
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SelectBaseUI : UIPopUp
 {
-    [Header("Confirm UI")]
-    [SerializeField] private Button completeButton;
 
+    public event Action OnSelectionChanged;
 
     protected override void Awake()
     {
         base.Awake();
-        if (completeButton != null)
-            completeButton.onClick.AddListener(OnCompleteSelect);
     }
 
 
@@ -21,8 +19,8 @@ public class SelectBaseUI : UIPopUp
 
     }
 
-    protected virtual void OnCompleteSelect()
+    protected void SelectionChanged()
     {
-       
+        OnSelectionChanged?.Invoke();
     }
 }
