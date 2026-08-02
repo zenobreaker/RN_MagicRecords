@@ -1,6 +1,17 @@
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+
+[System.Serializable]
+public sealed class ExploreRunSaveData
+{
+    public RunStatus runStatus = RunStatus.NoSave;
+    public ExplorationSetupData setupData = new();
+
+    public MapData mapData;
+    public StageNodeData stageNodeData; 
+}
 
 
 [System.Serializable]
@@ -99,13 +110,39 @@ public sealed class RecordSaveListData
 
 public static class SaveManager
 {
-    private static string mapDataPath = Path.Combine(Application.persistentDataPath, "mapdata.json");
-    private static string stageDataPath = Path.Combine(Application.persistentDataPath, "stagedata.json");
-    private static string charInfoDatPah = Path.Combine(Application.persistentDataPath, "charinfo.json");
-    private static string inventoryPath = Path.Combine(Application.persistentDataPath, "invetory.json");
-    private static string skillPath = Path.Combine(Application.persistentDataPath, "learnskill.json");
-    private static string recordPath = Path.Combine(Application.persistentDataPath, "record.json");
+    private static readonly string runSaveDataPath = Path.Combine(Application.persistentDataPath, "runSaveData.json");
+    private static readonly string mapDataPath = Path.Combine(Application.persistentDataPath, "mapdata.json");
+    private static readonly string stageDataPath = Path.Combine(Application.persistentDataPath, "stagedata.json");
+    private static readonly string charInfoDatPah = Path.Combine(Application.persistentDataPath, "charinfo.json");
+    private static readonly string inventoryPath = Path.Combine(Application.persistentDataPath, "invetory.json");
+    private static readonly string skillPath = Path.Combine(Application.persistentDataPath, "learnskill.json");
+    private static readonly string recordPath = Path.Combine(Application.persistentDataPath, "record.json");
 
+
+    public static void SaveExploreRun(ExploreRunSaveData data)
+    {
+        string json = JsonUtility.ToJson(data);
+        System.IO.File.WriteAllText(runSaveDataPath, json);
+    }
+
+    public static ExploreRunSaveData LoadExploreRun()
+    {
+        if (!System.IO.File.Exists(runSaveDataPath)) return null;
+
+        string json = System.IO.File.ReadAllText(runSaveDataPath);
+        return JsonUtility.FromJson<ExploreRunSaveData>(json);
+    }
+
+    public static bool HasSavedExploreRun()
+    {
+        return System.IO.File.Exists(runSaveDataPath);
+    }
+
+    public static void DeleteExploreRun()
+    {
+        if (System.IO.File.Exists(recordPath))
+            System.IO.File.Delete(recordPath);
+    }
 
     #region MapData
     public static void SaveMap(MapData mapData)

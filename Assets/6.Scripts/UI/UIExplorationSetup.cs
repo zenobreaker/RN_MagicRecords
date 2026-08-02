@@ -10,6 +10,28 @@ public enum ExplorationStep
     Final = Skill,
 }
 
+
+[System.Serializable]
+public class ExplorationSetupData
+{
+    public int SelectedCharacterId { get; set; } = -1;
+    public int SelectedClassId { get; set; } = -1;
+
+    // 이어하기 모드인지 여부 
+    public bool IsContinue { get; set; } = false;
+
+
+    public void Reset()
+    {
+        IsContinue = false;
+        SelectedCharacterId = -1;
+        SelectedClassId = -1;
+    }
+
+    public bool HasCharacter => SelectedCharacterId != -1;
+    public bool HasClass => SelectedClassId != -1;
+}
+
 public class UIExplorationSetup : UIPopUp
 {
     [Header("UI Pages (Inspector에서 할당)")]
@@ -25,7 +47,8 @@ public class UIExplorationSetup : UIPopUp
     private Dictionary<ExplorationStep, GameObject> pageObjects = new();
 
     private ExplorationStep currentStep = ExplorationStep.Character;
-    private ExplorationSetupData setupContext = new();
+    private ExplorationSetupData setupData = new();
+    private ExploreManager cachedManager;
 
     protected override void Awake()
     {
@@ -55,6 +78,8 @@ public class UIExplorationSetup : UIPopUp
             prevButton.onClick.AddListener(OnClickPrev);
         if (startButton != null)
             startButton.onClick.AddListener(OnClickStart);
+
+        cachedManager = AppManager.Instance.SafeInvoke(v => v.GetExploreManager());
     }
 
     protected override void OnEnable()
@@ -65,9 +90,31 @@ public class UIExplorationSetup : UIPopUp
 
     public void OpenSetupFlow()
     {
-        setupContext.Reset();
+        setupData.Reset();
         ChangeStep(ExplorationStep.Character);
         ShowPopUp();
+    }
+
+    public void OpenForContinue(ExplorationSetupData savedData)
+    {
+        setupData = savedData;
+        setupData.IsContinue = true;
+
+        ExplorationStep resumeStep = DetermineResumeStep();
+
+        ChangeStep(resumeStep);
+        ShowPopUp();
+    }
+
+    private ExplorationStep DetermineResumeStep()
+    {
+        if (!setupData.HasCharacter)
+            return ExplorationStep.Character;
+
+        if (!setupData.HasClass)
+            return ExplorationStep.Skill;
+
+        return ExplorationStep.Final;
     }
 
     protected override void DrawPopUp()
@@ -87,7 +134,7 @@ public class UIExplorationSetup : UIPopUp
         // 2. 타겟 페이지 켜고 데이터 주입
         currentStep = targetStep;
         pageObjects[currentStep].SetActive(true);
-        pages[currentStep].OnShowPage(setupContext);
+        pages[currentStep].OnShowPage(setupData);
 
         RefreshNavigationButtons();
     }
@@ -126,22 +173,27 @@ public class UIExplorationSetup : UIPopUp
     private void ForceProceedToNextStep()
     {
         if (currentStep < ExplorationStep.Final)
+        {
             ChangeStep(currentStep + 1);
+
+            cachedManager = cachedManager == null ? AppManager.Instance.SafeInvoke(v => v.GetExploreManager()) : cachedManager;
+            cachedManager.SaveSetupProgress(setupData);
+        }
     }
 
     private void OnClickNext()
     {
-        if (pageObjects[currentStep] != null 
+        if (pageObjects[currentStep] != null
             & pageObjects[currentStep].TryGetComponent<SkillSelectUI>(
                 out var skillpage))
         {
-            bool isValid 
+            bool isValid
                 = skillpage.CheckSkillSlotValidation(ForceProceedToNextStep);
 
             if (isValid)
                 ForceProceedToNextStep();
         }
-        else  if (currentStep < ExplorationStep.Final)
+        else if (currentStep < ExplorationStep.Final)
             ChangeStep(currentStep + 1);
     }
 
@@ -155,6 +207,8 @@ public class UIExplorationSetup : UIPopUp
     {
         if (!pages[currentStep].IsReadyToProceed()) return;
 
+        cachedManager = cachedManager == null ? AppManager.Instance.SafeInvoke(v => v.GetExploreManager()) : cachedManager;
+        cachedManager.SafeInvoke(v => v.FinallizeSetupAndGenerateMap(setupData));
         CloseUI();
 
         SceneManager.LoadScene("StageSelectScene");

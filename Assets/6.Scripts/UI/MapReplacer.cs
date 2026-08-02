@@ -161,6 +161,9 @@ public class MapReplacer
     public List<int> GetCanEnableNodeIds(int currentID)
     {
         List<int> results = new();
+        if (levels.Count <= 0)
+            return null;
+
         for (int level = 0; level < maxLevel; level++)
         {
             for (int node = 0; node < levels[level].Count; node++)

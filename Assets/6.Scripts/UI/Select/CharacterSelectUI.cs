@@ -4,18 +4,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ExplorationSetupData
-{
-    public int SelectedCharacterId { get; set; } = -1;
-    public int SelectedClassId { get; set; } = -1;
-
-
-    public void Reset()
-    {
-        SelectedCharacterId = -1;
-        SelectedClassId = -1;
-    }
-}
 
 public interface IExplorationSetupPage
 {

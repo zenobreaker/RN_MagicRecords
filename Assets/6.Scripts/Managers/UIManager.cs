@@ -476,12 +476,12 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
-    public void OpenExplorationSetupPopUp()
+    public void OpenExplorationSetupPopUp(Action<UIExplorationSetup> onAction = null)
     {
         UIExplorationSetup ui = OpenUI<UIExplorationSetup>(true);
         if (ui != null && ui.TryGetComponent<UIExplorationSetup>(out UIExplorationSetup target))
         {
-
+            onAction?.Invoke(target); 
         }
     }
 

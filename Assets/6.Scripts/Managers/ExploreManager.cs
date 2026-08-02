@@ -4,6 +4,7 @@ using UnityEngine;
 public enum RunStatus
 {
     NoSave,          // 세이브 없음 (새 게임)
+    SetupIncomplete, // 캐릭터/스킬 세팅 완료하지 않고 종료
     MidRun,          // 일반적인 이어하기 상태
     ChapterCleared,  // 챕터 보스는 깼으나 다음 챕터 이동 전 크래시
     FinalRunCleared  // 최종 보스까지 다 깼으나 최종 보상 받기 전 크래시
@@ -13,6 +14,8 @@ public enum RunStatus
 public sealed class ExploreManager : MonoBehaviour
 {
     public ExploreState CurrentState { get; private set; } = ExploreState.NONE;
+
+    public ExplorationSetupData CurrentSetupData { get; private set; } = new();
 
     // 탐사 단계별 이벤트
     public event Action OnExploreStart;     // 탐사 시작 시
@@ -74,14 +77,22 @@ public sealed class ExploreManager : MonoBehaviour
             Init(false);  // 기존의 맵 생성/로드 로직 실행
 
             RunStatus status = GetRunStatus();
-            
-            if (status == RunStatus.FinalRunCleared)
+
+            // 세팅하다 튕긴 경우 맵에 안들어가고 바로 셋업 UI 띄우기
+            if (status == RunStatus.SetupIncomplete)
             {
-                UIManager.Instance.SafeInvoke(v => v.OpenExploreResultPopUp()); 
+                UIManager.Instance.SafeInvoke(v => v.OpenExplorationSetupPopUp((target) =>
+                {
+                    target.OpenForContinue(CurrentSetupData);
+                }));
             }
-            else if(status == RunStatus.ChapterCleared)
+            else if (status == RunStatus.FinalRunCleared)
             {
-                UIManager.Instance.SafeInvoke(v => v.ShowStageResultUI(true)); 
+                UIManager.Instance.SafeInvoke(v => v.OpenExploreResultPopUp());
+            }
+            else if (status == RunStatus.ChapterCleared)
+            {
+                UIManager.Instance.SafeInvoke(v => v.ShowStageResultUI(true));
 
             }
         }
@@ -97,7 +108,7 @@ public sealed class ExploreManager : MonoBehaviour
 
     public void StartExplore()
     {
-        ResetExploreProgress(); 
+        ResetExploreProgress();
         ResetData();
         Init(true);
 
@@ -106,7 +117,7 @@ public sealed class ExploreManager : MonoBehaviour
 
     public void Init(bool foreceGenerate = false)
     {
-        if (foreceGenerate) bCreate = false; 
+        if (foreceGenerate) bCreate = false;
 
         if (bCreate == false)
         {
@@ -119,47 +130,66 @@ public sealed class ExploreManager : MonoBehaviour
 
     private void ReplaceLevel(bool forceGenerate)
     {
-        MapData loadMap = forceGenerate ? null : SaveManager.LoadMap();
+        ExploreRunSaveData loadData = forceGenerate ? null : SaveManager.LoadExploreRun();
+        //MapData loadData  = forceGenerate ? null : SaveManager.LoadMap();
 
-        if (loadMap != null)
+        if (loadData != null)
         {
-            Chapter = loadMap.chapter <= 0 ? 1 : loadMap.chapter;
-            mapReplacer.RestoreMap(loadMap.nodes);
-            MapNodeID = loadMap.currentNodeId;
-            RunStatus = loadMap.runStatus;
-        }
-        else
-        {
-            if (Chapter <= 0) Chapter = 1;
+            RunStatus = loadData.runStatus;
+            CurrentSetupData = loadData.setupData;
 
-            mapReplacer.Replace();
-            mapReplacer.ConnectToNode();
-            MapNodeID = 0;
-        }
+            // 세팅 중이었다면 맵/스테이지는 없으므로 로드 중단
+            if (RunStatus == RunStatus.SetupIncomplete)
+                return;
 
-
-        StageNodeData loadStage = forceGenerate ? null : SaveManager.LoadStageNode();
-        stageReplacer.StartChapter(Chapter);
-
-        if (loadStage != null)
-        {
-            stageReplacer.RestoreStages(loadStage);
-
-            MapNodeInfo startNode = stageReplacer.GetReplacedNodeInfo(0);
-            if (startNode != null)
+            // 맵과 스테이지 정상 복구 
+            MapData mapData = loadData.mapData;
+            if (mapData != null)
             {
-                startNode.isCleared = true;
+                Chapter = mapData.chapter <= 0 ? 1 : mapData.chapter;
+                mapReplacer.RestoreMap(mapData.nodes);
+                MapNodeID = mapData.currentNodeId;
+            }
+
+            //StageNodeData loadStage = forceGenerate ? null : SaveManager.LoadStageNode();
+            StageNodeData loadStage = loadData.stageNodeData;
+            stageReplacer.StartChapter(Chapter);
+
+            if (loadStage != null)
+            {
+                stageReplacer.RestoreStages(loadStage);
+                MapNodeInfo startNode = stageReplacer.GetReplacedNodeInfo(0);
+                if (startNode != null)
+                {
+                    startNode.isCleared = true;
+                }
             }
         }
+        // 데이터가 없으므로 새로 생성 
         else
         {
-            stageReplacer.AssignStages(mapReplacer.GetLevels());
-            MapNodeInfo startNode = stageReplacer.GetReplacedNodeInfo(0);
-            if (startNode != null)
+            Chapter = 1;
+
             {
-                startNode.isCleared = true;
+                mapReplacer.Replace();
+                mapReplacer.ConnectToNode();
+                MapNodeID = 0;
             }
+
+            {
+                stageReplacer.StartChapter(Chapter);
+                stageReplacer.AssignStages(mapReplacer.GetLevels());
+                MapNodeInfo startNode = stageReplacer.GetReplacedNodeInfo(MapNodeID);
+                if (startNode != null)
+                {
+                    startNode.isCleared = true;
+                }
+            }
+
+            RunStatus = RunStatus.SetupIncomplete;
+            CurrentSetupData = new ExplorationSetupData();
         }
+
 
 #if UNITY_EDITOR
         // 자신이 갈 수 있는 노드 출력하기 
@@ -171,20 +201,51 @@ public sealed class ExploreManager : MonoBehaviour
 #endif
     }
 
+    // UI에서 '다음'버튼을 누를 때 임시저장
+    public void SaveSetupProgress(ExplorationSetupData currentSetup)
+    {
+        CurrentSetupData = currentSetup;
+        RunStatus = RunStatus.SetupIncomplete;
+        SaveExploreMap();
+    }
+
+    // 유저가 세팅창에서 최종 시작 버튼을 눌렀을 때 호출
+    public void FinallizeSetupAndGenerateMap(ExplorationSetupData finalSetup)
+    {
+        CurrentSetupData = finalSetup;
+        RunStatus = RunStatus.MidRun;
+
+        mapReplacer.Replace();
+        mapReplacer.ConnectToNode();
+        MapNodeID = 0;
+
+        stageReplacer?.StartChapter(Chapter);
+        stageReplacer.AssignStages(mapReplacer.GetLevels());
+
+        MapNodeInfo startNode = stageReplacer.GetReplacedNodeInfo(0);
+        if (startNode != null) startNode.isCleared = true;
+
+        SaveExploreMap();
+        ChangeState(ExploreState.READY);
+    }
+
     private RunStatus GetRunStatus()
     {
-        if (!SaveManager.HasSavedMapData())
+        //if (!SaveManager.HasSavedMapData())
+        if (!SaveManager.HasSavedExploreRun())
             return RunStatus.NoSave;
+
+        // 맵이 생성되지 않은 단계
+        if (mapReplacer == null || mapReplacer.GetLevels().Count == 0)
+            return RunStatus.SetupIncomplete;
 
         MapNodeInfo currentNodeInfo = GetReplacedNodeInfo(MapNodeID);
         bool isBossNode = currentNodeInfo != null && currentNodeInfo.type == StageType.Boss_Combat;
 
-        if(isBossNode && currentNodeInfo.isCleared)
+        if (isBossNode && currentNodeInfo.isCleared)
         {
             if (Chapter < maxChapter)
-                return RunStatus.ChapterCleared;
-            else
-                return RunStatus.FinalRunCleared;
+                return Chapter < maxChapter ? RunStatus.ChapterCleared : RunStatus.FinalRunCleared;
         }
 
         return RunStatus.MidRun;
@@ -231,9 +292,6 @@ public sealed class ExploreManager : MonoBehaviour
         }
 
         SaveExploreMap();
-
-
-        //ExplorationRewardManager.ReceiveReward();
     }
 
 
@@ -361,12 +419,12 @@ public sealed class ExploreManager : MonoBehaviour
 
     public void StartEventCombat(EventChoice choice)
     {
-        if(choice == null) return;
+        if (choice == null) return;
 
         if (choice.ActionType != EventActionType.STAGE_COMBAT)
             return;
 
-        StartEventCombat(choice.ActionType, choice.ActionParam, choice.ActionValue);    
+        StartEventCombat(choice.ActionType, choice.ActionParam, choice.ActionValue);
     }
 
     public void ChangeState(ExploreState newState, int stageID = -1)
@@ -432,11 +490,12 @@ public sealed class ExploreManager : MonoBehaviour
     public void PurgeCurrentRun()
     {
         Debug.Log("[ExploreManager] 런 종료 완료. 세이브 파일 파기 및 메모리 데이터를 초기화합니다.");
+        SaveManager.DeleteExploreRun();
 
         // 1. 실제 세이브 파일 완전 삭제
-        SaveManager.DeleteMapData();
+        //SaveManager.DeleteMapData();
         // 필요하다면 스테이지 노드 정보 파일도 삭제 (SaveManager에 구현된 경우)
-        SaveManager.DeleteStageNodeData();
+        //SaveManager.DeleteStageNodeData();
 
         // 2. 메모리에 들고 있던 배치 클래스들을 null로 밀어버려 유령 저장을 원천 차단합니다.
         ResetExploreProgress();
@@ -455,36 +514,68 @@ public sealed class ExploreManager : MonoBehaviour
             return;
         }
 
-        // Save Map 
-        if (mapReplacer != null)
+        ExploreRunSaveData saveData = new ExploreRunSaveData
         {
-            MapData mapData = new();
+            runStatus = GetRunStatus(),
+            setupData = CurrentSetupData
+        };
+
+        if (saveData.runStatus != RunStatus.SetupIncomplete &&
+            mapReplacer != null && stageReplacer != null)
+        {
+            // Map Data 조립
+            MapData mapData = new MapData
+            {
+                chapter = this.Chapter,
+                currentNodeId = this.MapNodeID,
+                biomeName = this.BiomeName,
+                runStatus = saveData.runStatus
+            };
             foreach (var level in mapReplacer.GetLevels())
                 foreach (var node in level)
                     mapData.nodes.Add(node);
 
-            mapData.chapter = this.Chapter;
-            mapData.currentNodeId = MapNodeID;
-            mapData.biomeName = BiomeName;
+            saveData.mapData = mapData;
 
-            mapData.runStatus = GetRunStatus();
-
-            SaveManager.SaveMap(mapData);
-        }
-
-        // Save Stage
-        if (stageReplacer != null)
-        {
-            StageNodeData stageNodeData = new();
-
-            // MapNodeInfo 자체가 직렬화(Serializable)를 지원하므로 
-            // 변환할 필요 없이 리스트에 쏙쏙 담아주기만 하면 끝납니다!
+            StageNodeData stageNodeData = new StageNodeData();
             foreach (var pair in stageReplacer.GetNodeToInfo())
-            {
                 stageNodeData.nodeInfos.Add(pair.Value);
-            }
 
-            SaveManager.SaveStageNode(stageNodeData);
+            saveData.stageNodeData = stageNodeData;
         }
+
+        SaveManager.SaveExploreRun(saveData);
+
+        //// Save Map 
+        //if (mapReplacer != null)
+        //{
+        //    MapData mapData = new();
+        //    foreach (var level in mapReplacer.GetLevels())
+        //        foreach (var node in level)
+        //            mapData.nodes.Add(node);
+
+        //    mapData.chapter = this.Chapter;
+        //    mapData.currentNodeId = MapNodeID;
+        //    mapData.biomeName = BiomeName;
+
+        //    mapData.runStatus = GetRunStatus();
+
+        //    SaveManager.SaveMap(mapData);
+        //}
+
+        //// Save Stage
+        //if (stageReplacer != null)
+        //{
+        //    StageNodeData stageNodeData = new();
+
+        //    // MapNodeInfo 자체가 직렬화(Serializable)를 지원하므로 
+        //    // 변환할 필요 없이 리스트에 쏙쏙 담아주기만 하면 끝납니다!
+        //    foreach (var pair in stageReplacer.GetNodeToInfo())
+        //    {
+        //        stageNodeData.nodeInfos.Add(pair.Value);
+        //    }
+
+        //    SaveManager.SaveStageNode(stageNodeData);
+        //}
     }
 }

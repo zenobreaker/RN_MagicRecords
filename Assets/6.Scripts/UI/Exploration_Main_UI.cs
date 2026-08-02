@@ -11,21 +11,34 @@ public class Exploration_Main_UI : UiBase
     {
         if (AppManager.Instance == null) return;
 
-        // 1. 가벼운 MapData만 쓱 읽어옵니다.
-        MapData loadMap = SaveManager.LoadMap();
+        ExploreRunSaveData loadData = SaveManager.LoadExploreRun();
 
-        // 2. 세이브가 없으면 묻지도 따지지도 않고 새 게임
-        if (loadMap == null || loadMap.nodes.Count == 0)
+        if (loadData == null)
         {
-            AppManager.Instance.EnterTheExplorationProcess();
+            StartNewExplorationSetup();
             return;
         }
 
-        // 3. 💡 저장된 명시적 상태(RunStatus)를 기반으로 깔끔하게 처리합니다!
-        switch (loadMap.runStatus)
+        switch (loadData.runStatus)
         {
-            case RunStatus.MidRun:
             case RunStatus.NoSave: // (예외 처리용)
+                StartNewExplorationSetup();
+                break;
+
+            case RunStatus.SetupIncomplete:
+                //  캐릭터/스킬 세팅하다가 꺼진 상태
+                // 팝업 묻지 않고 바로 이어하기 모드로 셋업 UI를 열어줍니다.
+                Debug.Log("[이어하기] 세팅 도중 종료됨. 셋업 창을 복구합니다.");
+                UIManager.Instance.SafeInvoke(v =>
+                {
+                    v.OpenExplorationSetupPopUp(
+                        (setup)=>
+                        {
+                            setup.OpenForContinue(loadData.setupData);
+                        });
+                });
+                break;
+            case RunStatus.MidRun:
                 // 평범하게 진행 중이던 상태 -> 이어하기 팝업 호출
                 UIManager.Instance.OpenTwoButtonPopUp(
                     title: "알림",
@@ -51,5 +64,19 @@ public class Exploration_Main_UI : UiBase
                 AppManager.Instance.ContinueExplorationProcess();
                 break;
         }
+    }
+
+    // 새 탐사 세팅을 시작할 때 부르는 헬퍼 함수
+    private void StartNewExplorationSetup()
+    {
+        ExploreManager exploreManager = AppManager.Instance.SafeInvoke(v => v.GetExploreManager());
+        if (exploreManager == null) return;
+
+        exploreManager.Init(true); // 매니저 초기화 (껍데기 준비)
+
+        UIManager.Instance.SafeInvoke(v =>
+        {
+            v.OpenExplorationSetupPopUp();
+        });
     }
 }
