@@ -255,7 +255,10 @@ public class DamageEvent
     }
 }
 
-
+public interface IAttackOriginProvider
+{
+    IReadOnlyList<Transform> GetAttackOrigins();
+}
 
 public class Weapon : MonoBehaviour
 {
@@ -265,17 +268,16 @@ public class Weapon : MonoBehaviour
     [SerializeField] protected WeaponType type;
     public WeaponType Type { get => type; }
 
+    [SerializeField] protected SO_ActiveSkillData defaultSkill; 
+
     [SerializeField] protected SO_Action so_Action;
     public SO_Action GetActionData { get => so_Action; }
-    [SerializeField] protected SO_Damage so_Damage;
-    public SO_Damage GetDamageData { get => so_Damage; }
 
     protected List<ActionData> actionDatas;
-    protected List<DamageData> damageDatas;
 
     private bool bEquipped;
     public bool Equipped { get => bEquipped; }
-    protected int currentComboCount = 0;
+
 
     private bool bDirtyMove = false;
 
@@ -301,8 +303,6 @@ public class Weapon : MonoBehaviour
 
         if (so_Action != null)
             actionDatas = so_Action.actionDatas;
-        if (so_Damage != null)
-            damageDatas = so_Damage.damageDatas;
     }
 
     protected virtual void Start()
@@ -325,6 +325,18 @@ public class Weapon : MonoBehaviour
         if (rootObject.TryGetComponent(out IWeaponUser user))
         {
             weaponController = user.GetWeaponController();
+        }
+
+        if(defaultSkill != null && rootObject != null)
+        {
+            if(rootObject.TryGetComponent<SkillComponent>(out 
+                var skillComponent))
+            {
+                skillComponent.SetActiveSkill(SkillSlot.Default,
+                    defaultSkill.CreateSkill() as ActiveSkill);
+                
+                Debug.Log($"{rootObject.name} is set default skill complete.");
+            }
         }
 
         Begin_Equip();

@@ -85,6 +85,21 @@ public sealed class CastContext
     public Quaternion Direction;
 }
 
+
+public struct SpawnPointData
+{
+    public Vector3 position;
+    public Quaternion rotation;
+
+    public SpawnPointData(
+        Vector3 position,
+        Quaternion rotation)
+    {
+        this.position = position;
+        this.rotation = rotation;
+    }
+}
+
 [Serializable]
 public sealed class SpawnContext
 {
@@ -98,7 +113,17 @@ public sealed class SpawnContext
 
     public Vector3 TargetPosition;
     public List<Vector3> TargetPositions;
-    public string OverridePrefabName = string.Empty; 
+    public string OverridePrefabName = string.Empty;
+
+    // 어디서 생성?
+    public List<SpawnPointData> SpawnPositions = new();
+    public void Clear()
+    {
+        SpawnPositions.Clear();
+        TargetPositions.Clear();
+
+        TargetPosition = Vector3.zero;
+    }
 }
 
 [Serializable]

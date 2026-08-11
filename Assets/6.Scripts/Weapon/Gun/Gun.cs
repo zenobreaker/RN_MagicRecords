@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Gun : Weapon_Combo
+public class Gun : Weapon_Combo, IAttackOriginProvider
 {
 
     [SerializeField] private GameObject muzzleFlashPrefab;
@@ -17,6 +17,11 @@ public class Gun : Weapon_Combo
     [Tooltip("Ã¼Å©ÇÏ¸é ´õºí¹è·²Ã³·³ ÇÑ ¹ø¿¡ ½î°í, ²ô¸é ½Ö±ÇÃÑÃ³·³ ¹ø°¥¾Æ ½õ´Ï´Ù.")]
     [SerializeField] private bool fireSimultaneously = true;
     private int currentMuzzleIndex = 0; // ¹ø°¥¾Æ ½ò ¶§ »ç¿ëÇÒ ÀÎµ¦½º
+
+    public IReadOnlyList<Transform> GetAttackOrigins()
+    {
+        return muzzleTransforms;
+    }
 
     protected override void Start()
     {
@@ -59,25 +64,25 @@ public class Gun : Weapon_Combo
         actionDatas[index].Play_CameraShake();
     }
 
-    public override void Begin_JudgeAttack(AnimationEvent e)
-    {
-        base.Begin_JudgeAttack(e);
+    //public override void Begin_JudgeAttack(AnimationEvent e)
+    //{
+    //    base.Begin_JudgeAttack(e);
 
         
-        if(fireSimultaneously)
-        {
-            foreach(Transform muzzle in muzzleTransforms)
-                FireBulletFromMuzzle(muzzle);
-        }
-        else
-        {
-            Transform muzzle = muzzleTransforms[currentMuzzleIndex];
-            FireBulletFromMuzzle(muzzle); 
+    //    if(fireSimultaneously)
+    //    {
+    //        foreach(Transform muzzle in muzzleTransforms)
+    //            FireBulletFromMuzzle(muzzle);
+    //    }
+    //    else
+    //    {
+    //        Transform muzzle = muzzleTransforms[currentMuzzleIndex];
+    //        FireBulletFromMuzzle(muzzle); 
 
-            currentMuzzleIndex = (currentMuzzleIndex + 1) % muzzleTransforms.Count;
-        }
+    //        currentMuzzleIndex = (currentMuzzleIndex + 1) % muzzleTransforms.Count;
+    //    }
 
-    }
+    //}
 
     private void FireBulletFromMuzzle(Transform muzzle)
     {
@@ -90,26 +95,26 @@ public class Gun : Weapon_Combo
         GameObject obj = ObjectPooler.SpawnFromPool(bulletName, muzzle.position, muzzle.rotation);
         if (obj.TryGetComponent<Projectile>(out var projectile))
         {
-            projectile.SetDamageInfo(ownerCharacter, damageDatas[index]);
+           // projectile.SetDamageInfo(ownerCharacter, damageDatas[index]);
             projectile.AddIgnore(rootObject);
             projectile.OnProjectileHit -= OnProjectileHit;
             projectile.OnProjectileHit += OnProjectileHit;
         }
     }
 
-    public override void Play_PlaySound()
-    {
-        base.Play_PlaySound();
+    //public override void Play_PlaySound()
+    //{
+    //    base.Play_PlaySound();
 
-        actionDatas[index].Play_Sound();
-    }
+    //    actionDatas[index].Play_Sound();
+    //}
 
-    public override void Play_CameraShake()
-    {
-        base.Play_CameraShake();
+    //public override void Play_CameraShake()
+    //{
+    //    base.Play_CameraShake();
 
-        actionDatas[index].Play_CameraShake();
-    }
+    //    actionDatas[index].Play_CameraShake();
+    //}
 
     private void OnProjectileHit(Collider self, Collider other, Vector3 point)
     {
@@ -118,4 +123,6 @@ public class Gun : Weapon_Combo
 
         //Instantiate<GameObject>(actionDatas[index].HitParticle, point, rootObject.transform.rotation);
     }
+
+
 }

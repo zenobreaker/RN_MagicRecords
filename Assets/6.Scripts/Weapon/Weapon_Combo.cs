@@ -6,6 +6,7 @@ public class Weapon_Combo : Weapon
 {
     [SerializeField] protected SO_Combo so_Combo;
     public SO_Combo ComboData { get => so_Combo; }
+    protected int currentComboCount = 0;
 
 
     #region Cinenmachine
@@ -56,20 +57,20 @@ public class Weapon_Combo : Weapon
         Debug.Assert(so_Combo.comboDatas[this.index] != null);
 
   
-        // Play Animation 
-        {
-            if (ownerCharacter != null)
-            {
-                ownerCharacter.PlayAction(actionDatas[this.index]);
-            }
-            if(weaponController != null)
-                weaponController.DoAction(actionDatas[this.index].WeaponActionName);
+//        // Play Animation 
+//        {
+//            if (ownerCharacter != null)
+//            {
+//                ownerCharacter.PlayAction(actionDatas[this.index]);
+//            }
+//            if(weaponController != null)
+//                weaponController.DoAction(actionDatas[this.index].WeaponActionName);
 
-#if UNITY_EDITOR
-            if (bDebug)
-                Debug.Log($"Combo Play: {this.index} {actionDatas[this.index].StateName}");
-#endif
-        }
+//#if UNITY_EDITOR
+//            if (bDebug)
+//                Debug.Log($"Combo Play: {this.index} {actionDatas[this.index].StateName}");
+//#endif
+//        }
     }
 
     public override void Begin_JudgeAttack(AnimationEvent e)
@@ -93,14 +94,14 @@ public class Weapon_Combo : Weapon
 
     protected virtual void OnDamage(Collider other)
     {
-        damageDatas[this.index].PlayHitSound(); 
+      //  damageDatas[this.index].PlayHitSound(); 
 
-        if(other.TryGetComponent<IDamagable>(out IDamagable damage))
-        {
-            Vector3 hitPoint = colliders[this.index].ClosestPoint(other.transform.position);
-            hitPoint = other.transform.InverseTransformPoint(hitPoint);
-            damage.OnDamage(rootObject, this, hitPoint,
-                damageDatas[this.index].GetMyDamageEvent(ownerCharacter.Status)); 
-        }
+        //if(other.TryGetComponent<IDamagable>(out IDamagable damage))
+        //{
+        //    Vector3 hitPoint = colliders[this.index].ClosestPoint(other.transform.position);
+        //    hitPoint = other.transform.InverseTransformPoint(hitPoint);
+        //    damage.OnDamage(rootObject, this, hitPoint,
+        //        damageDatas[this.index].GetMyDamageEvent(ownerCharacter.Status)); 
+        //}
     }
 }

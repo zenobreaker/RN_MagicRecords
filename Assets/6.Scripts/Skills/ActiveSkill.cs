@@ -70,7 +70,11 @@ public abstract class ActiveSkill
             return (phaseList != null && phaseList.Count > 0) ? phaseList.Count : 1;
         }
     }
-    public int PhaseIndex => phaseIndex;
+    public int PhaseIndex
+    {
+        get { return phaseIndex; }
+        set { phaseIndex = value; }
+    }
     // 이 스킬이 다른 행동 중에도 쓸 수 있는 '즉발/동시 사용' 스킬인가?
     public bool isConcurrentSkill = false;
     // 각 페이즈별로 애니메이션 유무를 미리 저장해둘 캐싱 배열
@@ -232,10 +236,9 @@ public abstract class ActiveSkill
         phaseCts?.Dispose();
         phaseCts = new CancellationTokenSource();
 
-
         SetRunTimeContext();
 
-        if (phaseIndex == 0)
+        if (isCasting == false)
         {
             SkillUseEvent evt = new SkillUseEvent
             {
@@ -248,6 +251,7 @@ public abstract class ActiveSkill
             ps?.BroadcastOnSkillCast(evt, this.Runtime);
         }
 
+        phaseIndex = 0; 
         isCasting = true;
         isWaitingForRelease = false;
         chargeStartTime = Time.time;
@@ -266,7 +270,7 @@ public abstract class ActiveSkill
                 state.SetActionMode();
 
             // 첫 번째 페이즈 
-            ExecutePhase(0);
+            ExecutePhase(PhaseIndex);
         }
 
         // 쿨타임 

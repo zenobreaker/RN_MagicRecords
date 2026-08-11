@@ -456,17 +456,28 @@ public class AnimationEventEditor : EditorWindow
         {
             if (GUILayout.Toggle(targetClip == clip, clip.name, "Button"))
             {
-                if (targetClip != clip) { targetClip = clip; targetTime = 0; }
+                if (targetClip != clip)
+                {
+                    targetClip = clip;
+                    targetTime = 0;
+                    // 💡 [추가] 클립이 바뀌면 우측 이벤트 패널 초기화!
+                    ClearEventSelection();
+                }
             }
         }
         EditorGUILayout.EndScrollView();
     }
 
+
     private void RefreshClipList()
     {
         availableClips.Clear();
         targetClip = null;
+        
+        ClearEventSelection();
+
         if (targetAsset == null) return;
+
 
         var animator = targetAsset.GetComponentInChildren<Animator>();
         if (animator != null && animator.runtimeAnimatorController != null)
@@ -661,5 +672,17 @@ public class AnimationEventEditor : EditorWindow
             SaveEventsToClip(events.OrderBy(e => e.time).ToArray());
             selectedEventIndex = -1;
         }
+    }
+
+    // 💡 우측 패널(이벤트 입력 폼)을 초기 상태로 되돌리는 함수
+    private void ClearEventSelection()
+    {
+        selectedEventIndex = -1;
+        selectedPresetIndex = 0;
+        eventFloat = 0f;
+        eventInt = 0;
+        eventString = "";
+        eventObject = null;
+        GUI.FocusControl(null); // 활성화된 텍스트 커서 해제
     }
 }

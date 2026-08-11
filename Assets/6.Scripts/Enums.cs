@@ -4,7 +4,13 @@
 //TODO: 확장성을 위하여 enum이 아닌 string으로 처리해보기
 public enum SkillSlot
 {
-    SLOT1 = 0, SLOT2, SLOT3, SLOT4, MAX,
+    Default = 0, 
+
+    SLOT1 = 100,
+    SLOT2, 
+    SLOT3, 
+    SLOT4, 
+    MAX = SLOT4,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
