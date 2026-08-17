@@ -1,4 +1,4 @@
-﻿using Unity.Behavior;
+using Unity.Behavior;
 
 
 //TODO: 확장성을 위하여 enum이 아닌 string으로 처리해보기
@@ -10,7 +10,7 @@ public enum SkillSlot
     SLOT2, 
     SLOT3, 
     SLOT4, 
-    MAX = SLOT4,
+    MAX = SLOT4 + 1,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -224,6 +224,7 @@ public enum TriggerEvent
 public enum SkillTriggerTime
 {
     OnExecute,
+    OnCastingStart,
     OnBeginDoAction,
     OnJudgeAttack,
     OnEndDoAction,

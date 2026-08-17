@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -32,6 +32,7 @@ public class PhaseSkill
     public PhaseSkill() 
     {
         spwanQuaternion = Quaternion.identity;
+        modules = new List<SkillModule>();
     }
 
     //public void SetDamageData(float baseDamage, float coefficient = 1.0f, int level = 1)

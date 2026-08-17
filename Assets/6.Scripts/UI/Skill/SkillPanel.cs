@@ -3,16 +3,17 @@ using UnityEngine.UI;
 public class SkillPanel : MonoBehaviour
 {
     [Header("Skill Slots")]
-    [SerializeField] private SkillSlotUI[] ui_SkillSlot = new SkillSlotUI[(int)SkillSlot.MAX];
+    [SerializeField] private SkillSlotUI[] ui_SkillSlot = new SkillSlotUI[4];
 
-    [Header("Skill Hanlder")]
+    [Header("Skill Source")]
     [SerializeField] private SO_SkillEventHandler handler;
+
 
     private readonly string path = "Skills/SO_SkillEventHandler";
 
     private void Awake()
     {
-        if(handler == null)
+        if (handler == null)
         {
             handler = Resources.Load<SO_SkillEventHandler>(path);
         }
@@ -22,7 +23,7 @@ public class SkillPanel : MonoBehaviour
     {
         SetSkillHandlerToSlots();
     }
-
+   
     private void SetSkillHandlerToSlots()
     {
         foreach(SkillSlotUI slot in ui_SkillSlot)

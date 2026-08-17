@@ -25,6 +25,7 @@ MonoBehaviour:
     limitMinCooldown: 2
     cooldown: 14
     castingTime: -1
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 10
@@ -52,6 +53,7 @@ MonoBehaviour:
     limitMinCooldown: 2
     cooldown: 14
     castingTime: -1
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 14
@@ -79,6 +81,7 @@ MonoBehaviour:
     limitMinCooldown: 2
     cooldown: 14
     castingTime: -1
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 17
@@ -106,6 +109,7 @@ MonoBehaviour:
     limitMinCooldown: 2
     cooldown: 14
     castingTime: -1
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 19
@@ -133,6 +137,7 @@ MonoBehaviour:
     limitMinCooldown: 2
     cooldown: 12
     castingTime: 0
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 20
@@ -187,7 +192,7 @@ MonoBehaviour:
     - rid: 25348276825882839
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 4
+        triggerTime: 5
         soundName: Gun_Normal2
     - rid: 8682830518195847350
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
@@ -238,4 +243,3 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: ReinForcedMagicBullet
         baseLifeTime: -1
-        useBlackboardPattern: 1

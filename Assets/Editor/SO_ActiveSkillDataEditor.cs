@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+using UnityEditor;
+using UnityEditorInternal;
+using UnityEngine;
 
 [CustomEditor(typeof(SO_ActiveSkillData))]
 public class SO_ActiveSkillDataEditor : Editor
@@ -9,6 +11,7 @@ public class SO_ActiveSkillDataEditor : Editor
     private static bool showSettings = true;
     private static bool showDatas= true;
     private static bool showPhases = true;
+    private ReorderableList phaseList;
 
     public override void OnInspectorGUI()
     {
@@ -95,10 +98,58 @@ public class SO_ActiveSkillDataEditor : Editor
         {
             using (new EditorGUI.IndentLevelScope())
             {
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("phaseList"));
+                GetPhaseList().DoLayoutList();
             }
         }
 
         serializedObject.ApplyModifiedProperties();
+    }
+
+    private ReorderableList GetPhaseList()
+    {
+        SerializedProperty phaseListProperty = serializedObject.FindProperty("phaseList");
+        if (phaseList != null &&
+            phaseList.serializedProperty.serializedObject.targetObject == target &&
+            phaseList.serializedProperty.propertyPath == phaseListProperty.propertyPath)
+            return phaseList;
+
+        phaseList = new ReorderableList(serializedObject, phaseListProperty, true, true, true, true);
+        phaseList.drawHeaderCallback = rect => EditorGUI.LabelField(rect, "Phase List");
+
+        phaseList.drawElementCallback = (rect, index, isActive, isFocused) =>
+        {
+            SerializedProperty element = phaseList.serializedProperty.GetArrayElementAtIndex(index);
+            rect.y += 2f;
+            EditorGUI.PropertyField(
+                new Rect(rect.x, rect.y, rect.width, EditorGUI.GetPropertyHeight(element, true)),
+                element,
+                new GUIContent($"Phase {index}"),
+                true);
+        };
+
+        phaseList.elementHeightCallback = index =>
+        {
+            SerializedProperty element = phaseList.serializedProperty.GetArrayElementAtIndex(index);
+            return EditorGUI.GetPropertyHeight(element, true) + 4f;
+        };
+
+        phaseList.onAddCallback = _ => AddIndependentPhase();
+        return phaseList;
+    }
+
+    private void AddIndependentPhase()
+    {
+        serializedObject.ApplyModifiedProperties();
+        SO_ActiveSkillData skillData = (SO_ActiveSkillData)target;
+        Undo.RecordObject(skillData, "Add Independent Skill Phase");
+
+        if (skillData.phaseList == null)
+            skillData.phaseList = new System.Collections.Generic.List<PhaseSkill>();
+
+        // 새 Phase와 모듈 리스트를 직접 생성하여 기존 Phase의 SerializeReference를 공유하지 않습니다.
+        skillData.phaseList.Add(new PhaseSkill());
+        EditorUtility.SetDirty(skillData);
+        serializedObject.Update();
+        phaseList.index = skillData.phaseList.Count - 1;
     }
 }

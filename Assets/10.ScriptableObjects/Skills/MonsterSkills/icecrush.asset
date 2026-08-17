@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a45f9791fc77e874c9cfd4fd8604a80c, type: 3}
-  m_Name: icecursh
+  m_Name: icecrush
   m_EditorClassIdentifier: 
   id: 7081
   skillName: Icecrush
@@ -38,18 +38,13 @@ MonoBehaviour:
   - phaseName: "\uCE90\uC2A4\uD305 \uC2DC\uC791"
     isInstant: 0
     modules:
+    - rid: 1371895131259535445
     - rid: 1371895050838999040
-    - rid: 1371895131259535442
     - rid: 1371895131259535441
+    - rid: 1371895131259535450
+    - rid: 1371895131259535442
+    - rid: 1371895131259535464
     - rid: 1371895074986917888
-    skillObject: {fileID: 0}
-    objectName: 
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
-  - phaseName: "\uCE90\uC2A4\uD305 \uC885\uB8CC"
-    isInstant: 0
-    modules: []
     skillObject: {fileID: 0}
     objectName: 
     soundName: 
@@ -58,10 +53,9 @@ MonoBehaviour:
   - phaseName: "\uCE90\uC2A4\uD305 \uC885\uB8CC"
     isInstant: 0
     modules:
-    - rid: 1371895050838999040
-    - rid: 1371895131259535442
-    - rid: 1371895131259535441
-    - rid: 1371895074986917888
+    - rid: 1371895131259535446
+    - rid: 1371895131259535449
+    - rid: 1371895131259535448
     skillObject: {fileID: 0}
     objectName: 
     soundName: 
@@ -75,7 +69,7 @@ MonoBehaviour:
       data:
         triggerTime: 0
         actionData:
-          subStateName: Skill03
+          subStateName: Casting_Start
           stateName: Casting
           layerName: 
           actionSpeed: 1
@@ -128,5 +122,76 @@ MonoBehaviour:
     - rid: 1371895131259535442
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 0
+        triggerTime: 5
         soundName: 
+    - rid: 1371895131259535445
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        parameterName: IsCasting
+        paramType: 0
+        boolValue: 1
+        floatValue: 0
+        intValue: 0
+    - rid: 1371895131259535446
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        parameterName: IsCasting
+        paramType: 0
+        boolValue: 0
+        floatValue: 0
+        intValue: 0
+    - rid: 1371895131259535448
+      type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        damageApplyType: 0
+        damageMultiplier: 1
+        damageData:
+          damageType: 0
+          baseDamage: 100
+          statCoefficient: 1
+          bDownable: 0
+          bLauncher: 0
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          csp: {fileID: 0}
+          hitData:
+            DamageType: 0
+            Distance: 0
+            HeightValue: 0
+            StopFrame: 0
+            HitImpactIndex: 0
+            HitSoundName: 
+            HitParticle: {fileID: 0}
+            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+          ignoreDefenseRate: 0
+        spawnPosition: {x: 0, y: 0, z: 0}
+        spawnRotation: {x: 0, y: 0, z: 0}
+        patternType: 0
+        baseSpawnCount: 1
+        baseAngleBetween: 0
+        spawnObj: {fileID: 0}
+        objectName: IceCrush
+        baseLifeTime: -1
+    - rid: 1371895131259535449
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        controlType: 1
+        speedMultiplier: 0.5
+    - rid: 1371895131259535450
+      type: {class: Module_PhaseTransition, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        transitionType: 0
+        targetPhaseIndex: 0
+        delayTime: 3
+    - rid: 1371895131259535464
+      type: {class: Module_Casting, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        overrideCastingTime: 1
+        castingTime: 3

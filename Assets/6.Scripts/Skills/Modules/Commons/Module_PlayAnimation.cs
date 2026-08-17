@@ -25,6 +25,9 @@ public class Module_PlayAnimation : SkillModule
             ownerCharacter.PlayAction(actionData);
         if (weaponController != null)
             weaponController.DoAction(actionData);
+
+        if (skill != null)
+            skill.actionData = actionData;
     }
 
     public override bool HasAnimationData()

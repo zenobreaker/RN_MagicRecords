@@ -43,6 +43,8 @@ public class AssistDrone
 
     public void HandlePlayerAttack(ActionData actionData, Character attacker)
     {
+        if (actionData == null) return;
+
         cts?.Cancel();
         cts = new CancellationTokenSource();
 

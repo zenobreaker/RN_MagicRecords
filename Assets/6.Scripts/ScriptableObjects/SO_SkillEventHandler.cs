@@ -20,6 +20,8 @@ public class SO_SkillEventHandler : ScriptableObject
     public event Action<int> OnUpdateMagicBulletLoad;
     public event Action<Queue<BulletData>> OnChangeBullets;
 
+    // SkillSlot은 SLOT1(100)부터 시작하므로 enum 값을 인덱스로 사용할 수 있도록
+    // 최대 값까지 포함한 크기를 확보합니다. (기존 이벤트 구독자와의 호환용 캐시)
     public ActiveSkill[] CurrentActiveSkills = new ActiveSkill[(int)SkillSlot.MAX];
 
     public int MagicBulletCount { get; private set; }
@@ -27,7 +29,9 @@ public class SO_SkillEventHandler : ScriptableObject
     #region EQUIP SKILL
     public void OnSetting_ActiveSkill(SkillSlot slot, ActiveSkill skill)
     {
-        CurrentActiveSkills[(int)slot] = skill; 
+        int slotIndex = (int)slot;
+        if (slotIndex >= 0 && slotIndex < CurrentActiveSkills.Length)
+            CurrentActiveSkills[slotIndex] = skill;
 
         OnSetActiveSkill?.Invoke(slot, skill);
     }

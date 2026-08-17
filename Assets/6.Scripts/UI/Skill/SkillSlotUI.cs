@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class SkillSlotUI : MonoBehaviour
 {
+    [Tooltip("이 UI 슬롯이 표시할 실제 스킬 슬롯입니다. Default는 표시 대상이 아닙니다.")]
     public SkillSlot mySlot;
 
     [Header("UI Settings")]
@@ -15,7 +16,7 @@ public class SkillSlotUI : MonoBehaviour
     private SO_SkillEventHandler handler;
     private float currCooldown;
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (handler == null) return;
 
@@ -24,32 +25,57 @@ public class SkillSlotUI : MonoBehaviour
         handler.OnSkillCooldown -= OnSkillCoolDown;
     }
 
-    public void SetSkillHandler(SO_SkillEventHandler handler)
+    public void SetSkillHandler(SO_SkillEventHandler source)
     {
-        if (handler == null)
-            return;
+        if (handler != null)
+        {
+            handler.OnSetActiveSkill -= OnDrawSkill;
+            handler.OnInSkillCooldown -= OnIsCooldown;
+            handler.OnSkillCooldown -= OnSkillCoolDown;
+        }
 
-        this.handler = handler;
+        handler = source;
+        if (handler == null)
+        {
+            SetVisible(false);
+            return;
+        }
+
         handler.OnSetActiveSkill += OnDrawSkill;
         handler.OnInSkillCooldown += OnIsCooldown;
         handler.OnSkillCooldown += OnSkillCoolDown;
 
-        ActiveSkill cachedSkill = handler.CurrentActiveSkills[(int)mySlot];
-        if (cachedSkill != null)
-        {
-            OnDrawSkill(mySlot, cachedSkill);
-        }
+       // RefreshSkillUI();
     }
 
-    // 스킬 이미지 그리기
     private void OnDrawSkill(SkillSlot slot, ActiveSkill activeSkill)
     {
-        if (mySlot == slot && activeSkill != null)
-            img_Skill.sprite = activeSkill.Icon;
-        else if (mySlot == slot && activeSkill == null)
-            img_Skill.sprite = emptySlot;
+        if (slot != mySlot)
+            return;
 
-        OnIsCooldown(slot, activeSkill != null && activeSkill.IsOnCooldown);
+        if (activeSkill == null)
+        {
+            img_Skill.sprite = emptySlot;
+            return;
+        }
+
+        SetVisible(true);
+        img_Skill.sprite = activeSkill.Icon;
+        OnIsCooldown(mySlot, activeSkill.IsOnCooldown);
+    }
+
+    //private void RefreshSkillUI()
+    //{
+    //    OnDrawSkill(mySlot, registeredSkill);
+    //}
+
+    private void SetVisible(bool visible)
+    {
+        if (gameObject.activeSelf != visible)
+            gameObject.SetActive(visible);
+
+        if (!visible && img_Skill != null)
+            img_Skill.sprite = emptySlot;
     }
 
     // 고민 사항 => 스킬 쿨타임 값이 다 돌면 어떻게 처리하게 할까?
@@ -70,7 +96,7 @@ public class SkillSlotUI : MonoBehaviour
     // 스킬이 쿨타임 중인지 아닌지에 따른 동작 
     private void OnIsCooldown(SkillSlot slot, bool isCooldown)
     {
-        if (slot != mySlot) return;
+        if (slot != mySlot || !gameObject.activeSelf) return;
         if (isCooldown == false)
             currCooldown = 0;
 

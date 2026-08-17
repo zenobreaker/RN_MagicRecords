@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SkillTestWindow : EditorWindow
 {
-    private const string SkillFolder = "Assets/10.ScriptableObjects/Resources/Skills";
+    private const string SkillFolder = "Assets/10.ScriptableObjects/Skills";
     private const float LeftPanelWidth = 270f;
     private const float GridItemWidth = 84f;
 
@@ -98,8 +98,10 @@ public class SkillTestWindow : EditorWindow
         int buttonIndex = 0;
         foreach (SkillSlot slot in Enum.GetValues(typeof(SkillSlot)))
         {
-            if (slot == SkillSlot.MAX)
+            if (slot == SkillSlot.MAX 
+                || slot.ToString().Equals("Default", StringComparison.OrdinalIgnoreCase))
                 continue;
+
             if (buttonIndex % columns == 0)
                 EditorGUILayout.BeginHorizontal();
             Color previousColor = GUI.backgroundColor;

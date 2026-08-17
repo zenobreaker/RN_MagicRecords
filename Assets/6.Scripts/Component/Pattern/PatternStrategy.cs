@@ -12,7 +12,7 @@ public class AIContext
         HealthPoint = owner.GetComponent<HealthPointComponent>();   
     }
 
-    public float CurrentHP => HealthPoint != null ? HealthPoint.GetCurrentHP : 0f; 
+    public float CurrentHP => HealthPoint != null ? HealthPoint.GetCurrentHpRatio : 0f; 
     public Vector3 SelfPosition => Owner.transform.position;    
     public Vector3 TargetPosition => Target != null ? Target.transform.position : Vector3.zero; 
 }

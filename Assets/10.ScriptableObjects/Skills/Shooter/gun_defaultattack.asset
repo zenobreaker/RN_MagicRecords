@@ -70,9 +70,9 @@ MonoBehaviour:
     - rid: 1371895025776984064
     - rid: 1371895004803629236
     - rid: 1371894983370473472
+    - rid: 1371895025776984065
     - rid: 1371894983370473473
     - rid: 1371894983370473474
-    - rid: 1371895025776984065
     skillObject: {fileID: 0}
     objectName: 
     soundName: 
@@ -83,11 +83,11 @@ MonoBehaviour:
     modules:
     - rid: 1371895004803629157
     - rid: 1371895025776984066
-    - rid: 1371895004803629245
     - rid: 1371895004803629238
     - rid: 1371895004803629155
     - rid: 1371895004803629156
     - rid: 1371895025776984067
+    - rid: 1371895131259535483
     skillObject: {fileID: 0}
     objectName: 
     soundName: 
@@ -100,9 +100,9 @@ MonoBehaviour:
     - rid: 1371895025776984068
     - rid: 1371895004803629240
     - rid: 1371895004803629158
+    - rid: 1371895025776984069
     - rid: 1371895004803629159
     - rid: 1371895004803629161
-    - rid: 1371895025776984069
     skillObject: {fileID: 0}
     objectName: 
     soundName: 
@@ -114,9 +114,9 @@ MonoBehaviour:
     - rid: 1371895004803629164
     - rid: 1371895025776984070
     - rid: 1371895004803629239
-    - rid: 1371895004803629165
     - rid: 1371895004803629166
     - rid: 1371895004803629167
+    - rid: 1371895004803629165
     - rid: 1371895025776984071
     skillObject: {fileID: 0}
     objectName: 
@@ -144,7 +144,7 @@ MonoBehaviour:
     - rid: 1371894983370473473
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 2
+        triggerTime: 3
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -178,7 +178,7 @@ MonoBehaviour:
     - rid: 1371894983370473474
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 4
+        triggerTime: 5
         soundName: Gun_Normal1
     - rid: 1371894983370473572
       type: {class: Module_CalcSpawnPosition, ns: , asm: Assembly-CSharp}
@@ -203,7 +203,7 @@ MonoBehaviour:
     - rid: 1371895004803629156
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 2
+        triggerTime: 3
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -257,7 +257,7 @@ MonoBehaviour:
     - rid: 1371895004803629159
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 2
+        triggerTime: 3
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -296,7 +296,7 @@ MonoBehaviour:
     - rid: 1371895004803629161
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 4
+        triggerTime: 5
         soundName: Gun_Normal1
     - rid: 1371895004803629164
       type: {class: Module_CalcSpawnPosition, ns: , asm: Assembly-CSharp}
@@ -306,7 +306,7 @@ MonoBehaviour:
     - rid: 1371895004803629165
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 4
+        triggerTime: 5
         soundName: Gun_Normal2
     - rid: 1371895004803629166
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
@@ -326,7 +326,7 @@ MonoBehaviour:
     - rid: 1371895004803629167
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 2
+        triggerTime: 3
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -385,13 +385,6 @@ MonoBehaviour:
         selectType: 1
         spawnPointIndex: 0
         indices: 
-    - rid: 1371895004803629245
-      type: {class: Module_SelectSpawnPoint, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 0
-        selectType: 1
-        spawnPointIndex: 0
-        indices: 
     - rid: 1371895025776984064
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
@@ -401,7 +394,7 @@ MonoBehaviour:
     - rid: 1371895025776984065
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 3
+        triggerTime: 0
         controlType: 1
         speedMultiplier: 0
     - rid: 1371895025776984066
@@ -425,7 +418,7 @@ MonoBehaviour:
     - rid: 1371895025776984069
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 3
+        triggerTime: 0
         controlType: 1
         speedMultiplier: 0.5
     - rid: 1371895025776984070
@@ -437,6 +430,11 @@ MonoBehaviour:
     - rid: 1371895025776984071
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 3
+        triggerTime: 4
         controlType: 1
         speedMultiplier: 0.5
+    - rid: 1371895131259535483
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 5
+        soundName: Gun_Normal1

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 public class RadialAoEProjectile : BaseProjectile
@@ -6,17 +6,17 @@ public class RadialAoEProjectile : BaseProjectile
     [Header("Radial Settings")]
     [SerializeField] private int shardCount = 8;
 
-    [Tooltip("°¢ ¾óÀ½ ÆÄÆíÀÌ Â÷ÁöÇÏ´Â °¢µµ")]
+    [Tooltip("ê° ì–¼ìŒ íŒŒí¸ì´ ì°¨ì§€í•˜ëŠ” ê°ë„")]
     [Range(0f, 90f)]
     [SerializeField] private float shardAngle = 20f;
 
-    [Tooltip("ÆÇÁ¤ÀÌ ½ÃÀÛµÇ´Â Áß½É °Å¸®")]
+    [Tooltip("íŒì •ì´ ì‹œì‘ë˜ëŠ” ì¤‘ì‹¬ ê±°ë¦¬")]
     [SerializeField] private float innerRadius = 0f;
 
-    [Tooltip("ÆÇÁ¤ ÃÖ´ë °Å¸®")]
+    [Tooltip("íŒì • ìµœëŒ€ ê±°ë¦¬")]
     [SerializeField] private float maxRadius = 7f;
 
-    [Tooltip("°ø°İ ¹æÇâ ÀüÃ¼ È¸Àü")]
+    [Tooltip("ê³µê²© ë°©í–¥ ì „ì²´ íšŒì „")]
     [SerializeField] private float rotationOffset = 0f;
 
     [Header("Expansion")]
@@ -30,11 +30,16 @@ public class RadialAoEProjectile : BaseProjectile
     [SerializeField] private LayerMask hitLayer;
 
     [SerializeField] private bool multiHit = false;
+    [Tooltip("ì§€ì† ì¥íŒì˜ ë°ë¯¸ì§€ ê°„ê²©")]
     [SerializeField] private float tickRate = 0.2f;
+    [Tooltip("í™•ì¥ ì¤‘ ì ì„ ê²€ì‚¬í•˜ëŠ” ê°„ê²©")]
+    [SerializeField] private float hitCheckRate = 0.05f;
+
 
     private float currentRadius;
     private float expandTimer;
     private float tickTimer;
+    private float hitCheckTimer;
 
     private readonly HashSet<GameObject> hitTargets = new();
 
@@ -45,6 +50,7 @@ public class RadialAoEProjectile : BaseProjectile
         currentRadius = 0f;
         expandTimer = 0f;
         tickTimer = 0f;
+        hitCheckTimer = 0;
 
         hitTargets.Clear();
     }
@@ -52,6 +58,8 @@ public class RadialAoEProjectile : BaseProjectile
     protected override void OnDisable()
     {
         base.OnDisable();
+
+        ObjectPooler.ReturnToPool(this.gameObject);
     }
 
     protected override void Update()
@@ -60,17 +68,24 @@ public class RadialAoEProjectile : BaseProjectile
 
         UpdateExpansion();
 
-        tickTimer -= Time.deltaTime;
+        hitCheckTimer -= Time.deltaTime;
 
-        if (tickTimer <= 0f)
+        if(hitCheckTimer <= 0f)
         {
-            tickTimer = multiHit ? tickRate : float.MaxValue;
+            hitCheckTimer = hitCheckRate;
 
             CheckRadialHit();
+        }
+ 
+        if (multiHit)
+        {
+            tickTimer -= Time.deltaTime;
 
-            if (!multiHit)
+            if (tickTimer <= 0f)
             {
-                gameObject.SetActive(false);
+                tickTimer = tickRate;
+
+                hitTargets.Clear();
             }
         }
     }
@@ -80,6 +95,7 @@ public class RadialAoEProjectile : BaseProjectile
         if (expandTimer >= expandDuration)
         {
             currentRadius = maxRadius;
+            gameObject.SetActive(false);
             return;
         }
 
@@ -135,12 +151,12 @@ public class RadialAoEProjectile : BaseProjectile
     {
         Vector3 offset = targetPosition - transform.position;
 
-        // YÃà Á¦°Å
+        // Yì¶• ì œê±°
         offset.y = 0f;
 
         float distance = offset.magnitude;
 
-        // Áß½ÉºÎ / ÃÖ´ë°Å¸® °Ë»ç
+        // ì¤‘ì‹¬ë¶€ / ìµœëŒ€ê±°ë¦¬ ê²€ì‚¬
         if (distance < innerRadius)
             return false;
 

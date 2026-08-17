@@ -20,6 +20,9 @@ public sealed class SkillComponent
     public SO_SkillEventHandler skillEventHandler;
 
     public event Action<bool> OnSkillUse;
+    public event Action<SkillSlot, ActiveSkill> OnActiveSkillChanged;
+    public event Action<SkillSlot, bool> OnActiveSkillCooldownChanged;
+    public event Action<SkillSlot, float, float> OnActiveSkillCooldownUpdated;
 
     private void Awake()
     {
@@ -61,6 +64,7 @@ public sealed class SkillComponent
             pair.Value.Update(Time.deltaTime);
             if (skillEventHandler != null)
                 skillEventHandler.OnInCoolDown(currentSlot, pair.Value.IsOnCooldown);
+            OnActiveSkillCooldownChanged?.Invoke(currentSlot, pair.Value.IsOnCooldown);
 
             if (pair.Value.IsOnCooldown == false) continue;
 
@@ -68,6 +72,7 @@ public sealed class SkillComponent
             pair.Value.Update_Cooldown(Time.deltaTime);
             if (skillEventHandler != null)
                 skillEventHandler.OnCooldown(currentSlot, pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
+            OnActiveSkillCooldownUpdated?.Invoke(currentSlot, pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
         }
     }
 
@@ -126,6 +131,12 @@ public sealed class SkillComponent
             {
                 if (currentSkill != null)
                     phaseCount = currentSkill.MaxPhaseCount;
+            }
+
+            // 캐스팅이 끝날 때까지 공격 판정과 다음 페이즈 진행을 보류합니다.
+            while (currentSkill != null && currentSkill.IsCasting)
+            {
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
             }
 
             for (int i = 0; i < phaseCount; i++)
@@ -206,8 +217,20 @@ public sealed class SkillComponent
     public void SetActiveSkill(SkillSlot slot, ActiveSkill skill)
     {
         SetActiveSkill(slot.ToString(), skill);
+        OnActiveSkillChanged?.Invoke(slot, skill);
         if (skillEventHandler != null)
             skillEventHandler.OnSetting_ActiveSkill(slot, skill);
+    }
+
+    public bool TryGetRegisteredActiveSkill(SkillSlot slot, out ActiveSkill skill)
+    {
+        skill = null;
+
+        // 기본 공격은 내부 전용 슬롯이므로 스킬 UI 표시 대상으로 사용하지 않습니다.
+        if (slot < SkillSlot.SLOT1 || slot > SkillSlot.SLOT4)
+            return false;
+
+        return skillSlotTable.TryGetValue(slot.ToString(), out skill) && skill != null;
     }
 
     // AI에서 접근할 때는 첫 번째 인자는 스킬 이름으로 오므로 주의해야 함 
@@ -270,6 +293,11 @@ public sealed class SkillComponent
     {
         try
         {
+            while (skill != null && skill.IsCasting)
+                await UniTask.Yield(PlayerLoopTiming.Update);
+
+            if (skill == null) return;
+
             // 1프레임 대기 (로직 꼬임 방지)
             await UniTask.Yield(PlayerLoopTiming.Update);
 
@@ -308,6 +336,11 @@ public sealed class SkillComponent
 
     private async UniTaskVoid ExecuteConcurrentSkillAsync(ActiveSkill skill)
     {
+        while (skill != null && skill.IsCasting)
+            await UniTask.Yield(PlayerLoopTiming.Update);
+
+        if (skill == null) return;
+
         for (int i = 0; i < skill.MaxPhaseCount; i++)
         {
             skill.Begin_JudgeAttack(null);

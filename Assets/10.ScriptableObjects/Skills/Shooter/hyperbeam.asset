@@ -193,8 +193,8 @@ MonoBehaviour:
     modules:
     - rid: 7840629750711451761
     - rid: 8682830616796856405
-    - rid: 8682830616796856406
     - rid: 8682830698810441814
+    - rid: 8682830616796856406
     - rid: 8682830616796856407
     - rid: 25348276825882833
     - rid: 7840629750711451766
@@ -224,7 +224,7 @@ MonoBehaviour:
     - rid: 25348276825882833
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 4
+        triggerTime: 5
         soundName: Laser02
     - rid: 7840629750711451761
       type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
@@ -238,7 +238,7 @@ MonoBehaviour:
     - rid: 7840629750711451766
       type: {class: Module_PhaseTransition, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 3
+        triggerTime: 4
         transitionType: 0
         targetPhaseIndex: 0
         delayTime: 1.5
@@ -275,13 +275,13 @@ MonoBehaviour:
     - rid: 8682830616796856406
       type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 2
+        triggerTime: 6
         impulseDirection: {x: 0, y: 0, z: 0}
         settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
     - rid: 8682830616796856407
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 2
+        triggerTime: 3
         damageApplyType: 1
         damageMultiplier: 1
         damageData:
@@ -312,7 +312,6 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: HyperBeam
         baseLifeTime: 1
-        useBlackboardPattern: 1
     - rid: 8682830680103845977
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:

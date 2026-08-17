@@ -136,7 +136,7 @@ public class AoEProjectile : BaseProjectile
                 // 지속 피해용이므로 이전 피격 기록 초기화
                 hitTargets.Clear();
 
-                ExplodeHit();
+                //ExplodeHit();
             }
         }
     }

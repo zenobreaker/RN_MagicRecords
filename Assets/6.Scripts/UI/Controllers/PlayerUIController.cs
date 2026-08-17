@@ -13,17 +13,17 @@ public class PlayerUIController : UIController
             {
                 if (ui != null)
                 {
-                    if(pauseButton != null)
+                    if (pauseButton != null)
                     {
                         pauseButton.onClick.AddListener(() =>
                         {
-                            ui.OpenPausePopUp(); 
+                            ui.OpenPausePopUp();
                         });
                     }
                 }
 
             },
             onUnregister: ui => { });
-    }
 
+    }
 }

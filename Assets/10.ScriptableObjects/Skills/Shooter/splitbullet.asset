@@ -25,6 +25,7 @@ MonoBehaviour:
     limitMinCooldown: 5
     cooldown: 30
     castingTime: 0
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 12
@@ -44,6 +45,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
@@ -51,6 +53,7 @@ MonoBehaviour:
     limitMinCooldown: 5
     cooldown: 25
     castingTime: 0
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 15
@@ -70,6 +73,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
@@ -77,6 +81,7 @@ MonoBehaviour:
     limitMinCooldown: 5
     cooldown: 20
     castingTime: 0
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 18
@@ -96,6 +101,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
@@ -103,6 +109,7 @@ MonoBehaviour:
     limitMinCooldown: 5
     cooldown: 15
     castingTime: 0
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 21
@@ -122,6 +129,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
@@ -129,6 +137,7 @@ MonoBehaviour:
     limitMinCooldown: 5
     cooldown: 10
     castingTime: 0
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 24
@@ -148,6 +157,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
@@ -182,7 +192,7 @@ MonoBehaviour:
     - rid: 25348276825882837
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 2
+        triggerTime: 5
         soundName: Gun_Normal2
     - rid: 8682830549225308248
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
@@ -202,7 +212,7 @@ MonoBehaviour:
     - rid: 8682830549225308249
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 2
+        triggerTime: 3
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -224,6 +234,7 @@ MonoBehaviour:
             HitParticle: {fileID: 0}
             HitParticlePositionOffset: {x: 0, y: 0, z: 0}
             HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+          ignoreDefenseRate: 0
         spawnPosition: {x: 0, y: 1, z: 0}
         spawnRotation: {x: 0, y: 0, z: 0}
         patternType: 0
@@ -232,4 +243,3 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: SplitMotherBullet
         baseLifeTime: -1
-        useBlackboardPattern: 1

@@ -27,7 +27,7 @@ public class Module_MovementControl : SkillModule
         switch (controlType)
         {
             case MovementControlType.LockMovement:
-                if (agent != null)
+                if (agent != null && agent.isActiveAndEnabled)
                 {
                     agent.isStopped = true;
                     agent.updateRotation = false;
@@ -41,7 +41,7 @@ public class Module_MovementControl : SkillModule
                 break;
 
             case MovementControlType.UnlockMovement:
-                if (agent != null)
+                if (agent != null && agent.isActiveAndEnabled)
                 {
                     agent.isStopped = false;
                     agent.updateRotation = true;
@@ -55,7 +55,7 @@ public class Module_MovementControl : SkillModule
                 break;
 
             case MovementControlType.ModifySpeed:
-                if (agent != null)
+                if (agent != null && agent.isActiveAndEnabled)
                 {
                     agent.isStopped = false;
                     agent.updateRotation = true;

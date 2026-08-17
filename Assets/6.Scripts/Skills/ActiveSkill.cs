@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.AI;
@@ -60,6 +62,7 @@ public abstract class ActiveSkill
     protected float chargeStartTime = 0f;
 
     public bool IsCasting { get => isCasting; set => isCasting = value; }
+    public event Action<ActiveSkill> OnCastingCompleted;
     public float CurrentCooldown { get => currentCooldown; }
     public float MaxCooldown { get => maxCooldown; }
     public SkillRuntimeContext Runtime { get; protected set; } = new SkillRuntimeContext();
@@ -231,7 +234,7 @@ public abstract class ActiveSkill
 
     public void Cast()
     {
-        if (IsOnCooldown)
+        if (IsOnCooldown || isCasting)
             return;
 
         phaseCts?.Cancel();
@@ -253,32 +256,66 @@ public abstract class ActiveSkill
             ps?.BroadcastOnSkillCast(evt, this.Runtime);
         }
 
-        isCasting = true;
-        //TODO 캐스팅 기능 추가 
-        isCasting = false; 
-
         isWaitingForRelease = false;
         chargeStartTime = Time.time;
 
-        if (!isConcurrentSkill)
+        PrepareCasting();
+
+        if (Runtime.Cast.CastingTime > 0f)
         {
-            if (ownerObject.TryGetComponent<NavMeshAgent>(out var agent) && agent.isActiveAndEnabled)
-            {
-                agent.updateRotation = false;
-                agent.isStopped = true;
-                agent.velocity = Vector3.zero;
-            }
-
-            // 상태 변경 
-            if (state != null)
-                state.SetActionMode();
-
-            // 첫 번째 페이즈 
-            ExecutePhase(PhaseIndex);
+            isCasting = true;
+            currentCastingTime = Runtime.Cast.CastingTime;
+            WaitForCastingAsync(Runtime.Cast.CastingTime, phaseCts.Token).Forget();
+        }
+        else
+        {
+            BeginSkillAction();
         }
 
-        // 쿨타임 
+        // 쿨타임
         SetCooldown();
+    }
+
+    protected virtual void PrepareCasting() { }
+
+    private async UniTaskVoid WaitForCastingAsync(float duration, CancellationToken token)
+    {
+        bool isCancelled = await UniTask.Delay(
+            TimeSpan.FromSeconds(duration),
+            cancellationToken: token).SuppressCancellationThrow();
+
+        if (isCancelled || token.IsCancellationRequested)
+        {
+            isCasting = false;
+            currentCastingTime = 0f;
+            return;
+        }
+
+        isCasting = false;
+        currentCastingTime = 0f;
+        BeginSkillAction();
+        OnCastingCompleted?.Invoke(this);
+    }
+
+    private void BeginSkillAction()
+    {
+        if (isConcurrentSkill)
+        {
+            ExecutePhase(PhaseIndex);
+            return;
+        }
+
+        if (ownerObject.TryGetComponent<NavMeshAgent>(out var agent) && agent.isActiveAndEnabled)
+        {
+            agent.updateRotation = false;
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+
+        if (state != null)
+            state.SetActionMode();
+
+        ExecutePhase(PhaseIndex);
     }
 
     private void SetRunTimeContext()
@@ -304,6 +341,7 @@ public abstract class ActiveSkill
             // Cast
             Runtime.Cast = new CastContext
             {
+                CastingTime = LevelDatas[index].castingTime,
                 MaxCastingTime = LevelDatas[index].castingTime,
                 MaxChargeTime = LevelDatas[index].chargeTime,
             };

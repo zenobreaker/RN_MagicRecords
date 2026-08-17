@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -59,13 +59,18 @@ public class GenericActiveSkill
         }
     }
 
+    protected override void PrepareCasting()
+    {
+        NotifyModules(phaseIndex, SkillTriggerTime.OnCastingStart);
+    }
+
     protected override void ApplyEffects()
     {
     }
 
     public override void EndPhaseAndNext()
     {
-        if (isCasting == false) return;
+        if (isCasting || IsPhaseRunning == false) return;
 
         IsPhaseRunning = false; 
 
