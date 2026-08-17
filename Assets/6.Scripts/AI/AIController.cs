@@ -14,10 +14,10 @@ public class AIController : MonoBehaviour
 {
     [Header("AI Settings")]
     [SerializeField] private AICombatStyle combatStyle = AICombatStyle.RANGE;
+    [SerializeField] private float defaultStopRange = 1.5f;
 
     [SerializeField] protected List<PatternEntry> patternEntries = new();
-    [SerializeField] protected PatternEntry defaultAttack;
-
+    
     protected AIContext context;
 
     protected BehaviorGraphAgent bgAgent;
@@ -48,19 +48,9 @@ public class AIController : MonoBehaviour
         foreach (PatternEntry entry in patternEntries)
             AddPattern(entry);
 
-        defaultAttack?.InitiaizePattern();
-
         if (skill != null)
         {
             skill.OnEndDoAction += () =>
-            {
-                currentPattern?.ResetCondition();
-            };
-        }
-
-        if (weapon != null)
-        {
-            weapon.OnEndDoAction += () =>
             {
                 currentPattern?.ResetCondition();
             };
@@ -82,7 +72,6 @@ public class AIController : MonoBehaviour
         {
             pattern.Update(Time.deltaTime, context);
         }
-        defaultAttack?.Update(Time.deltaTime, context);
 
         if (perception == null || aiBehaivour == null) return;
 
@@ -102,14 +91,7 @@ public class AIController : MonoBehaviour
 
         currentPattern = patternEntry;
 
-        if (patternEntry.slotName != "default")
-        {
-            skill.UseSkill(patternEntry.slotName.ToUpper());
-        }
-        else
-        {
-            weapon.DoActionWithIndex();
-        }
+        skill.UseSkill(patternEntry.slotName.ToUpper());
     }
 
     public void DoAction()
@@ -119,24 +101,16 @@ public class AIController : MonoBehaviour
 
         // 이미 평타를 치고 있거나 스킬을 쓰는 중(InAction)이라면,
         // 새로운 패턴을 찾거나 덮어쓰지 않고 즉시 리턴합니다!
-        if ((weapon != null && weapon.InAction) || (skill != null && skill.InAction))
+        if ((skill != null && skill.InAction))
             return;
-
-        bool skillExecuted = false;
 
         foreach (var pattern in patternEntries)
         {
             if (pattern.CheckUsePattern(context))
             {
                 ExecutePattern(pattern);
-                skillExecuted = true;
                 break;
             }
-        }
-
-        if (!skillExecuted && defaultAttack != null && defaultAttack.CheckUsePattern(context))
-        {
-            ExecutePattern(defaultAttack);
         }
     }
 
@@ -223,7 +197,7 @@ public class AIController : MonoBehaviour
 
     private float GetMaxRange()
     {
-        float maxRange = defaultAttack != null ? defaultAttack.GetAttackRange() : 1.5f;
+        float maxRange = defaultStopRange;
         foreach (var pattern in patternEntries)
         {
             float range = pattern.GetAttackRange();
@@ -245,13 +219,7 @@ public class AIController : MonoBehaviour
             }
         }
 
-        // 2. 만약 모든 스킬이 쿨타임이라면, 평타(기본 근접 공격)의 사거리를 반환합니다.
-        if (defaultAttack != null)
-        {
-            return defaultAttack.GetAttackRange(); // ex) 평타면 2 반환
-        }
-
-        return 1.5f; // 최후의 기본값 (안전 장치)
+        return defaultStopRange; // 최후의 기본값 (안전 장치)
     }
 
 }

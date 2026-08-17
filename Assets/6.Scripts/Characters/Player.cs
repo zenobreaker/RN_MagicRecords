@@ -21,7 +21,6 @@ public class Player
     private EquipmentComponent equipment;
 
     private WeaponController weaponController;
-    private List<ActionComponent> actionComponents = new();
 
     private Action<InputAction.CallbackContext> onAction;
     private Action<InputAction.CallbackContext> onMove;
@@ -30,7 +29,7 @@ public class Player
     private Action<InputAction.CallbackContext>[] onSkillCancels;
 
 
-    private int jobID; 
+    private int jobID;
     public int JobID
     {
         get { return jobID; }
@@ -45,11 +44,9 @@ public class Player
         comboComponent = GetComponent<ComboComponent>();
         weapon = GetComponent<WeaponComponent>();
         Debug.Assert(weapon != null);
-        actionComponents.Add(weapon);
 
         skill = GetComponent<SkillComponent>();
         Debug.Assert(skill != null);
-        actionComponents.Add(skill);
 
         damageHandle = GetComponent<DamageHandleComponent>();
         launch = GetComponent<LaunchComponent>();
@@ -64,7 +61,7 @@ public class Player
 
         onAction = (context) =>
         {
-            if(comboComponent != null)
+            if (comboComponent != null)
                 comboComponent.InputQueue(InputCommandType.ACTION);
         };
 
@@ -77,14 +74,14 @@ public class Player
 
         onMove = (context) =>
         {
-            comboComponent?.BreakCombo();
+            comboComponent.SafeInvoke(v => v.BreakCombo());
         };
 
         Awake_SkillAcitonInput(actionMap);
 
         actionMap.FindAction("Action").started += onAction;
         actionMap.FindAction("Dash").started += onDash;
-        actionMap.FindAction("Move").started += onMove; 
+        actionMap.FindAction("Move").started += onMove;
     }
 
 
@@ -110,20 +107,23 @@ public class Player
 
             string actionName = $"SkillAction{slot + 1}";
             actionMap.FindAction(actionName).started += onSkillActions[i];
-            actionMap.FindAction(actionName).canceled += onSkillCancels[i]; 
+            actionMap.FindAction(actionName).canceled += onSkillCancels[i];
         }
     }
 
     protected override void Start()
     {
         base.Start();
-        
-        SetGenericTeamId(1); 
+
+        SetGenericTeamId(1);
     }
     protected void OnEnable()
     {
         if (state != null)
             state.OnStateTypeChanged += ChangeType;
+
+        if (skill != null)
+            skill.OnDoAction += DoAction;
 
         Debug.Log($"Battle Manager {BattleManager.Instance}");
     }
@@ -135,8 +135,11 @@ public class Player
         if (state != null)
             state.OnStateTypeChanged -= ChangeType;
 
+        if (skill != null)
+            skill.OnDoAction -= DoAction;
+
         var input = GetComponent<PlayerInput>();
-        if(input != null)
+        if (input != null)
         {
             var actionMap = input.actions.FindActionMap("Player");
 
@@ -150,7 +153,19 @@ public class Player
             }
         }
 
-        BattleManager.Instance?.UnreistPlayer(this);
+        BattleManager.Instance.SafeInvoke(v => v.UnreistPlayer(this));
+    }
+
+    private void DoAction()
+    {
+        state.SafeInvoke(v => v.SetActionMode());
+    }
+
+    public override void Start_DoAction()
+    {
+        base.Start_DoAction();
+        if (skill.SafeInvoke(v => v.InAction))
+            skill.StartAction();
     }
 
     public override void Begin_DoAction()
@@ -158,46 +173,49 @@ public class Player
         base.Begin_DoAction();
 
         OnBeginDoAction?.Invoke();
-        foreach (var ac in actionComponents)
-            if (ac.InAction) ac.BeginDoAction(); 
+        if (skill.SafeInvoke(v => v.InAction))
+            skill.BeginDoAction();
     }
 
     public override void End_DoAction()
     {
         bInAction = false;
         Debug.Log("Player End DoAction");
-        foreach (var ac in actionComponents)
-            if (ac.InAction) ac.EndDoAction();
-        
+
+        if (skill.SafeInvoke(v => v.InAction))
+            skill.EndDoAction();
+
+        state.SafeInvoke(v => v.SetIdleMode());
+
         OnEndDoAction?.Invoke();
     }
 
     public override void Begin_JudgeAttack(AnimationEvent e)
     {
         base.Begin_JudgeAttack(e);
-        foreach (var ac in actionComponents)
-            if (ac.InAction) ac.BeginJudgeAttack(e);
+        if (skill.SafeInvoke(v => v.InAction))
+            skill.BeginJudgeAttack(e);
     }
 
     public override void End_JudgeAttack(AnimationEvent e)
     {
         base.End_JudgeAttack(e);
-        foreach (var ac in actionComponents)
-            if (ac.InAction) ac.EndJudgeAttack(e);
+        if (skill.SafeInvoke(v => v.InAction))
+            skill.EndJudgeAttack(e);
     }
 
     public override void Play_Sound()
     {
         base.Play_Sound();
-        foreach (var ac in actionComponents)
-            if (ac.InAction) ac.PlaySound();
+        if (skill.SafeInvoke(v => v.InAction))
+            skill.PlaySound();
     }
 
     public override void Play_CameraShake()
     {
         base.Play_CameraShake();
-        foreach(var ac in actionComponents)
-            if (ac.InAction) ac.PlayCameraShake();
+        if (skill.SafeInvoke(v => v.InAction))
+            skill.PlayCameraShake();
     }
 
     public WeaponController GetWeaponController() => weaponController;
@@ -216,7 +234,7 @@ public class Player
 
         // 2. 데미지 계산 및 적용 
         // 💡 주의: 이 함수 내부에서 이미 HP를 깎고 state.SetDamagedMode()를 호출합니다!
-        damageHandle?.OnDamage(attacker, damageEvent);
+        damageHandle.SafeInvoke(v => v.OnDamage(attacker, damageEvent));
 
         // 3. 살았는지 죽었는지 판단
         if (healthPoint.Dead == false)
@@ -232,7 +250,7 @@ public class Player
 
         // 💡 코루틴 대신 UniTask 호출
         HandleDeath().Forget();
-        visual?.PlayDeadAnimation();
+        visual.SafeInvoke(v => v.PlayDeadAnimation());
     }
 
     // 💡 IEnumerator -> async UniTaskVoid 로 변경
@@ -259,23 +277,18 @@ public class Player
         if (newType == StateType.Damaged || newType == StateType.Stop || newType == StateType.Dead)
         {
             // 현재 행동 중(InAction)인 모든 컴포넌트들을 강제로 캔슬시킵니다!
-            foreach (var ac in actionComponents)
-            {
-                if (ac.InAction)
-                {
-                    ac.EndDoAction(); // (가짜 타이머도 여기서 알아서 다 꺼집니다)
-                }
-            }
+            if (skill.SafeInvoke(v => v.InAction))
+                skill.EndDoAction();
         }
     }
 
     public override void End_Damaged()
     {
         base.End_Damaged();
-        
-        state?.SetIdleMode();
-        foreach(var action in actionComponents)
-            action.EndDoAction();
+
+        state.SafeInvoke(v => v.SetIdleMode());
+        if (skill.SafeInvoke(v => v.InAction))
+            skill.EndDoAction();
     }
 
     public void ApplyLaunch(GameObject attacker, Weapon causer, DamageEvent devt)
@@ -285,7 +298,7 @@ public class Player
 
     public void ApplyLaunch(GameObject attacker, Weapon causer, HitData hitData)
     {
-        launch?.ApplyLaunch(attacker, causer, hitData);
+        launch.SafeInvoke(v => v.ApplyLaunch(attacker, causer, hitData));
     }
 
     public void SetActiveSkills()
@@ -298,18 +311,18 @@ public class Player
         if (PlayerManager.Instance != null)
         {
             CharStatusData data = PlayerManager.Instance.GetCharacterStatus(1);
-            status?.SetStatusData(data);
+            status.SafeInvoke(v => v.SetStatusData(data));
         }
     }
 
     public void SetEquipments()
     {
-        if(PlayerManager.Instance != null)
+        if (PlayerManager.Instance != null)
         {
             CharEquipmentData data = PlayerManager.Instance.GetCharEquipmentData(1);
-            equipment?.SertEquipmentData(data);
+            equipment.SafeInvoke(v => v.SertEquipmentData(data));
         }
     }
 
-  
+
 }

@@ -15,8 +15,8 @@ public class Gun : Weapon_Combo, IAttackOriginProvider
 
     // [발사 모드 보너스] 한 번에 다 쏠지, 번갈아가며 쏠지?
     [Tooltip("체크하면 더블배럴처럼 한 번에 쏘고, 끄면 쌍권총처럼 번갈아 쏩니다.")]
-    [SerializeField] private bool fireSimultaneously = true;
-    private int currentMuzzleIndex = 0; // 번갈아 쏠 때 사용할 인덱스
+    //[SerializeField] private bool fireSimultaneously = true;
+    //private int currentMuzzleIndex = 0; // 번갈아 쏠 때 사용할 인덱스
 
     public IReadOnlyList<Transform> GetAttackOrigins()
     {
@@ -54,15 +54,15 @@ public class Gun : Weapon_Combo, IAttackOriginProvider
         End_Equip();
     }
 
-    public override void Begin_DoAction()
-    {
-        if (muzzleTransforms.Count == 0)
-            return;
+    //public override void Begin_DoAction()
+    //{
+    //    if (muzzleTransforms.Count == 0)
+    //        return;
 
-        base.Begin_DoAction();
+    //    base.Begin_DoAction();
 
-        actionDatas[index].Play_CameraShake();
-    }
+    //    actionDatas[index].Play_CameraShake();
+    //}
 
     //public override void Begin_JudgeAttack(AnimationEvent e)
     //{

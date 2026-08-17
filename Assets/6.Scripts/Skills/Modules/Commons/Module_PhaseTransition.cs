@@ -28,16 +28,15 @@ public class Module_PhaseTransition : SkillModule
         if (skill == null) return;
 
         CancellationToken token = owner.GetCancellationTokenOnDestroy();
-        Character character = owner.GetComponent<Character>(); 
-        ExecuteTransitionAsync(character, skill, token).Forget();
+        ExecuteTransitionAsync(skill, token).Forget();
     }
 
-    private async UniTaskVoid ExecuteTransitionAsync(Character character, ActiveSkill skill, CancellationToken token)
+    private async UniTaskVoid ExecuteTransitionAsync(ActiveSkill skill, CancellationToken token)
     {
         // 딜레이가 있다면 대기
         if (delayTime > 0f)
         {
-            // 💡 지정된 시간만큼 대기하되, 취소 명령이 들어오면 에러 없이 조용히 종료합니다.
+            // 지정된 시간만큼 대기하되, 취소 명령이 들어오면 에러 없이 조용히 종료합니다.
             bool isCancelled = await UniTask.Delay(TimeSpan.FromSeconds(delayTime), cancellationToken: token).SuppressCancellationThrow();
 
             if (isCancelled) return; // 애니메이션이 끝나거나 캔슬당했으면 발동 안 함!
@@ -45,7 +44,7 @@ public class Module_PhaseTransition : SkillModule
 
         if (token.IsCancellationRequested) return;
 
-        // 💡 ActiveSkill에게 페이즈 전환을 명령합니다!
+        // ActiveSkill에게 페이즈 전환을 명령합니다!
         switch (transitionType)
         {
             case PhaseTransitionType.NextPhase:
@@ -56,7 +55,6 @@ public class Module_PhaseTransition : SkillModule
                 break;
             case PhaseTransitionType.EndSkill:
                 skill.End_DoAction(); // 스킬 종료 함수 호출
-                character.SafeInvoke(v => v.End_DoAction());
                 break;
         }
     }

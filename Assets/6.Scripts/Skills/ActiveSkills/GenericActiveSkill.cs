@@ -65,7 +65,9 @@ public class GenericActiveSkill
 
     public override void EndPhaseAndNext()
     {
-        if (isCasting == false) return; 
+        if (isCasting == false) return;
+
+        IsPhaseRunning = false; 
 
         int nextPhase = phaseIndex + 1;
         
@@ -94,9 +96,12 @@ public class GenericActiveSkill
     }
     protected override void ExecutePhase(int phaseIndex)
     {
-        if (isCasting == false) return;
+        if (isCasting == true) return;
+        if (phaseList == null) return;
+        if (phaseIndex < 0 || phaseIndex >= phaseList.Count) return;
 
-        base.ExecutePhase(phaseIndex);
+        expectedAnimEventPhaseIndex = phaseIndex;
+        Debug.Log($"{this.SkillID} : execute phase {phaseIndex}");
 
         SetCurrentPhaseSkill(phaseIndex);
 

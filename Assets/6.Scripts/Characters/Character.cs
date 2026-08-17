@@ -99,7 +99,13 @@ public class Character
     // Visual 스크립트에서 이 함수들을 호출해주도록 브릿지(Bridge) 연결이 필요합니다!
     public virtual void Start_DoAction() { }
     public virtual void Begin_DoAction() { OnBeginDoAction?.Invoke(); }
-    public virtual void End_DoAction() { OnEndDoAction?.Invoke(); }
+    public virtual void End_DoAction() 
+    {
+
+        state.SafeInvoke(v => v.SetIdleMode());
+        OnEndDoAction?.Invoke(); 
+    }
+
     public virtual void Begin_JudgeAttack(AnimationEvent e = null) { }
     public virtual void End_JudgeAttack(AnimationEvent e = null) { }
     public virtual void Play_Sound() { }

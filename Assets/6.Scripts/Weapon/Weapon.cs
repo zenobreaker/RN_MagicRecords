@@ -279,7 +279,7 @@ public class Weapon : MonoBehaviour
     public bool Equipped { get => bEquipped; }
 
 
-    private bool bDirtyMove = false;
+    //private bool bDirtyMove = false;
 
     protected GameObject rootObject;    // 무기를 가진 대상
     protected Character ownerCharacter;
@@ -287,7 +287,7 @@ public class Weapon : MonoBehaviour
 
     protected StateComponent state;
     protected StatusComponent status;
-    protected MovementComponent moving;
+
 
     public event Action<GameObject> OnLastAttackExecuted;
 
@@ -299,7 +299,6 @@ public class Weapon : MonoBehaviour
         state = rootObject.GetComponent<StateComponent>();
         status = rootObject.GetComponent<StatusComponent>();
         ownerCharacter = rootObject.GetComponent<Character>();
-        moving = rootObject.GetComponent<MovementComponent>();
 
         if (so_Action != null)
             actionDatas = so_Action.actionDatas;
@@ -354,53 +353,34 @@ public class Weapon : MonoBehaviour
         bEquipped = false;
     }
 
-    public virtual void DoAction(int index = 0)
-    {
-        if (state.IdleMode == false)
-            return;
+    //public virtual void DoAction(int index = 0)
+    //{
+    //    if (state.IdleMode == false)
+    //        return;
 
-        state.SetActionMode();
-        CheckStop(index);
-    }
+    //    state.SetActionMode();
+    //    //CheckStop(index);
+    //}
 
-    public virtual void Begin_DoAction() { }
+    //public virtual void Begin_DoAction() { }
 
-    public virtual void End_DoAction()
-    {
-        state.SetIdleMode();
+    //public virtual void End_DoAction()
+    //{
+    //    state.SetIdleMode();
 
-        if (bDirtyMove)
-        {
-            bDirtyMove = false;
-            Move();
-        }
-    }
+    //    if (bDirtyMove)
+    //    {
+    //        bDirtyMove = false;
+    //        //Move();
+    //    }
+    //}
 
-    public virtual void Begin_JudgeAttack(AnimationEvent e) { }
-    public virtual void End_JudgeAttack(AnimationEvent e) { }
+    //public virtual void Begin_JudgeAttack(AnimationEvent e) { }
+    //public virtual void End_JudgeAttack(AnimationEvent e) { }
 
-    public virtual void Play_PlaySound() { }
+    //public virtual void Play_PlaySound() { }
 
-    public virtual void Play_CameraShake() { }
+    //public virtual void Play_CameraShake() { }
 
-    ////////////////////////////////////////////////////////////////////////////////////
 
-    protected void Move()
-    {
-        moving?.Move();
-    }
-
-    protected void Stop()
-    {
-        moving?.Stop();
-    }
-
-    protected void CheckStop(int index)
-    {
-        if (so_Action != null && so_Action.GetCanMove(index) == false)
-        {
-            Stop();
-            bDirtyMove = true;
-        }
-    }
 }

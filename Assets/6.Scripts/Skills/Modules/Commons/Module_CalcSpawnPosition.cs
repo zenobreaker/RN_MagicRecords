@@ -22,7 +22,7 @@ public class Module_CalcSpawnPosition : SkillModule
         ActiveSkill skill,
         PhaseSkill phaseSkill)
     {
-        skill.Runtime.Spawn.SpawnPositions.Clear();
+        skill.Runtime.Spawn.SpawnPoints.Clear();
 
         switch (type)
         {
@@ -40,7 +40,7 @@ public class Module_CalcSpawnPosition : SkillModule
     {
         if (skill == null) return;
 
-        skill.Runtime.Spawn.SpawnPositions.Add(
+        skill.Runtime.Spawn.SpawnPoints.Add(
             new SpawnPointData(
                 target.position,
                 target.rotation));
@@ -57,7 +57,7 @@ public class Module_CalcSpawnPosition : SkillModule
             if (weaponComponent.GetCurrentWeapon() is IAttackOriginProvider origin)
             {
                 foreach(Transform t in origin.GetAttackOrigins())
-                    skill.Runtime.Spawn.SpawnPositions.Add(
+                    skill.Runtime.Spawn.SpawnPoints.Add(
                         new SpawnPointData(
                             t.position,
                             target.rotation)

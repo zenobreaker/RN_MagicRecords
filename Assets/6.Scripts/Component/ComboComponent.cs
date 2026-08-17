@@ -70,10 +70,8 @@ public class ComboComponent : MonoBehaviour
         ResetCombo();
     }
 
-    // 💡 [버그 픽스 1]: 새로운 아키텍처에 맞게 무기와 스킬이 바쁜지 "직접" 확인합니다!
     private bool CanExecuteNextAction()
     {
-        if (weapon != null && weapon.InAction) return false;
         if (skill != null && skill.InAction) return false;
 
         return true; // 아무것도 안 하고 있을 때만 true!
@@ -113,8 +111,14 @@ public class ComboComponent : MonoBehaviour
     }
 
     private void TryProcess_Move(InputCommand newInput) { }
-    private void TryProcess_Skill(InputCommand newInput) { skill?.UseSkill($"SLOT{newInput.SkillSlotIndex + 1}"); }
-    private void TryProcess_Dash(InputCommand newInput) { movement?.TryDash(); }
+    private void TryProcess_Skill(InputCommand newInput) 
+    { 
+        skill.SafeInvoke(v=>v.UseSkill($"SLOT{newInput.SkillSlotIndex + 1}"));
+    }
+    private void TryProcess_Dash(InputCommand newInput) 
+    { 
+        movement.SafeInvoke(v=>v.TryDash()); 
+    }
 
     private void TryProcess_Action(InputCommand newInput)
     {
@@ -174,11 +178,13 @@ public class ComboComponent : MonoBehaviour
         if (currComboObj == null) return;
 
         ComboData data = currComboObj.GetComboData(index);
-        comboInputHandler?.HandleComboIndex(index);
+        comboInputHandler.SafeInvoke(v => v.HandleComboIndex(index));
         comboResetTime = data.ComboResetTime;
 
+        Debug.Log($"{index} comob index ");
         CancelComboTimer(); // 공격이 시작되었으므로 콤보 대기시간 캔슬
-        weapon?.DoActionWithIndex(index);
+        //weapon.SafeInvoke(v => v.DoActionWithIndex(index));
+        skill.SafeInvoke(v => v.UseSkill(SkillSlot.Default, index));
     }
 
     // ComboComponent.cs 수정

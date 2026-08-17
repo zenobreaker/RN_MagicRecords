@@ -297,13 +297,13 @@ public sealed class CharacterVisual : MonoBehaviour
     #endregion
 
     #region Animation Event Bridge
-    public void Start_DoAction() => character?.Start_DoAction();
-    public void Begin_DoAction() => character?.Begin_DoAction();
-    public void End_DoAction() => character?.End_DoAction();
-    public void Begin_JudgeAttack(AnimationEvent e = null) => character?.Begin_JudgeAttack(e);
-    public void End_JudgeAttack(AnimationEvent e = null) => character?.End_JudgeAttack(e);
-    public void Play_Sound() => character?.Play_Sound();
-    public void Play_CameraShake() => character?.Play_CameraShake();
-    public void End_Damaged() => character?.End_Damaged();
+    public void Start_DoAction() => character.SafeInvoke(v=>v.Start_DoAction());
+    public void Begin_DoAction() => character.SafeInvoke(v => v.Begin_DoAction());
+    public void End_DoAction() => character.SafeInvoke(v => v.End_DoAction());
+    public void Begin_JudgeAttack(AnimationEvent e = null) => character.SafeInvoke(v => v.Begin_JudgeAttack(e));
+    public void End_JudgeAttack(AnimationEvent e = null) => character.SafeInvoke(v => v.End_JudgeAttack(e));
+    public void Play_Sound() => character.SafeInvoke(v => v.Play_Sound());
+    public void Play_CameraShake() => character.SafeInvoke(v => v.Play_CameraShake());
+    public void End_Damaged() => character.SafeInvoke(v => v.End_Damaged());
     #endregion
 }

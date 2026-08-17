@@ -12,6 +12,7 @@ public abstract class ActionComponent : MonoBehaviour
     public Action OnDoAction;
     public Action OnBeginDoAction;
     public Action OnEndDoAction;
+    protected bool bDirtyMove = false; 
 
     protected GameObject rootObject;
     protected bool bInAction;
@@ -23,7 +24,7 @@ public abstract class ActionComponent : MonoBehaviour
     // 가짜 타이머(애니메이션 대체) 관리용 토큰
     protected CancellationTokenSource actionCts;
 
-    // 💡 공통 실행부: 행동 시작 및 가짜 타이머 자동화
+    // 공통 실행부: 행동 시작 및 가짜 타이머 자동화
     public virtual void DoAction()
     {
         if (bInAction) return;
@@ -88,4 +89,6 @@ public abstract class ActionComponent : MonoBehaviour
     {
         CancelManualAction();
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////
 }

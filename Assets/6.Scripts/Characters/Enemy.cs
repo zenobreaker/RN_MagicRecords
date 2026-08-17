@@ -26,7 +26,6 @@ public class Enemy
     private DamageHandleComponent damageHandle;
     private LaunchComponent launch;
 
-    private List<ActionComponent> actionComponents = new();
     protected SkillComponent skill;
     protected WeaponComponent weapon;
 
@@ -58,8 +57,6 @@ public class Enemy
         skill = GetComponent<SkillComponent>();
         weapon = GetComponent<WeaponComponent>();
 
-        if (weapon != null) actionComponents.Add(weapon);
-        if (skill != null) actionComponents.Add(skill);
         Debug.Assert(damageHandle != null);
         damageHandle.OnDamagedEvent += HandleHitReaction;
     }
@@ -91,16 +88,18 @@ public class Enemy
     public override void Start_DoAction()
     {
         base.Start_DoAction();
-        foreach (var ac in actionComponents)
-            if (ac.InAction) ac.StartAction();
+        if (skill.SafeInvoke(v => v.InAction))
+            skill.StartAction();
     }
 
     public override void End_DoAction()
     {
         base.End_DoAction();
         bInAction = false;
-        foreach (var ac in actionComponents)
-            if (ac.InAction) ac.EndDoAction();
+        if (skill.SafeInvoke(v => v.InAction))
+            skill.EndDoAction();
+
+        state.SafeInvoke(v => v.SetIdleMode());
 
         OnEndDoAction?.Invoke();
     }
@@ -108,15 +107,15 @@ public class Enemy
     public override void Begin_JudgeAttack(AnimationEvent e)
     {
         base.Begin_JudgeAttack(e);
-        foreach (var ac in actionComponents)
-            if (ac.InAction) ac.BeginJudgeAttack(e);
+        if (skill.SafeInvoke(v => v.InAction))
+            skill.BeginJudgeAttack(e);
     }
 
     public override void End_JudgeAttack(AnimationEvent e)
     {
         base.End_JudgeAttack(e);
-        foreach (var ac in actionComponents)
-            if (ac.InAction) ac.EndJudgeAttack(e);
+        if (skill.SafeInvoke(v => v.InAction))
+            skill.EndJudgeAttack(e);
     }
 
     public void OnDamage(GameObject attacker,
@@ -202,8 +201,9 @@ public class Enemy
         if (state != null)
             state.SetIdleMode();
 
-        foreach (var ac in actionComponents)
-            ac.EndDoAction();
+
+        if (skill !=null)
+            skill.EndDoAction();
     }
 
     private async UniTaskVoid HandleDeath()

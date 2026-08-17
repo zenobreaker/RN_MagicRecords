@@ -61,6 +61,11 @@
       "en": "Leave"
     },
     {
+      "key": "ui_btn_receive",
+      "kr": "받기",
+      "en": "Receive"
+    },
+    {
       "key": "ui_text_equip",
       "kr": "장비",
       "en": "Equipment"
@@ -1144,6 +1149,206 @@
       "key": "evt_1011_r3",
       "kr": "역시 심상치 않은 일은 피하는게 상책이죠.",
       "en": "As expected, it's best to avoid anything suspicious."
+    },
+    {
+      "key": "record_name_modify_magnum_hollowpoint",
+      "kr": "매그넘샷 - 할로포인트",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_magnum_fullpiercing",
+      "kr": "매그넘샷 - 풀 피어싱",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_plasmaray_overcharge",
+      "kr": "플라즈마 레이 - 과충전",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_plasmaray_cuttingray",
+      "kr": "플라즈마 레이 - 절단광선",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_hyperbeam_nocharge",
+      "kr": "파괴광선 - 무충전",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_hyperbeam_overdrive",
+      "kr": "파괴광선 - 오버드라이브",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_spreadshot_dragonbreath",
+      "kr": "산탄 사격 - 드래곤 브레스",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_spreadshot_closefire",
+      "kr": "산탄 사격 - 화력 집중",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_rapidfire_powerboost",
+      "kr": "연속 발사 - 화력 강화",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_rapidfire_fastest",
+      "kr": "연속 발사 - 패스티스트",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_spiralshot_inhalation",
+      "kr": "스파이럴 탄 - 응집",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_spiralshot_stickybomb",
+      "kr": "스파이럴 탄 - 스티키 밤",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_extreambullet_blackhole",
+      "kr": "마탄 - 극악무도 - 블랙홀",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_extreambullet_fusion",
+      "kr": "마탄 - 극악무도 - 마력 융합",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_bulletrain_apbomb",
+      "kr": "불릿 레인 - 철갑 폭격",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_bulletrain_condensedmana",
+      "kr": "불릿 레인 - 응집된 마나",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_assistweapon_chaser",
+      "kr": "어시스트 웨폰 - 체이서",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_assistweapon_appiercing",
+      "kr": "어시스트 웨폰 - 철갑 관통 마력탄",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_splitshot_homingchildren",
+      "kr": "분열탄 - 유도 자탄",
+      "en": null
+    },
+    {
+      "key": "record_name_modify_splitshot_slowmodule",
+      "kr": "분열탄 - 저속 모듈",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_magnum_hollowpoint",
+      "kr": "매그넘탄이 충돌 시 6갈래로 갈라지는 효과 추가",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_magnum_fullpiercing",
+      "kr": "매그넘탄에 관통과 유도 기능 추가",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_plasmaray_overcharge",
+      "kr": "레이저의 두께 증가",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_plasmaray_cuttingray",
+      "kr": "방어력 무시 피해 추가",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_hyperbeam_nocharge",
+      "kr": "충전 기능 삭제 후, 즉시 발사",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_hyperbeam_overdrive",
+      "kr": "일정 시간 후 파괴광선을 쏘는 구체 생성",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_spreadshot_dragonbreath",
+      "kr": "샷건 탄환충돌 시 화상 부여",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_spreadshot_closefire",
+      "kr": "탄환의 밀집도가 상승된 채 발사",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_rapidfire_powerboost",
+      "kr": "각 탄환에 유도 기능 부여",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_rapidfire_fastest",
+      "kr": "연속발사의 공격속도 상승",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_spiralshot_inhalation",
+      "kr": "탄환이 충돌 시 주변의 적을 끌어들이는 효과 추가",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_spiralshot_stickybomb",
+      "kr": "적중 시 적에게 붙어 지속적으로 피해를 입히는 효과로 변경",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_extreambullet_blackhole",
+      "kr": null,
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_extreambullet_fusion",
+      "kr": null,
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_bulletrain_apbomb",
+      "kr": null,
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_bulletrain_condensedmana",
+      "kr": null,
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_assistweapon_chaser",
+      "kr": "탄환의 유도 기능 추가",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_assistweapon_appiercing",
+      "kr": "탄환의 관통 기능 추가",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_splitshot_homingchildren",
+      "kr": "분열탄의 자탄에 유도 기능 추가",
+      "en": null
+    },
+    {
+      "key": "record_desc_modify_splitshot_slowmodule",
+      "kr": "분열탄의 모탄의 속도 감소",
+      "en": null
     }
   ]
 }

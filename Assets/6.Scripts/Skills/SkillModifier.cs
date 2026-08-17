@@ -116,10 +116,15 @@ public sealed class SpawnContext
     public string OverridePrefabName = string.Empty;
 
     // 어디서 생성?
-    public List<SpawnPointData> SpawnPositions = new();
+    public List<SpawnPointData> SpawnPoints = new();
+    
+    // 이번 스킬에서 사용할 총구 인덱스
+    public int SelectedSpawnPointIndex;
+    public List<int> SelectedSpawnPointIndices = new();
+
     public void Clear()
     {
-        SpawnPositions.Clear();
+        SpawnPoints.Clear();
         TargetPositions.Clear();
 
         TargetPosition = Vector3.zero;

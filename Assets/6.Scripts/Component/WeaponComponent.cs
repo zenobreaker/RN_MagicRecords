@@ -14,7 +14,7 @@ public enum WeaponType
 /// </summary>
 
 public class WeaponComponent 
-    : ActionComponent
+    : MonoBehaviour
 {
     [Header("Weapons")]
     [SerializeField] private GameObject[] originPrefabs;
@@ -175,53 +175,45 @@ public class WeaponComponent
         return weaponTable[type];
     }
 
-    public void DoActionWithIndex(int index = 0)
-    {
-        if (InAction == true || state.ActionMode) 
-            return; 
 
-        base.DoAction();
-        weaponTable[type]?.DoAction(index);
-    }
+    //public override void BeginDoAction()
+    //{
+    //    base.BeginDoAction();
 
-    public override void BeginDoAction()
-    {
-        base.BeginDoAction();
+    //    Debug.Log($"Weapon Begin DoAction");
+    //    OnBeginDoAction?.Invoke();
+    //    weaponTable[type]?.Begin_DoAction();
+    //}
 
-        Debug.Log($"Weapon Begin DoAction");
-        OnBeginDoAction?.Invoke();
-        weaponTable[type]?.Begin_DoAction();
-    }
+    //public override void EndDoAction()
+    //{
+    //    base.EndDoAction();
 
-    public override void EndDoAction()
-    {
-        base.EndDoAction();
+    //    Debug.Log($"Weapon End DoAction");
+    //    OnEndDoAction?.Invoke();
+    //    weaponTable[type]?.End_DoAction();
+    //}
 
-        Debug.Log($"Weapon End DoAction");
-        OnEndDoAction?.Invoke();
-        weaponTable[type]?.End_DoAction();
-    }
+    //public override void BeginJudgeAttack(AnimationEvent e) 
+    //{
+    //    base.BeginJudgeAttack(e); 
+    //    weaponTable[type]?.Begin_JudgeAttack(e); 
+    //}
 
-    public override void BeginJudgeAttack(AnimationEvent e) 
-    {
-        base.BeginJudgeAttack(e); 
-        weaponTable[type]?.Begin_JudgeAttack(e); 
-    }
+    //public override void EndJudgeAttack(AnimationEvent e) 
+    //{
+    //    base.EndJudgeAttack(e); 
+    //    weaponTable[type]?.End_JudgeAttack(e); 
+    //}
 
-    public override void EndJudgeAttack(AnimationEvent e) 
-    {
-        base.EndJudgeAttack(e); 
-        weaponTable[type]?.End_JudgeAttack(e); 
-    }
-
-    public override void PlaySound()
-    {
-        base.PlaySound();
-        weaponTable[type]?.Play_PlaySound();
-    }
-    public override void PlayCameraShake()
-    {
-        base.PlayCameraShake();
-        weaponTable[type]?.Play_CameraShake();
-    }
+    //public override void PlaySound()
+    //{
+    //    base.PlaySound();
+    //    weaponTable[type]?.Play_PlaySound();
+    //}
+    //public override void PlayCameraShake()
+    //{
+    //    base.PlayCameraShake();
+    //    weaponTable[type]?.Play_CameraShake();
+    //}
 }

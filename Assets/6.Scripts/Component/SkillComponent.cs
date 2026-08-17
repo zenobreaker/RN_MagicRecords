@@ -31,6 +31,8 @@ public sealed class SkillComponent
     {
         skillSlotTable = new Dictionary<string, ActiveSkill>
         {
+            {"DEFAULT", null},
+
             {"SLOT1", null },
             {"SLOT2", null },
             {"SLOT3", null },
@@ -57,14 +59,14 @@ public sealed class SkillComponent
 
             // 3. 스킬 로직 업데이트
             pair.Value.Update(Time.deltaTime);
-            if(skillEventHandler != null)
+            if (skillEventHandler != null)
                 skillEventHandler.OnInCoolDown(currentSlot, pair.Value.IsOnCooldown);
 
             if (pair.Value.IsOnCooldown == false) continue;
 
             // 4. 쿨타임 UI 이벤트 발송
             pair.Value.Update_Cooldown(Time.deltaTime);
-            if(skillEventHandler != null)
+            if (skillEventHandler != null)
                 skillEventHandler.OnCooldown(currentSlot, pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
         }
     }
@@ -145,9 +147,10 @@ public sealed class SkillComponent
                 if (isSelfControlled)
                 {
                     int cachedPhase = i;
-                    while (currentSkill.PhaseIndex == cachedPhase)
-                    {
-                        await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
+                    while (currentSkill.IsPhaseRunning)
+                    { 
+                        await UniTask.Yield(PlayerLoopTiming.Update, 
+                            cancellationToken: token);
                     }
                 }
                 else
@@ -155,13 +158,15 @@ public sealed class SkillComponent
                     if (hasAnimation)
                     {
                         // 애니메이션이 있을 때만 후딜레이 0.3초 대기
-                        await UniTask.Delay(TimeSpan.FromSeconds(0.3f), cancellationToken: token);
+                        await UniTask.Delay(TimeSpan.FromSeconds(0.3f),
+                            cancellationToken: token);
                     }
                     else
                     {
                         // 💡 애니메이션이 없다면 대기 시간 없이 즉시 1프레임만 쉬고 넘깁니다.
                         // (프레임 꼬임 방지를 위해 딱 1프레임 Yield를 주는 것이 안전합니다)
-                        await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
+                        await UniTask.Yield(PlayerLoopTiming.Update, 
+                            cancellationToken: token);
                     }
 
                     if (i < phaseCount - 1)
@@ -218,15 +223,19 @@ public sealed class SkillComponent
     }
 
     // 슬롯의 있는 스킬 사용 
-    public void UseSkill(SkillSlot slot)
+    public void UseSkill(SkillSlot slot, int phaseIndex = -1)
     {
-        UseSkill(slot.ToString());
+        UseSkill(slot.ToString(), phaseIndex);
     }
 
-    public void UseSkill(string slotName)
+    public void UseSkill(string slotName, int phaseIndex = -1)
     {
         if (!skillSlotTable.TryGetValue(slotName, out var skill) || skill == null) return;
 
+        if (phaseIndex > -1)
+            skill.PhaseIndex = phaseIndex;
+
+        // 동시 사용 가능 스킬은 행동거지를 같이해선 안되므로 호출하고 return
         if (skill.isConcurrentSkill)
         {
             if (skill.IsOnCooldown) return;
@@ -236,7 +245,6 @@ public sealed class SkillComponent
             ExecuteConcurrentSkillAsync(skill).Forget();
             return;
         }
-
 
 
         if (InAction || CanUseSkill(slotName) == false)
@@ -249,6 +257,7 @@ public sealed class SkillComponent
         OnSkillUse?.Invoke(true);
 
         base.DoAction();
+
         skill.Cast();
 
         if (!skill.HasActionData(skill.PhaseIndex))
@@ -340,7 +349,7 @@ public sealed class SkillComponent
         ActiveSkill skill = skillSlotTable[currentSlotName];
         skill?.End_DoAction();
 
-        if(skill != null && skill.IsCasting)
+        if (skill != null && skill.IsCasting)
         {
             return;
         }
@@ -349,7 +358,7 @@ public sealed class SkillComponent
         currentSlotName = string.Empty;
 
         OnEndDoAction?.Invoke();
-        if(skillEventHandler != null)
+        if (skillEventHandler != null)
             skillEventHandler.OnEnd_UseSkill();
     }
 

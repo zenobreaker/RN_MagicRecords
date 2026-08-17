@@ -42,44 +42,44 @@ public class Weapon_Combo : Weapon
         }
     }
 
-    public override void DoAction(int index)
-    {
-        base.DoAction(index);
+//    public override void DoAction(int index)
+//    {
+//        base.DoAction(index);
 
-        this.index = index % so_Combo.MaxComboIndex();
+//        this.index = index % so_Combo.MaxComboIndex();
 
-        if(this.index == so_Combo.MaxComboIndex() -1)
-        {
-            InvokeLastAttackEvent();
-        }
+//        if(this.index == so_Combo.MaxComboIndex() -1)
+//        {
+//            InvokeLastAttackEvent();
+//        }
 
-        Debug.Assert(so_Combo.comboDatas.Count > 0);
-        Debug.Assert(so_Combo.comboDatas[this.index] != null);
+//        Debug.Assert(so_Combo.comboDatas.Count > 0);
+//        Debug.Assert(so_Combo.comboDatas[this.index] != null);
 
   
-//        // Play Animation 
-//        {
-//            if (ownerCharacter != null)
-//            {
-//                ownerCharacter.PlayAction(actionDatas[this.index]);
-//            }
-//            if(weaponController != null)
-//                weaponController.DoAction(actionDatas[this.index].WeaponActionName);
+////        // Play Animation 
+////        {
+////            if (ownerCharacter != null)
+////            {
+////                ownerCharacter.PlayAction(actionDatas[this.index]);
+////            }
+////            if(weaponController != null)
+////                weaponController.DoAction(actionDatas[this.index].WeaponActionName);
 
-//#if UNITY_EDITOR
-//            if (bDebug)
-//                Debug.Log($"Combo Play: {this.index} {actionDatas[this.index].StateName}");
-//#endif
-//        }
-    }
+////#if UNITY_EDITOR
+////            if (bDebug)
+////                Debug.Log($"Combo Play: {this.index} {actionDatas[this.index].StateName}");
+////#endif
+////        }
+//    }
 
-    public override void Begin_JudgeAttack(AnimationEvent e)
-    {
-        base.Begin_JudgeAttack(e);
+    //public override void Begin_JudgeAttack(AnimationEvent e)
+    //{
+    //    base.Begin_JudgeAttack(e);
 
-        if (ownerCharacter != null)
-            ownerCharacter.BroadcastAttack(actionDatas[this.index], ownerCharacter);
-    }
+    //    if (ownerCharacter != null)
+    //        ownerCharacter.BroadcastAttack(actionDatas[this.index], ownerCharacter);
+    //}
 
     protected virtual void OnTriggerEnter(Collider other)
     {

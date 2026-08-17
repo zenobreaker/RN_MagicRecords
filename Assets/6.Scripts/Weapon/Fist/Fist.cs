@@ -10,7 +10,7 @@ public class Fist : Weapon_Combo
         LeftHand, RightHand, LeftFoot, RightFoot, Max
     }
 
-    bool isPlayer = true;
+    //bool isPlayer = true;
 
     protected override void Awake()
     {
@@ -37,15 +37,15 @@ public class Fist : Weapon_Combo
             }
         }
     }
-    protected override void Start()
-    {
-        base.Start();
+    //protected override void Start()
+    //{
+    //    base.Start();
 
-        if (rootObject.TryGetComponent<Enemy>(out Enemy enemy))
-        {
-            isPlayer = false; 
-        }
-    }
+    //    if (rootObject.TryGetComponent<Enemy>(out Enemy enemy))
+    //    {
+    //        isPlayer = false; 
+    //    }
+    //}
 
     public override void Begin_Equip()
     {
@@ -59,58 +59,58 @@ public class Fist : Weapon_Combo
         End_Equip(); 
     }
 
-    public override void Begin_DoAction()
-    {
-        base.Begin_DoAction();
+    //public override void Begin_DoAction()
+    //{
+    //    base.Begin_DoAction();
         
-        hitList.Clear();
-    }
+    //    hitList.Clear();
+    //}
 
-    public override void End_DoAction()
-    {
-        base.End_DoAction();
+    //public override void End_DoAction()
+    //{
+    //    base.End_DoAction();
 
-        hitList.Clear();
-    }
+    //    hitList.Clear();
+    //}
 
-    public override void Begin_JudgeAttack(AnimationEvent e)
-    {
-        base.Begin_JudgeAttack(e);
+    //public override void Begin_JudgeAttack(AnimationEvent e)
+    //{
+    //    base.Begin_JudgeAttack(e);
 
-        string estring = e.stringParameter;
-        if (estring != "")
-        {
-            string[] strings = estring.Split(',');
-            foreach (string s in strings)
-            {
-                if (int.TryParse(s, out int result))
-                    colliders[result].enabled = true;
-            }
-            return;
-        }
+    //    string estring = e.stringParameter;
+    //    if (estring != "")
+    //    {
+    //        string[] strings = estring.Split(',');
+    //        foreach (string s in strings)
+    //        {
+    //            if (int.TryParse(s, out int result))
+    //                colliders[result].enabled = true;
+    //        }
+    //        return;
+    //    }
 
-        colliders[e.intParameter].enabled = true;
-    }
+    //    colliders[e.intParameter].enabled = true;
+    //}
 
-    public override void End_JudgeAttack(AnimationEvent e)
-    {
-        base.End_JudgeAttack(e);
+    //public override void End_JudgeAttack(AnimationEvent e)
+    //{
+    //    base.End_JudgeAttack(e);
 
-        colliders[e.intParameter].enabled = false;
-    }
+    //    colliders[e.intParameter].enabled = false;
+    //}
 
-    public override void Play_PlaySound()
-    {
-        base.Play_PlaySound();
+    //public override void Play_PlaySound()
+    //{
+    //    base.Play_PlaySound();
 
-        actionDatas[index].Play_Sound();
-    }
+    //    actionDatas[index].Play_Sound();
+    //}
 
-    public override void Play_CameraShake()
-    {
-        base.Play_CameraShake();
+    //public override void Play_CameraShake()
+    //{
+    //    base.Play_CameraShake();
 
-        if (isPlayer)
-            actionDatas[index].Play_CameraShake();
-    }
+    //    if (isPlayer)
+    //        actionDatas[index].Play_CameraShake();
+    //}
 }

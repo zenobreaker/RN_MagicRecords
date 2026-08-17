@@ -62,7 +62,8 @@ public abstract class ActiveSkill
     public bool IsCasting { get => isCasting; set => isCasting = value; }
     public float CurrentCooldown { get => currentCooldown; }
     public float MaxCooldown { get => maxCooldown; }
-    public SkillRuntimeContext Runtime { get; private set; } = new SkillRuntimeContext();
+    public SkillRuntimeContext Runtime { get; protected set; } = new SkillRuntimeContext();
+    public bool IsPhaseRunning { get; protected set; }
     public int MaxPhaseCount
     {
         get
@@ -198,6 +199,7 @@ public abstract class ActiveSkill
         if (phaseIndex < 0 || phaseIndex >= phaseList.Count)
             return;
 
+        IsPhaseRunning = true; 
         this.phaseIndex = phaseIndex;
         phaseSkill = phaseList[phaseIndex];
     }
@@ -251,8 +253,10 @@ public abstract class ActiveSkill
             ps?.BroadcastOnSkillCast(evt, this.Runtime);
         }
 
-        phaseIndex = 0; 
         isCasting = true;
+        //TODO 캐스팅 기능 추가 
+        isCasting = false; 
+
         isWaitingForRelease = false;
         chargeStartTime = Time.time;
 
@@ -351,11 +355,19 @@ public abstract class ActiveSkill
 
     public void JumpToPhase(int index)
     {
+        if (IsPhaseRunning == false)
+            return; 
+
         if (phaseList.Count <= index) return;
+
         ExecutePhase(index);
     }
     protected virtual void ExecutePhase(int phaseIndex)
     {
+        if (isCasting == true) return;
+        if (phaseList == null) return;
+        if (phaseIndex < 0 || phaseIndex >= phaseList.Count) return; 
+
         expectedAnimEventPhaseIndex = phaseIndex;
         Debug.Log($"{this.SkillID} : execute phase {phaseIndex}");
     }
@@ -428,7 +440,7 @@ public abstract class ActiveSkill
         {
             if (effect != null && effect.activeInHierarchy)
             {
-                effect.gameObject.SetActive(false);
+                effect.SetActive(false);
             }
         }
 
@@ -448,6 +460,7 @@ public abstract class ActiveSkill
         // 다음 번 스킬을 위해 초기화
         phaseIndex = 0;
         isCasting = false;
+        IsPhaseRunning = false;
 
         if (!isConcurrentSkill && ownerObject != null)
         {

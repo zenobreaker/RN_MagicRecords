@@ -7,196 +7,539 @@ using UnityEngine.Scripting.APIUpdating;
 [Serializable]
 public class Module_SpawnObject : SkillModule
 {
+    #region Damage
+
     [Header("Damage Settings")]
     public DamageApplyType damageApplyType = DamageApplyType.Inherit;
 
-    [Tooltip("Multiply 모드 시 부모 데미지에 곱해질 기본 비율 (0.5 = 50%)")]
+    [Tooltip("Multiply 모드 시 부모 데미지에 곱해질 기본 비율")]
     public float damageMultiplier = 1.0f;
 
-    [Tooltip("Override 모드일 때만 사용되는 전용 데미지 데이터")]
+    [Tooltip("Override 모드일 때만 사용하는 전용 데미지")]
     public DamageData damageData;
 
-    [Header("Spawn Data")]
+    #endregion
+
+
+    #region Spawn
+
+    [Header("Spawn Settings")]
+
+    [Tooltip("SpawnPoint가 없을 경우 사용할 기존 로컬 위치")]
     public Vector3 spawnPosition;
 
     [SerializeField]
     private Vector3 spawnRotation;
+
     public Quaternion ValidSpawnQuaternion =>
-        spawnRotation.Equals(Vector3.zero) ? Quaternion.identity : Quaternion.Euler(spawnRotation);
+        spawnRotation == Vector3.zero
+            ? Quaternion.identity
+            : Quaternion.Euler(spawnRotation);
+
+    #endregion
+
+
+    #region Pattern
 
     [Header("Pattern Settings")]
+
+    [Tooltip("투사체 생성 방향 패턴")]
     public FirePatternType patternType = FirePatternType.RegularFan;
 
-    [Tooltip("기본적으로 발사할 투사체의 개수 (발리샷 등)")]
+    [Tooltip("기본적으로 생성할 투사체 개수")]
     public int baseSpawnCount = 1;
 
-    [Tooltip("투사체 사이의 벌어지는 각도")]
+    [Tooltip("투사체 사이의 각도")]
     public float baseAngleBetween = 0f;
 
+    #endregion
+
+
+    #region Prefab
+
     [Header("Spawn Prefab")]
+
     public GameObject spawnObj;
+
     public string objectName;
 
+    #endregion
+
+
+    #region Lifetime
+
     [Header("Lifetime Settings")]
-    [Tooltip("소환수/투사체의 기본 수명 (0이면 무한 또는 프리팹 기본값)")]
+
+    [Tooltip("0 이하이면 프리팹 기본 수명을 사용")]
     public float baseLifeTime = -1.0f;
 
-    [Header("Pattern Override")]
-    [Tooltip("체크하면 인스펙터 값 대신 블랙보드의 값을 강제로 가져와서 씁니다.")]
-    public bool useBlackboardPattern = true;
+    #endregion
 
-    public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
+
+    public override void OnNotify(
+        Character owner,
+        ActiveSkill skill,
+        PhaseSkill phaseSkill)
     {
-        // 1. 스폰 위치 계산 (로컬 -> 월드 좌표)
-        Vector3 basePosition = owner.transform.TransformPoint(spawnPosition);
+        if (owner == null || skill == null)
+            return;
 
-        // 2. 💡 강타입 컨텍스트(Runtime)를 이용한 최종 수치 계산
-        // [개수] Base 값이 세팅 안 되어있으면 내 Fallback 값 사용 + 레코드가 추가한 Add 값 더하기
-        int finalSpawnCount = skill.Runtime.PatternCount > 0 ? skill.Runtime.PatternCount : baseSpawnCount;
 
-        // [각도] Base 값이 세팅 안 되어있으면 내 Fallback 각도 사용
-        float finalAngleBetween = skill.Runtime.PatternAngle > 0 ? skill.Runtime.PatternAngle : baseAngleBetween;
+        // ============================================================
+        // 1. 최종 Spawn Count
+        // ============================================================
+        //
+        // SpawnCount는 SpawnPoint 선택과 완전히 별개다.
+        //
+        // 예:
+        // SpawnPoint 2개
+        // SpawnCount 3
+        //
+        // => 각 SpawnPoint에서 3개씩 생성
+        // => 총 6개
+        //
+        int finalSpawnCount =
+            skill.Runtime.PatternCount > 0
+                ? skill.Runtime.PatternCount
+                : baseSpawnCount;
 
-        // [데미지 배율] 내 기본 배율 * 레코드가 뻥튀기 시켜준 배율
-        float finalDamageMultiplier = skill.Runtime.DamageMultiplier;
 
-        // [기타 수치들]
-        float finalLifeTime = this.baseLifeTime; // 필요시 Runtime.LifeTimeAdd 등을 추가하여 연동 가능
-        bool isCrit = skill.Runtime.Combat.IsCritical;
+        // ============================================================
+        // 2. 최종 Pattern 값
+        // ============================================================
 
-        // 3. 최종 데미지 데이터 확정 (계산된 최종 데미지 배율을 넘겨줍니다)
-        DamageData finalDamageData = GetEffectiveDamageData(skill, finalDamageMultiplier);
+        float finalAngleBetween =
+            skill.Runtime.PatternAngle != 0f
+                ? skill.Runtime.PatternAngle
+                : baseAngleBetween;
 
-        // 4. 다중 생성 루프 
-        for (int i = 0; i < finalSpawnCount; i++)
+
+        // ============================================================
+        // 3. 최종 Damage
+        // ============================================================
+
+        float finalDamageMultiplier =
+            skill.Runtime.DamageMultiplier;
+
+        bool isCrit =
+            skill.Runtime.Combat.IsCritical;
+
+        DamageData finalDamageData =
+            GetEffectiveDamageData(
+                skill,
+                finalDamageMultiplier);
+
+
+        // ============================================================
+        // 4. 사용할 SpawnPoint 결정
+        // ============================================================
+
+        if (skill.Runtime.Spawn.SelectedSpawnPointIndices != null &&
+            skill.Runtime.Spawn.SelectedSpawnPointIndices.Count > 0)
         {
+            SpawnFromSelectedPoints(
+                owner,
+                skill,
+                finalSpawnCount,
+                finalAngleBetween,
+                finalDamageData,
+                isCrit);
+        }
+        else
+        {
+            // SpawnPoint 선택 모듈을 사용하지 않은 기존 스킬의
+            // 하위 호환용 fallback
+            SpawnFromOwnerTransform(
+                owner,
+                skill,
+                finalSpawnCount,
+                finalAngleBetween,
+                finalDamageData,
+                isCrit);
+        }
+    }
+
+
+    // ====================================================================
+    // Selected SpawnPoint 기반 생성
+    // ====================================================================
+
+    private void SpawnFromSelectedPoints(
+        Character owner,
+        ActiveSkill skill,
+        int spawnCount,
+        float angleBetween,
+        DamageData damageData,
+        bool isCrit)
+    {
+        var spawnContext = skill.Runtime.Spawn;
+
+        foreach (int spawnPointIndex
+                 in spawnContext.SelectedSpawnPointIndices)
+        {
+            if (spawnPointIndex < 0 ||
+                spawnPointIndex >= spawnContext.SpawnPoints.Count)
+            {
+                Debug.LogWarning(
+                    $"[{GetType().Name}] 잘못된 SpawnPoint Index: {spawnPointIndex}");
+
+                continue;
+            }
+
+
+            SpawnPointData spawnPoint =
+                spawnContext.SpawnPoints[spawnPointIndex];
+
+
+            // --------------------------------------------------------
+            // SpawnPoint의 위치 / 방향
+            // --------------------------------------------------------
+
+            Vector3 basePosition =
+                spawnPoint.position;
+
+            Quaternion baseRotation =
+                spawnPoint.rotation;
+
+
+            // --------------------------------------------------------
+            // 해당 SpawnPoint에서 SpawnCount만큼 생성
+            // --------------------------------------------------------
+
+            SpawnProjectiles(
+                owner,
+                skill,
+                basePosition,
+                baseRotation,
+                spawnCount,
+                angleBetween,
+                damageData,
+                isCrit);
+        }
+    }
+
+
+    // ====================================================================
+    // 기존 방식 fallback
+    // ====================================================================
+
+    private void SpawnFromOwnerTransform(
+        Character owner,
+        ActiveSkill skill,
+        int spawnCount,
+        float angleBetween,
+        DamageData damageData,
+        bool isCrit)
+    {
+        Vector3 basePosition =
+            owner.transform.TransformPoint(spawnPosition);
+
+        Quaternion baseRotation =
+            owner.transform.rotation *
+            ValidSpawnQuaternion;
+
+
+        SpawnProjectiles(
+            owner,
+            skill,
+            basePosition,
+            baseRotation,
+            spawnCount,
+            angleBetween,
+            damageData,
+            isCrit);
+    }
+
+
+    // ====================================================================
+    // 실제 생성
+    // ====================================================================
+
+    private void SpawnProjectiles(
+        Character owner,
+        ActiveSkill skill,
+        Vector3 basePosition,
+        Quaternion baseRotation,
+        int spawnCount,
+        float angleBetween,
+        DamageData damageData,
+        bool isCrit)
+    {
+        if (spawnCount <= 0)
+            return;
+
+
+        for (int i = 0; i < spawnCount; i++)
+        {
+            // --------------------------------------------------------
+            // 1. 발사 방향 계산
+            // --------------------------------------------------------
+
             Quaternion finalRotation;
 
-            if (patternType == FirePatternType.RegularFan)
+            switch (patternType)
             {
-                // 일정한 간격으로 퍼지는 부채꼴
-                finalRotation = PositionHelpers.GetDirection(owner.transform, i, finalSpawnCount, finalAngleBetween, 0f)
-                                * ValidSpawnQuaternion;
+                case FirePatternType.RegularFan:
+
+                    finalRotation =
+                        PositionHelpers.GetDirection(
+                            owner.transform,
+                            i,
+                            spawnCount,
+                            angleBetween,
+                            0f);
+
+                    break;
+
+
+                case FirePatternType.RandomSpread:
+
+                    finalRotation =
+                        PositionHelpers.GetRandomSpread(
+                            baseRotation,
+                            angleBetween);
+
+                    break;
+
+
+                default:
+
+                    finalRotation =
+                        baseRotation;
+
+                    break;
             }
-            else // FirePatternType.RandomSpread
+
+
+            // --------------------------------------------------------
+            // 2. 실제 Spawn
+            // --------------------------------------------------------
+
+            GameObject obj = SpawnObject(
+                skill,
+                basePosition,
+                finalRotation);
+
+
+            if (obj == null)
+                continue;
+
+
+            // --------------------------------------------------------
+            // 3. ISkillEffect 초기화
+            // --------------------------------------------------------
+
+            if (obj.TryGetComponent<ISkillEffect>(
+                    out var skillEffect))
             {
-                // 범위 안에서 무작위 난사
-                Quaternion centerDir = owner.transform.rotation * ValidSpawnQuaternion;
-                finalRotation = PositionHelpers.GetRandomSpread(centerDir, finalAngleBetween);
+                skillEffect.SetDamageInfo(
+                    owner,
+                    damageData,
+                    isCrit,
+                    skill.Runtime.DamageMultiplier);
+
+                skillEffect.AddIgnore(owner);
             }
 
-            GameObject obj = null;
-            bool isPooled = false;
 
-            // [생성 분기] 풀링 vs Instantiate
-            string finalName = "";
-            if (!string.IsNullOrEmpty(skill.Runtime.Spawn.OverridePrefabName))
-                finalName = skill.Runtime.Spawn.OverridePrefabName;
-            else
-                finalName = objectName;
+            // --------------------------------------------------------
+            // 4. Target Position
+            // --------------------------------------------------------
 
-            if (!string.IsNullOrEmpty(finalName))
+            if (obj.TryGetComponent<ITargetableEffect>(
+                    out var targetable))
             {
-                obj = ObjectPooler.DeferredSpawnFromPool(finalName, basePosition, finalRotation);
-                isPooled = true;
-            }
-            else if (spawnObj != null)
-            {
-                obj = UnityEngine.Object.Instantiate(spawnObj, basePosition, finalRotation);
+                targetable.SetTargetPosition(
+                    skill.Runtime.Spawn.TargetPosition);
             }
 
-            // 5. 생성된 오브젝트 공통 셋업
-            if (obj != null)
+
+            // --------------------------------------------------------
+            // 5. Lifetime
+            // --------------------------------------------------------
+
+            if (baseLifeTime > 0f &&
+                obj.TryGetComponent<ILifetimeSetup>(
+                    out var lifetime))
             {
-                // 💡 패시브 시스템에 던져줄 ISkillEffect 캐싱용 변수
-                ISkillEffect spawnedEffect = null;
-
-                if (obj.TryGetComponent<ISkillEffect>(out var projectile))
-                {
-                    projectile.SetDamageInfo(owner, finalDamageData, isCrit, finalDamageMultiplier);
-                    projectile.AddIgnore(owner);
-
-                    spawnedEffect = projectile;
-                }
-
-                if (obj.TryGetComponent<ITargetableEffect>(out var targetable))
-                {
-                    // 💡 컨텍스트에 추가해둔 TargetPosition을 바로 가져옵니다.
-                    targetable.SetTargetPosition(skill.Runtime.Spawn.TargetPosition);
-                }
-
-                if (finalLifeTime > 0f && obj.TryGetComponent<ILifetimeSetup>(out var lifetimeObj))
-                {
-                    lifetimeObj.SetLifeTime(finalLifeTime);
-                }
-
-                if (obj.TryGetComponent<IOwnerSetup>(out var ownerSetup))
-                {
-                    ownerSetup.SetupOwner(owner);
-                }
-
-                // 패시브 개입 
-                if(spawnedEffect != null)
-                    AppManager.Instance.SafeInvoke(v=>v.GetPassiveSystem()?.BroadcastOnSpawnObject(spawnedEffect, skill));
+                lifetime.SetLifeTime(baseLifeTime);
+            }
 
 
-                if (isPooled)
-                {
-                    ObjectPooler.FinishSpawn(obj);
-                }
+            // --------------------------------------------------------
+            // 6. Owner
+            // --------------------------------------------------------
+
+            if (obj.TryGetComponent<IOwnerSetup>(
+                    out var ownerSetup))
+            {
+                ownerSetup.SetupOwner(owner);
+            }
+
+
+            // --------------------------------------------------------
+            // 7. Passive OnSpawn
+            // --------------------------------------------------------
+
+            if (skillEffect != null)
+            {
+                AppManager.Instance.SafeInvoke(
+                    v => v.GetPassiveSystem()
+                        ?.BroadcastOnSpawnObject(
+                            skillEffect,
+                            skill));
             }
         }
     }
 
+
     // ====================================================================
-    // 💡 데미지 계산 도우미 함수 (combinedMultiplier 파라미터 추가)
+    // Object 생성
     // ====================================================================
-    private DamageData GetEffectiveDamageData(ActiveSkill skill, float combinedMultiplier)
+
+    private GameObject SpawnObject(
+        ActiveSkill skill,
+        Vector3 position,
+        Quaternion rotation)
+    {
+        string finalName =
+            !string.IsNullOrEmpty(
+                skill.Runtime.Spawn.OverridePrefabName)
+                    ? skill.Runtime.Spawn.OverridePrefabName
+                    : objectName;
+
+
+        // ------------------------------------------------------------
+        // Pool
+        // ------------------------------------------------------------
+
+        if (!string.IsNullOrEmpty(finalName))
+        {
+            GameObject obj =
+                ObjectPooler.DeferredSpawnFromPool(
+                    finalName,
+                    position,
+                    rotation);
+
+            if (obj != null)
+            {
+                ObjectPooler.FinishSpawn(obj);
+            }
+
+            return obj;
+        }
+
+
+        // ------------------------------------------------------------
+        // Instantiate
+        // ------------------------------------------------------------
+
+        if (spawnObj != null)
+        {
+            return UnityEngine.Object.Instantiate(
+                spawnObj,
+                position,
+                rotation);
+        }
+
+
+        Debug.LogWarning(
+            $"[{GetType().Name}] Spawn할 Object가 없습니다.");
+
+        return null;
+    }
+
+
+    // ====================================================================
+    // Damage
+    // ====================================================================
+
+    private DamageData GetEffectiveDamageData(
+        ActiveSkill skill,
+        float combinedMultiplier)
     {
         switch (damageApplyType)
         {
             case DamageApplyType.Override:
+
                 return damageData;
 
-            case DamageApplyType.Multiply:
-                if (skill != null && skill.damageData != null)
-                {
-                    return new DamageData
-                    {
-                        damageType = skill.damageData.damageType,
-                        // 💡 여기서 모듈 인스펙터 배율 + 레코드 배율이 모두 합쳐진 combinedMultiplier를 곱해줍니다.
-                        baseDamage = skill.damageData.baseDamage * combinedMultiplier,
-                        statCoefficient = skill.damageData.statCoefficient * combinedMultiplier,
 
-                        bDownable = skill.damageData.bDownable,
-                        bLauncher = skill.damageData.bLauncher,
-                        SoundName = skill.damageData.SoundName,
-                        impulseDirection = skill.damageData.impulseDirection,
-                        csp = skill.damageData.csp,
-                        hitData = skill.damageData.hitData
-                    };
+            case DamageApplyType.Multiply:
+
+                if (skill != null &&
+                    skill.damageData != null)
+                {
+                    DamageData source =
+                        skill.damageData;
+
+                    DamageData result =
+                        new DamageData
+                        {
+                            damageType =
+                                source.damageType,
+
+                            baseDamage =
+                                source.baseDamage *
+                                combinedMultiplier,
+
+                            statCoefficient =
+                                source.statCoefficient *
+                                combinedMultiplier,
+
+                            bDownable =
+                                source.bDownable,
+
+                            bLauncher =
+                                source.bLauncher,
+
+                            SoundName =
+                                source.SoundName,
+
+                            impulseDirection =
+                                source.impulseDirection,
+
+                            csp =
+                                source.csp,
+
+                            hitData =
+                                source.hitData
+                        };
+
+                    return result;
                 }
+
                 break;
+
 
             case DamageApplyType.Inherit:
             default:
-                if (skill != null && skill.damageData != null)
+
+                if (skill != null &&
+                    skill.damageData != null)
                 {
                     return skill.damageData;
                 }
+
                 break;
         }
+
 
         return new DamageData();
     }
 
+
     public override SkillModule Clone()
     {
-        Module_SpawnObject clone = (Module_SpawnObject)base.Clone();
-        if (this.damageData != null)
+        Module_SpawnObject clone =
+            (Module_SpawnObject)base.Clone();
+
+        if (damageData != null)
         {
-            clone.damageData = this.damageData.Clone();
+            clone.damageData =
+                damageData.Clone();
         }
+
         return clone;
     }
 }
