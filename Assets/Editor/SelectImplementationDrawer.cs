@@ -158,7 +158,7 @@ public class SelectImplementationDrawer : PropertyDrawer
                     {
                         case "spawnCount":
                         case "angleBetween":
-                            shouldShow = !spawnEffect.useBlackboardPattern;
+                            //shouldShow = !spawnEffect.useBlackboardPattern;
                             break;
                     }
                 }
