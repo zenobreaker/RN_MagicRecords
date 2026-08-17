@@ -1,0 +1,442 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a45f9791fc77e874c9cfd4fd8604a80c, type: 3}
+  m_Name: gun_defaultattack
+  m_EditorClassIdentifier: Assembly-CSharp::SO_ActiveSkillData
+  id: 1000
+  skillName: skill_name_gun_default1
+  skillDescription: 
+  learnableLevel: 0
+  maxLevel: 1
+  skillUpgradeCost: 
+  skillImage: {fileID: 21300000, guid: 6e7c911d3229fcf4b95c37bbe6c5a193, type: 3}
+  leadingSkillList: 
+  levelDatas:
+  - range: 10
+    limitMinCooldown: 0
+    cooldown: 0
+    castingTime: 0
+    chargeTime: 0
+    damageData:
+      damageType: 0
+      baseDamage: 0
+      statCoefficient: 0
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
+      hitData:
+        DamageType: 0
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
+    bonusOptionList: 
+    spawnCount: 0
+    angle: 0
+  range: -1
+  isConcurrentSkill: 0
+  actionData:
+    subStateName: 
+    stateName: 
+    layerName: 
+    actionSpeed: 1
+    droneReactionType: 1
+    weaponActionName: 
+    SoundName: 
+    impulseDirection: {x: 0, y: 0, z: 0}
+    csp: {fileID: 0}
+    bCanMove: 0
+  phaseList:
+  - phaseName: Default 1
+    isInstant: 0
+    modules:
+    - rid: 1371894983370473572
+    - rid: 1371895025776984064
+    - rid: 1371895004803629236
+    - rid: 1371894983370473472
+    - rid: 1371894983370473473
+    - rid: 1371894983370473474
+    - rid: 1371895025776984065
+    skillObject: {fileID: 0}
+    objectName: 
+    soundName: 
+    spawnPosition: {x: 0, y: 0, z: 0}
+    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+  - phaseName: Default 2
+    isInstant: 0
+    modules:
+    - rid: 1371895004803629157
+    - rid: 1371895025776984066
+    - rid: 1371895004803629245
+    - rid: 1371895004803629238
+    - rid: 1371895004803629155
+    - rid: 1371895004803629156
+    - rid: 1371895025776984067
+    skillObject: {fileID: 0}
+    objectName: 
+    soundName: 
+    spawnPosition: {x: 0, y: 0, z: 0}
+    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+  - phaseName: Default 3
+    isInstant: 0
+    modules:
+    - rid: 1371895004803629160
+    - rid: 1371895025776984068
+    - rid: 1371895004803629240
+    - rid: 1371895004803629158
+    - rid: 1371895004803629159
+    - rid: 1371895004803629161
+    - rid: 1371895025776984069
+    skillObject: {fileID: 0}
+    objectName: 
+    soundName: 
+    spawnPosition: {x: 0, y: 0, z: 0}
+    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+  - phaseName: Default 4
+    isInstant: 0
+    modules:
+    - rid: 1371895004803629164
+    - rid: 1371895025776984070
+    - rid: 1371895004803629239
+    - rid: 1371895004803629165
+    - rid: 1371895004803629166
+    - rid: 1371895004803629167
+    - rid: 1371895025776984071
+    skillObject: {fileID: 0}
+    objectName: 
+    soundName: 
+    spawnPosition: {x: 0, y: 0, z: 0}
+    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 1371894983370473472
+      type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        actionData:
+          subStateName: Combo_1
+          stateName: Action
+          layerName: 
+          actionSpeed: 1
+          droneReactionType: 1
+          weaponActionName: Action
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          csp: {fileID: 0}
+          bCanMove: 0
+    - rid: 1371894983370473473
+      type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 2
+        damageApplyType: 0
+        damageMultiplier: 1
+        damageData:
+          damageType: 0
+          baseDamage: 10
+          statCoefficient: 1
+          bDownable: 0
+          bLauncher: 0
+          SoundName: Gun_Normal1
+          impulseDirection: {x: 0, y: 0, z: 0}
+          csp: {fileID: 0}
+          hitData:
+            DamageType: 0
+            Distance: 0
+            HeightValue: 0
+            StopFrame: 0
+            HitImpactIndex: 0
+            HitSoundName: 
+            HitParticle: {fileID: 0}
+            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+          ignoreDefenseRate: 0
+        spawnPosition: {x: 0, y: 0, z: 0}
+        spawnRotation: {x: 0, y: 0, z: 0}
+        patternType: 0
+        baseSpawnCount: 1
+        baseAngleBetween: 0
+        spawnObj: {fileID: 0}
+        objectName: Bullet
+        baseLifeTime: -1
+    - rid: 1371894983370473474
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        soundName: Gun_Normal1
+    - rid: 1371894983370473572
+      type: {class: Module_CalcSpawnPosition, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        type: 1
+    - rid: 1371895004803629155
+      type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        actionData:
+          subStateName: Combo_2
+          stateName: Action
+          layerName: 
+          actionSpeed: 1
+          droneReactionType: 1
+          weaponActionName: Action
+          SoundName: Gun_Normal1
+          impulseDirection: {x: 0, y: 0, z: 0}
+          csp: {fileID: 0}
+          bCanMove: 0
+    - rid: 1371895004803629156
+      type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 2
+        damageApplyType: 0
+        damageMultiplier: 1
+        damageData:
+          damageType: 0
+          baseDamage: 10
+          statCoefficient: 0
+          bDownable: 0
+          bLauncher: 0
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          csp: {fileID: 0}
+          hitData:
+            DamageType: 0
+            Distance: 0
+            HeightValue: 0
+            StopFrame: 0
+            HitImpactIndex: 0
+            HitSoundName: 
+            HitParticle: {fileID: 0}
+            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+          ignoreDefenseRate: 0
+        spawnPosition: {x: 0, y: 0, z: 0}
+        spawnRotation: {x: 0, y: 0, z: 0}
+        patternType: 0
+        baseSpawnCount: 1
+        baseAngleBetween: 0
+        spawnObj: {fileID: 0}
+        objectName: Bullet
+        baseLifeTime: -1
+    - rid: 1371895004803629157
+      type: {class: Module_CalcSpawnPosition, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        type: 1
+    - rid: 1371895004803629158
+      type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        actionData:
+          subStateName: Combo_3
+          stateName: Action
+          layerName: 
+          actionSpeed: 1
+          droneReactionType: 1
+          weaponActionName: Action
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          csp: {fileID: 0}
+          bCanMove: 0
+    - rid: 1371895004803629159
+      type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 2
+        damageApplyType: 0
+        damageMultiplier: 1
+        damageData:
+          damageType: 0
+          baseDamage: 10
+          statCoefficient: 1
+          bDownable: 0
+          bLauncher: 0
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          csp: {fileID: 0}
+          hitData:
+            DamageType: 0
+            Distance: 0
+            HeightValue: 0
+            StopFrame: 0
+            HitImpactIndex: 0
+            HitSoundName: 
+            HitParticle: {fileID: 0}
+            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+          ignoreDefenseRate: 0
+        spawnPosition: {x: 0, y: 0, z: 0}
+        spawnRotation: {x: 0, y: 0, z: 0}
+        patternType: 0
+        baseSpawnCount: 1
+        baseAngleBetween: 0
+        spawnObj: {fileID: 0}
+        objectName: Bullet
+        baseLifeTime: -1
+    - rid: 1371895004803629160
+      type: {class: Module_CalcSpawnPosition, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        type: 1
+    - rid: 1371895004803629161
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        soundName: Gun_Normal1
+    - rid: 1371895004803629164
+      type: {class: Module_CalcSpawnPosition, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        type: 1
+    - rid: 1371895004803629165
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        soundName: Gun_Normal2
+    - rid: 1371895004803629166
+      type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        actionData:
+          subStateName: Combo_4
+          stateName: Action
+          layerName: 
+          actionSpeed: 1
+          droneReactionType: 1
+          weaponActionName: Action_Final
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          csp: {fileID: 0}
+          bCanMove: 0
+    - rid: 1371895004803629167
+      type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 2
+        damageApplyType: 0
+        damageMultiplier: 1
+        damageData:
+          damageType: 0
+          baseDamage: 10
+          statCoefficient: 1.2
+          bDownable: 0
+          bLauncher: 0
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          csp: {fileID: 0}
+          hitData:
+            DamageType: 0
+            Distance: 0
+            HeightValue: 0
+            StopFrame: 0
+            HitImpactIndex: 0
+            HitSoundName: 
+            HitParticle: {fileID: 0}
+            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+          ignoreDefenseRate: 0
+        spawnPosition: {x: 0, y: 0, z: 0}
+        spawnRotation: {x: 0, y: 0, z: 0}
+        patternType: 0
+        baseSpawnCount: 1
+        baseAngleBetween: 0
+        spawnObj: {fileID: 0}
+        objectName: Bullet
+        baseLifeTime: -1
+    - rid: 1371895004803629236
+      type: {class: Module_SelectSpawnPoint, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        selectType: 1
+        spawnPointIndex: 0
+        indices: 
+    - rid: 1371895004803629238
+      type: {class: Module_SelectSpawnPoint, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        selectType: 0
+        spawnPointIndex: 0
+        indices: 
+    - rid: 1371895004803629239
+      type: {class: Module_SelectSpawnPoint, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        selectType: 1
+        spawnPointIndex: 0
+        indices: 
+    - rid: 1371895004803629240
+      type: {class: Module_SelectSpawnPoint, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        selectType: 1
+        spawnPointIndex: 0
+        indices: 
+    - rid: 1371895004803629245
+      type: {class: Module_SelectSpawnPoint, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        selectType: 1
+        spawnPointIndex: 0
+        indices: 
+    - rid: 1371895025776984064
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        controlType: 0
+        speedMultiplier: 0
+    - rid: 1371895025776984065
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        controlType: 1
+        speedMultiplier: 0
+    - rid: 1371895025776984066
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        controlType: 0
+        speedMultiplier: 0
+    - rid: 1371895025776984067
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        controlType: 1
+        speedMultiplier: 0.5
+    - rid: 1371895025776984068
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        controlType: 0
+        speedMultiplier: 0.5
+    - rid: 1371895025776984069
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        controlType: 1
+        speedMultiplier: 0.5
+    - rid: 1371895025776984070
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        controlType: 0
+        speedMultiplier: 0.5
+    - rid: 1371895025776984071
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        controlType: 1
+        speedMultiplier: 0.5
