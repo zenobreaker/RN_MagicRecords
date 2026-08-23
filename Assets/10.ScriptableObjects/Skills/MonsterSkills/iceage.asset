@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a45f9791fc77e874c9cfd4fd8604a80c, type: 3}
-  m_Name: icecrush
+  m_Name: iceage
   m_EditorClassIdentifier: 
-  id: 7081
-  skillName: Icecrush
+  id: 8002
+  skillName: IceAge
   skillDescription: 
   learnableLevel: 0
   maxLevel: 0
@@ -39,13 +39,12 @@ MonoBehaviour:
     isInstant: 0
     modules:
     - rid: 1371895131259535445
+    - rid: 1371895244641534060
     - rid: 1371895050838999040
     - rid: 1371895131259535441
-    - rid: 1371895131259535450
     - rid: 1371895131259535442
-    - rid: 1371895131259535464
-    - rid: 1371895244641533954
-    - rid: 1371895074986917888
+    - rid: 1371895185988124755
+    - rid: 1371895244641534061
     skillObject: {fileID: 0}
     objectName: 
     soundName: 
@@ -80,40 +79,6 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           bCanMove: 0
-    - rid: 1371895074986917888
-      type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 2
-        damageApplyType: 0
-        damageMultiplier: 1
-        damageData:
-          damageType: 0
-          baseDamage: 10
-          statCoefficient: 1
-          bDownable: 0
-          bLauncher: 0
-          SoundName: 
-          impulseDirection: {x: 0, y: 0, z: 0}
-          csp: {fileID: 0}
-          hitData:
-            DamageType: 0
-            Distance: 0
-            HeightValue: 0
-            StopFrame: 0
-            HitImpactIndex: 0
-            HitSoundName: 
-            HitParticle: {fileID: 0}
-            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
-          ignoreDefenseRate: 0
-        spawnPosition: {x: 0, y: 0, z: 0}
-        spawnRotation: {x: 0, y: 0, z: 0}
-        patternType: 0
-        baseSpawnCount: 1
-        baseAngleBetween: 0
-        spawnObj: {fileID: 0}
-        objectName: IceCrush
-        baseLifeTime: -1
     - rid: 1371895131259535441
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
@@ -146,7 +111,7 @@ MonoBehaviour:
     - rid: 1371895131259535448
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 4
+        triggerTime: 3
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -175,7 +140,7 @@ MonoBehaviour:
         baseSpawnCount: 1
         baseAngleBetween: 0
         spawnObj: {fileID: 0}
-        objectName: IceCrush
+        objectName: IceAge
         baseLifeTime: -1
     - rid: 1371895131259535449
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
@@ -183,23 +148,31 @@ MonoBehaviour:
         triggerTime: 4
         controlType: 1
         speedMultiplier: 0.5
-    - rid: 1371895131259535450
-      type: {class: Module_PhaseTransition, ns: , asm: Assembly-CSharp}
+    - rid: 1371895185988124755
+      type: {class: Module_SetPatternData, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
-        transitionType: 0
-        targetPhaseIndex: 0
-        delayTime: 3
-    - rid: 1371895131259535464
+        spawnCount: 1
+        angleBetween: 0
+    - rid: 1371895244641534060
       type: {class: Module_Casting, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 0
+        triggerTime: 1
         overrideCastingTime: 1
         castingTime: 3
-    - rid: 1371895244641533954
-      type: {class: Module_SelectSpawnPoint, ns: , asm: Assembly-CSharp}
+    - rid: 1371895244641534061
+      type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
-        selectType: 4
-        spawnPointIndex: 0
-        indices: 
+        useBlackboardPattern: 0
+        signType: 0
+        duration: 1
+        isSetTargetPos: 0
+        fallbackSpawnCount: 1
+        fallbackAngleBetween: 0
+        startAngleOffset: 0
+        radius: 1
+        rectSize: {x: 1, y: 1}
+        maxRectSize: {x: 1, y: 1}
+        fanRadius: 2
+        fanAngle: 90
