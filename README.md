@@ -23,8 +23,7 @@ ScriptableObject 기반 데이터 구성만으로 다양한 스킬을 제작할 
 
 <!-- TODO: Demo GIF / YouTube 영상 삽입 -->
 
-![Skill Demo](Docs/Images/SkillDemo.gif)
-
+[![The Wheeler - Skill System Demo](https://img.youtube.com/vi/-iz_XMGcHkg/maxresdefault.jpg)](https://www.youtube.com/watch?v=-iz_XMGcHkg)
 ---
 
 # ⭐ Key Features
@@ -62,10 +61,10 @@ Skill Phase / Trigger
 Common / Combat / Animation Module  
 Custom Skill Editor  
 ### Code
-GenericActiveSkill.cs  
-SO_ActiveSkillData.cs  
-SkillModuleDrawer.cs  
-PhaseSkillDrawer.cs  
+- [GenericActiveSkill.cs](Assets/6.Scripts/Skills/ActiveSkills/GenericActiveSkill.cs)
+- [SO_ActiveSkillData.cs](Assets/6.Scripts/ScriptableObjects/SO_ActiveSkillData.cs)
+- [SkillModuleDrawer.cs](Editor/SkillModuleDrawer.cs)
+- [PhaseSkillDrawer.cs](Editor/PhaseSkillDrawer.cs)
 
 ## 2. Passive Skill → Active Skill Modification
 
@@ -117,9 +116,9 @@ FocusedFire
 SplitChildHoming  
 IgnoreDefense  
 ### Code
-GenericPassiveSkill.cs  
-SO_PassiveSkillData.cs  
-PassiveModuleDrawer.cs  
+- [GenericPassiveSkill.cs](Assets/6.Scripts/Skills/PassiveSkills/GenericPassiveSkill.cs)
+- [SO_PassiveSkillData.cs](Assets/6.Scripts/ScriptableObjects/SO_PassiveSkillData.cs)
+- [PassiveModuleDrawer.cs](Editor/PassiveModuleDrawer.cs)
 
 ## 3. ScriptableObject 기반 Skill Data
 
@@ -153,10 +152,10 @@ Phase / Trigger / Module 계층 관리
 필요한 Module만 직관적으로 설정
 반복적인 Inspector 조작 최소화
 ### Code
-SkillModuleDrawer.cs
-PhaseSkillDrawer.cs
-PassiveModuleDrawer.cs
-SelectImplementationDrawer.cs
+- [SkillModuleDrawer.cs](Editor/SkillModuleDrawer.cs)
+- [PhaseSkillDrawer.cs](Editor/PhaseSkillDrawer.cs)
+- [PassiveModuleDrawer.cs](Editor/PassiveModuleDrawer.cs)
+- [SelectImplementationDrawer.cs](Editor/SelectImplementationDrawer.cs)
 ## 5. Async Stage Flow
 
 Stage 진행을 여러 상태와 이벤트의 조합으로 관리하는 대신,
