@@ -61,8 +61,8 @@ Custom Skill Editor
 ### Code
 - [GenericActiveSkill.cs](Assets/6.Scripts/Skills/ActiveSkills/GenericActiveSkill.cs)
 - [SO_ActiveSkillData.cs](Assets/6.Scripts/ScriptableObjects/SO_ActiveSkillData.cs)
-- [SkillModuleDrawer.cs](Editor/SkillModuleDrawer.cs)
-- [PhaseSkillDrawer.cs](Editor/PhaseSkillDrawer.cs)
+- [SkillModuleDrawer.cs](Assets/Editor/SkillModuleDrawer.cs)
+- [PhaseSkillDrawer.cs](Assets/Editor/PhaseSkillDrawer.cs)
 
 ## 2. Passive Skill → Active Skill Modification
 
@@ -116,7 +116,7 @@ IgnoreDefense
 ### Code
 - [GenericPassiveSkill.cs](Assets/6.Scripts/Skills/PassiveSkills/GenericPassiveSkill.cs)
 - [SO_PassiveSkillData.cs](Assets/6.Scripts/ScriptableObjects/SO_PassiveSkillData.cs)
-- [PassiveModuleDrawer.cs](Editor/PassiveModuleDrawer.cs)
+- [PassiveModuleDrawer.cs](Assets/Editor/PassiveModuleDrawer.cs)
 
 ## 3. ScriptableObject 기반 Skill Data
 
@@ -150,10 +150,10 @@ Phase / Trigger / Module 계층 관리
 필요한 Module만 직관적으로 설정
 반복적인 Inspector 조작 최소화
 ### Code
-- [SkillModuleDrawer.cs](Editor/SkillModuleDrawer.cs)
-- [PhaseSkillDrawer.cs](Editor/PhaseSkillDrawer.cs)
-- [PassiveModuleDrawer.cs](Editor/PassiveModuleDrawer.cs)
-- [SelectImplementationDrawer.cs](Editor/SelectImplementationDrawer.cs)
+- [SkillModuleDrawer.cs](Assets/Editor/SkillModuleDrawer.cs)
+- [PhaseSkillDrawer.cs](Assets/Editor/PhaseSkillDrawer.cs)
+- [PassiveModuleDrawer.cs](Assets/Editor/PassiveModuleDrawer.cs)
+- [SelectImplementationDrawer.cs](Assets/Editor/SelectImplementationDrawer.cs)
 ## 5. Async Stage Flow
 
 Stage 진행을 여러 상태와 이벤트의 조합으로 관리하는 대신,
