@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.UIElements;
 
 [MovedFrom(true, null, null, "Module_SpawnEffect")]
 [ModuleCategory("Combat/Spawn Object")]
@@ -315,15 +316,42 @@ public class Module_SpawnObject : SkillModule
             // 2. 실제 Spawn
             // --------------------------------------------------------
 
-            GameObject obj = SpawnObject(
-                skill,
+            //GameObject obj = SpawnObject(
+            //    skill,
+            //    basePosition,
+            //    finalRotation);
+
+            bool isPoolerSpawn = false; 
+            string finalName =
+          !string.IsNullOrEmpty(
+              skill.Runtime.Spawn.OverridePrefabName)
+                  ? skill.Runtime.Spawn.OverridePrefabName
+                  : objectName;
+
+            GameObject obj = ObjectPooler.DeferredSpawnFromPool(
+                finalName,
                 basePosition,
                 finalRotation);
 
 
+            isPoolerSpawn = true; 
             if (obj == null)
-                continue;
+            {
+                // ------------------------------------------------------------
+                // Instantiate
+                // ------------------------------------------------------------
 
+                if (spawnObj != null)
+                {
+                    obj =  UnityEngine.Object.Instantiate(
+                        spawnObj,
+                        basePosition,
+                        finalRotation);
+                    isPoolerSpawn = false; 
+                }
+                else 
+                    continue;
+            }
 
             // --------------------------------------------------------
             // 3. ISkillEffect 초기화
@@ -389,65 +417,68 @@ public class Module_SpawnObject : SkillModule
                             skillEffect,
                             skill));
             }
+
+            if (isPoolerSpawn)
+                ObjectPooler.FinishSpawn(obj); 
         }
     }
 
 
-    // ====================================================================
-    // Object 생성
-    // ====================================================================
+    //// ====================================================================
+    //// Object 생성
+    //// ====================================================================
 
-    private GameObject SpawnObject(
-        ActiveSkill skill,
-        Vector3 position,
-        Quaternion rotation)
-    {
-        string finalName =
-            !string.IsNullOrEmpty(
-                skill.Runtime.Spawn.OverridePrefabName)
-                    ? skill.Runtime.Spawn.OverridePrefabName
-                    : objectName;
-
-
-        // ------------------------------------------------------------
-        // Pool
-        // ------------------------------------------------------------
-
-        if (!string.IsNullOrEmpty(finalName))
-        {
-            GameObject obj =
-                ObjectPooler.DeferredSpawnFromPool(
-                    finalName,
-                    position,
-                    rotation);
-
-            if (obj != null)
-            {
-                ObjectPooler.FinishSpawn(obj);
-            }
-
-            return obj;
-        }
+    //private GameObject SpawnObject(
+    //    ActiveSkill skill,
+    //    Vector3 position,
+    //    Quaternion rotation)
+    //{
+    //    string finalName =
+    //        !string.IsNullOrEmpty(
+    //            skill.Runtime.Spawn.OverridePrefabName)
+    //                ? skill.Runtime.Spawn.OverridePrefabName
+    //                : objectName;
 
 
-        // ------------------------------------------------------------
-        // Instantiate
-        // ------------------------------------------------------------
+    //    // ------------------------------------------------------------
+    //    // Pool
+    //    // ------------------------------------------------------------
 
-        if (spawnObj != null)
-        {
-            return UnityEngine.Object.Instantiate(
-                spawnObj,
-                position,
-                rotation);
-        }
+    //    if (!string.IsNullOrEmpty(finalName))
+    //    {
+    //        GameObject obj =
+    //            ObjectPooler.DeferredSpawnFromPool(
+    //                finalName,
+    //                position,
+    //                rotation);
+
+    //        if (obj != null)
+    //        {
+    //            ObjectPooler.FinishSpawn(obj);
+    //        }
+
+    //        return obj;
+    //    }
 
 
-        Debug.LogWarning(
-            $"[{GetType().Name}] Spawn할 Object가 없습니다.");
+    //    // ------------------------------------------------------------
+    //    // Instantiate
+    //    // ------------------------------------------------------------
 
-        return null;
-    }
+    //    if (spawnObj != null)
+    //    {
+    //        return UnityEngine.Object.Instantiate(
+    //            spawnObj,
+    //            position,
+    //            rotation);
+    //    }
+
+
+    //    Debug.LogWarning(
+    //        $"[{GetType().Name}] Spawn할 Object가 없습니다.");
+
+    //    return null;
+    //}
 
 
     // ====================================================================

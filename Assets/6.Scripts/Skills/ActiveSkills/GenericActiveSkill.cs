@@ -92,6 +92,13 @@ public class GenericActiveSkill
         base.Begin_JudgeAttack(e);
         NotifyModules(phaseIndex, SkillTriggerTime.OnJudgeAttack);
     }
+
+    public override void End_JudgeAttack(AnimationEvent e)
+    {
+        base.End_JudgeAttack(e);
+        NotifyModules(phaseIndex, SkillTriggerTime.OnEndJudgeAttack);
+    }
+
     public override void Play_Sound() => NotifyModules(phaseIndex, SkillTriggerTime.OnSoundEvent);
     public override void Play_CameraShake() => NotifyModules(phaseIndex, SkillTriggerTime.OnCameraShake);
     public override void End_DoAction()

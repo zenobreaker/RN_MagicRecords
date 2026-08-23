@@ -11,6 +11,7 @@ public enum PatternConditionType
     ElapseTime,
     Distance, 
     Custom,
+    Count,
 }
 
 public enum ComparisonType
@@ -35,12 +36,25 @@ public struct PatternCondition
 [System.Serializable]
 public class PatternEntry
 {
+    [Header("Pattenr")]
     public string slotName;
+
+    [Tooltip("외부 설정이 없을 때 사용하는 기본 활성화 여부")]
+    public bool defaultIsUse = true; 
+
     public List<PatternCondition> conditions = new List<PatternCondition>();
     public SO_ActiveSkillData skill;
 
     // 이렇게 하면 중복 조건(예: 최소 거리 & 최대 거리)을 동시에 사용할 수 있습니다.
     private List<(IPatternCondition instance, float targetValue)> runtimeConditions = new();
+
+    private bool? runtimeIsUse;
+    public bool IsUse =>
+        runtimeIsUse ?? defaultIsUse;
+
+    public void SetruntimeIsUse(bool value) => runtimeIsUse = value;
+    public void CleaerRuntimeIsUse() => runtimeIsUse = null;
+
 
     public void InitiaizePattern()
     {
@@ -63,6 +77,7 @@ public class PatternEntry
                 PatternConditionType.Cooldown => new CooldownCondition(op, targetValue),
                 PatternConditionType.Health => new HealthCondition(op, targetValue),
                 PatternConditionType.Distance => new DistanceCondition(op, targetValue),
+                PatternConditionType.Count => new CountCondition(op, targetValue),
                 _ => throw new NotImplementedException($"Condition {condition.type} is not implemented.")
             };
 
@@ -109,8 +124,20 @@ public class PatternEntry
         }
     }
 
+    public void UsePattern()
+    {
+        foreach (var cond in runtimeConditions)
+        {
+            if(cond.instance is IUseableCondition useable)
+                useable.Use();
+        }
+    }
+
     public bool CheckUsePattern(AIContext ctx)
     {
+        if (!IsUse)
+            return false; 
+
         foreach (var cond in runtimeConditions)
         {
             // 💡 3. Short-Circuit (빠른 종료) 도입

@@ -74,7 +74,8 @@ public class SelectImplementationDrawer : PropertyDrawer
                     for (int i = 0; i < moduleProp.arraySize; i++)
                     {
                         var m = moduleProp.GetArrayElementAtIndex(i).managedReferenceValue;
-                        if (m is Module_SetTargetByPerception)
+                        if (m is Module_SetTargetByPerception || 
+                            m is Module_SelectSpawnPoint)
                         {
                             hasTargetModule = true;
                             break;

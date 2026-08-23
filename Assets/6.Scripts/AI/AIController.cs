@@ -90,6 +90,7 @@ public class AIController : MonoBehaviour
         if (patternEntry == null) return;
 
         currentPattern = patternEntry;
+        currentPattern?.UsePattern();
 
         skill.UseSkill(patternEntry.slotName.ToUpper());
     }

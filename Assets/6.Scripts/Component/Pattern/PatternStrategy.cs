@@ -5,6 +5,7 @@ public class AIContext
     public GameObject Owner;
     public GameObject Target;
     public HealthPointComponent HealthPoint;
+    public int patternCount = -1; 
 
     public AIContext(GameObject owner)
     {
@@ -15,6 +16,8 @@ public class AIContext
     public float CurrentHP => HealthPoint != null ? HealthPoint.GetCurrentHpRatio : 0f; 
     public Vector3 SelfPosition => Owner.transform.position;    
     public Vector3 TargetPosition => Target != null ? Target.transform.position : Vector3.zero; 
+
+    public int PatternCount => patternCount;
 }
 
 public interface IPatternCondition
@@ -27,6 +30,11 @@ public interface IPatternCondition
 public interface IUpdatableCondition : IPatternCondition
 {
     void Update(float deltaTime);
+}
+
+public interface IUseableCondition : IPatternCondition
+{
+    void Use();
 }
 
 public interface IComparisonOperator
@@ -57,7 +65,7 @@ public abstract class PatternConditionBase : IPatternCondition
 }
 
 // Cooldown 상태가 있으므로 구조가 다름
-public class CooldownCondition : IUpdatableCondition
+public sealed  class CooldownCondition : IUpdatableCondition
 {
     private float cooldown = 0.0f;
     private float maxCooldown;
@@ -85,7 +93,7 @@ public class CooldownCondition : IUpdatableCondition
     }
 }
 
-public class HealthCondition : PatternConditionBase
+public sealed class HealthCondition : PatternConditionBase
 {
     public HealthCondition(IComparisonOperator comparisonOperator, float targetValue)
         : base(comparisonOperator, targetValue)
@@ -96,7 +104,7 @@ public class HealthCondition : PatternConditionBase
         => ctx.CurrentHP;
 }
 
-public class DistanceCondition : PatternConditionBase
+public sealed class DistanceCondition : PatternConditionBase
 {
     public DistanceCondition(IComparisonOperator comparisonOperator, float targetValue)
         : base(comparisonOperator, targetValue)
@@ -105,8 +113,35 @@ public class DistanceCondition : PatternConditionBase
 
     protected override float GetContextValue(AIContext ctx)
     => Vector3.Distance(ctx.SelfPosition, ctx.TargetPosition);
+
 }
 
+public sealed class CountCondition : PatternConditionBase, IUseableCondition
+{
+    private int count = -1;
+    private int initCount = 0; 
+
+    public CountCondition(IComparisonOperator comparisonOperator, float targetValue)
+        : base(comparisonOperator, targetValue)
+    {
+        initCount = (int)targetValue;
+    }
+
+    public void Use()
+    {
+        count--; 
+    }
+
+    protected override float GetContextValue(AIContext ctx)
+    {
+        return ctx.patternCount;
+    }
+    
+    public override void ResetCondition()
+    {
+        count = initCount;
+    }
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 ///

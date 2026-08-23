@@ -20,7 +20,7 @@ public class MovementComponent : MonoBehaviour
     private bool bCanMove = true;
 
     [Header("Dash Settings")]
-    [SerializeField] private float dashSpeed = 25.0f;
+    [SerializeField] private float dashSpeed = 5.0f;
     [SerializeField] private float dashDistance = 5.0f;
 
     private Vector2 targetDirection;
@@ -95,7 +95,7 @@ public class MovementComponent : MonoBehaviour
         speed = bRun ? movement.RunSpeed : movement.WalkSpeed;
         Vector3 moveDir = Vector3.zero;
 
-        if (targetDirection.magnitude > 0.001f)
+        if (targetDirection.magnitude > 1e-3f)
         {
             moveDir = (Vector3.right * targetDirection.x) + (Vector3.forward * targetDirection.y);
             moveDir.y = 0;
@@ -149,8 +149,6 @@ public class MovementComponent : MonoBehaviour
     {
         if (state == null || state.EvadeMode || !state.IdleMode) return;
 
-        state.SetEvadeMode();
-
         DashDirection dd = DashDirection.Forward;
         bool isDash;
         if (targetDirection.magnitude == 0.0f)
@@ -164,55 +162,125 @@ public class MovementComponent : MonoBehaviour
             isDash = false;
         }
 
+        Vector3 localDir =
+        dd == DashDirection.Backward
+            ? Vector3.back
+            : Vector3.forward;
+
+        Vector3 direction =
+       transform.TransformDirection(localDir);
+
         if (visual != null)
             visual.PlayDashAnimation(isDash);
 
-        CancelDashTimer();
-        dashCts = new CancellationTokenSource();
-        DashRoutine(dd, dashCts.Token).Forget();
+        Dash(direction, dashDistance, dashDistance / dashSpeed, null);
     }
 
-    private async UniTaskVoid DashRoutine(DashDirection dir, CancellationToken token)
+    public void Dash(
+    Vector3 direction,
+    float distance,
+    float duration,
+    AnimationCurve speedCurve = null)
+    {
+        if (state == null || state.EvadeMode)
+            return;
+
+        if (direction.sqrMagnitude <= 1e-3f)
+            return;
+
+        direction.y = 0f;
+        direction.Normalize();
+
+        state.SetEvadeMode();
+
+        CancelDashTimer();
+
+        dashCts = new CancellationTokenSource();
+
+        DashRoutine(
+            direction,
+            distance,
+            duration,
+            speedCurve,
+            dashCts.Token
+        ).Forget();
+    }
+
+    private async UniTaskVoid DashRoutine(
+    Vector3 direction,
+    float distance,
+    float duration,
+    AnimationCurve speedCurve,
+    CancellationToken token)
     {
         try
         {
             OnBeginDash?.Invoke();
 
-            // 💡 대시 시작 시 기존에 걷던 관성을 완벽히 초기화합니다.
-            rigid.linearVelocity = new Vector3(0, rigid.linearVelocity.y, 0);
+            rigid.linearVelocity =
+                new Vector3(
+                    0f,
+                    rigid.linearVelocity.y,
+                    0f);
 
-            Vector3 localDir = dir == DashDirection.Backward ? Vector3.back : Vector3.forward;
-            Vector3 finalDir = transform.TransformDirection(localDir).normalized;
+            float elapsed = 0f;
 
-            float duration = dashDistance / dashSpeed;
-            float passedTime = 0f;
+            Vector3 start = transform.position;
+            Vector3 end = start + direction * distance;
 
-            while (passedTime < duration)
+            while (elapsed < duration)
             {
-                // 💡 [핵심] SweepTest나 MovePosition 없이 오직 linearVelocity로만 쏩니다!
-                // 두꺼운 벽이 버티고 있고 Continuous Dynamic이 켜져 있으므로 절대 뚫리지 않고 부드럽게 미끄러집니다.
-                rigid.linearVelocity = new Vector3(finalDir.x * dashSpeed, rigid.linearVelocity.y, finalDir.z * dashSpeed);
+                token.ThrowIfCancellationRequested();
 
-                passedTime += Time.fixedDeltaTime;
+                elapsed += Time.fixedDeltaTime;
 
-                await UniTask.WaitForFixedUpdate(cancellationToken: token);
+                float t = Mathf.Clamp01(elapsed / duration);
+
+                float curveValue =
+                    speedCurve != null
+                        ? speedCurve.Evaluate(t)
+                        : t;
+
+                Vector3 currentTarget =
+                    Vector3.Lerp(
+                        start,
+                        end,
+                        curveValue);
+
+                Vector3 velocity =
+                    (currentTarget - transform.position)
+                    / Time.fixedDeltaTime;
+
+                rigid.linearVelocity = new Vector3(
+                    velocity.x,
+                    rigid.linearVelocity.y,
+                    velocity.z);
+
+                await UniTask.WaitForFixedUpdate(
+                    cancellationToken: token);
             }
+
+            rigid.linearVelocity =
+                new Vector3(
+                    0f,
+                    rigid.linearVelocity.y,
+                    0f);
         }
         catch (OperationCanceledException)
         {
-            // 캔슬(피격 등) 처리
         }
         finally
         {
             OnEndDash?.Invoke();
 
-            // 대시가 끝나면 얼음판처럼 미끄러지지 않게 즉시 속도를 0으로 잡아줍니다.
-            rigid.linearVelocity = new Vector3(0, rigid.linearVelocity.y, 0);
+            rigid.linearVelocity =
+                new Vector3(
+                    0f,
+                    rigid.linearVelocity.y,
+                    0f);
 
             if (state != null && state.EvadeMode)
-            {
                 state.SetIdleMode();
-            }
         }
     }
 

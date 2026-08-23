@@ -57,6 +57,7 @@ public class AoEProjectile : BaseProjectile
 
         hitTargets.Clear();
 
+        UpdateLifeTime();
         UpdateAoESize();
     }
 
@@ -139,6 +140,14 @@ public class AoEProjectile : BaseProjectile
                 //ExplodeHit();
             }
         }
+    }
+
+    private void UpdateLifeTime()
+    {
+        if (visualRoot == null || aoeParticle ==  null) return; 
+
+        var main = aoeParticle.main;
+        main.startLifetime = lifeTime;
     }
 
     /// <summary>
