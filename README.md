@@ -21,9 +21,7 @@ ScriptableObject 기반 데이터 구성만으로 다양한 스킬을 제작할 
 
 패시브를 획득하면 기존 Active Skill의 발사 방식, 투사체, 공격 방식 등의 동작이 변경됩니다.
 
-<!-- TODO: Demo GIF / YouTube 영상 삽입 -->
-
-[![The Wheeler - Skill System Demo](https://img.youtube.com/vi/-iz_XMGcHkg/maxresdefault.jpg)](https://www.youtube.com/watch?v=-iz_XMGcHkg)
+[![The Wheeler - Skill System Demo](https://img.youtube.com/vi/KEQMut75X4w/maxresdefault.jpg)](https://www.youtube.com/watch?v=KEQMut75X4w)
 ---
 
 # ⭐ Key Features
