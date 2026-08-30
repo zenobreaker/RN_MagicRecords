@@ -8,6 +8,11 @@ public class StageReplacer
     private Dictionary<int, MapNodeInfo> nodeInfoDict = new(); // key : node id value : stage
     private float eventChance;
 
+    public StageReplacer()
+    {
+        nodeReplacer = new NodeReplacer(); 
+    }
+
     public void StartChapter(int chapter,
         float eventChance = 0.25f,
         float width = 0.0f,

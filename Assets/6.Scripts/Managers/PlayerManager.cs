@@ -159,7 +159,7 @@ public class PlayerManager :
 
         foreach (JobInfo job in jobdata.list)
         {
-            if (charInfoData.CanUseJob(job.id))
+            if (charInfoData.CanUseJob(job.id) && jobdata.GetJobInfo(job.id) != null)
                 availableJobs.Add(job);
         }
 

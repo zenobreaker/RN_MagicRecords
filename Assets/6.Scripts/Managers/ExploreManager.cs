@@ -44,8 +44,11 @@ public sealed class ExploreManager : MonoBehaviour
     private bool bAllCleared = false;
 
     [SerializeField] private int maxChapter = 1;
-   
-    
+
+    private void Awake()
+    {
+        stageReplacer = new StageReplacer();
+    }
 
 
     // 현재 위치한 노드의 클리어 여부를 StageReplacer(진실의 원천)에게 직접 물어보는 프로퍼티
@@ -207,10 +210,12 @@ public sealed class ExploreManager : MonoBehaviour
 
         MapNodeID = 0;
 
-        stageReplacer?.StartChapter(Chapter);
-
+        stageReplacer ??= new StageReplacer(); 
+        stageReplacer.StartChapter(Chapter);
         MapNodeInfo startNode = stageReplacer.GetReplacedNodeInfo(0);
-        if (startNode != null) startNode.isCleared = true;
+        
+        if (startNode != null) 
+            startNode.isCleared = true;
 
         SaveExploreMap();
         ChangeState(ExploreState.READY);
