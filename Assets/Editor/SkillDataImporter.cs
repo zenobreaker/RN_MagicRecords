@@ -311,13 +311,13 @@ namespace UserEditor
                         //phase.duration = phaseSkill.duration;
 
                         // Skill Object
-                        phase.objectName = phaseSkill.objectName;
+                        //phase.objectName = phaseSkill.objectName;
 
                         //TODO: skill create pos <= 다른 캐릭터가 생성되면 위치값은 캐릭터에 따라
                         // 다를 수 있으므로 추후에 조정..
 
                         // Sound
-                        phase.soundName = phaseSkill.skillSound;
+                        //phase.soundName = phaseSkill.skillSound;
 
                         //TODO: bonus 
                         //soSkill.

@@ -11,6 +11,10 @@ public class ActiveSkillEditorWindow : EditorWindow
 
     private List<ScriptableObject> activeSkills = new();
     private ScriptableObject selectedSkill;
+
+    // 💡 [버그 해결 핵심] 매 프레임 생성하지 않도록 SerializedObject를 전역으로 캐싱합니다.
+    private SerializedObject serializedSelectedSkill;
+
     private Vector2 leftScrollPos;
     private Vector2 centerScrollPos;
 
@@ -106,6 +110,9 @@ public class ActiveSkillEditorWindow : EditorWindow
             if (GUILayout.Button(content, listItemStyle))
             {
                 selectedSkill = skill;
+                // 💡 스킬을 선택할 때 딱 한 번만 객체를 생성하여 할당합니다.
+                serializedSelectedSkill = new SerializedObject(skill);
+
                 selectedPhaseIndex = -1;
                 selectedModuleIndex = -1;
                 GUI.FocusControl(null);
@@ -132,7 +139,15 @@ public class ActiveSkillEditorWindow : EditorWindow
         }
 
         centerScrollPos = EditorGUILayout.BeginScrollView(centerScrollPos);
-        SerializedObject so = new SerializedObject(selectedSkill);
+
+        // 💡 만약 컴파일 직후 등 캐싱된 객체가 유실되었다면 다시 잡아줍니다.
+        if (serializedSelectedSkill == null || serializedSelectedSkill.targetObject != selectedSkill)
+        {
+            serializedSelectedSkill = new SerializedObject(selectedSkill);
+        }
+
+        // 💡 매 프레임 new를 하지 않고 캐싱된 객체를 사용합니다.
+        SerializedObject so = serializedSelectedSkill;
         so.Update();
 
         SerializedProperty phaseListProp = so.FindProperty("phaseList");
@@ -147,6 +162,8 @@ public class ActiveSkillEditorWindow : EditorWindow
             DrawPropertyIfExists(so, "actionData");
             DrawPropertyIfExists(so, "damageData");
             EditorGUILayout.Space(10f);
+
+            // 캐싱 처리 덕분에 이제 levelDatas 안의 값을 클릭하고 정상적으로 수정할 수 있습니다.
             DrawPropertyIfExists(so, "levelDatas");
         }
         else if (phaseListProp != null && selectedPhaseIndex < phaseListProp.arraySize)
@@ -163,12 +180,10 @@ public class ActiveSkillEditorWindow : EditorWindow
                 EditorGUILayout.PropertyField(currentPhaseProp.FindPropertyRelative("isInstant"));
                 EditorGUILayout.Space(10f);
 
-                // 💡 [레이아웃 붕괴 완벽 해결] 커스텀 리스트 + 스왑(이동) 로직 렌더링
                 DrawCustomModuleList(so, currentPhaseProp.FindPropertyRelative("modules"));
             }
             else
             {
-                // 특정 모듈 상세 속성 수정 (Detail View)
                 SerializedProperty modulesProp = currentPhaseProp.FindPropertyRelative("modules");
                 if (selectedModuleIndex < modulesProp.arraySize)
                 {
@@ -196,12 +211,6 @@ public class ActiveSkillEditorWindow : EditorWindow
         EditorGUILayout.EndVertical();
     }
 
-    // ==========================================
-    // 💡 [핵심] 에러가 없는 100% 커스텀 수동 레이아웃 리스트
-    // ==========================================
-    // ==========================================
-    // 💡 [핵심] 에러가 없는 100% 커스텀 수동 레이아웃 리스트
-    // ==========================================
     private void DrawCustomModuleList(SerializedObject so, SerializedProperty modulesProp)
     {
         EditorGUILayout.LabelField("Phase Modules", EditorStyles.boldLabel);
@@ -215,7 +224,6 @@ public class ActiveSkillEditorWindow : EditorWindow
             SerializedProperty modProp = modulesProp.GetArrayElementAtIndex(m);
             string triggerGroup = GetTriggerGroupName(modProp);
 
-            // 1. 트리거 타임 별로 그룹 헤더 그리기
             if (m == 0 || triggerGroup != currentGroup)
             {
                 currentGroup = triggerGroup;
@@ -230,43 +238,39 @@ public class ActiveSkillEditorWindow : EditorWindow
 
             EditorGUILayout.BeginHorizontal("box");
 
-            // 2. 모듈 이름 (여백 클릭 시 Detail View 진입)
             if (GUILayout.Button($"[{m}] {GetModuleSummary(modProp)}", EditorStyles.label, GUILayout.ExpandWidth(true)))
             {
                 selectedModuleIndex = m;
                 GUI.FocusControl(null);
             }
 
-            // 3. 순서 조정 버튼 (▲ 위로 / ▼ 아래로)
             if (GUILayout.Button("▲", GUILayout.Width(25)) && m > 0)
             {
                 modulesProp.MoveArrayElement(m, m - 1);
                 so.ApplyModifiedProperties();
-                EditorGUILayout.EndHorizontal(); // 💡 레이아웃 깨짐 방지!
+                EditorGUILayout.EndHorizontal();
                 break;
             }
             if (GUILayout.Button("▼", GUILayout.Width(25)) && m < modulesProp.arraySize - 1)
             {
                 modulesProp.MoveArrayElement(m, m + 1);
                 so.ApplyModifiedProperties();
-                EditorGUILayout.EndHorizontal(); // 💡 레이아웃 깨짐 방지!
+                EditorGUILayout.EndHorizontal();
                 break;
             }
 
-            // 4. Edit 버튼
             if (GUILayout.Button("Edit", GUILayout.Width(45)))
             {
                 selectedModuleIndex = m;
                 GUI.FocusControl(null);
             }
 
-            // 5. 삭제 버튼
             GUI.color = new Color(1f, 0.5f, 0.5f);
             if (GUILayout.Button("X", GUILayout.Width(25)))
             {
                 modulesProp.DeleteArrayElementAtIndex(m);
                 so.ApplyModifiedProperties();
-                EditorGUILayout.EndHorizontal(); // 💡 레이아웃 깨짐 방지!
+                EditorGUILayout.EndHorizontal();
                 break;
             }
             GUI.color = Color.white;
@@ -276,14 +280,12 @@ public class ActiveSkillEditorWindow : EditorWindow
 
         EditorGUILayout.Space(10f);
 
-        // 카테고리별 모듈 추가 버튼
         if (GUILayout.Button("+ 모듈 추가 (카테고리별)", GUILayout.Height(30f)))
         {
             ShowCategorizedModuleMenu(modulesProp);
         }
     }
 
-    // 💡 트리거 타임 속성을 찾아서 문자열로 반환하는 헬퍼 함수
     private string GetTriggerGroupName(SerializedProperty modProp)
     {
         if (modProp == null) return "Unknown";
@@ -296,7 +298,7 @@ public class ActiveSkillEditorWindow : EditorWindow
         {
             return tProp.enumDisplayNames[tProp.enumValueIndex];
         }
-        return "On Execute"; // 속성을 못 찾았을 때 기본값
+        return "On Execute";
     }
 
     private string GetModuleSummary(SerializedProperty modProp)
@@ -331,21 +333,23 @@ public class ActiveSkillEditorWindow : EditorWindow
         foreach (var type in derivedTypes)
         {
             string typeName = type.Name.Replace("Module_", "");
-            string category = "Etc";
-            string lowerName = typeName.ToLower();
+            string menuPath;
 
-            if (lowerName.Contains("spawn") || lowerName.Contains("create")) category = "Spawn";
-            else if (lowerName.Contains("damage") || lowerName.Contains("attack")) category = "Combat";
-            else if (lowerName.Contains("move") || lowerName.Contains("teleport") || lowerName.Contains("target") || lowerName.Contains("dash")) category = "Movement";
-            else if (lowerName.Contains("sound") || lowerName.Contains("camera") || lowerName.Contains("vfx")) category = "Visual & Audio";
-            else if (lowerName.Contains("charge") || lowerName.Contains("wait")) category = "Timing";
+            var categoryAttr = type.GetCustomAttribute<ModuleCategoryAttribute>();
 
-            menu.AddItem(new GUIContent($"{category}/{typeName}"), false, () =>
+            if (categoryAttr != null && !string.IsNullOrEmpty(categoryAttr.Path))
+                menuPath = categoryAttr.Path;
+            else
+                menuPath = $"Etc/{typeName}";
+
+            menu.AddItem(new GUIContent($"{menuPath}"), false, () =>
             {
                 listProp.serializedObject.Update();
                 listProp.arraySize++;
                 SerializedProperty element = listProp.GetArrayElementAtIndex(listProp.arraySize - 1);
+
                 element.managedReferenceValue = Activator.CreateInstance(type);
+
                 listProp.serializedObject.ApplyModifiedProperties();
             });
         }
@@ -395,7 +399,13 @@ public class ActiveSkillEditorWindow : EditorWindow
 
     private void DrawPhaseNodes()
     {
-        SerializedObject so = new SerializedObject(selectedSkill);
+        // 💡 노드 캔버스에서도 캐싱된 객체 사용
+        if (serializedSelectedSkill == null || serializedSelectedSkill.targetObject != selectedSkill)
+        {
+            serializedSelectedSkill = new SerializedObject(selectedSkill);
+        }
+
+        SerializedObject so = serializedSelectedSkill;
         SerializedProperty phaseListProp = so.FindProperty("phaseList");
         if (phaseListProp == null) return;
         so.Update();
@@ -491,7 +501,6 @@ public class ActiveSkillEditorWindow : EditorWindow
 
     private void CreateNewActiveSkill()
     {
-        // 1. 유저에게 저장 경로를 묻는 팝업 띄우기 (기본 시작 폴더: SkillFolder)
         string defaultName = $"NewActiveSkill_{1000 + activeSkills.Count}";
         string path = EditorUtility.SaveFilePanelInProject(
             "새 액티브 스킬 저장",
@@ -500,11 +509,8 @@ public class ActiveSkillEditorWindow : EditorWindow
             "스킬 데이터(SO)를 저장할 위치와 이름을 지정하세요.",
             SkillFolder);
 
-        // 2. 유저가 취소(Cancel)를 눌렀거나 창을 닫았으면 생성 중단
         if (string.IsNullOrEmpty(path)) return;
 
-        // 3. 인스턴스 생성 (문자열 기반으로 생성하여 클래스 의존성 분리)
-        // 🚨 만약 프로젝트 내 액티브 스킬 클래스 이름이 다르면 "SO_ActiveSkillData"를 알맞게 수정하세요!
         ScriptableObject newSkill = ScriptableObject.CreateInstance("SO_ActiveSkillData");
 
         if (newSkill == null)
@@ -513,7 +519,6 @@ public class ActiveSkillEditorWindow : EditorWindow
             return;
         }
 
-        // 4. 기본값 세팅 (생성되자마자 ID와 이름을 임시로 채워줌)
         SerializedObject so = new SerializedObject(newSkill);
         var nameProp = so.FindProperty("skillName") ?? so.FindProperty("SkillName");
         if (nameProp != null) nameProp.stringValue = "New Active Skill";
@@ -523,14 +528,14 @@ public class ActiveSkillEditorWindow : EditorWindow
 
         so.ApplyModifiedPropertiesWithoutUndo();
 
-        // 5. 실제 에셋으로 저장 및 리스트 갱신
         AssetDatabase.CreateAsset(newSkill, path);
         AssetDatabase.SaveAssets();
 
         RefreshSkillList();
 
-        // 6. 새로 만든 스킬을 윈도우에서 바로 선택 상태로 만들어줌
         selectedSkill = newSkill;
+        // 💡 새로 만들었을 때도 캐싱 처리
+        serializedSelectedSkill = new SerializedObject(newSkill);
         selectedPhaseIndex = -1;
         selectedModuleIndex = -1;
         GUI.FocusControl(null);
@@ -539,11 +544,20 @@ public class ActiveSkillEditorWindow : EditorWindow
     private void AddPhaseToSelectedSkill()
     {
         if (selectedSkill == null) return;
-        SerializedObject so = new SerializedObject(selectedSkill);
+
+        if (serializedSelectedSkill == null || serializedSelectedSkill.targetObject != selectedSkill)
+        {
+            serializedSelectedSkill = new SerializedObject(selectedSkill);
+        }
+
+        SerializedObject so = serializedSelectedSkill;
         SerializedProperty prop = so.FindProperty("phaseList");
         if (prop != null)
         {
-            so.Update(); prop.arraySize++; so.ApplyModifiedProperties(); EditorUtility.SetDirty(selectedSkill);
+            so.Update();
+            prop.arraySize++;
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(selectedSkill);
             selectedPhaseIndex = prop.arraySize - 1;
         }
     }

@@ -91,13 +91,15 @@ public class SelectImplementationDrawer : PropertyDrawer
                         Rect helpBoxRect = new Rect(position.x, currentY, position.width, helpBoxHeight);
 
                         EditorGUI.HelpBox(helpBoxRect,
-                            "Warning! 'Module_SetTargetByPerception'이 리스트에 없습니다.\n타겟 위치가 설정되지 않아 오작동할 수 있습니다.",
+                            "Warning! 'Module_SetTargetByPerception'같은 모듈 리스트에 없습니다.\n타겟 위치가 설정되지 않아 오작동할 수 있습니다.\n" +
+                            "위치를 세팅하는 모듈을 추가해야할 수 있습니다.",
                             MessageType.Warning);
 
                         currentY += helpBoxHeight + EditorGUIUtility.standardVerticalSpacing;
                     }
                 }
             }
+
 
 
             // 나머지 필드들을 그립니다 (triggerTime 제외)
