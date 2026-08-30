@@ -28,16 +28,16 @@ public class ComboComponent : MonoBehaviour
 
     private WeaponComponent weapon;
     private SkillComponent skill;
-    private MovementComponent movement; 
+    private MovementComponent movement;
     private Character ownerCharacter;
-    
+
 
     private CancellationTokenSource comboCts;
 
     private void Awake()
     {
         ownerCharacter = GetComponent<Character>();
-        Debug.Assert(ownerCharacter != null); 
+        Debug.Assert(ownerCharacter != null);
         if (ownerCharacter != null)
         {
             ownerCharacter.OnEndDoAction += OnEndDoAction;
@@ -47,7 +47,7 @@ public class ComboComponent : MonoBehaviour
                 weapon.OnWeaponTypeChanged_Combo += OnWeaponTypeChanged_Combo;
 
             skill = ownerCharacter.GetComponent<SkillComponent>();
-            movement = ownerCharacter.GetComponent<MovementComponent>(); 
+            movement = ownerCharacter.GetComponent<MovementComponent>();
         }
 
         inputQueue = new Queue<InputCommand>();
@@ -87,7 +87,7 @@ public class ComboComponent : MonoBehaviour
             TimeStamp = currentTime,
         };
 
-        comboInputHandler?.HandleInputCommandType(commandType);
+        comboInputHandler.SafeInvoke(v => v.HandleInputCommandType(commandType));
         TryProcessInput(inputCommand);
     }
 
@@ -111,13 +111,13 @@ public class ComboComponent : MonoBehaviour
     }
 
     private void TryProcess_Move(InputCommand newInput) { }
-    private void TryProcess_Skill(InputCommand newInput) 
-    { 
-        skill.SafeInvoke(v=>v.UseSkill($"SLOT{newInput.SkillSlotIndex + 1}"));
+    private void TryProcess_Skill(InputCommand newInput)
+    {
+        skill.SafeInvoke(v => v.UseSkill($"SLOT{newInput.SkillSlotIndex + 1}"));
     }
-    private void TryProcess_Dash(InputCommand newInput) 
-    { 
-        movement.SafeInvoke(v=>v.TryDash()); 
+    private void TryProcess_Dash(InputCommand newInput)
+    {
+        movement.SafeInvoke(v => v.TryDash());
     }
 
     private void TryProcess_Action(InputCommand newInput)

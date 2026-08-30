@@ -42,6 +42,15 @@ public sealed class SkillComponent
             {"SLOT4", null },
         };
     }
+    private void FixedUpdate()
+    {
+        foreach (KeyValuePair<string, ActiveSkill> pair in skillSlotTable)
+        {
+            if (pair.Value == null) continue;
+
+            pair.Value.FixedUpdate(Time.fixedDeltaTime);
+        }
+    }
 
     private void Update()
     {
@@ -75,6 +84,7 @@ public sealed class SkillComponent
             OnActiveSkillCooldownUpdated?.Invoke(currentSlot, pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
         }
     }
+
 
     // 기능 등록 (패시브가 호출)
     public void RegisterCapability<T>(T capability) where T : class
@@ -117,89 +127,121 @@ public sealed class SkillComponent
             }
         }
     }
-
     protected override async UniTaskVoid ManualActionRoutine(CancellationToken token)
     {
         try
         {
             BeginDoAction();
 
-            int phaseCount = 1;
-            ActiveSkill currentSkill = null;
-
-            if (!string.IsNullOrEmpty(currentSlotName) && skillSlotTable.TryGetValue(currentSlotName, out currentSkill))
+            if (string.IsNullOrEmpty(currentSlotName) ||
+                !skillSlotTable.TryGetValue(currentSlotName, out ActiveSkill currentSkill) ||
+                currentSkill == null)
             {
-                if (currentSkill != null)
-                    phaseCount = currentSkill.MaxPhaseCount;
+                EndDoAction();
+                return;
             }
 
-            // 캐스팅이 끝날 때까지 공격 판정과 다음 페이즈 진행을 보류합니다.
-            while (currentSkill != null && currentSkill.IsCasting)
+            // 캐스팅 종료 대기
+            while (currentSkill.IsCasting)
             {
-                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
+                await UniTask.Yield(
+                    PlayerLoopTiming.Update,
+                    cancellationToken: token);
             }
 
-            for (int i = 0; i < phaseCount; i++)
+            while (true)
             {
-                // 💡 [핵심 1] 애니메이션(ActionData) 데이터가 존재하는가?
-                bool hasAnimation = currentSkill != null && currentSkill.HasActionData(i);
+                // ★ 항상 ActiveSkill의 실제 PhaseIndex를 가져온다.
+                int phaseIndex = currentSkill.PhaseIndex;
 
+                // 범위를 벗어나면 종료
+                if (phaseIndex < 0 || phaseIndex >= currentSkill.MaxPhaseCount)
+                    break;
+
+                bool hasAnimation =
+                    currentSkill.HasActionData(phaseIndex);
+
+                // --------------------------------------------------
+                // Animation이 있는 경우 선딜레이
+                // --------------------------------------------------
                 if (hasAnimation)
                 {
-                    // 애니메이션이 있을 때만 선딜레이 0.2초 대기
-                    await UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: token);
+                    await UniTask.Delay(
+                        TimeSpan.FromSeconds(0.2f),
+                        cancellationToken: token);
                 }
 
+                // --------------------------------------------------
+                // 현재 Phase 공격 이벤트
+                // --------------------------------------------------
                 BeginJudgeAttack(null);
                 EndJudgeAttack(null);
 
-                bool isSelfControlled = currentSkill != null && currentSkill.DoesPhaseControlItself(i);
+                // --------------------------------------------------
+                // 현재 Phase가 스스로 종료되는지 확인
+                // --------------------------------------------------
+                bool isSelfControlled =
+                    currentSkill.DoesPhaseControlItself(phaseIndex);
 
                 if (isSelfControlled)
                 {
-                    int cachedPhase = i;
-                    while (currentSkill.IsPhaseRunning)
-                    { 
-                        await UniTask.Yield(PlayerLoopTiming.Update, 
+                    // ★ 이 Phase가 끝나면서 PhaseIndex가 변경되기를 기다린다.
+                    int waitingPhase = phaseIndex;
+
+                    while (currentSkill != null &&
+                           currentSkill.PhaseIndex == waitingPhase)
+                    {
+                        await UniTask.Yield(
+                            PlayerLoopTiming.Update,
                             cancellationToken: token);
                     }
+
+                    // PhaseIndex가 변경됐으므로
+                    // 다음 while에서 새로운 PhaseIndex를 읽는다.
+                    continue;
+                }
+
+                // --------------------------------------------------
+                // 일반 Phase
+                // --------------------------------------------------
+                if (hasAnimation)
+                {
+                    await UniTask.Delay(
+                        TimeSpan.FromSeconds(0.3f),
+                        cancellationToken: token);
                 }
                 else
                 {
-                    if (hasAnimation)
-                    {
-                        // 애니메이션이 있을 때만 후딜레이 0.3초 대기
-                        await UniTask.Delay(TimeSpan.FromSeconds(0.3f),
-                            cancellationToken: token);
-                    }
-                    else
-                    {
-                        // 💡 애니메이션이 없다면 대기 시간 없이 즉시 1프레임만 쉬고 넘깁니다.
-                        // (프레임 꼬임 방지를 위해 딱 1프레임 Yield를 주는 것이 안전합니다)
-                        await UniTask.Yield(PlayerLoopTiming.Update, 
-                            cancellationToken: token);
-                    }
-
-                    if (i < phaseCount - 1)
-                    {
-                        currentSkill?.End_DoAction();
-                    }
+                    await UniTask.Yield(
+                        PlayerLoopTiming.Update,
+                        cancellationToken: token);
                 }
+
+                // 현재 Phase가 마지막인지 확인
+                if (currentSkill.PhaseIndex >=
+                    currentSkill.MaxPhaseCount - 1)
+                {
+                    break;
+                }
+
+                // 다음 Phase로 넘어감
+                currentSkill.End_DoAction();
+
+                await UniTask.Yield(
+                    PlayerLoopTiming.Update,
+                    cancellationToken: token);
             }
 
-            // 모든 페이즈가 정상적으로 끝났을 때
             EndDoAction();
         }
         catch (OperationCanceledException)
         {
-            // 피격/스턴 등으로 인한 정상적인 캔슬
+            // 정상적인 스킬 취소
         }
         catch (Exception e)
         {
-            // 💡 [핵심 2] 절대 방어선 구축 (Failsafe)
-            // 모듈을 잘못 짰거나 널 포인트 에러가 터져서 루틴이 죽어버려도, 
-            // 여기서 에러를 잡아서 강제로 EndDoAction()을 호출해 캐릭터 굳음을 방지합니다!
-            Debug.LogError($"<color=red>스킬 실행 중 치명적 에러 발생, 캐릭터 잠금을 강제 해제합니다.</color>\n{e}");
+            Debug.LogError(
+                $"<color=red>스킬 실행 중 치명적 에러</color>\n{e}");
 
             EndDoAction();
         }

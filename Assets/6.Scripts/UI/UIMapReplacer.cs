@@ -14,28 +14,28 @@ public class UIMapReplacer : MonoBehaviour
     [SerializeField] private CustomLine CustomLineObject;
 
 
-    private MapReplacer mapReplacer;
-
     private List<MapNode> mapNodes = new List<MapNode>();
     private List<UIMapNode> uiMapNodes = new List<UIMapNode>();
 
-    public void ReplaceUINode(MapReplacer mapReplacer)
+    private StageReplacer stageReplacer;
+
+    public void ReplaceUINode(StageReplacer stageReplacer)
     {
-        this.mapReplacer = mapReplacer;
+        this.stageReplacer = stageReplacer;
+
+        if (this.stageReplacer == null)
+            return;
 
         ReplaceNodeObject();
-
         CalcFinalRectArea();
-
         DrawNodeLine();
     }
-
 
     private void ReplaceNodeObject()
     {
         if (NodeContainer == null || NodeObject == null) return;
 
-        List<List<MapNode>> levels = mapReplacer.GetLevels();
+        List<List<MapNode>> levels = stageReplacer.GetLevels();
 
         mapNodes.Clear();
         uiMapNodes.Clear(); 
@@ -67,7 +67,7 @@ public class UIMapReplacer : MonoBehaviour
     // 영역 재계산
     private void CalcFinalRectArea()
     {
-        if (Content == null || mapReplacer == null) return;
+        if (Content == null || stageReplacer == null) return;
 
         // Content의 부모(일반적으로 ScrollRect의 Viewport)를 가져옵니다.
         RectTransform viewport = Content.parent as RectTransform;
@@ -79,8 +79,8 @@ public class UIMapReplacer : MonoBehaviour
         float viewportHeight = viewport != null ? viewport.rect.height : 600f;
 
         // 노드들이 차지하는 총 길이만 가져옵니다.
-        float nodeHorizontal = mapReplacer.GetTotalHorizontalSpacing();
-        float nodeVertical = mapReplacer.GetTotalVerticalSpacing();
+        float nodeHorizontal = stageReplacer.GetTotalHorizontalSpacing();
+        float nodeVertical = stageReplacer.GetTotalVerticalSpacing();
 
         // [가로] 뷰포트 너비보다 노드들의 너비가 길면, 노드 너비만큼 Content를 늘립니다.
         float finalWidth = Mathf.Max(viewportWidth, nodeHorizontal);

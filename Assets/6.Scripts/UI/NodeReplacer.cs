@@ -12,9 +12,14 @@ public class MapNode
     public List<int> nextNodeIds = new List<int>(); // 연결된 다음 노드들
 }
 
-public class MapReplacer
+public class NodeReplacer
 {
     private List<List<MapNode>> levels = new List<List<MapNode>>();
+
+    public void ClearMap()
+    {
+        levels.Clear();
+    }
 
     public List<List<MapNode>> GetLevels()
     {
@@ -23,7 +28,7 @@ public class MapReplacer
 
     private int nodeIdCounter = 0;
     private int maxLevel = 5;
-    private int maxNodesPreLevel = 3;
+    private int maxBranchCount = 3;
     private int finalNodeId = -1;
 
     private float horizontalSpacing = 350f;
@@ -34,7 +39,24 @@ public class MapReplacer
     private float maxNodePosX = 0.0f;
     private float maxNodePosY = 0.0f;
 
-  
+    /// <summary>
+    ///  배치되는 레벨의 한계 설정
+    /// </summary>
+    /// <param name="level"></param>
+    public void SetMaxNodeLevel(int level)
+    {
+        maxLevel = level;
+    }
+
+    /// <summary>
+    /// 갈래 길에 배치되는 노드의 최대 개수 설정 
+    /// </summary>
+    /// <param name="count"></param>
+    public void SetMaxBranchCount(int count)
+    { maxBranchCount = count; }
+
+
+
     public float GetTotalHorizontalSpacing()
     {
         // 가장 멀리 있는 노드의 X좌표에 우측 여백(시작 여백과 동일하게)을 더해줍니다.
@@ -53,6 +75,12 @@ public class MapReplacer
         return nodeId == finalNodeId;
     }
 
+    public void GenerateNodeMap(float width = 0.0f, float height = 0.0f)
+    {
+        Replace(width, height);
+        ConnectToNode();
+    }
+
     public void Replace(float width = 0.0f, float height = 0.0f)
     {
         levels.Clear();
@@ -66,7 +94,7 @@ public class MapReplacer
             if (level == 0 || level == maxLevel - 1)
                 nodeCount = 1; // 시작/끝 노드는 하나만
             else
-                nodeCount = UnityEngine.Random.Range(2, maxNodesPreLevel + 1);
+                nodeCount = UnityEngine.Random.Range(2, maxBranchCount + 1);
 
             List<MapNode> currentLevel = new List<MapNode>();
 
@@ -84,10 +112,10 @@ public class MapReplacer
                 // 가운데 정렬되도록 y축 계산 
                 float totalHeight = (nodeCount - 1) * verticalSpacing;
                 float y = -(i * verticalSpacing - totalHeight / 2);
-                maxNodePosY = Mathf.Max(y, maxNodePosY); 
+                maxNodePosY = Mathf.Max(y, maxNodePosY);
 
                 float x = widthMargin + level * horizontalSpacing;
-                maxNodePosX = Mathf.Max(x, maxNodePosX); 
+                maxNodePosX = Mathf.Max(x, maxNodePosX);
 
                 node.position = new Vector2(x, y);
                 currentLevel.Add(node);
@@ -184,10 +212,10 @@ public class MapReplacer
 
     public void RestoreMap(List<MapNode> savedNodes)
     {
-        levels.Clear(); 
+        levels.Clear();
         maxLevel = savedNodes.Max(x => x.level) + 1;
 
-        for(int i = 0; i < maxLevel; i++)
+        for (int i = 0; i < maxLevel; i++)
             levels.Add(new List<MapNode>());
 
         // 초기화
@@ -203,7 +231,7 @@ public class MapReplacer
             maxNodePosX = Mathf.Max(maxNodePosX, node.position.x);
             maxNodePosY = Mathf.Max(maxNodePosY, Mathf.Abs(node.position.y));
         }
-        
+
         finalNodeId = savedNodes.Last().id;
 
         if (isConnected == false)

@@ -94,18 +94,19 @@ public class Player
 
         for (int i = 0; i < 4; i++)
         {
-            int slot = i;
+            SkillSlot slot = SkillSlot.SLOT1 + i;
+            int index = i;
             onSkillActions[i] = (context) =>
             {
-                comboComponent.InputQueue(InputCommandType.SKILL, slot);
+                comboComponent.InputQueue(InputCommandType.SKILL, index);
             };
 
             onSkillCancels[i] = (context) =>
             {
-                skill.ReleaseSkill(((SkillSlot)slot).ToString());
+                skill.ReleaseSkill(slot.ToString());
             };
 
-            string actionName = $"SkillAction{slot + 1}";
+            string actionName = $"SkillAction{index + 1}";
             actionMap.FindAction(actionName).started += onSkillActions[i];
             actionMap.FindAction(actionName).canceled += onSkillCancels[i];
         }

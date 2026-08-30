@@ -5,30 +5,53 @@ using UnityEngine;
 
 
 [ModuleCategory("Utility/Charge Wait")]
+[Serializable]
 public class Module_ChargeWait : SkillModule
 {
     [Tooltip("최대 충전 시간")]
     public float maxChargeTime = 3.0f;
-    private float currentMaxChargeTime; 
+    private float currentMaxChargeTime;
+
+    private CancellationTokenSource chargeCts;
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         if (skill == null) return;
+        CancelCharge(); 
 
         currentMaxChargeTime = skill.Runtime?.Cast?.MaxChargeTime ?? maxChargeTime;
+        chargeCts = CancellationTokenSource.CreateLinkedTokenSource(skill.PhaseToken);
 
         skill.isWaitingForRelease = true;
-        WaitForMaxChargeAsync(skill, skill.PhaseToken).Forget();
+        WaitForMaxChargeAsync(skill, chargeCts.Token).Forget();
     }
     private async UniTaskVoid WaitForMaxChargeAsync(ActiveSkill skill, CancellationToken token)
     {
         if (currentMaxChargeTime > 0f)
         {
             // 최대 시간 대기
-            bool isCancelled = await UniTask.Delay(TimeSpan.FromSeconds(maxChargeTime), cancellationToken: token).SuppressCancellationThrow();
+            bool isCancelled = await UniTask.Delay(TimeSpan.FromSeconds(maxChargeTime)
+                , cancellationToken: token)
+                .SuppressCancellationThrow();
 
             // 중간에 유저가 키를 떼서(OnReleaseKey) 캔슬되었다면 조용히 종료!
             if (isCancelled) return;
         }
+    }
+
+    public override bool ControlsPhaseLifecycle()
+    {
+        return true;
+    }
+
+
+    private void CancelCharge()
+    {
+        if (chargeCts == null)
+            return;
+
+        chargeCts.Cancel();
+        chargeCts.Dispose();
+        chargeCts = null;
     }
 }

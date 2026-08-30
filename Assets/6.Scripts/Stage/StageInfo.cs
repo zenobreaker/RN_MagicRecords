@@ -26,6 +26,7 @@ public class StageInfo
         type = other.type;
         groupIds = new List<int>(other.groupIds);
         clearRewardId = other.clearRewardId;
+        mapIndex = other.mapIndex;
         wave = other.wave;
     }
 
@@ -33,16 +34,7 @@ public class StageInfo
 
     public StageInfo Copy()
     {
-        return new StageInfo()
-        {
-            id = this.id,
-            biome = this.biome,
-            mapIndex = this.mapIndex,
-            type = this.type,
-            groupIds = new List<int>(groupIds),
-            clearRewardId = clearRewardId,
-            wave = wave,
-        };
+        return MemberwiseClone() as StageInfo;
     }
 
     public override string ToString()

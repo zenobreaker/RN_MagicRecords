@@ -10,7 +10,19 @@ public abstract class SkillModule
     // 스킬이 생성되거나 페이즈가 바뀔 때(CacheModule 시점) 호출
     public virtual void Init(Character owner) { }
     public abstract void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill);
+
+    public virtual void Update (Character owner, ActiveSkill skill, 
+        PhaseSkill phase, float deltaTime) { }
+    public virtual void FixedUpdate(Character owner, ActiveSkill skill,
+        PhaseSkill phaseSkill, float fixedDeltaTime)
+    { }
+
     public virtual bool HasAnimationData()
+    {
+        return false;
+    }
+
+    public virtual bool ControlsPhaseLifecycle()
     {
         return false;
     }

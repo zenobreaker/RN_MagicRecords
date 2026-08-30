@@ -59,6 +59,11 @@ public class Module_PhaseTransition : SkillModule
         }
     }
 
+    public override bool ControlsPhaseLifecycle()
+    {
+        return true;
+    }
+
     public override SkillModule Clone()
     {
         return (Module_PhaseTransition)base.Clone();

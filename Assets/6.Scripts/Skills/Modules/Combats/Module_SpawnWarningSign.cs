@@ -14,6 +14,9 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
     public float duration = 1.0f;
     public bool isSetTargetPos = false;
 
+    [Header("Warning Rect Type")]
+    public RectFillMode fillMode;
+
     [Header("Multi-Spawn Settings")]
     public int fallbackSpawnCount = 1;
     public float fallbackAngleBetween = 0f;
@@ -41,16 +44,16 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
     {
         // 값을 결정합니다 (인스펙터 값 쓸래? 블랙보드 값 쓸래?)
         int baseCount = skill.Runtime.Base.PatternCount > 0
-            ? skill.Runtime.Base.PatternCount 
+            ? skill.Runtime.Base.PatternCount
             : fallbackSpawnCount;
-        
-        int finalSpawnCount = 
+
+        int finalSpawnCount =
             baseCount + skill.Runtime.Combat.PatternCountBonus;
 
 
-        float finalAngleBetween = 
-            skill.Runtime.Base.PatternAngle > 0 
-            ? skill.Runtime.Base.PatternAngle 
+        float finalAngleBetween =
+            skill.Runtime.Base.PatternAngle > 0
+            ? skill.Runtime.Base.PatternAngle
             : fallbackAngleBetween;
 
         //  만약 내가 인스펙터 값을 썼다면, 다음 페이즈를 위해 블랙보드에 갱신
@@ -80,19 +83,23 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
             WarningSign sign = ObjectPooler.DeferredSpawnFromPool<WarningSign>(GetSignName(),
             basePosition, rotation);
 
-            sign.Setup(this, duration);
-
-            // 3. 종료 로직 ( 중요 : 모든 장판이 끝났을 때만) 
-            sign.OnEndSign = () =>
+            if (sign != null)
             {
-                finishedCount++;
-                if (finishedCount >= finalSpawnCount)
-                    skill.EndPhaseAndNext();
-            };
+                SetFillMode(sign);
+                sign.Setup(this, duration);
 
-            ObjectPooler.FinishSpawn(sign.gameObject);
+                // 3. 종료 로직 ( 중요 : 모든 장판이 끝났을 때만) 
+                sign.OnEndSign = () =>
+                {
+                    finishedCount++;
+                    if (finishedCount >= finalSpawnCount)
+                        skill.EndPhaseAndNext();
+                };
 
-            skill.AddTrackedEffect(sign.gameObject);
+                ObjectPooler.FinishSpawn(sign.gameObject);
+
+                skill.AddTrackedEffect(sign.gameObject);
+            }
         }
     }
 
@@ -105,5 +112,19 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
             WarningSignType.Fan => "WarningSign_Fan",
             _ => "",
         };
+    }
+
+    public override bool ControlsPhaseLifecycle()
+    {
+        return true;
+    }
+
+    private void SetFillMode(WarningSign sign)
+    {
+        if (sign == null)
+            return;
+
+        if (sign.TryGetComponent<WarningSign_Rect>(out var rect))
+            rect.fillMode = fillMode;
     }
 }

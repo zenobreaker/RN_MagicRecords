@@ -389,6 +389,12 @@ public abstract class ActiveSkill
             }
         }
     }
+
+    public virtual void FixedUpdate(float fixedDeltaTime)
+    {
+
+    }
+
     public virtual void EndPhaseAndNext() { }   // 페이즈를 종료 후 넘기는 처리 
 
     public void JumpToPhase(int index)
@@ -436,18 +442,10 @@ public abstract class ActiveSkill
     //현재 페이즈가 장판처럼 "스스로 페이즈를 끝내는" 능력이 있는지 확인.
     public bool DoesPhaseControlItself(int index)
     {
-        if (index >= 0 && index < phaseList.Count)
-        {
-            foreach (var mod in phaseList[index].modules)
-            {
-                // 장판 모듈은 OnEndSign 델리게이트를 통해 스스로 EndPhaseAndNext를 부르므로 true!
-                if (mod is Module_SpawnWarningSign ||
-                    mod is Module_PhaseTransition ||
-                    mod is Module_ChargeWait)
-                    return true;
-            }
-        }
-        return false;
+        if (index < 0 || index >= phaseList.Count)
+            return false;
+
+        return phaseList[index].DoesPhaseControlItself();
     }
 
     // 모듈이 무언가를 소환하면 여기에 신고(등록)하게 만듭니다.

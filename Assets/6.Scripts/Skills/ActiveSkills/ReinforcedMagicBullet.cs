@@ -75,15 +75,15 @@ public class ReinforcedMagicBullet
         }
 
         // 2. 마탄 오브젝트 생성 
-        Vector3 localOffset = phaseSkill.spawnPosition; // 스폰 위치(로컬 기준)
-        Vector3 position = ownerObject.transform.TransformPoint(localOffset); // 로컬 -> 월드 좌표로 변경
-        Quaternion rotation = ownerObject.transform.rotation * phaseSkill.ValidSpawnQuaternion;
+        //Vector3 localOffset = phaseSkill.spawnPosition; // 스폰 위치(로컬 기준)
+        //Vector3 position = ownerObject.transform.TransformPoint(localOffset); // 로컬 -> 월드 좌표로 변경
+        //Quaternion rotation = ownerObject.transform.rotation * phaseSkill.ValidSpawnQuaternion;
 
-        GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
-        if (obj.TryGetComponent<ISkillEffect>(out var projectile))
-        {
-            projectile.SetDamageInfo(ownerCharacter, damageData, isCrit);
-            projectile.AddIgnore(ownerObject);
-        }
+        //GameObject obj = ObjectPooler.SpawnFromPool(phaseSkill.objectName, position, rotation);
+        //if (obj.TryGetComponent<ISkillEffect>(out var projectile))
+        //{
+        //    projectile.SetDamageInfo(ownerCharacter, damageData, isCrit);
+        //    projectile.AddIgnore(ownerObject);
+        //}
     }
 }

@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,16 +15,20 @@ public class MovementComponent : MonoBehaviour
     [SerializeField] private SO_Movement SO_Movement;
     private SO_Movement movement;
 
+    [Header("Layer Settings")]
+    [SerializeField] private float dashCollisionSearchPadding = 0.5f;
+    [SerializeField] private LayerMask characterLayer;
+
+    [Header("Dash Settings")]
+    [SerializeField] private float dashSpeed = 5.0f;
+    [SerializeField] private float dashDistance = 5.0f;
+
     private float speed;
     private float originSpeed;
     public float Speed => speed;
     public float DeltaSpeed { get; private set; }
     private bool bRun = false;
     private bool bCanMove = true;
-
-    [Header("Dash Settings")]
-    [SerializeField] private float dashSpeed = 5.0f;
-    [SerializeField] private float dashDistance = 5.0f;
 
     private Vector2 targetDirection;
     public Vector2 TargetDirection => targetDirection;
@@ -32,6 +39,16 @@ public class MovementComponent : MonoBehaviour
     private StateComponent state;
     private Rigidbody rigid;
     #endregion
+
+
+    private bool bIsExternalMoving = false;
+    private Collider[] ownerColliders;
+
+    /// <summary>
+    /// 대시 중 충돌을 무시한 Collider 쌍.
+    /// 대시 종료 시 반드시 원복한다.
+    /// </summary>
+    private readonly List<(Collider owner, Collider target)> ignoredCharacterCollisions = new();
 
     private CancellationTokenSource dashCts;
 
@@ -46,6 +63,8 @@ public class MovementComponent : MonoBehaviour
         state = GetComponent<StateComponent>();
         visual = GetComponentInChildren<CharacterVisual>();
         rigid = GetComponent<Rigidbody>();
+
+        ownerColliders = GetComponentsInChildren<Collider>(); 
 
         Debug.Assert(state != null && rigid != null);
     }
@@ -84,7 +103,9 @@ public class MovementComponent : MonoBehaviour
     private void Update()
     {
         // 이동 불가거나 대시 중(EvadeMode)일 때는 일반 애니메이션 속도를 0으로!
-        if (!bCanMove || (state != null && state.EvadeMode))
+        if (!bCanMove || 
+            bIsExternalMoving ||
+            (state != null && state.EvadeMode))
         {
             DeltaSpeed = 0f;
             if (visual != null)
@@ -115,9 +136,14 @@ public class MovementComponent : MonoBehaviour
     // --------------------------------------------------------
     private void FixedUpdate()
     {
-        if (rigid.isKinematic) return;
+        // 외부 이동 중이면 일반 이동 로직을 실행하지 않는다.
+        if (bIsExternalMoving)
+            return;
 
-        // [핵심 방어막] 대시 중(EvadeMode)이거나 이동 불가면 일반 걷기 물리 연산을 완벽 차단!
+        if (rigid.isKinematic) 
+            return;
+
+        // 대시 중(EvadeMode)이거나 이동 불가면 일반 걷기 물리 연산을 완벽 차단!
         if (!bCanMove || (state != null && state.EvadeMode))
         {
             // 대시 중이 아닐 때만 멈춤 처리 (대시 중에는 DashRoutine이 물리를 통제함)
@@ -190,11 +216,9 @@ public class MovementComponent : MonoBehaviour
 
         direction.y = 0f;
         direction.Normalize();
-
         state.SetEvadeMode();
 
         CancelDashTimer();
-
         dashCts = new CancellationTokenSource();
 
         DashRoutine(
@@ -227,6 +251,9 @@ public class MovementComponent : MonoBehaviour
 
             Vector3 start = transform.position;
             Vector3 end = start + direction * distance;
+            
+            // 캐릭터간 무시 시작 
+            BeginDashCollisionIgnore(start, end); 
 
             while (elapsed < duration)
             {
@@ -271,6 +298,8 @@ public class MovementComponent : MonoBehaviour
         }
         finally
         {
+            RestoreDashCollision(); 
+
             OnEndDash?.Invoke();
 
             rigid.linearVelocity =
@@ -281,7 +310,212 @@ public class MovementComponent : MonoBehaviour
 
             if (state != null && state.EvadeMode)
                 state.SetIdleMode();
+
+            bIsExternalMoving = false; 
         }
+    }
+
+    public void MoveOverTime(
+    Vector3 direction,
+    float distance,
+    float duration,
+    bool ghostMode = false)
+    {
+        if (state == null || state.EvadeMode)
+            return;
+
+        if (direction.sqrMagnitude <= 1e-3f)
+            return;
+
+        if (distance <= 0f || duration <= 0f)
+            return;
+
+        direction.y = 0f;
+        direction.Normalize();
+
+        CancelDashTimer();
+        bIsExternalMoving = true;
+        dashCts = new CancellationTokenSource();
+
+        MoveOverTimeRoutine(
+            direction,
+            distance,
+            duration,
+            dashCts.Token,
+            ghostMode
+        ).Forget();
+    }
+
+    private async UniTaskVoid MoveOverTimeRoutine(
+    Vector3 direction,
+    float distance,
+    float duration,
+    CancellationToken token,
+    bool ghostMode = false) 
+    {
+        try
+        {
+            float elapsed = 0f;
+
+            Vector3 start = transform.position;
+            Vector3 end = start + direction * distance;
+            if (ghostMode)
+            {
+                BeginDashCollisionIgnore(start, end);
+            }
+
+            while (elapsed < duration)
+            {
+                token.ThrowIfCancellationRequested();
+
+                elapsed += Time.fixedDeltaTime;
+
+                float t = Mathf.Clamp01(elapsed / duration);
+
+                Vector3 targetPosition =
+                    Vector3.Lerp(start, end, t);
+
+                Vector3 velocity =
+                    (targetPosition - transform.position)
+                    / Time.fixedDeltaTime;
+
+                rigid.linearVelocity = new Vector3(
+                    velocity.x,
+                    rigid.linearVelocity.y,
+                    velocity.z
+                );
+
+                await UniTask.WaitForFixedUpdate(
+                    cancellationToken: token);
+            }
+
+            // 이동 종료
+            rigid.linearVelocity = new Vector3(
+                0f,
+                rigid.linearVelocity.y,
+                0f);
+        }
+        catch (OperationCanceledException)
+        {
+            RestoreDashCollision();
+
+            bIsExternalMoving = false;
+            targetDirection = Vector2.zero;
+        }
+        finally
+        {
+            RestoreDashCollision();
+
+            rigid.linearVelocity = new Vector3(
+                0f,
+                rigid.linearVelocity.y,
+                0f
+            );
+            bIsExternalMoving = false;
+            targetDirection = Vector2.zero;
+        }
+    }
+    private void BeginDashCollisionIgnore(Vector3 start, Vector3 end)
+    {
+        RestoreDashCollision();
+
+        if (ownerColliders == null || ownerColliders.Length == 0)
+            return;
+
+        // 현재 주변의 Collider를 찾는다.
+        Bounds bounds = ownerColliders[0].bounds;
+
+        for (int i = 1; i < ownerColliders.Length; i++)
+            bounds.Encapsulate(ownerColliders[i].bounds);
+
+        // 캐릭터의 크기를 기준으로 탐색 반경 결정
+        float radius =
+            Mathf.Max(bounds.extents.x, bounds.extents.z)
+            + dashCollisionSearchPadding;
+
+        Vector3 castStart = start;
+        Vector3 castEnd = end; 
+
+        // 대시 시작 시 주변 캐릭터 탐색
+        Collider[] nearbyColliders =
+            Physics.OverlapCapsule(
+                castStart,
+                castEnd, 
+                radius, characterLayer, 
+                QueryTriggerInteraction.Ignore);
+
+        foreach (Collider targetCollider in nearbyColliders)
+        {
+            if (targetCollider == null)
+                continue;
+
+            // 자기 자신의 Collider
+            if (targetCollider.transform.IsChildOf(transform))
+                continue;
+
+            Character targetCharacter =
+                targetCollider.GetComponentInParent<Character>();
+
+            // Character가 아니면 무시하지 않는다. 
+            if (targetCharacter == null)
+                continue;
+
+            // 자기 자신이면 무시
+            if (targetCharacter == null)
+                continue;
+
+            foreach(Collider ownerColiider in ownerColliders)
+            {
+                if (ownerColiider == null)
+                    continue;
+
+                if (IsAlreadyIgnored(
+                    ownerColiider,
+                    targetCollider))
+                    continue;
+
+                Physics.IgnoreCollision(
+                    ownerColiider,
+                    targetCollider,
+                    true);
+
+                ignoredCharacterCollisions.Add((ownerColiider, targetCollider));
+            }
+        }
+        
+    }
+
+    private bool IsAlreadyIgnored(
+        Collider ownerCollider, 
+        Collider targetCollider)
+    {
+        for(int i = 0; i< ignoredCharacterCollisions.Count; i++)
+        {
+            var pair = ignoredCharacterCollisions[i];
+
+            if (pair.owner == ownerCollider &&
+                pair.target == targetCollider)
+                return true; 
+        }
+
+        return false; 
+    }
+
+    private void RestoreDashCollision()
+    {
+        for(int i = 0; i< ignoredCharacterCollisions.Count; i++)
+        {
+            var pair = ignoredCharacterCollisions[i];
+
+            if (pair.owner == null ||
+                pair.target == null)
+                continue;
+
+            Physics.IgnoreCollision(
+                pair.owner, pair.target, false); 
+        }
+
+        ignoredCharacterCollisions.Clear(); 
     }
 
     private void CancelDashTimer()

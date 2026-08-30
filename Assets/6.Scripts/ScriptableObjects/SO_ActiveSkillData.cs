@@ -14,33 +14,50 @@ public class PhaseSkill
     public List<SkillModule> modules; 
 
     // 오브젝트 풀링 적용 상태라면 굳이 오브젝트 자체를 가질 필요가 없긴함.
-    [Header("Skill Prefab")]
-    public GameObject skillObject;
-    public string objectName;
+    //[Header("Skill Prefab")]
+    //public GameObject skillObject;
+    //public string objectName;
 
-    [Header("Skill Sounds")]
-    public string soundName; 
+    //[Header("Skill Sounds")]
+    //public string soundName; 
 
-    [Header("Spawn Data")]
-    public Vector3 spawnPosition;
+    //[Header("Spawn Data")]
+    //public Vector3 spawnPosition;
     
-    [SerializeField]
-    private Quaternion spwanQuaternion;
-    public Quaternion ValidSpawnQuaternion =>
-        spwanQuaternion.Equals(new Quaternion(0, 0, 0, 0)) ? Quaternion.identity : spwanQuaternion;
+    //[SerializeField]
+    //private Quaternion spwanQuaternion;
+    //public Quaternion ValidSpawnQuaternion =>
+    //    spwanQuaternion.Equals(new Quaternion(0, 0, 0, 0)) ? Quaternion.identity : spwanQuaternion;
 
     public PhaseSkill() 
     {
-        spwanQuaternion = Quaternion.identity;
         modules = new List<SkillModule>();
     }
 
-    //public void SetDamageData(float baseDamage, float coefficient = 1.0f, int level = 1)
-    //{
-    //    damageData = new DamageData();
-    //    damageData.baseDamage = baseDamage;
-    //    damageData.statCoefficient = coefficient;
-    //}
+    public void BeginJudgeAttack(Character owner, ActiveSkill skill)
+    {
+
+    }
+
+    public void EndJudgeAttack(Character owner, ActiveSkill skill)
+    {
+        foreach (var module in modules)
+        {
+            if (module is Module_HitDetection hitModule)
+                hitModule.EndDetection(skill);
+        }
+    }
+
+    public bool DoesPhaseControlItself()
+    {
+        foreach (var module in modules)
+        {
+            if (module != null && module.ControlsPhaseLifecycle())
+                return true;
+        }
+
+        return false;
+    }
 }
 
 [CreateAssetMenu(fileName = "SO_SkillData", menuName = "Scriptable Objects/SO_ActiveSkillData")]

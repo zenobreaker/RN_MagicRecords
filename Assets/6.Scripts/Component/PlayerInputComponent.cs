@@ -19,13 +19,16 @@ public class PlayerInputComponent : MonoBehaviour
         InputActionMap actionMap = input.actions.FindActionMap("Player");
         InputAction moveAction = actionMap.FindAction("Move");
 
-        moveAction.performed += ctx => inputMove = ctx.ReadValue<Vector2>();
-        moveAction.canceled += ctx => inputMove = Vector2.zero;
+        moveAction.performed += ctx =>
+        {
+            inputMove = ctx.ReadValue<Vector2>();
+            movement.SetDirection(inputMove);
+        };
+        moveAction.canceled += ctx =>
+        {
+            inputMove = Vector2.zero;
+            movement.SetDirection(inputMove);
+        };
     }
 
-    private void Update()
-    {
-        // 💡 매 프레임 입력받은 방향을 다리(CharacterMovement)로 넘겨줍니다.
-        movement.SetDirection(inputMove);
-    }
 }

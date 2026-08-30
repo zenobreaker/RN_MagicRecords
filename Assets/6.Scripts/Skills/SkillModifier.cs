@@ -1,3 +1,4 @@
+using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -146,6 +147,53 @@ public sealed class CombatContext
     public bool IsCritical;
 }
 
+[Serializable]
+public sealed class HitContext
+{
+    public HashSet<GameObject> HitTargets { get; } = new();
+    public HashSet<GameObject> Ignores { get; } = new();
+
+    public bool IsDectecting { get; set; }
+
+    public void Begin()
+    {
+        IsDectecting = true; 
+        HitTargets.Clear(); 
+    }
+
+    public void End()
+    {
+        IsDectecting = false; 
+    }
+
+    public void AddIgnore(GameObject target)
+    {
+        if (target != null)
+            Ignores.Add(target); 
+    }
+
+    public bool HasHit(GameObject target)
+    { 
+        return target != null && HitTargets.Contains(target);
+    }
+
+    public bool TryAddTarget(GameObject target)
+    {
+        return target != null && HitTargets.Add(target); 
+    }
+
+    public void ClearTargets()
+    {
+        HitTargets.Clear(); 
+    }
+
+    public void Reset()
+    {
+        IsDectecting = false; 
+        HitTargets.Clear(); Ignores.Clear();
+    }
+}
+
 
 public sealed class SkillRuntimeContext
 {
@@ -154,6 +202,7 @@ public sealed class SkillRuntimeContext
     public SpawnContext Spawn = new();
     public ModifierContext Modifier = new();
     public CombatContext Combat = new();
+    public HitContext Hit = new();
 
     public int PatternCount
     {

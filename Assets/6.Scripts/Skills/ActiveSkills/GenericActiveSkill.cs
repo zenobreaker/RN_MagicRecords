@@ -36,10 +36,14 @@ public class GenericActiveSkill
         // 모듈들을 미리 분류해서 담아둔다.
         foreach (var module in phase.modules)
         {
-            if (module == null) continue; 
+            if (module == null) continue;
+            SkillModule runtimeModule = module.Clone();
 
-            module.Init(ownerCharacter); 
-            timingCache[module.triggerTime].Add(module);
+            if (runtimeModule == null)
+                continue;
+
+            runtimeModule.Init(ownerCharacter); 
+            timingCache[runtimeModule.triggerTime].Add(runtimeModule);
         }
 
         // 전체 캐시에 저장 
@@ -87,15 +91,43 @@ public class GenericActiveSkill
         }
     }
 
+    public override void Update(float deltaTime)
+    {
+        base.Update(deltaTime);
+
+        if(!IsPhaseRunning ) return;
+
+        if (phaseSkill == null || phaseSkill.modules == null)
+            return;
+
+        foreach(var module in phaseSkill.modules)
+            module?.Update(ownerCharacter, this, phaseSkill, deltaTime);
+    }
+
+    public override void FixedUpdate(float fixedDeltaTime)
+    {
+        if (!IsPhaseRunning) return;
+
+        if (phaseSkill == null || phaseSkill.modules == null)
+            return;
+
+        foreach (var module in phaseSkill.modules)
+        {
+            module?.FixedUpdate(ownerCharacter, this, phaseSkill, fixedDeltaTime);
+        }
+    }
+
     public override void Begin_JudgeAttack(AnimationEvent e)
     {
         base.Begin_JudgeAttack(e);
+        phaseSkill?.BeginJudgeAttack(ownerCharacter, this); 
         NotifyModules(phaseIndex, SkillTriggerTime.OnJudgeAttack);
     }
 
     public override void End_JudgeAttack(AnimationEvent e)
     {
         base.End_JudgeAttack(e);
+        phaseSkill?.EndJudgeAttack(ownerCharacter, this);
         NotifyModules(phaseIndex, SkillTriggerTime.OnEndJudgeAttack);
     }
 

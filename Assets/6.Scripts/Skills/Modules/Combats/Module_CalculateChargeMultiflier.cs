@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [ModuleCategory("Utility/Calculate Charge Multiplier")]
+[Serializable]
 public class Module_CalculateChargeMultiplier : SkillModule
 {
     [Tooltip("X축: 차지 시간, Y축: 데미지 배율")]

@@ -8,6 +8,9 @@ public class StageUIController
 {
     [SerializeField] private UIMapReplacer uiMapReplacer;
 
+    private ExploreManager exploreManager;
+
+ 
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -37,17 +40,18 @@ public class StageUIController
 
     protected void Start()
     {
-        // 데이터가 로드 안되어 있다면 강제로 Init 
-        var em = AppManager.Instance.GetExploreManager();
-        em.SafeInvoke(v =>v.EnsureInitialized());
-        em.OnStageClear += RefreshMainUI;
+        exploreManager = AppManager.Instance.GetExploreManager();
+
+        exploreManager.SafeInvoke(v => v.EnsureInitialized());
+
+        exploreManager.OnStageClear += RefreshMainUI;
 
         InitUIMapReplace();
 
-        // 배치가 끝났다면 탐사 상태로 변경 
-        if (em.CurrentState != ExploreState.ON_EXPLORE)
-            em.SafeInvoke(v => v.ChangeState(ExploreState.ON_EXPLORE));
+        if (exploreManager.CurrentState != ExploreState.ON_EXPLORE)
+            exploreManager.ChangeState(ExploreState.ON_EXPLORE);
     }
+
 
     protected void OnDisable()
     {
@@ -62,14 +66,14 @@ public class StageUIController
 
     private void InitUIMapReplace()
     {
-        if (uiMapReplacer == null) return;
+        if (uiMapReplacer == null || exploreManager == null) return;
 
         List<UIMapNode> uiMapNodes = new List<UIMapNode>();
         // Set Map Node 
         {
-            uiMapReplacer.ReplaceUINode(AppManager.Instance.GetMapReplacer());
+            uiMapReplacer.ReplaceUINode(exploreManager.StageReplacer);
             uiMapReplacer.GetUIMapNodes(ref uiMapNodes);
-            AppManager.Instance.GetExploreManager().UpdateMapUIState(uiMapReplacer);
+            exploreManager.UpdateMapUIState(uiMapReplacer);
         }
 
         // Set Node Event
@@ -103,7 +107,7 @@ public class StageUIController
 
     public void OnRecordInvenButton()
     {
-        UIManager.Instance?.OpenRecordInvenPopUp();
+        UIManager.Instance.SafeInvoke(v=>v.OpenRecordInvenPopUp());
     }
     #endregion
 }

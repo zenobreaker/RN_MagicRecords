@@ -42,17 +42,20 @@ public static class NodeRouter
         switch (node.type)
         {
             case StageType.Combat:
-                StageInfo combatData = AppManager.Instance.GetStageInfo(node.contentId);
+                StageInfo combatData =
+                    DataBaseManager.Instance.SafeInvoke(v=>v.GetStageInfo(node.contentId));
                 GameManager.Instance.EnterStage(combatData);
                 break;
 
             case StageType.Boss_Combat:
-                StageInfo bossCombat = AppManager.Instance.GetBossStageInfo(chapter, node.contentId);
+                StageInfo bossCombat =
+                    DataBaseManager.Instance.SafeInvoke(v=>v.GetBossStageInfo(chapter, node.contentId));
                 GameManager.Instance.EnterStage(bossCombat); 
                 break; 
 
             case StageType.Event:
-                EventInfo eventData = AppManager.Instance.GetEventInfo(node.contentId);
+                EventInfo eventData =
+                    DataBaseManager.Instance.SafeInvoke(v => v.GetEventInfo(node.contentId));
                 UIManager.Instance.OpenExploreEventPopup(eventData);
                 break;
         }
