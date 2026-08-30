@@ -6,7 +6,8 @@ public class JobInfo
 {
     public int id;
     public Sprite jobSprite;
-    public string jobName; 
+    public string jobName;
+    public bool isActive = true;
 }
 
 
@@ -20,6 +21,9 @@ public class SO_JobData : ScriptableObject
     {
         foreach (JobInfo info in list)
         {
+            if (info.isActive == false)
+                continue; 
+
             jobTable[info.id] = info;
         }
     }

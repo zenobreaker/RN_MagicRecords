@@ -29,13 +29,17 @@ public class RuntimeAutoTargetingOrb
     // 💡 풀링 환경에서 비동기 작업을 안전하게 취소하기 위한 토큰
     private CancellationTokenSource cancelTokenSource;
 
+    private bool bIsInstalled;
+
+    private void Awake()
+    {
+        bIsInstalled = false; 
+    }
+
     private void OnEnable()
     {
         // 활성화될 때마다 새로운 취소 토큰 생성
         cancelTokenSource = new CancellationTokenSource();
-        SoundManager.Instance.SafeInvoke(v => v.PlaySFX(createOrbSoundName));
-        // UniTask 실행 (Forget()을 붙여 경고 메시지 제거 및 Fire-and-forget 처리)
-        OrbFireSequenceAsync(cancelTokenSource.Token).Forget();
     }
 
     private void OnDisable()
@@ -48,8 +52,20 @@ public class RuntimeAutoTargetingOrb
             cancelTokenSource = null;
         }
 
+        bIsInstalled = false; 
+
         SoundManager.Instance.SafeInvoke(v => v.PlaySFX(destroyOrbSoundName));
         ObjectPooler.ReturnToPool(gameObject);    // 한 객체에 한번만 
+    }
+
+    public void Install()
+    {
+        if (bIsInstalled)
+            return;
+
+        SoundManager.Instance.SafeInvoke(v => v.PlaySFX(createOrbSoundName));
+        // UniTask 실행 (Forget()을 붙여 경고 메시지 제거 및 Fire-and-forget 처리)
+        OrbFireSequenceAsync(cancelTokenSource.Token).Forget();
     }
 
     // IEnumerator 대신 async UniTaskVoid 사용
@@ -127,7 +143,9 @@ public class RuntimeAutoTargetingOrb
         isExtraCrit = bExtraCrit;
         this.multiplier = multiplier;
 
-        myTeamId = TeamUtility.GetTeamId(attacker); 
+        myTeamId = TeamUtility.GetTeamId(attacker);
+        
+        bIsInstalled = true; 
     }
 
     public void AddIgnore(GameObject ignore)

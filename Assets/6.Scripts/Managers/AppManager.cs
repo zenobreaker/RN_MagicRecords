@@ -97,6 +97,7 @@ public class AppManager
             databaseManager = Instance.databaseManager;
             recordManager = Instance.recordManager;
             exploreManager = Instance.exploreManager;
+            rewardManager = Instance.rewardManager;
 
             bCheat = Instance.bCheat;
 
@@ -106,7 +107,7 @@ public class AppManager
 
     private void OnDisable()
     {
-        if (Instance != null) return;
+        if (Instance != this) return;
 
         if (GameManager.Instance == null) return;
 
@@ -142,11 +143,6 @@ public class AppManager
     }
 
     public ExploreManager GetExploreManager() { return exploreManager; }
-
-    public MapReplacer GetMapReplacer()
-    {
-        return exploreManager == null ? null : exploreManager.MapReplacer;
-    }
 
 
     private void AcceptReward()
@@ -232,20 +228,7 @@ public class AppManager
         return exploreManager.CanEnableNode(node.id, bCheat);
     }
 
-    public string GetRandomBiome(int chapter)
-    {
-        if (databaseManager == null) return ""; 
-        string biomeName =  databaseManager.GetRandomBiome(chapter);
 
-        exploreManager.BiomeName = biomeName;
-
-        return biomeName;
-    }
-
-    public SO_Biome GetBiomeData(string biomeName)
-    {
-        return BiomeManager.Instance.GetBiomeData(biomeName);
-    }
 
     public StageInfo GetStageInfo(int stageID)
     {
@@ -261,7 +244,6 @@ public class AppManager
 
     public int GetRandomStageId(int chapter)
     {
-        if (exploreManager == null) return -1;
         if (databaseManager == null) return -1;
 
         return databaseManager.GetRandomStageID(chapter); 
@@ -269,8 +251,6 @@ public class AppManager
 
     public int GetRandomBossStageID(int chapter)
     {
-        if (exploreManager == null) return 0;
-
         int stageId = databaseManager.GetRandomBossStageID(chapter);
         return stageId;
     }
@@ -315,11 +295,6 @@ public class AppManager
 
         var nodeInfo = GetNodeInfoMatchedMapNode(node);
 
-    }
-
-    public int GetRandomExploreEvent(int chapter)
-    {
-       return  databaseManager.GetRandomEventID(chapter);
     }
 
     private void HandleExploreStart()

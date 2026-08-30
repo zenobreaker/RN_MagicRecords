@@ -1,9 +1,10 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using UnityEditor.Build.Pipeline;
 using UnityEngine;
 
-public class DataBaseManager : MonoBehaviour
+public class DataBaseManager : Singleton<DataBaseManager>
 {
     private StageDataBase stageDataBase;
     private MonsterDataBase monsterDataBase;
@@ -13,12 +14,14 @@ public class DataBaseManager : MonoBehaviour
     private EnhanceDataBase enhanceDataBase;
     private RecordDataBase recordDataBase;
     private EventDataBase eventDataBase;
-    
+
     [SerializeField] private SO_StageIconDatabase stageIconDb;
 
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         if (gameObject.TryComponentInChildren<StageDataBase>(out stageDataBase))
             stageDataBase.Initialize();
 
@@ -54,12 +57,10 @@ public class DataBaseManager : MonoBehaviour
     }
 
 
-    public string GetRandomBiome(int chapter)
-    {
-        if (stageDataBase == null) return "";
-
-        return stageDataBase.GetRandomBiome(chapter);
-    }
+    public GameObject GetTargetBiomeObj(int chapter, int idx)
+         => stageDataBase.SafeInvoke(v => v.GetTargetBiomeObj(chapter, idx));
+    public GameObject GetRandBiomeObj(int chapter)
+        => stageDataBase.SafeInvoke(v => v.GetRandomBiomeObj(chapter));
 
     public int GetRandomStageID(int chapter)
     {
@@ -77,7 +78,7 @@ public class DataBaseManager : MonoBehaviour
 
     public int GetRandomBossStageID(int chapter)
     {
-        if(stageDataBase == null) return -1;
+        if (stageDataBase == null) return -1;
 
         return stageDataBase.GetRandomBossStageId(chapter);
     }
@@ -85,8 +86,17 @@ public class DataBaseManager : MonoBehaviour
     public StageInfo GetBossStageInfo(int chapter, int stageID)
     {
         if (stageDataBase == null) return null;
-        
+
         return stageDataBase.GetBossStageInfo(chapter, stageID);
+    }
+
+    public StageInfo GetRandomBossStageInfo(int chapter)
+    {
+        if (stageDataBase == null) return null;
+
+        int stageid = GetRandomBossStageID(chapter);
+
+        return stageDataBase.GetBossStageInfo(chapter, stageid);
     }
 
     public MonsterData GetMonsterData(int monsterID)
@@ -199,28 +209,28 @@ public class DataBaseManager : MonoBehaviour
 
     public RecordData GetRecordData(int recordID)
     {
-        if (recordDataBase == null) return null; 
+        if (recordDataBase == null) return null;
 
-        return recordDataBase.GetRecordData(recordID);    
+        return recordDataBase.GetRecordData(recordID);
     }
 
     public List<RecordData> GetAllRecordData()
     {
-        if (recordDataBase == null) return null; 
+        if (recordDataBase == null) return null;
 
-        return recordDataBase.GetAllRecordData(); 
+        return recordDataBase.GetAllRecordData();
     }
 
     public RecordData GetEmptyRecord()
     {
-        if (recordDataBase == null) return null; 
+        if (recordDataBase == null) return null;
 
         return recordDataBase.GetEmptyRecord();
     }
 
     public List<RecordData> GetRecordDatas(RecordRarity rarity)
     {
-        if (recordDataBase == null) return null; 
+        if (recordDataBase == null) return null;
 
         return recordDataBase.GetRecordDatas(rarity);
     }
@@ -237,6 +247,6 @@ public class DataBaseManager : MonoBehaviour
 
     public int GetRandomEventID(int chapter)
     {
-         return eventDataBase.GetRandomEventID(chapter);
+        return eventDataBase.GetRandomEventID(chapter);
     }
 }

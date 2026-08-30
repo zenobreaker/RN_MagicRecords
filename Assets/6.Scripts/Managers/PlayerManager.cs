@@ -204,6 +204,10 @@ public class PlayerManager :
         CharInfoListData listData = new();
         foreach (var info in characterIds)
         {
+            if (charClass == null || 
+                charEquipments[info] == null)
+                continue;
+
             int level = 1;
             if (charStatusDatas.TryGetValue(info, out var data))
                 level = data.level;

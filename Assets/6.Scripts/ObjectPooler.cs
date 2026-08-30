@@ -284,8 +284,10 @@ public partial class ObjectPooler : MonoBehaviour
     {
 
         // 1. 유효한 객체 확보 (공통 로직 호출)
-        GameObject objectToSpawn = GetOrCreateValidObject(tag);
-
+        GameObject objectToSpawn = GetOrCreateValidObject(tag, true);
+        if (objectToSpawn == null)
+            return null;
+        
         // 2. 위치/회전만 설정 (Peek 상태 유지)
         objectToSpawn.transform.SetPositionAndRotation(position, rotation);
 
@@ -295,10 +297,16 @@ public partial class ObjectPooler : MonoBehaviour
     /// <summary>
     /// Pool에서 유효한 객체를 찾아 반환하거나, 없으면 새로 생성하는 공통 로직
     /// </summary>
-    private GameObject GetOrCreateValidObject(string tag)
+    private GameObject GetOrCreateValidObject(string tag, bool deferred = false)
     {
-        if (!poolDictionary.ContainsKey(tag))
+        if (!poolDictionary.ContainsKey(tag) && deferred == false)
+        {
             throw new Exception($"Pool with tag {tag} doesn't exist.");
+        }
+        else if(!poolDictionary.ContainsKey(tag) && deferred)
+        {
+            return null;
+        }
 
         Queue<GameObject> poolQueue = poolDictionary[tag];
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [System.Serializable]
 public sealed class ChapterInfoJson : InfoJson
@@ -43,7 +44,8 @@ public class StageInfoJson
     public int id;
     public int stageType;
     public int chapter;
-    public string biome; 
+    public string biome;
+    public int mapIndex;
     public string groupIds;
     public int clearRewardId;
     public int wave;
@@ -64,10 +66,13 @@ public sealed class StageDataBase : DataBase
     [Header("Biomes Data Json")]
     [SerializeField] private TextAsset biomeJson;
 
-
     [Header("Stage Data Json")]
     [SerializeField] private TextAsset stageJson;
 
+    [Header("Chapter SO")]
+    [SerializeField] private SO_ChapterData chapterData;
+
+    private Dictionary<string, SO_Biome> biomeDict = new Dictionary<string, SO_Biome>();
     private Dictionary<int, ChapterInfo> chapterInfoTable = new();
     private Dictionary<int, BiomesInfo> biomeInfoTable = new();
 
@@ -85,6 +90,18 @@ public sealed class StageDataBase : DataBase
         InitializeBiomeData();
 
         InitializeStageData();
+
+        IntitializeChapterSO();
+    }
+
+    private void IntitializeChapterSO()
+    {
+        Debug.Assert(chapterData != null, $"Chapter Data를 할당하세요.");
+
+        foreach (var biome in chapterData.possibleBiomes)
+        {
+            biomeDict[biome.biomeName] = biome;
+        }
     }
 
     private void InitializeChapterData()
@@ -174,6 +191,7 @@ public sealed class StageDataBase : DataBase
                       biome = json.biome,
                       clearRewardId = json.clearRewardId,
                       chapter = json.chapter,
+                      mapIndex = json.mapIndex,
                       wave = json.wave
                   };
                   return stage;
@@ -215,9 +233,9 @@ public sealed class StageDataBase : DataBase
             $"bossChapterTable : {bossChapterTable.Count}");
     }
 
-    public string GetRandomBiome(int chapter)
+    public string GetBiomeThemeName(int chapter)
     {
-        if (chapterInfoTable != null && 
+        if (chapterInfoTable != null &&
             chapterInfoTable.TryGetValue(chapter, out var info))
         {
             if (info.possibleBiomes != null)
@@ -227,15 +245,52 @@ public sealed class StageDataBase : DataBase
 
                 int biomeId = info.possibleBiomes[biomeResultIdx];
 
-                if (biomeInfoTable != null && 
+                if (biomeInfoTable != null &&
                     biomeInfoTable.TryGetValue(biomeId, out var biome))
                     return biome.environmentData;
 
-                return "Test"; 
+                return "Test";
             }
         }
 
         return "Test";
+    }
+
+    public SO_Biome GetSOBiome(string themeName)
+    {
+        if (biomeDict == null) return null;
+        return biomeDict[themeName];
+    }
+
+    public GameObject GetTargetBiomeObj(int chapter, int idx)
+    {
+        string themeName = GetBiomeThemeName(chapter);
+        if (!string.IsNullOrEmpty(themeName))
+        {
+            SO_Biome biome = biomeDict[themeName];
+            if (biome == null) return null;
+            if(idx >= biome.possibleRoomPrefabs.Count) return null;
+
+            return biome.possibleRoomPrefabs[idx];
+        }
+
+        return null; 
+    }
+
+    public GameObject GetRandomBiomeObj(int chapter)
+    {
+        string themeName = GetBiomeThemeName(chapter);
+        if (!string.IsNullOrEmpty(themeName))
+        {
+            SO_Biome biome = biomeDict[themeName];
+            if(biome == null) return null;
+
+            int maxCount = biome.possibleRoomPrefabs.Count;
+            int radIdx = Random.Range(0, maxCount);
+            return biome.possibleRoomPrefabs[radIdx];
+        }
+
+        return null;
     }
 
     public string GetTestBiome() { return "Test"; }

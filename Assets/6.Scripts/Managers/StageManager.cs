@@ -32,7 +32,7 @@ public sealed class StageManager : MonoBehaviour
     private StageInfo currentStage;
 
     private SpawnManager spawnManager;
-    private RoomManager roomManager;
+    private RoomMaker roomMaker;
 
     private bool bEnableSpawn = false;
 
@@ -41,7 +41,7 @@ public sealed class StageManager : MonoBehaviour
     private void Awake()
     {
         spawnManager = GetComponent<SpawnManager>();
-        roomManager = GetComponent<RoomManager>();
+        roomMaker = new RoomMaker();    
     }
 
     private void OnEnable()
@@ -74,7 +74,7 @@ public sealed class StageManager : MonoBehaviour
     {
         try
         {
-            if (currentStage == null)
+            if (currentStage == null || roomMaker == null)
                 return new StageResult(); 
 
             stageState = StageState.Preparing;
@@ -87,7 +87,7 @@ public sealed class StageManager : MonoBehaviour
             }
 
             // 맵 로드 
-            RoomData roomData = roomManager.LoadRoom(currentStage);
+            RoomData roomData = roomMaker.CreateRoom(currentStage);
 
             // 플레이어 스폰 대기
             await spawnManager.SpawnCharacterAsync(1, roomData.MainSpawnPoints, token);
