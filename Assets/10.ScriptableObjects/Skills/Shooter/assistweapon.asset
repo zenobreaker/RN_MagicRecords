@@ -24,7 +24,8 @@ MonoBehaviour:
   - range: 0
     limitMinCooldown: 20
     cooldown: 40
-    castingTime: 0
+    castingTime: 0.25
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 15
@@ -44,13 +45,15 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
   - range: 0
     limitMinCooldown: 20
     cooldown: 40
-    castingTime: 0
+    castingTime: 0.25
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 17
@@ -70,13 +73,15 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
   - range: 0
     limitMinCooldown: 20
     cooldown: 40
-    castingTime: 0
+    castingTime: 0.25
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 19
@@ -96,13 +101,15 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
   - range: 0
     limitMinCooldown: 20
     cooldown: 40
-    castingTime: 0
+    castingTime: 0.25
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 21
@@ -122,13 +129,15 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
   - range: 0
     limitMinCooldown: 20
     cooldown: 40
-    castingTime: 0
+    castingTime: 0.25
+    chargeTime: 0
     damageData:
       damageType: 0
       baseDamage: 23
@@ -148,6 +157,7 @@ MonoBehaviour:
         HitParticle: {fileID: 0}
         HitParticlePositionOffset: {x: 0, y: 0, z: 0}
         HitParticleScaleOffset: {x: 0, y: 0, z: 0}
+      ignoreDefenseRate: 0
     bonusOptionList: 
     spawnCount: 1
     angle: 0
@@ -168,19 +178,61 @@ MonoBehaviour:
   - phaseName: "\uC0DD\uC131"
     isInstant: 1
     modules:
+    - rid: 1371895434487791694
+    - rid: 1371895434487791695
+    - rid: 1371895434487791710
+  - phaseName: "\uC0DD\uC131"
+    isInstant: 0
+    modules:
     - rid: 8682830616796856459
-    skillObject: {fileID: 3606507098463213375, guid: a154784cad37b0545beb0c94f0df3e87, type: 3}
-    objectName: 
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
+    - rid: 1371895434487791698
+    - rid: 1371895434487791699
   references:
     version: 2
     RefIds:
+    - rid: 1371895434487791694
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        parameterName: IsCasting
+        paramType: 0
+        boolValue: 1
+        floatValue: 0
+        intValue: 0
+    - rid: 1371895434487791695
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        controlType: 0
+        speedMultiplier: 0.5
+    - rid: 1371895434487791698
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        controlType: 1
+        speedMultiplier: 0.5
+    - rid: 1371895434487791699
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        parameterName: IsCasting
+        paramType: 0
+        boolValue: 0
+        floatValue: 0
+        intValue: 0
+    - rid: 1371895434487791710
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        parameterName: Casting
+        paramType: 3
+        boolValue: 0
+        floatValue: 0
+        intValue: 0
     - rid: 8682830616796856459
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 0
+        triggerTime: 4
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -202,6 +254,7 @@ MonoBehaviour:
             HitParticle: {fileID: 0}
             HitParticlePositionOffset: {x: 0, y: 0, z: 0}
             HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+          ignoreDefenseRate: 0
         spawnPosition: {x: 0, y: 0, z: 0}
         spawnRotation: {x: 0, y: 0, z: 0}
         patternType: 0
@@ -210,4 +263,3 @@ MonoBehaviour:
         spawnObj: {fileID: 3606507098463213375, guid: a154784cad37b0545beb0c94f0df3e87, type: 3}
         objectName: 
         baseLifeTime: -1
-        useBlackboardPattern: 1

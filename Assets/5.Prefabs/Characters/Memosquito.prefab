@@ -588,7 +588,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9390b2db8381934eba058cebcb26d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useAnimationEvents: 1
   originPrefabs:
   - {fileID: 3126351601299179236, guid: 4f742ae19609b434fa361ca3152a3264, type: 3}
   initType: 3
@@ -651,8 +650,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   combatStyle: 1
+  defaultStopRange: 1.5
   patternEntries:
   - slotName: slot2
+    defaultIsUse: 1
     conditions:
     - type: 0
       ctype: 4
@@ -660,17 +661,17 @@ MonoBehaviour:
     - type: 3
       ctype: 4
       value: 12
-    skill: {fileID: 11400000, guid: f18986f394989954aba7f76f86268a6c, type: 2}
-  defaultAttack:
-    slotName: default
+    skill: {fileID: 11400000, guid: 869f6673d14616f47a277e0f959af47c, type: 2}
+  - slotName: slot1
+    defaultIsUse: 1
     conditions:
     - type: 0
       ctype: 4
       value: 5
     - type: 3
       ctype: 5
-      value: 4
-    skill: {fileID: 0}
+      value: 3
+    skill: {fileID: 11400000, guid: f561829a8243bbc45b5d312bfb6b2dd6, type: 2}
 --- !u!114 &5727818965257582011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -684,6 +685,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SO_Movement: {fileID: 11400000, guid: 8b47bfc4a8b8c2e4c9abc94758b81c19, type: 2}
+  dashCollisionSearchPadding: 0.5
+  characterLayer:
+    serializedVersion: 2
+    m_Bits: 264
   dashSpeed: 25
   dashDistance: 5
 --- !u!1 &7218114331738614421

@@ -85,8 +85,8 @@ MonoBehaviour:
     - rid: 1371895025776984066
     - rid: 1371895004803629238
     - rid: 1371895004803629155
-    - rid: 1371895004803629156
     - rid: 1371895025776984067
+    - rid: 1371895004803629156
     - rid: 1371895131259535483
     skillObject: {fileID: 0}
     objectName: 
@@ -394,7 +394,7 @@ MonoBehaviour:
     - rid: 1371895025776984065
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 0
+        triggerTime: 4
         controlType: 1
         speedMultiplier: 0
     - rid: 1371895025776984066
@@ -406,7 +406,7 @@ MonoBehaviour:
     - rid: 1371895025776984067
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 3
+        triggerTime: 4
         controlType: 1
         speedMultiplier: 0.5
     - rid: 1371895025776984068
@@ -418,7 +418,7 @@ MonoBehaviour:
     - rid: 1371895025776984069
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 0
+        triggerTime: 4
         controlType: 1
         speedMultiplier: 0.5
     - rid: 1371895025776984070

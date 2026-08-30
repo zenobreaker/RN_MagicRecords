@@ -2166,13 +2166,11 @@ GameObject:
   - component: {fileID: 3806654061284044991}
   - component: {fileID: 2982591067945177240}
   - component: {fileID: 7870455255664782143}
-  - component: {fileID: 7246429268575232567}
   - component: {fileID: 7484770316190235113}
-  - component: {fileID: 3924612880793301116}
   - component: {fileID: 4480503508081750894}
   - component: {fileID: 2330361896713357098}
-  - component: {fileID: 781754991892433395}
   - component: {fileID: 7616402120698274475}
+  - component: {fileID: 781754991892433395}
   - component: {fileID: 6235755972502760631}
   - component: {fileID: 4749969207082184895}
   - component: {fileID: 5360620584534484074}
@@ -2368,20 +2366,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentLanguage: 0
   stringJson: {fileID: 4900000, guid: 704e529e3e06ba24f877708f91dc49ad, type: 3}
---- !u!114 &7246429268575232567
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6372159647807091890}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de1a2cfbb7cdd0a4298a2dddf85cb123, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  backgroundMaterial: {fileID: 2100000, guid: 15ac788db25badb41b1c9cbc1e9ddeb6, type: 2}
-  chapterData: {fileID: 11400000, guid: 1c4641159b49caf478103b3291c69003, type: 2}
 --- !u!114 &7484770316190235113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2400,18 +2384,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 070340146e1cfac43bd3c68577502048, type: 2}
   - {fileID: 11400000, guid: ba0fa22ee070d4d4585311b92550f92b, type: 2}
   - {fileID: 11400000, guid: 4b29b44d3c6f92d42bf364dccacf9026, type: 2}
---- !u!114 &3924612880793301116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6372159647807091890}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f7dead18dc1ad54798fdaf1bc721173, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4480503508081750894
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2439,18 +2411,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stageState: 0
---- !u!114 &781754991892433395
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6372159647807091890}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a9a372b59f51024ea7e2b99b13b972c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7616402120698274475
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2461,6 +2421,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ad4be896bee8df479f11c1d54259fd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &781754991892433395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6372159647807091890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a9a372b59f51024ea7e2b99b13b972c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &6235755972502760631
@@ -3448,6 +3420,7 @@ MonoBehaviour:
   chapterJson: {fileID: 4900000, guid: 8a87244a5a886ab4581a30be7a63c639, type: 3}
   biomeJson: {fileID: 4900000, guid: bfcf26fb6c15da94bb1bc1eed6fce690, type: 3}
   stageJson: {fileID: 4900000, guid: 9a4e7b29df426a74ea8d6c61f3a3ede8, type: 3}
+  chapterData: {fileID: 11400000, guid: 1c4641159b49caf478103b3291c69003, type: 2}
 --- !u!114 &2185832905276735178
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -38,23 +38,19 @@ MonoBehaviour:
   - phaseName: "\uCE90\uC2A4\uD305"
     isInstant: 0
     modules:
-    - rid: 1371895267614785640
+    - rid: 1371895388252405760
     - rid: 1371895050838999040
     - rid: 1371895267614785647
     - rid: 1371895267614785639
-    skillObject: {fileID: 0}
-    objectName: 
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+    - rid: 1371895388252405871
   - phaseName: "\uCE90\uC2A4\uD305 \uC2DC\uC791"
     isInstant: 0
-    modules: []
-    skillObject: {fileID: 0}
-    objectName: 
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+    modules:
+    - rid: 1371895388252405880
+    - rid: 1371895399042515057
+    - rid: 1371895388252405764
+    - rid: 1371895399042515112
+    - rid: 1371895388252405761
   references:
     version: 2
     RefIds:
@@ -81,22 +77,131 @@ MonoBehaviour:
         signType: 1
         duration: 1
         isSetTargetPos: 0
-        fallbackSpawnCount: 3
+        fillMode: 0
+        fallbackSpawnCount: 1
         fallbackAngleBetween: 0
         startAngleOffset: 0
         radius: 1
-        rectSize: {x: 1, y: 1}
-        maxRectSize: {x: 1, y: 5}
+        rectSize: {x: 0.5, y: 0}
+        maxRectSize: {x: 0.5, y: 2.5}
         fanRadius: 2
         fanAngle: 90
-    - rid: 1371895267614785640
-      type: {class: Module_ChargeWait, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 0
-        maxChargeTime: 3
     - rid: 1371895267614785647
       type: {class: Module_SetTargetByPerception, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
         isAutoTarget: 1
         defaultDistance: 100
+    - rid: 1371895388252405760
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        parameterName: IsCharging
+        paramType: 0
+        boolValue: 1
+        floatValue: 0
+        intValue: 0
+    - rid: 1371895388252405761
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 7
+        parameterName: IsCharging
+        paramType: 0
+        boolValue: 0
+        floatValue: 0
+        intValue: 0
+    - rid: 1371895388252405764
+      type: {class: Module_HitDetection, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        shape: 0
+        localCenter: {x: 0, y: 0, z: 1}
+        detectionDuration: 0
+        CheckInterval: 0.05
+        preventDuplicateHit: 1
+        targetLayer:
+          serializedVersion: 2
+          m_Bits: 264
+        detectImmediately: 1
+        radius: 2
+        localEnd: {x: 0, y: 0, z: 2}
+        capsuleRadius: 0.5
+        fanRadius: 3
+        fanAngle: 90
+    - rid: 1371895388252405871
+      type: {class: Module_SetDamageData, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        DamageData:
+          damageType: 0
+          baseDamage: 100
+          statCoefficient: 0
+          bDownable: 0
+          bLauncher: 0
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          csp: {fileID: 0}
+          hitData:
+            DamageType: 0
+            Distance: 0
+            HeightValue: 0
+            StopFrame: 0
+            HitImpactIndex: 0
+            HitSoundName: 
+            HitParticle: {fileID: 0}
+            HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+            HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+          ignoreDefenseRate: 0
+    - rid: 1371895388252405880
+      type: {class: Module_Dash, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        distance: 20
+        duration: 2
+        useTargetPosition: 1
+        speedCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 1
+            outSlope: 1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 1
+            outSlope: 1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        bIsMoveOverTime: 1
+        bIsGhostMode: 1
+    - rid: 1371895399042515057
+      type: {class: Module_DelayEvent, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        eventType: 0
+        delay: 0.25
+        floatValue: 0
+        intValue: 0
+        stringValue: 
+        objectValue: {fileID: 0}
+    - rid: 1371895399042515112
+      type: {class: Module_DelayEvent, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        eventType: 1
+        delay: 1
+        floatValue: 0
+        intValue: 0
+        stringValue: 
+        objectValue: {fileID: 0}

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a45f9791fc77e874c9cfd4fd8604a80c, type: 3}
   m_Name: JumpPress
   m_EditorClassIdentifier: 
-  id: 1001
+  id: 6003
   skillName: JumpPress
   skillDescription: 
   learnableLevel: 0
@@ -20,138 +20,79 @@ MonoBehaviour:
   skillUpgradeCost: 
   skillImage: {fileID: 0}
   leadingSkillList: 
-  cost: 0
-  cooldown: 5
-  limitCooldown: 5
-  castingTime: 0.3
+  levelDatas: []
+  range: -1
+  isConcurrentSkill: 0
+  actionData:
+    subStateName: 
+    stateName: 
+    layerName: 
+    actionSpeed: 1
+    droneReactionType: 1
+    weaponActionName: 
+    SoundName: 
+    impulseDirection: {x: 0, y: 0, z: 0}
+    csp: {fileID: 0}
+    bCanMove: 0
   phaseList:
   - phaseName: 
     isInstant: 0
     modules:
+    - rid: 1371895424172425317
+    - rid: 1371895424172425314
+    - rid: 1371895424172425316
     - rid: 7308159156281147392
-    baseDamage: 0
-    confficient: 0
-    hitDelay: 0.015
-    duration: 0
-    damageData:
-      damageType: 0
-      Power: 0
-      bDownable: 0
-      bLauncher: 0
-      SoundName: 
-      impulseDirection: {x: 0, y: 0, z: 0}
-      settings: {fileID: 0}
-      hitData:
-        DamageType: 0
-        Distance: 0
-        HeightValue: 0
-        StopFrame: 0
-        HitImpactIndex: 0
-        HitSoundName: 
-        HitParticle: {fileID: 0}
-        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
-    bonusOptionList: 
-    skillObject: {fileID: 0}
-    objectName: 
-    actionData:
-      subStateName: Charging_Start
-      stateName: Charging
-      layerName: 
-      actionSpeed: 1
-      weaponActionName: 
-      SoundName: 
-      impulseDirection: {x: 0, y: 0, z: 0}
-      settings: {fileID: 0}
-      bCanMove: 0
-    soundName: 
-    spawnPosition: {x: 0, y: 1, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+    - rid: 1371895424172425318
+    - rid: 1371895424172425319
   - phaseName: 
     isInstant: 0
     modules: []
-    baseDamage: 0
-    confficient: 0
-    hitDelay: 0.015
-    duration: 0
-    damageData:
-      damageType: 0
-      Power: 0
-      bDownable: 0
-      bLauncher: 0
-      SoundName: 
-      impulseDirection: {x: 0, y: 0, z: 0}
-      settings: {fileID: 0}
-      hitData:
-        DamageType: 0
-        Distance: 0
-        HeightValue: 0
-        StopFrame: 0
-        HitImpactIndex: 0
-        HitSoundName: 
-        HitParticle: {fileID: 0}
-        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
-    bonusOptionList: 
-    skillObject: {fileID: 0}
-    objectName: 
-    actionData:
-      subStateName: 
-      stateName: 
-      layerName: 
-      actionSpeed: 1
-      weaponActionName: 
-      SoundName: 
-      impulseDirection: {x: 0, y: 0, z: 0}
-      settings: {fileID: 0}
-      bCanMove: 0
-    soundName: 
-    spawnPosition: {x: 0, y: 1, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
   - phaseName: 
     isInstant: 0
     modules: []
-    baseDamage: 20
-    confficient: 0
-    hitDelay: 0.015
-    duration: 0
-    damageData:
-      damageType: 0
-      Power: 2
-      bDownable: 0
-      bLauncher: 0
-      SoundName: 
-      impulseDirection: {x: 0, y: 0, z: 0}
-      settings: {fileID: 0}
-      hitData:
-        DamageType: 0
-        Distance: 20
-        HeightValue: 0
-        StopFrame: 0
-        HitImpactIndex: 0
-        HitSoundName: 
-        HitParticle: {fileID: 0}
-        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
-        HitParticleScaleOffset: {x: 0, y: 0, z: 0}
-    bonusOptionList: 
-    skillObject: {fileID: 0}
-    objectName: 
-    actionData:
-      subStateName: Charging_End
-      stateName: Charging
-      layerName: 
-      actionSpeed: 1
-      weaponActionName: 
-      SoundName: 
-      impulseDirection: {x: 0, y: 0, z: 0}
-      settings: {fileID: 0}
-      bCanMove: 0
-    soundName: 
-    spawnPosition: {x: 0, y: 1, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
   references:
     version: 2
     RefIds:
+    - rid: 1371895424172425314
+      type: {class: Module_CalcTargetPosition, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        targetingType: 4
+        scanRadius: 10
+        enemyLayer:
+          serializedVersion: 2
+          m_Bits: 8
+        maxTargetCount: 1
+        forwardDistance: 50
+        fixedLocalOffset: {x: 0, y: 0, z: 0}
+    - rid: 1371895424172425316
+      type: {class: Module_LookAtTarget, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        useBlackboardPos: 1
+        lookAtOwnerTarget: 0
+        turnSpeed: 0
+    - rid: 1371895424172425317
+      type: {class: Module_SetTargetByPerception, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        isAutoTarget: 1
+        defaultDistance: 50
+    - rid: 1371895424172425318
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        controlType: 0
+        speedMultiplier: 0.5
+    - rid: 1371895424172425319
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        parameterName: IsCharging
+        paramType: 0
+        boolValue: 1
+        floatValue: 0
+        intValue: 0
     - rid: 7308159156281147392
       type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
       data:
@@ -159,9 +100,10 @@ MonoBehaviour:
         useBlackboardPattern: 0
         signType: 0
         duration: 1
-        isSetTargetPos: 0
-        spawnCount: 1
-        angleBetween: 0
+        isSetTargetPos: 1
+        fillMode: 2
+        fallbackSpawnCount: 1
+        fallbackAngleBetween: 0
         startAngleOffset: 0
         radius: 1
         rectSize: {x: 1, y: 1}

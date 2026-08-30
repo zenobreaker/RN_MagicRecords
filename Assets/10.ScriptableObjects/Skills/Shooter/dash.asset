@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: dash
   m_EditorClassIdentifier: Assembly-CSharp::SO_ActiveSkillData
   id: 1025
-  skillName: New Active Skill
+  skillName: name_dash
   skillDescription: 
   learnableLevel: 0
   maxLevel: 0
   skillUpgradeCost: 
-  skillImage: {fileID: 0}
+  skillImage: {fileID: 21300000, guid: 24159eb5a316fcc48bc820607bbe5a23, type: 3}
   leadingSkillList: 
   levelDatas: []
   range: -1
@@ -34,7 +34,47 @@ MonoBehaviour:
     impulseDirection: {x: 0, y: 0, z: 0}
     csp: {fileID: 0}
     bCanMove: 0
-  phaseList: []
+  phaseList:
+  - phaseName: 
+    isInstant: 0
+    modules:
+    - rid: 1371895267614785654
+    skillObject: {fileID: 0}
+    objectName: 
+    soundName: 
+    spawnPosition: {x: 0, y: 0, z: 0}
+    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 1371895267614785654
+      type: {class: Module_Dash, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        distance: 5
+        duration: 0.3
+        useTargetPosition: 0
+        speedCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4

@@ -735,6 +735,7 @@ MonoBehaviour:
   defaultStopRange: 10
   patternEntries:
   - slotName: slot3
+    defaultIsUse: 1
     conditions:
     - type: 0
       ctype: 4
@@ -747,6 +748,7 @@ MonoBehaviour:
       value: 0.7
     skill: {fileID: 11400000, guid: 1ebd485649b3fc14ab134fd18826e723, type: 2}
   - slotName: slot2
+    defaultIsUse: 1
     conditions:
     - type: 0
       ctype: 4
@@ -756,6 +758,7 @@ MonoBehaviour:
       value: 20
     skill: {fileID: 11400000, guid: b8626d04137768a489f6ca93738912d3, type: 2}
   - slotName: default
+    defaultIsUse: 1
     conditions:
     - type: 0
       ctype: 4
@@ -764,6 +767,19 @@ MonoBehaviour:
       ctype: 5
       value: 13
     skill: {fileID: 11400000, guid: 1ebd485649b3fc14ab134fd18826e723, type: 2}
+  - slotName: BreakRush
+    defaultIsUse: 1
+    conditions:
+    - type: 0
+      ctype: 4
+      value: 15
+    - type: 3
+      ctype: 5
+      value: 100
+    - type: 1
+      ctype: 5
+      value: 0.8
+    skill: {fileID: 11400000, guid: 7ba8b1c9070294a49ae6640180bb14cb, type: 2}
 --- !u!114 &253665532066184430
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -777,6 +793,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SO_Movement: {fileID: 11400000, guid: 8b47bfc4a8b8c2e4c9abc94758b81c19, type: 2}
+  dashCollisionSearchPadding: 0.5
+  characterLayer:
+    serializedVersion: 2
+    m_Bits: 264
   dashSpeed: 25
   dashDistance: 5
 --- !u!65 &5679554539548884376

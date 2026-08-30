@@ -1,0 +1,646 @@
+fileFormatVersion: 2
+guid: e9dda2d2fddd98845ab95cb256605536
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Autumn Arch
+    100002: Autumn Cave
+    100004: Autumn Cliff 1
+    100006: Autumn Cliff 2
+    100008: Autumn Cliff 3
+    100010: Autumn Low Cliff 1
+    100012: Autumn Low Cliff 2
+    100014: Autumn Pine Tree 1
+    100016: Autumn Pine Tree 2
+    100018: Autumn Pine Tree 3
+    100020: Autumn Pine Tree 4
+    100022: Autumn Pink Tree 1
+    100024: Autumn Pink Tree 2
+    100026: Autumn Pink Tree 3
+    100028: Autumn Round Tree 1
+    100030: Autumn Round Tree 2
+    100032: Autumn Round Tree 3
+    100034: Autumn Shrub 1
+    100036: Autumn Shrub 2
+    100038: Autumn Shrub 3
+    100040: Autumn Shrub 4
+    100042: Building 1
+    100044: Chest
+    100046: Chest.Lid
+    100048: Cylinder.048
+    100050: Cylinder.049
+    100052: Cylinder.050
+    100054: Dead Standing Tree 1
+    100056: Dead Standing Tree 2
+    100058: Fallen Log
+    100060: Fence Post 1
+    100062: Fence Post 2
+    100064: Fence Post and Slat
+    100066: Grass 1
+    100068: Grass 2
+    100070: Ground Plant 1
+    100072: Ground Plant 2
+    100074: //RootNode
+    100076: LowPoly Male
+    100078: Mountain
+    100080: Mushroom
+    100082: Rock 1
+    100084: Rock 2
+    100086: Rock 3
+    100088: Sign Post
+    100090: Summer Arch
+    100092: Summer Cave
+    100094: Summer Cliff 1
+    100096: Summer Cliff 2
+    100098: Summer Cliff 3
+    100100: Summer Low Cliff 1
+    100102: Summer Low Cliff 2
+    100104: Summer Pine Tree 1
+    100106: Summer Pine Tree 2
+    100108: Summer Pine Tree 3
+    100110: Summer Pine Tree 4
+    100112: Summer Pink Tree 1
+    100114: Summer Pink Tree 2
+    100116: Summer Pink Tree 3
+    100118: Summer Round Tree 1
+    100120: Summer Round Tree 2
+    100122: Summer Round Tree 3
+    100124: Summer Shrub 1
+    100126: Summer Shrub 2
+    100128: Summer Shrub 3
+    100130: Summer Shrub 4
+    100132: Tree Stump 1
+    100134: Walk Through Rock
+    100136: Water Well
+    100138: Winter Arch
+    100140: Winter Cave
+    100142: Winter Cliff 1
+    100144: Winter Cliff 2
+    100146: Winter Cliff 3
+    100148: Winter Dead Standing Tree 1
+    100150: Winter Dead Standing Tree 2
+    100152: Winter Fallen Log
+    100154: Winter Grass 1
+    100156: Winter Grass 2
+    100158: Winter Ground Plant 1
+    100160: Winter Ground Plant 2
+    100162: Winter Low Cliff 1
+    100164: Winter Low Cliff 2
+    100166: Winter Pine Tree 1
+    100168: Winter Pine Tree 2
+    100170: Winter Pine Tree 3
+    100172: Winter Pine Tree 4
+    100174: Winter Pink Tree 1
+    100176: Winter Pink Tree 2
+    100178: Winter Pink Tree 3
+    100180: Winter Rock 1
+    100182: Winter Rock 2
+    100184: Winter Rock 3
+    100186: Winter Round Tree 1
+    100188: Winter Round Tree 2
+    100190: Winter Round Tree 3
+    100192: Winter Shrub 1
+    100194: Winter Shrub 2
+    100196: Winter Shrub 3
+    100198: Winter Shrub 4
+    100200: Winter Tree Stump 1
+    400000: Autumn Arch
+    400002: Autumn Cave
+    400004: Autumn Cliff 1
+    400006: Autumn Cliff 2
+    400008: Autumn Cliff 3
+    400010: Autumn Low Cliff 1
+    400012: Autumn Low Cliff 2
+    400014: Autumn Pine Tree 1
+    400016: Autumn Pine Tree 2
+    400018: Autumn Pine Tree 3
+    400020: Autumn Pine Tree 4
+    400022: Autumn Pink Tree 1
+    400024: Autumn Pink Tree 2
+    400026: Autumn Pink Tree 3
+    400028: Autumn Round Tree 1
+    400030: Autumn Round Tree 2
+    400032: Autumn Round Tree 3
+    400034: Autumn Shrub 1
+    400036: Autumn Shrub 2
+    400038: Autumn Shrub 3
+    400040: Autumn Shrub 4
+    400042: Building 1
+    400044: Chest
+    400046: Chest.Lid
+    400048: Cylinder.048
+    400050: Cylinder.049
+    400052: Cylinder.050
+    400054: Dead Standing Tree 1
+    400056: Dead Standing Tree 2
+    400058: Fallen Log
+    400060: Fence Post 1
+    400062: Fence Post 2
+    400064: Fence Post and Slat
+    400066: Grass 1
+    400068: Grass 2
+    400070: Ground Plant 1
+    400072: Ground Plant 2
+    400074: //RootNode
+    400076: LowPoly Male
+    400078: Mountain
+    400080: Mushroom
+    400082: Rock 1
+    400084: Rock 2
+    400086: Rock 3
+    400088: Sign Post
+    400090: Summer Arch
+    400092: Summer Cave
+    400094: Summer Cliff 1
+    400096: Summer Cliff 2
+    400098: Summer Cliff 3
+    400100: Summer Low Cliff 1
+    400102: Summer Low Cliff 2
+    400104: Summer Pine Tree 1
+    400106: Summer Pine Tree 2
+    400108: Summer Pine Tree 3
+    400110: Summer Pine Tree 4
+    400112: Summer Pink Tree 1
+    400114: Summer Pink Tree 2
+    400116: Summer Pink Tree 3
+    400118: Summer Round Tree 1
+    400120: Summer Round Tree 2
+    400122: Summer Round Tree 3
+    400124: Summer Shrub 1
+    400126: Summer Shrub 2
+    400128: Summer Shrub 3
+    400130: Summer Shrub 4
+    400132: Tree Stump 1
+    400134: Walk Through Rock
+    400136: Water Well
+    400138: Winter Arch
+    400140: Winter Cave
+    400142: Winter Cliff 1
+    400144: Winter Cliff 2
+    400146: Winter Cliff 3
+    400148: Winter Dead Standing Tree 1
+    400150: Winter Dead Standing Tree 2
+    400152: Winter Fallen Log
+    400154: Winter Grass 1
+    400156: Winter Grass 2
+    400158: Winter Ground Plant 1
+    400160: Winter Ground Plant 2
+    400162: Winter Low Cliff 1
+    400164: Winter Low Cliff 2
+    400166: Winter Pine Tree 1
+    400168: Winter Pine Tree 2
+    400170: Winter Pine Tree 3
+    400172: Winter Pine Tree 4
+    400174: Winter Pink Tree 1
+    400176: Winter Pink Tree 2
+    400178: Winter Pink Tree 3
+    400180: Winter Rock 1
+    400182: Winter Rock 2
+    400184: Winter Rock 3
+    400186: Winter Round Tree 1
+    400188: Winter Round Tree 2
+    400190: Winter Round Tree 3
+    400192: Winter Shrub 1
+    400194: Winter Shrub 2
+    400196: Winter Shrub 3
+    400198: Winter Shrub 4
+    400200: Winter Tree Stump 1
+    2100000: Material.002
+    2100002: Material.003
+    2100004: Material.007
+    2100006: Material.004
+    2100008: Material.006
+    2100010: Material.005
+    2100012: Material.008
+    2100014: Material.009
+    2100016: Material.010
+    2100018: Material.012
+    2100020: Material.013
+    2100022: Material.015
+    2100024: Material.001
+    2100026: Material.016
+    2100028: Material.018
+    2100030: Material.017
+    2100032: Material.020
+    2100034: Material.021
+    2100036: Material.044
+    2100038: Material.046
+    2100040: Material.047
+    2100042: Material.042
+    2100044: Material.043
+    2100046: Material.040
+    2100048: Material.023
+    2100050: Material.038
+    2100052: Material.045
+    2100054: Material.048
+    2100056: Material.049
+    2100058: Material.050
+    2100060: Material.056
+    2100062: Material.054
+    2100064: Material.052
+    2100066: Material.053
+    2100068: Material.051
+    2100070: Material.055
+    2100072: Material.061
+    2100074: Material.066
+    2100076: Material.064
+    2100078: Material.068
+    2100080: Material.074
+    2100082: Material.073
+    2100084: Material.077
+    2100086: Material.078
+    2100088: Material.076
+    2100090: Material.080
+    2100092: Material.079
+    2100094: Material.085
+    2100096: Material.082
+    2100098: Material.081
+    2100100: Material.087
+    2300000: Autumn Arch
+    2300002: Autumn Cave
+    2300004: Autumn Cliff 1
+    2300006: Autumn Cliff 2
+    2300008: Autumn Cliff 3
+    2300010: Autumn Low Cliff 1
+    2300012: Autumn Low Cliff 2
+    2300014: Autumn Pine Tree 1
+    2300016: Autumn Pine Tree 2
+    2300018: Autumn Pine Tree 3
+    2300020: Autumn Pine Tree 4
+    2300022: Autumn Pink Tree 1
+    2300024: Autumn Pink Tree 2
+    2300026: Autumn Pink Tree 3
+    2300028: Autumn Round Tree 1
+    2300030: Autumn Round Tree 2
+    2300032: Autumn Round Tree 3
+    2300034: Autumn Shrub 1
+    2300036: Autumn Shrub 2
+    2300038: Autumn Shrub 3
+    2300040: Autumn Shrub 4
+    2300042: Building 1
+    2300044: Chest
+    2300046: Chest.Lid
+    2300048: Cylinder.048
+    2300050: Cylinder.049
+    2300052: Cylinder.050
+    2300054: Dead Standing Tree 1
+    2300056: Dead Standing Tree 2
+    2300058: Fallen Log
+    2300060: Fence Post 1
+    2300062: Fence Post 2
+    2300064: Fence Post and Slat
+    2300066: Grass 1
+    2300068: Grass 2
+    2300070: Ground Plant 1
+    2300072: Ground Plant 2
+    2300074: LowPoly Male
+    2300076: Mountain
+    2300078: Mushroom
+    2300080: Rock 1
+    2300082: Rock 2
+    2300084: Rock 3
+    2300086: Sign Post
+    2300088: Summer Arch
+    2300090: Summer Cave
+    2300092: Summer Cliff 1
+    2300094: Summer Cliff 2
+    2300096: Summer Cliff 3
+    2300098: Summer Low Cliff 1
+    2300100: Summer Low Cliff 2
+    2300102: Summer Pine Tree 1
+    2300104: Summer Pine Tree 2
+    2300106: Summer Pine Tree 3
+    2300108: Summer Pine Tree 4
+    2300110: Summer Pink Tree 1
+    2300112: Summer Pink Tree 2
+    2300114: Summer Pink Tree 3
+    2300116: Summer Round Tree 1
+    2300118: Summer Round Tree 2
+    2300120: Summer Round Tree 3
+    2300122: Summer Shrub 1
+    2300124: Summer Shrub 2
+    2300126: Summer Shrub 3
+    2300128: Summer Shrub 4
+    2300130: Tree Stump 1
+    2300132: Walk Through Rock
+    2300134: Water Well
+    2300136: Winter Arch
+    2300138: Winter Cave
+    2300140: Winter Cliff 1
+    2300142: Winter Cliff 2
+    2300144: Winter Cliff 3
+    2300146: Winter Dead Standing Tree 1
+    2300148: Winter Dead Standing Tree 2
+    2300150: Winter Fallen Log
+    2300152: Winter Grass 1
+    2300154: Winter Grass 2
+    2300156: Winter Ground Plant 1
+    2300158: Winter Ground Plant 2
+    2300160: Winter Low Cliff 1
+    2300162: Winter Low Cliff 2
+    2300164: Winter Pine Tree 1
+    2300166: Winter Pine Tree 2
+    2300168: Winter Pine Tree 3
+    2300170: Winter Pine Tree 4
+    2300172: Winter Pink Tree 1
+    2300174: Winter Pink Tree 2
+    2300176: Winter Pink Tree 3
+    2300178: Winter Rock 1
+    2300180: Winter Rock 2
+    2300182: Winter Rock 3
+    2300184: Winter Round Tree 1
+    2300186: Winter Round Tree 2
+    2300188: Winter Round Tree 3
+    2300190: Winter Shrub 1
+    2300192: Winter Shrub 2
+    2300194: Winter Shrub 3
+    2300196: Winter Shrub 4
+    2300198: Winter Tree Stump 1
+    3300000: Autumn Arch
+    3300002: Autumn Cave
+    3300004: Autumn Cliff 1
+    3300006: Autumn Cliff 2
+    3300008: Autumn Cliff 3
+    3300010: Autumn Low Cliff 1
+    3300012: Autumn Low Cliff 2
+    3300014: Autumn Pine Tree 1
+    3300016: Autumn Pine Tree 2
+    3300018: Autumn Pine Tree 3
+    3300020: Autumn Pine Tree 4
+    3300022: Autumn Pink Tree 1
+    3300024: Autumn Pink Tree 2
+    3300026: Autumn Pink Tree 3
+    3300028: Autumn Round Tree 1
+    3300030: Autumn Round Tree 2
+    3300032: Autumn Round Tree 3
+    3300034: Autumn Shrub 1
+    3300036: Autumn Shrub 2
+    3300038: Autumn Shrub 3
+    3300040: Autumn Shrub 4
+    3300042: Building 1
+    3300044: Chest
+    3300046: Chest.Lid
+    3300048: Cylinder.048
+    3300050: Cylinder.049
+    3300052: Cylinder.050
+    3300054: Dead Standing Tree 1
+    3300056: Dead Standing Tree 2
+    3300058: Fallen Log
+    3300060: Fence Post 1
+    3300062: Fence Post 2
+    3300064: Fence Post and Slat
+    3300066: Grass 1
+    3300068: Grass 2
+    3300070: Ground Plant 1
+    3300072: Ground Plant 2
+    3300074: LowPoly Male
+    3300076: Mountain
+    3300078: Mushroom
+    3300080: Rock 1
+    3300082: Rock 2
+    3300084: Rock 3
+    3300086: Sign Post
+    3300088: Summer Arch
+    3300090: Summer Cave
+    3300092: Summer Cliff 1
+    3300094: Summer Cliff 2
+    3300096: Summer Cliff 3
+    3300098: Summer Low Cliff 1
+    3300100: Summer Low Cliff 2
+    3300102: Summer Pine Tree 1
+    3300104: Summer Pine Tree 2
+    3300106: Summer Pine Tree 3
+    3300108: Summer Pine Tree 4
+    3300110: Summer Pink Tree 1
+    3300112: Summer Pink Tree 2
+    3300114: Summer Pink Tree 3
+    3300116: Summer Round Tree 1
+    3300118: Summer Round Tree 2
+    3300120: Summer Round Tree 3
+    3300122: Summer Shrub 1
+    3300124: Summer Shrub 2
+    3300126: Summer Shrub 3
+    3300128: Summer Shrub 4
+    3300130: Tree Stump 1
+    3300132: Walk Through Rock
+    3300134: Water Well
+    3300136: Winter Arch
+    3300138: Winter Cave
+    3300140: Winter Cliff 1
+    3300142: Winter Cliff 2
+    3300144: Winter Cliff 3
+    3300146: Winter Dead Standing Tree 1
+    3300148: Winter Dead Standing Tree 2
+    3300150: Winter Fallen Log
+    3300152: Winter Grass 1
+    3300154: Winter Grass 2
+    3300156: Winter Ground Plant 1
+    3300158: Winter Ground Plant 2
+    3300160: Winter Low Cliff 1
+    3300162: Winter Low Cliff 2
+    3300164: Winter Pine Tree 1
+    3300166: Winter Pine Tree 2
+    3300168: Winter Pine Tree 3
+    3300170: Winter Pine Tree 4
+    3300172: Winter Pink Tree 1
+    3300174: Winter Pink Tree 2
+    3300176: Winter Pink Tree 3
+    3300178: Winter Rock 1
+    3300180: Winter Rock 2
+    3300182: Winter Rock 3
+    3300184: Winter Round Tree 1
+    3300186: Winter Round Tree 2
+    3300188: Winter Round Tree 3
+    3300190: Winter Shrub 1
+    3300192: Winter Shrub 2
+    3300194: Winter Shrub 3
+    3300196: Winter Shrub 4
+    3300198: Winter Tree Stump 1
+    4300000: Summer Pine Tree 2
+    4300002: Rock 2
+    4300004: Summer Pine Tree 3
+    4300006: Rock 3
+    4300008: Grass 1
+    4300010: Grass 2
+    4300012: Fallen Log
+    4300014: Dead Standing Tree 1
+    4300016: Summer Round Tree 3
+    4300018: Rock 1
+    4300020: Summer Round Tree 2
+    4300022: Summer Low Cliff 2
+    4300024: Summer Shrub 2
+    4300026: Summer Shrub 1
+    4300028: Summer Low Cliff 1
+    4300030: Tree Stump 1
+    4300032: Ground Plant 1
+    4300034: Ground Plant 2
+    4300036: Summer Cliff 1
+    4300038: Dead Standing Tree 2
+    4300040: Winter Dead Standing Tree 2
+    4300042: Winter Cliff 1
+    4300044: Winter Ground Plant 2
+    4300046: Winter Ground Plant 1
+    4300048: Winter Tree Stump 1
+    4300050: Winter Low Cliff 1
+    4300052: Winter Shrub 1
+    4300054: Winter Shrub 2
+    4300056: Winter Low Cliff 2
+    4300058: Winter Round Tree 2
+    4300060: Winter Rock 1
+    4300062: Winter Round Tree 3
+    4300064: Winter Dead Standing Tree 1
+    4300066: Winter Fallen Log
+    4300068: Winter Grass 2
+    4300070: Winter Grass 1
+    4300072: Winter Rock 3
+    4300074: Winter Pine Tree 3
+    4300076: Winter Rock 2
+    4300078: Winter Pine Tree 2
+    4300080: Summer Cave
+    4300082: Winter Cave
+    4300084: Winter Pine Tree 4
+    4300086: Summer Pine Tree 4
+    4300088: Mushroom
+    4300090: Autumn Round Tree 3
+    4300092: Autumn Pine Tree 4
+    4300094: Autumn Cave
+    4300096: Autumn Cliff 1
+    4300098: Autumn Low Cliff 1
+    4300100: Autumn Shrub 1
+    4300102: Autumn Shrub 2
+    4300104: Autumn Low Cliff 2
+    4300106: Autumn Round Tree 2
+    4300108: Autumn Pine Tree 3
+    4300110: Autumn Pine Tree 2
+    4300112: Summer Cliff 2
+    4300114: Winter Cliff 2
+    4300116: Autumn Cliff 2
+    4300118: Autumn Cliff 3
+    4300120: Autumn Pine Tree 1
+    4300122: Summer Pine Tree 1
+    4300124: Winter Pine Tree 1
+    4300126: Autumn Round Tree 1
+    4300128: Summer Round Tree 1
+    4300130: Winter Round Tree 1
+    4300132: Summer Cliff 3
+    4300134: Winter Cliff 3
+    4300136: Autumn Shrub 4
+    4300138: Autumn Shrub 3
+    4300140: Summer Shrub 3
+    4300142: Summer Shrub 4
+    4300144: Winter Shrub 4
+    4300146: Winter Shrub 3
+    4300148: Mountain
+    4300150: Winter Pink Tree 3
+    4300152: Summer Pink Tree 3
+    4300154: Autumn Pink Tree 3
+    4300156: Autumn Pink Tree 2
+    4300158: Summer Pink Tree 2
+    4300160: Winter Pink Tree 2
+    4300162: Autumn Pink Tree 1
+    4300164: Summer Pink Tree 1
+    4300166: Winter Pink Tree 1
+    4300168: Cylinder.048
+    4300170: Cylinder.049
+    4300172: Cylinder.050
+    4300174: Water Well
+    4300176: Walk Through Rock
+    4300178: Chest
+    4300180: Fence Post and Slat
+    4300182: Fence Post 2
+    4300184: Sign Post
+    4300186: Fence Post 1
+    4300188: LowPoly Male
+    4300190: Building 1
+    4300192: Summer Arch
+    4300194: Winter Arch
+    4300196: Autumn Arch
+    4300198: Chest.Lid
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 128932
+  packageName: Lowpoly Biome Pack
+  packageVersion: 1.0
+  assetPath: Assets/Lowpoly Biome Pack/Lowpoly Biome Pack v1.0.fbx
+  uploadId: 268797

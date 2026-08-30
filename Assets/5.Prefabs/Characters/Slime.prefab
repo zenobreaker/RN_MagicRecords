@@ -83,6 +83,8 @@ SkinnedMeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -104,9 +106,11 @@ SkinnedMeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   serializedVersion: 2
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
@@ -251,6 +255,7 @@ MonoBehaviour:
   - rid: 6694591430074302853
   - rid: 5085156074607608133
   - rid: 455251970566127706
+  m_OriginalGraph: {fileID: 0}
   m_IsInitialised: 0
   m_IsStarted: 0
   references:
@@ -295,10 +300,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1661731564040365086}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 100
-  m_Drag: 10
-  m_AngularDrag: 0.05
+  m_LinearDamping: 10
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -456,7 +461,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9390b2db8381934eba058cebcb26d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useAnimationEvents: 1
   originPrefabs:
   - {fileID: 3178941285683598763, guid: 81aab8d4e1ae1924b9e793a2af89abfd, type: 3}
   initType: 1
@@ -541,17 +545,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   combatStyle: 0
-  patternEntries: []
-  defaultAttack:
-    slotName: default
+  defaultStopRange: 1.5
+  patternEntries:
+  - slotName: slot1
+    defaultIsUse: 0
     conditions:
-    - type: 3
-      ctype: 5
-      value: 3
     - type: 0
       ctype: 4
       value: 3
-    skill: {fileID: 0}
+    - type: 3
+      ctype: 4
+      value: 3
+    skill: {fileID: 11400000, guid: f561829a8243bbc45b5d312bfb6b2dd6, type: 2}
 --- !u!114 &980019055661084329
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -565,6 +570,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SO_Movement: {fileID: 11400000, guid: 0f4fe110b41cda5459f4d00db63c2125, type: 2}
+  dashCollisionSearchPadding: 0.5
+  characterLayer:
+    serializedVersion: 2
+    m_Bits: 0
   dashSpeed: 25
   dashDistance: 5
 --- !u!1 &3395227246003356282
