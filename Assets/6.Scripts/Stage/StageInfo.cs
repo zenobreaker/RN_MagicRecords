@@ -8,6 +8,7 @@ public class StageInfo
     public int chapter;
     public StageType type;
     public string biome;
+    public string battleBGM; 
 
     // 등장할 적 
     public List<int> groupIds = new List<int>();
@@ -28,6 +29,7 @@ public class StageInfo
         clearRewardId = other.clearRewardId;
         mapIndex = other.mapIndex;
         wave = other.wave;
+        battleBGM = other.battleBGM;
     }
 
     public StageInfo() { }

@@ -59,25 +59,36 @@ public class UIToast : MonoBehaviour
     {
         try
         {
-            // 💡 1. 애니메이션 시작 전 상태 초기화 (투명도 0, 원래 위치보다 아래로)
             canvasGroup.alpha = 0f;
-            rectTransform.anchoredPosition = originalPosition - new Vector2(0, moveDistance);
+            rectTransform.anchoredPosition =
+                originalPosition - new Vector2(0, moveDistance);
 
-            // 💡 2. 나타나는 연출 (Fade In & 위로 올라오기)
-            // ToUniTask(cancellationToken: token)을 붙이면 토큰 취소 시 애니메이션도 자동 정지(Kill)됩니다!
+            // Fade In
             await DOTween.Sequence()
                 .Append(canvasGroup.DOFade(1f, fadeDuration))
-                .Join(rectTransform.DOAnchorPos(originalPosition, fadeDuration).SetEase(Ease.OutBack))
+                .Join(rectTransform.DOAnchorPos(
+                    originalPosition,
+                    fadeDuration)
+                    .SetEase(Ease.OutBack))
+                .SetUpdate(true)
                 .ToUniTask(cancellationToken: token);
 
-            // 💡 3. 떠있는 시간 대기
-            await UniTask.Delay(TimeSpan.FromSeconds(showTime), cancellationToken: token);
+            // 대기
+            await UniTask.Delay(
+                TimeSpan.FromSeconds(showTime),
+                ignoreTimeScale: true,
+                cancellationToken: token);
 
-            // 💡 4. 사라지는 연출 (Fade Out & 위로 더 올라가기)
+            // Fade Out
             await DOTween.Sequence()
                 .Append(canvasGroup.DOFade(0f, fadeDuration))
-                .Join(rectTransform.DOAnchorPos(originalPosition + new Vector2(0, moveDistance), fadeDuration).SetEase(Ease.InBack))
+                .Join(rectTransform.DOAnchorPos(
+                    originalPosition + new Vector2(0, moveDistance),
+                    fadeDuration)
+                    .SetEase(Ease.InBack))
+                .SetUpdate(true)
                 .ToUniTask(cancellationToken: token);
+
 
             // 모든 연출이 끝나면 비활성화
             gameObject.SetActive(false);

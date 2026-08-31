@@ -53,6 +53,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private UIToast toastPrefab;
     [SerializeField] private int maxToastCount = 3; // 화면에 띄울 최대 토스트 개수 
 
+    private GameObject toastCanvasObj;
     private UIToast[] toastPool;
     private int currentToastIndex = 0; 
 
@@ -65,9 +66,11 @@ public class UIManager : Singleton<UIManager>
         base.Awake();
 
         if (Instance == this)
+        {
             SceneManager.sceneLoaded += HandleSceneLoaded;
 
-        InitToastPool();
+            InitToastPool();
+        }
     }
 
     private void OnEnable()
@@ -108,7 +111,7 @@ public class UIManager : Singleton<UIManager>
         toastPool = new UIToast[maxToastCount];
 
         // 💡 1. 토스트 전용 '최상단 캔버스'를 코드로 직접 생성합니다.
-        GameObject toastCanvasObj = new GameObject("GlobalToastCanvas");
+        toastCanvasObj = new GameObject("GlobalToastCanvas");
 
         // UIManager가 DontDestroyOnLoad라면, 토스트 캔버스도 씬 전환 시 파괴되지 않게 묶어줍니다.
         // (만약 UIManager의 자식으로 넣는다면 UIManager.transform을 부모로 설정해도 되지만, 
@@ -141,6 +144,9 @@ public class UIManager : Singleton<UIManager>
     public void ShowToast(string message)
     {
         if (toastPool == null || toastPool.Length == 0) return;
+
+        if (toastCanvasObj == null)
+            InitToastPool(); 
 
         // 현재 인덱스의 토스트를 꺼내서 메시지를 띄움
         UIToast toast = toastPool[currentToastIndex];

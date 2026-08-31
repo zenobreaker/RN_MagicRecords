@@ -17,6 +17,8 @@ public class RecordUI : UIPopUp
     private RecordManager rm;
     private List<RecordCard> cards = new();
 
+    private bool cachedRerollFlag;
+
     protected override void Awake()
     {
         base.Awake();
@@ -39,6 +41,7 @@ public class RecordUI : UIPopUp
 
     public void SetData(List<RecordData> options, bool canReroll, RecordUIMode mode = RecordUIMode.DRAFT)
     {
+        cachedRerollFlag = canReroll;
         currentMode = mode;
         cards.Clear();
 
@@ -178,7 +181,20 @@ public class RecordUI : UIPopUp
     {
         if (rm == null) return;
 
-        rm.RerollAllCurrentRecords(); 
+        if (rm.RerollCount <= 0)
+        {
+            // 알림 메세지 UI 호출
+            UIManager.Instance.SafeInvoke(v => v.ShowToast(
+                $"리롤 횟수가 부족합니다!!"));
+            return;
+        }
+
+        selectCard = null;
+
+        List<RecordData> replacedRecords =  rm.RerollAllCurrentRecords();
+
+        SetData(replacedRecords, cachedRerollFlag, currentMode);
+        RefreshUI(); 
     }
 
     protected override void DrawPopUp()

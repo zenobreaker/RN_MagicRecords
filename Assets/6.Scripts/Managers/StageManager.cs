@@ -30,6 +30,7 @@ public sealed class StageManager : MonoBehaviour
     public int CurStageChapter { get => currentStageChapter; }
 
     private StageInfo currentStage;
+    public StageInfo CurrentStageInfo => currentStage;
 
     private SpawnManager spawnManager;
     private RoomMaker roomMaker;

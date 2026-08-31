@@ -200,13 +200,16 @@ public class AppManager
 
     public void EnterTheExplorationProcess()
     {
+        // 레코드 데이터 초기화
+        recordManager.SafeInvoke(v=>v.ResetRecordFlowData());
+
         // 탐사 데이터 초기화 
         exploreManager.SafeInvoke(v => v.StartExplore());
 
-        skillManager.SafeInvoke(v => v.ResetRunData());
+        // 스킬 정보 초기화
+        skillManager.SafeInvoke(v => v.ResetRunTimeData());
 
-        // SceneManager.LoadScene("StageSelectScene");
-
+        
         UIManager.Instance.SafeInvoke(v => v.OpenExplorationSetupPopUp());
     }
 
@@ -597,7 +600,7 @@ public class AppManager
 
     private void OnBeginStage()
     {
-        //TODO : 선택한 휠러의 직업들을 가져와 세팅해야 한다. 
+        
     }
 
     public void OnUnloadScene(Scene scene)

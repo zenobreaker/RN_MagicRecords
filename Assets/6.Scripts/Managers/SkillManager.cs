@@ -8,19 +8,14 @@ public class SkillManager : MonoBehaviour
 {
     private readonly int SKILL_SLOT_MAX_COUNT = 4;
 
-    // 캐릭터별로 장착한 스킬 
+    // 캐릭터별로 장착한 스킬 key : character id, value : runtime data 
     private Dictionary<int, List<SkillRuntimeData>> equippedActiveSkills = new();
 
     public event Action OnDataChanaged;
 
     private void Awake()
     {
-        equippedActiveSkills.Clear();
-        var slots = new List<SkillRuntimeData>(SKILL_SLOT_MAX_COUNT);
-        for (int i = 0; i < SKILL_SLOT_MAX_COUNT; i++)
-            slots.Add(null);
-        equippedActiveSkills.Add(1, slots);
-
+        ResetRunTimeData();
     }
 
 
@@ -65,7 +60,13 @@ public class SkillManager : MonoBehaviour
         }
     }
 
-    public void ResetRunData()
+    public void ResetRunTimeData()
     {
+        equippedActiveSkills.Clear();
+        var slots = new List<SkillRuntimeData>(SKILL_SLOT_MAX_COUNT);
+        for (int i = 0; i < SKILL_SLOT_MAX_COUNT; i++)
+            slots.Add(null);
+        // 현재 1번 아이디의 캐릭터 슬롯 처리 
+        equippedActiveSkills.Add(1, slots);
     }
 }

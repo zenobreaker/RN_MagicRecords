@@ -15,6 +15,7 @@ public sealed class RecordManager : MonoBehaviour
     private int generateCount = 3;
     private int rerollCount;
     public int RerollCount => rerollCount;
+    private int maxRerollCount = 3;
 
     private int max_selectCount = 1;
     private RecordInventory recordInventory = new();
@@ -24,15 +25,21 @@ public sealed class RecordManager : MonoBehaviour
     private bool isDirty = false;
 
     public void SetReceiveRecordFlag() => isReceived = true;
-    public void ResetReceiveFlag()
+
+    public void ResetRecordFlowData()
     {
         isReceived = false;
+        rerollCount = maxRerollCount;
+        recordInventory.ClearAll();
     }
+
+
     public void OnInit()
     {
+        ResetRecordFlowData();
+
         foreach (var record in records)
             recordsDict.Add(record.id, record);
-        rerollCount = 3;
 
         // 인벤토리에 변동이 생길 때마다 자동으로 세이브 플레그 ON 
         recordInventory.OnInventoryChanged += (inv) => { isDirty = true; };
@@ -287,18 +294,10 @@ public sealed class RecordManager : MonoBehaviour
         transferInventory.RemoveRecord(target);
     }
 
-    public void RerollAllCurrentRecords()
+    public List<RecordData> RerollAllCurrentRecords()
     {
-        if (AppManager.Instance == null) return;
-
-        if (rerollCount <= 0)
-        {
-            // TODO: 알림 메세지 UI 호출
-            return;
-        }
-
-        DataBaseManager db = AppManager.Instance.GetDataBaseManager();
-        if (db == null) return;
+        DataBaseManager db = DataBaseManager.Instance;
+        if (db == null) return null;
 
         // 1. 후보군 생성 (전체 - 이미 영구 보유 중인 것들)
         // 현재 떠 있는 것(CurrentOptions)은 제외하지 않습니다. 
@@ -353,8 +352,77 @@ public sealed class RecordManager : MonoBehaviour
         // 4. 데이터 갱신 및 UI 트리거
         CurrentOptions = newOptions;
 
-        UIManager.Instance.SafeInvoke(v => v.RefreshRecordSelectPopUp(CurrentOptions)); 
+        return newOptions;
     }
+
+    //public void RerollAllCurrentRecords()
+    //{
+    //    if (rerollCount <= 0)
+    //    {
+    //        // 알림 메세지 UI 호출
+    //        UIManager.Instance.SafeInvoke(v => v.ShowToast(
+    //            $"리롤 횟수가 부족합니다!!"));
+    //        return;
+    //    }
+
+    //    DataBaseManager db = DataBaseManager.Instance;
+    //    if (db == null) return;
+
+    //    // 1. 후보군 생성 (전체 - 이미 영구 보유 중인 것들)
+    //    // 현재 떠 있는 것(CurrentOptions)은 제외하지 않습니다. 
+    //    // 그래야 리롤 시점에 다시 나올 기회를 얻어 '빈 레코드'가 성급하게 뜨지 않습니다.
+    //    var allRecord = GetAllEnrichedRecordData();
+    //    var candidates = allRecord
+    //        .Where(data => !recordInventory.Records.Any(p => p.id == data.id))
+    //        .ToList();
+
+    //    // 2. 현재 잠금(Lock)된 데이터들은 후보군에서 즉시 제거하여 중복 생성 방지
+    //    foreach (var opt in CurrentOptions)
+    //    {
+    //        if (opt.isLocked)
+    //        {
+    //            candidates.RemoveAll(c => c.id == opt.id);
+    //        }
+    //    }
+
+    //    List<RecordData> newOptions = new List<RecordData>();
+
+    //    // 3. 새로운 옵션 구성
+    //    for (int i = 0; i < generateCount; i++)
+    //    {
+    //        // 현재 인덱스가 잠금 상태라면 그대로 유지
+    //        if (i < CurrentOptions.Count && CurrentOptions[i].isLocked)
+    //        {
+    //            newOptions.Add(CurrentOptions[i]);
+    //            continue;
+    //        }
+
+    //        // 뽑을 수 있는 레코드가 있다면 랜덤 추출
+    //        if (candidates.Count > 0)
+    //        {
+    //            int randomIndex = Random.Range(0, candidates.Count);
+    //            newOptions.Add(candidates[randomIndex]);
+    //            candidates.RemoveAt(randomIndex); // 이번 셔플 내 중복 방지
+    //        }
+    //        else
+    //        {
+    //            // [핵심] 진짜로 모든 데이터를 다 소진했을 때만 빈 레코드 등장
+    //            var emptyRecord = db.GetEmptyRecord();
+    //            if (emptyRecord != null)
+    //            {
+    //                newOptions.Add(emptyRecord);
+    //            }
+    //        }
+    //    }
+
+    //    // 성공적으로 리롤이 수행된 경우에만 카운트 차감
+    //    rerollCount--;
+
+    //    // 4. 데이터 갱신 및 UI 트리거
+    //    CurrentOptions = newOptions;
+
+    //    UIManager.Instance.SafeInvoke(v => v.RefreshRecordSelectPopUp(CurrentOptions)); 
+    //}
 
 
     // 레코드를 비용(Cost)으로 지불하고 완료하는 함수
@@ -479,10 +547,5 @@ public sealed class RecordManager : MonoBehaviour
         save.isReceived = isReceived;
         SaveManager.SaveRecordData(save);
         isDirty = false;
-    }
-
-    public void ClearExploreRecords()
-    {
-        recordInventory.ClearAll(); 
     }
 }

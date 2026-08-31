@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 [System.Serializable]
 public sealed class ChapterInfoJson : InfoJson
@@ -49,6 +48,7 @@ public class StageInfoJson
     public string groupIds;
     public int clearRewardId;
     public int wave;
+    public string battleBGM;
 }
 
 [System.Serializable]
@@ -192,7 +192,8 @@ public sealed class StageDataBase : DataBase
                       clearRewardId = json.clearRewardId,
                       chapter = json.chapter,
                       mapIndex = json.mapIndex,
-                      wave = json.wave
+                      wave = json.wave,
+                      battleBGM = json.battleBGM,
                   };
                   return stage;
               },
@@ -256,10 +257,10 @@ public sealed class StageDataBase : DataBase
         return "Test";
     }
 
-    public SO_Biome GetSOBiome(string themeName)
+    public Sprite GetThemeBgSptByBiome(string themeName)
     {
         if (biomeDict == null) return null;
-        return biomeDict[themeName];
+        return biomeDict[themeName].themeBgSpt;
     }
 
     public GameObject GetTargetBiomeObj(int chapter, int idx)

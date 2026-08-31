@@ -36,7 +36,7 @@ public class SoundManager : MonoBehaviour
 
     private Dictionary<string, AudioClip> bgmSoundTable = new Dictionary<string, AudioClip>();
     private Dictionary<string, AudioClip> sfxSoundTable = new Dictionary<string, AudioClip>();
-    
+
     private CancellationTokenSource bgmFadeCts;
 
     private void Awake()
@@ -56,6 +56,16 @@ public class SoundManager : MonoBehaviour
         Awake_InitSFXTable();
         Awake_InitBGMTable();
         Awake_InitMixerGroups(); // 💡 믹서 그룹 자동 할당
+    }
+
+    private void Start()
+    {
+        GameManager.Instance.SafeInvoke(v => v.OnBattleStage += PlayBattleBGM);
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.Instance.SafeInvoke(v => v.OnBattleStage -= PlayBattleBGM);
     }
 
     private void Awake_InitSFXTable()
@@ -122,7 +132,7 @@ public class SoundManager : MonoBehaviour
         // 1. 기존 음악 Fade Out
         while (currentTime < duration)
         {
-            currentTime += Time.deltaTime;
+            currentTime += Time.unscaledDeltaTime;
             bgmPlayer.volume = Mathf.Lerp(startVolume, 0f, currentTime / duration);
 
             // 💡 yield return null 대신 UniTask.Yield 사용 (취소 토큰 전달)
@@ -137,7 +147,7 @@ public class SoundManager : MonoBehaviour
         currentTime = 0f;
         while (currentTime < duration)
         {
-            currentTime += Time.deltaTime;
+            currentTime += Time.unscaledDeltaTime;
             bgmPlayer.volume = Mathf.Lerp(0f, startVolume, currentTime / duration);
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
         }
@@ -161,10 +171,10 @@ public class SoundManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(soundName) || bgmSoundTable == null) return;
 
-        if(bgmSoundTable.ContainsKey(soundName))
+        if (bgmSoundTable.ContainsKey(soundName))
         {
             bgmPlayer.clip = bgmSoundTable[soundName];
-            bgmPlayer.Play(); 
+            bgmPlayer.Play();
         }
     }
 
@@ -258,5 +268,20 @@ public class SoundManager : MonoBehaviour
             masterMixer.SetFloat("SFX", -80f);
         else
             masterMixer.SetFloat("SFX", Mathf.Lerp(-40f, 0f, normalizedValue));
+    }
+
+
+    private void PlayBattleBGM()
+    {
+        StageManager sm = GameManager.Instance.SafeInvoke(v => v.StageManager);
+        if (sm == null) return;
+
+        StageInfo info = sm.SafeInvoke(v => v.CurrentStageInfo);
+        if (info == null) return;
+
+        if (string.IsNullOrEmpty(info.battleBGM))
+            return;
+
+        ChangeBGM(info.battleBGM);
     }
 }

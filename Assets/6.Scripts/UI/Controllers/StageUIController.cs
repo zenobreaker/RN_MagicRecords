@@ -1,14 +1,20 @@
 ﻿using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class StageUIController
     : UIController
 {
+    [Header("노드 배치자")]
     [SerializeField] private UIMapReplacer uiMapReplacer;
 
+    [Header("UI 배경")]
+    [SerializeField] private Image themeBg; 
+
+
     private ExploreManager exploreManager;
+    
 
  
     protected override void OnEnable()
@@ -91,10 +97,22 @@ public class StageUIController
 
     private void RefreshMainUI()
     {
-        Debug.Assert(AppManager.Instance != null); 
-        Debug.Assert(AppManager.Instance.GetExploreManager() != null); 
+        Debug.Assert(exploreManager != null);
 
-        AppManager.Instance.GetExploreManager().UpdateMapUIState(uiMapReplacer);
+        exploreManager.SafeInvoke(v => v.UpdateMapUIState(uiMapReplacer));
+
+
+        string biomeName =  exploreManager.BiomeName;
+        Sprite bg = DataBaseManager.Instance.GetThemeBgSptByBiome(biomeName); 
+
+        ChangeBgSpt(bg);
+    }
+
+    private void ChangeBgSpt(Sprite bgSpt)
+    {
+        if (bgSpt == null || themeBg == null) return;
+
+        themeBg.sprite = bgSpt;
     }
 
     #region Button Events

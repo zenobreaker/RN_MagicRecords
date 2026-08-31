@@ -6,6 +6,7 @@ using UnityEngine;
 public class SO_Biome : ScriptableObject
 {
     public string biomeName = "Forest";
+    public Sprite themeBgSpt; 
 
     [Header("이 테마에서 나올 수 있는 맵 구조들")]
     public List<GameObject> possibleRoomPrefabs; 

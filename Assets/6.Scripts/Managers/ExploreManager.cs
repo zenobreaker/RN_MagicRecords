@@ -65,13 +65,6 @@ public sealed class ExploreManager : MonoBehaviour
     {
         CurrencyManager.Instance.SafeInvoke(v => v.ClearExploreCurrency());
 
-        RecordManager recordManager = AppManager.Instance.SafeInvoke(v => v.GetRecordManager());
-        if (recordManager != null)
-        {
-            recordManager.ClearExploreRecords();
-            recordManager.ResetReceiveFlag();
-        }
-
         RewardManager.Instance.SafeInvoke(v => v.ClearPendingRewards());
     }
 
@@ -381,9 +374,10 @@ public sealed class ExploreManager : MonoBehaviour
     }
 
     //  유저가 보상을 확인하고 다음 챕터 이동을 수락했을 때 실행
-    public void GoToNextChapter()
+    private  void GoToNextChapter()
     {
         if (Chapter >= maxChapter) return;
+        if (AllStageClear == false) return; 
 
         Chapter++;
         bCreate = false;
@@ -460,6 +454,7 @@ public sealed class ExploreManager : MonoBehaviour
     {
         Debug.Log($"Exlpore Stage Clear");
         OnStageClear?.Invoke();
+        GoToNextChapter();
     }
 
     private void HandleExploreFinish()

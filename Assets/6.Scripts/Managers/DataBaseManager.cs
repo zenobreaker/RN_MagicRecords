@@ -99,6 +99,13 @@ public class DataBaseManager : Singleton<DataBaseManager>
         return stageDataBase.GetBossStageInfo(chapter, stageid);
     }
 
+    public Sprite GetThemeBgSptByBiome(string themeName)
+    {
+        if (stageDataBase == null) return null;
+
+        return stageDataBase.GetThemeBgSptByBiome(themeName);
+    }
+
     public MonsterData GetMonsterData(int monsterID)
     {
         return monsterDataBase.SafeInvoke(v => v.GetMonsterData(monsterID));
