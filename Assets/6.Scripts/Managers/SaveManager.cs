@@ -121,7 +121,7 @@ public static class SaveManager
 
     public static void SaveExploreRun(ExploreRunSaveData data)
     {
-        string json = JsonUtility.ToJson(data);
+        string json = JsonUtility.ToJson(data, true);
         System.IO.File.WriteAllText(runSaveDataPath, json);
     }
 

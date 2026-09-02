@@ -10,13 +10,13 @@ public class StageUIController
     [SerializeField] private UIMapReplacer uiMapReplacer;
 
     [Header("UI 배경")]
-    [SerializeField] private Image themeBg; 
+    [SerializeField] private Image themeBg;
 
 
     private ExploreManager exploreManager;
-    
 
- 
+
+
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -48,9 +48,8 @@ public class StageUIController
     {
         exploreManager = AppManager.Instance.GetExploreManager();
 
-        exploreManager.SafeInvoke(v => v.EnsureInitialized());
 
-        exploreManager.OnStageClear += RefreshMainUI;
+        //exploreManager.OnStageClear += RefreshMainUI;
 
         InitUIMapReplace();
 
@@ -66,8 +65,8 @@ public class StageUIController
 
         if (ManagerWaiter.TryGetManager(out CurrencyManager manager))
             manager.OnUpdatedCurrency -= UpdateCurrencies;
-        if(AppManager.Instance != null && AppManager.Instance.GetExploreManager() != null )
-            AppManager.Instance.GetExploreManager().OnStageClear -= RefreshMainUI;
+        //if (AppManager.Instance != null && AppManager.Instance.GetExploreManager() != null)
+        //    AppManager.Instance.GetExploreManager().OnStageClear -= RefreshMainUI;
     }
 
     private void InitUIMapReplace()
@@ -77,9 +76,17 @@ public class StageUIController
         List<UIMapNode> uiMapNodes = new List<UIMapNode>();
         // Set Map Node 
         {
+            exploreManager.SafeInvoke(v => v.EnsureInitialized());
+
             uiMapReplacer.ReplaceUINode(exploreManager.StageReplacer);
             uiMapReplacer.GetUIMapNodes(ref uiMapNodes);
-            exploreManager.UpdateMapUIState(uiMapReplacer);
+            uiMapReplacer.UpdateMapUIState(exploreManager, ref uiMapNodes);
+
+            
+            string biomeName = exploreManager.BiomeName;
+            Sprite bg = DataBaseManager.Instance.GetThemeBgSptByBiome(biomeName);
+
+            ChangeBgSpt(bg);
         }
 
         // Set Node Event
@@ -99,13 +106,9 @@ public class StageUIController
     {
         Debug.Assert(exploreManager != null);
 
-        exploreManager.SafeInvoke(v => v.UpdateMapUIState(uiMapReplacer));
+        //exploreManager.SafeInvoke(v => v.UpdateMapUIState(uiMapReplacer));
 
 
-        string biomeName =  exploreManager.BiomeName;
-        Sprite bg = DataBaseManager.Instance.GetThemeBgSptByBiome(biomeName); 
-
-        ChangeBgSpt(bg);
     }
 
     private void ChangeBgSpt(Sprite bgSpt)
@@ -125,7 +128,7 @@ public class StageUIController
 
     public void OnRecordInvenButton()
     {
-        UIManager.Instance.SafeInvoke(v=>v.OpenRecordInvenPopUp());
+        UIManager.Instance.SafeInvoke(v => v.OpenRecordInvenPopUp());
     }
     #endregion
 }

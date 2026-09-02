@@ -40,6 +40,8 @@ public class RuntimeAutoTargetingOrb
     {
         // 활성화될 때마다 새로운 취소 토큰 생성
         cancelTokenSource = new CancellationTokenSource();
+
+        Install();
     }
 
     private void OnDisable()
@@ -63,6 +65,7 @@ public class RuntimeAutoTargetingOrb
         if (bIsInstalled)
             return;
 
+        bIsInstalled = true;
         SoundManager.Instance.SafeInvoke(v => v.PlaySFX(createOrbSoundName));
         // UniTask 실행 (Forget()을 붙여 경고 메시지 제거 및 Fire-and-forget 처리)
         OrbFireSequenceAsync(cancelTokenSource.Token).Forget();
@@ -144,8 +147,6 @@ public class RuntimeAutoTargetingOrb
         this.multiplier = multiplier;
 
         myTeamId = TeamUtility.GetTeamId(attacker);
-        
-        bIsInstalled = true; 
     }
 
     public void AddIgnore(GameObject ignore)

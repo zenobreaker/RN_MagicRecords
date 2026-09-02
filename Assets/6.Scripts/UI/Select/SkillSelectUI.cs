@@ -38,6 +38,7 @@ public class SkillSelectUI
     {
         if (skillController != null)
         {
+            skillController.SetSelectPopupType();
             skillController.SetJobID(currentContext.SelectedClassId);
             skillController.RefreshUI();
         }

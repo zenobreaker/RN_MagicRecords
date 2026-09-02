@@ -259,7 +259,7 @@ public sealed class StageDataBase : DataBase
 
     public Sprite GetThemeBgSptByBiome(string themeName)
     {
-        if (biomeDict == null) return null;
+        if (biomeDict == null || string.IsNullOrEmpty(themeName)) return null;
         return biomeDict[themeName].themeBgSpt;
     }
 

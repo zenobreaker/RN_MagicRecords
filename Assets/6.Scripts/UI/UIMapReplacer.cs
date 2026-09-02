@@ -113,6 +113,24 @@ public class UIMapReplacer : MonoBehaviour
             }
         }
     }
+    // 화면에 떠있는 UI 노드들에게 "상태에 맞춰서 색깔 바꿔!" 라고 명령하는 함수
+    public void UpdateMapUIState(ExploreManager exploreManager, ref List<UIMapNode> spawnedNodes)
+    {
+        if (exploreManager == null) return;
+
+        // 모든 UI 노드를 순회하면서 알맞은 옷(상태)을 입혀줍니다.
+        foreach (var uiNode in uiMapNodes)
+        {
+            if (uiNode is UIStageMapNode stageNode)
+            {
+                // 두뇌(GetNodeState)에게 물어봐서 상태를 얻어온 뒤
+                MapNodeState state = exploreManager.GetNodeState(stageNode.Node.id);
+
+                // UI에게 적용!
+                stageNode.SetState(state);
+            }
+        }
+    }
 
     public void GetUIMapNodes(ref List<UIMapNode> uiMapNodes)
     {

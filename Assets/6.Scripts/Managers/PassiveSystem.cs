@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 
@@ -202,5 +203,19 @@ public class PassiveSystem
                     gps.OnAssistDroneNormalProjectile(spawnedObject, owner);
             }
         }
+    }
+
+    public void ResetExplorePassives()
+    {
+        if(passiveSkillList.TryGetValue(
+            Constants.GLOBAL_RECORD_JOB_ID, out var recordPassives))
+        {
+            foreach (var passive in recordPassives)
+                passive.OnLose();
+            recordPassives.Clear(); 
+        }
+
+        updatablePassive.RemoveAll(
+            passive => passiveSkillList[Constants.GLOBAL_RECORD_JOB_ID].Contains(passive)== false);
     }
 }

@@ -1,5 +1,8 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
+
+
 
 public class SkillTreeController : UiBase
 {
@@ -7,6 +10,17 @@ public class SkillTreeController : UiBase
     [SerializeField] private UISkillDetail uiSkillDetail;
     [SerializeField] private UISkillReplaceDetail uiSkillReplace;
     private SkillTreeManager skillTreeManager;
+
+    public enum SkillUIEnterType
+    {
+        MainRoom,
+        SelectPopup,
+    }
+
+    [SerializeField] private SkillUIEnterType skillUIEnterType;
+
+    public void SetMainRoomType() => skillUIEnterType = SkillUIEnterType.MainRoom;
+    public void SetSelectPopupType() => skillUIEnterType = SkillUIEnterType.SelectPopup;
 
     public enum Skill_Category
     {
@@ -42,7 +56,7 @@ public class SkillTreeController : UiBase
 
         if (uiSkillReplace != null)
         {
-            //uiSkillReplace.HideUI();
+            uiSkillReplace.HideUI();
             uiSkillReplace.SetSkillTreeManager(skillTreeManager);
             uiSkillDetail.OnDrawEquipUI += uiSkillReplace.ShowUI;
         }
@@ -53,6 +67,11 @@ public class SkillTreeController : UiBase
         base.OnEnable();
 
         category = Skill_Category.CLASS_ACTIVE;
+
+        if (skillUIEnterType == SkillUIEnterType.MainRoom)
+            uiSkillReplace.SafeInvoke(v => v.HideUI());
+        else 
+            uiSkillReplace.SafeInvoke(v => v.ShowUI());
 
         RefreshUI();
     }

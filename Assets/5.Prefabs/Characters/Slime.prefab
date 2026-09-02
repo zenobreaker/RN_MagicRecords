@@ -544,18 +544,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1a6b0daebc84d94a85c987321f2ae8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  combatStyle: 0
+  combatStyle: 1
   defaultStopRange: 1.5
   patternEntries:
   - slotName: slot1
-    defaultIsUse: 0
+    defaultIsUse: 1
     conditions:
     - type: 0
       ctype: 4
       value: 3
     - type: 3
-      ctype: 4
-      value: 3
+      ctype: 5
+      value: 4.5
     skill: {fileID: 11400000, guid: f561829a8243bbc45b5d312bfb6b2dd6, type: 2}
 --- !u!114 &980019055661084329
 MonoBehaviour:

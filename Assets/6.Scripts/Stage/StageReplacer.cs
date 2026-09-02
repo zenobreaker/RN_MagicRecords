@@ -190,7 +190,7 @@ public class StageReplacer
                     if (level > 1 && UnityEngine.Random.value < eventChance)
                     {
                         info.type = StageType.Event;
-                        info.contentId = DataBaseManager.Instance.GetRandomEventID(currentChapter); ;
+                        info.contentId = DataBaseManager.Instance.GetRandomEventID(currentChapter);
                         info.mapIndex = -1;
                     }
                     else

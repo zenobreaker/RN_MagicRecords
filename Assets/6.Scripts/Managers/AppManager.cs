@@ -207,6 +207,7 @@ public class AppManager
         exploreManager.SafeInvoke(v => v.StartExplore());
 
         // 스킬 정보 초기화
+        passiveSystem.ResetExplorePassives();
         skillManager.SafeInvoke(v => v.ResetRunTimeData());
 
         
@@ -296,7 +297,7 @@ public class AppManager
             exploreManager.EnterStageByNode(node);
         }
 
-        var nodeInfo = GetNodeInfoMatchedMapNode(node);
+       // var nodeInfo = GetNodeInfoMatchedMapNode(node);
 
     }
 
