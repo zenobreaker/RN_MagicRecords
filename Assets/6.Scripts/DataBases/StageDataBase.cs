@@ -43,7 +43,7 @@ public class StageInfoJson
     public int id;
     public int stageType;
     public int chapter;
-    public string biome;
+    public string theme;
     public int mapIndex;
     public string groupIds;
     public int clearRewardId;
@@ -72,7 +72,10 @@ public sealed class StageDataBase : DataBase
     [Header("Chapter SO")]
     [SerializeField] private SO_ChapterData chapterData;
 
-    private Dictionary<string, SO_Biome> biomeDict = new Dictionary<string, SO_Biome>();
+    [Header("Theme SO")]
+    [SerializeField]
+    private List<SO_Theme> ThemeList = new();
+
     private Dictionary<int, ChapterInfo> chapterInfoTable = new();
     private Dictionary<int, BiomesInfo> biomeInfoTable = new();
 
@@ -91,18 +94,10 @@ public sealed class StageDataBase : DataBase
 
         InitializeStageData();
 
-        IntitializeChapterSO();
+        if (chapterData != null)
+            chapterData.Init();
     }
 
-    private void IntitializeChapterSO()
-    {
-        Debug.Assert(chapterData != null, $"Chapter Data를 할당하세요.");
-
-        foreach (var biome in chapterData.possibleBiomes)
-        {
-            biomeDict[biome.biomeName] = biome;
-        }
-    }
 
     private void InitializeChapterData()
     {
@@ -150,17 +145,17 @@ public sealed class StageDataBase : DataBase
                 root => root.biomeInfoJson,
                 json =>
                 {
-                    var biome = new BiomesInfo
+                    var theme = new BiomesInfo
                     {
                         id = json.id,
                         environmentData = json.environmentData,
                     };
-                    return biome;
+                    return theme;
                 },
 
-                biome =>
+                theme =>
                 {
-                    biomeInfoTable.TryAdd(biome.id, biome);
+                    biomeInfoTable.TryAdd(theme.id, theme);
                 }
             );
 
@@ -188,7 +183,7 @@ public sealed class StageDataBase : DataBase
                       id = json.id,
                       type = (StageType)json.stageType,
                       groupIds = JsonLoader.ParseIntList(json.groupIds),
-                      biome = json.biome,
+                      theme = json.theme,
                       clearRewardId = json.clearRewardId,
                       chapter = json.chapter,
                       mapIndex = json.mapIndex,
@@ -234,64 +229,82 @@ public sealed class StageDataBase : DataBase
             $"bossChapterTable : {bossChapterTable.Count}");
     }
 
-    public string GetBiomeThemeName(int chapter)
+    //public string GetThemeName(int chapter)
+    //{
+    //    if (chapterInfoTable != null &&
+    //        chapterInfoTable.TryGetValue(chapter, out var info))
+    //    {
+    //        if (info.possibleBiomes != null)
+    //        {
+    //            int maxCount = info.possibleBiomes.Count;
+    //            int biomeResultIdx = Random.Range(0, maxCount);
+
+    //            int biomeId = info.possibleBiomes[biomeResultIdx];
+
+    //            if (biomeInfoTable != null &&
+    //                biomeInfoTable.TryGetValue(biomeId, out var theme))
+    //                return theme.environmentData;
+
+    //            return "Test";
+    //        }
+    //    }
+
+    //    return "Test";
+    //}
+
+    public string GetRandThemeNameByChapter(int chapter)
     {
-        if (chapterInfoTable != null &&
-            chapterInfoTable.TryGetValue(chapter, out var info))
-        {
-            if (info.possibleBiomes != null)
-            {
-                int maxCount = info.possibleBiomes.Count;
-                int biomeResultIdx = Random.Range(0, maxCount);
+        if (chapterData == null) return "Test";
 
-                int biomeId = info.possibleBiomes[biomeResultIdx];
+        var theme = chapterData.GetRandomTheme(chapter);
+        if (theme == null) return "Test";
 
-                if (biomeInfoTable != null &&
-                    biomeInfoTable.TryGetValue(biomeId, out var biome))
-                    return biome.environmentData;
-
-                return "Test";
-            }
-        }
-
-        return "Test";
+        return theme.GetThemeName;
     }
 
-    public Sprite GetThemeBgSptByBiome(string themeName)
+    public SO_Theme SelectRandomTheme(int chapter)
     {
-        if (biomeDict == null || string.IsNullOrEmpty(themeName)) return null;
-        return biomeDict[themeName].themeBgSpt;
+        return GetRandomTheme(chapter);
     }
 
-    public GameObject GetTargetBiomeObj(int chapter, int idx)
+    public SO_Theme GetRandomTheme(int chapter)
     {
-        string themeName = GetBiomeThemeName(chapter);
-        if (!string.IsNullOrEmpty(themeName))
-        {
-            SO_Biome biome = biomeDict[themeName];
-            if (biome == null) return null;
-            if(idx >= biome.possibleRoomPrefabs.Count) return null;
+        List<SO_Theme> theme = GetPossibleThemes(chapter);
 
-            return biome.possibleRoomPrefabs[idx];
-        }
+        if (theme == null || theme.Count == 0)
+            return null;
 
-        return null; 
+        int randomIndex = Random.Range(0, theme.Count);
+
+        return theme[randomIndex];
     }
 
-    public GameObject GetRandomBiomeObj(int chapter)
+    public Sprite GetThemeBgSptByTheme(string themeName)
     {
-        string themeName = GetBiomeThemeName(chapter);
-        if (!string.IsNullOrEmpty(themeName))
-        {
-            SO_Biome biome = biomeDict[themeName];
-            if(biome == null) return null;
+        if (string.IsNullOrEmpty(themeName)) return null;
 
-            int maxCount = biome.possibleRoomPrefabs.Count;
-            int radIdx = Random.Range(0, maxCount);
-            return biome.possibleRoomPrefabs[radIdx];
-        }
+        return chapterData.GetThemeSprite(themeName);
+    }
 
-        return null;
+    public GameObject GetTargetThemeObj(string themeName, int idx)
+    {
+        if (chapterData == null) return null; 
+
+        return chapterData.GetTargetThemeObj(themeName, idx);
+    }
+
+    public GameObject GetRandomThemeObj(string themeName)
+    {
+        if (chapterData == null) return null;
+
+        return chapterData.GetTargetThemeRandObj(themeName);
+    }
+
+    public List<SO_Theme> GetPossibleThemes(int chapter)
+    {
+        if (chapterData == null) return null;
+
+        return chapterData.GetPossibleThemes(chapter);
     }
 
     public string GetTestBiome() { return "Test"; }

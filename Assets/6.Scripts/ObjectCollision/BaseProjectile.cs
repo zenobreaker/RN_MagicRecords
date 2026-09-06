@@ -59,12 +59,11 @@ public abstract class BaseProjectile
     // ==========================================
     protected bool IsFriendlyFire(GameObject target)
     {
-        // 1. 애초에 무시하기로 한 대상(나 자신, 총구 등)이면 아군 취급
-        if (ignores.Contains(target)) return true;
-
-        // 2. 팀 ID를 비교해서 같은 팀이면 아군 취급 (관통)
-        GenenricTeamId hitTeamId = TeamUtility.GetTeamId(target);
-        return myTeamId.IsValid && hitTeamId.IsValid && myTeamId == hitTeamId;
+        return CombatHelper.IsFriendly(
+            owner,
+            target,
+            ignores
+        );
     }
 
     // ==========================================
@@ -111,17 +110,33 @@ public abstract class BaseProjectile
         }
     }
 
+    //protected void DealDamage(GameObject target, Vector3 hitPoint)
+    //{
+    //    if (target.TryGetComponent<IDamagable>(out var damage))
+    //    {
+    //        damage?.OnDamage(ownerObject, null, hitPoint, damageEvent);
+    //    }
+
+    //    NotifyHit(target, hitPoint);
+
+    //    OnTargetHitEvent?.Invoke(target, hitPoint);
+    //}
+
     protected void DealDamage(GameObject target, Vector3 hitPoint)
     {
-        if (target.TryGetComponent<IDamagable>(out var damage))
-        {
-            damage?.OnDamage(ownerObject, null, hitPoint, damageEvent);
-        }
+        CombatHelper.ApplyDamage(
+            owner,
+            cachedDamageData,
+            target,
+            hitPoint
+        );
 
         NotifyHit(target, hitPoint);
 
         OnTargetHitEvent?.Invoke(target, hitPoint);
     }
+
+
 
     public void AddSpawnRunner(IProjectileOnSpawnRunner spawn)
     {

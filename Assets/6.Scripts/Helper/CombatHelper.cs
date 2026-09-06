@@ -14,7 +14,10 @@ public static class CombatHelper
         if (ignores != null && ignores.Contains(target))
             return true;
 
-        if(target.transform.IsChildOf(owner.transform))
+        if (target == owner.gameObject)
+            return true;
+
+        if (target.transform.IsChildOf(owner.transform))
             return true;
 
         GenenricTeamId myTeamId = TeamUtility.GetTeamId(owner);
@@ -23,7 +26,27 @@ public static class CombatHelper
 
         return myTeamId.IsValid && hitTeamId.IsValid && myTeamId == hitTeamId;
     }
+    public static void ApplyDamage(
+    Character owner,
+    DamageEvent damageEvent,
+    GameObject target,
+    Vector3 hitPoint)
+    {
+        if (owner == null ||
+            damageEvent == null ||
+            target == null)
+            return;
 
+        if (target.TryGetComponent<IDamagable>(out var damage))
+        {
+            damage.OnDamage(
+                owner,
+                null,
+                hitPoint,
+                damageEvent
+            );
+        }
+    }
 
     public static void ApplyDamage(
         Character owner,

@@ -56,7 +56,7 @@ public sealed class SpawnManager : MonoBehaviour
         if (spawnPoints == null || spawnPoints.Count <= 0)
         {
 #if UNITY_EDITOR
-            Debug.Log($"Spawn Point Don't exist");
+            Debug.Log($"<color=red>Spawn Point Don't exist</color>");
 #endif
             return;
         }
@@ -199,6 +199,8 @@ public sealed class SpawnManager : MonoBehaviour
     // 자식 오브젝트들까지 모조리 레이어를 바꿔주는 마법의 헬퍼 함수
     private void SetLayerRecursively(GameObject obj, int newLayer)
     {
+        if (obj == null) return;
+
         obj.layer = newLayer;
         foreach (Transform child in obj.transform)
         {

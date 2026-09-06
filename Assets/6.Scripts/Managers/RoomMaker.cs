@@ -56,11 +56,11 @@ public sealed class RoomMaker
 
         if(stageInfo.mapIndex < 0)
             return DataBaseManager.Instance.SafeInvoke(
-            v => v.GetRandBiomeObj(stageInfo.chapter));
+            v => v.GetRandThemeObj(stageInfo.theme));
         else
             return DataBaseManager.Instance.SafeInvoke(
-            v => v.GetTargetBiomeObj(
-                stageInfo.chapter, 
+            v => v.GetTargetThemeObj(
+                stageInfo.theme, 
             stageInfo.mapIndex));
     }
 }

@@ -92,13 +92,13 @@ public sealed class ExploreManager : MonoBehaviour
             Debug.Log("========== Explore Resume ==========");
             Init(false);  // 기존의 맵 생성/로드 로직 실행
             Debug.Log(
-      $"[ExploreResume] " +
-      $"RunStatus = {RunStatus}, " +
-      $"Chapter = {Chapter}, " +
-      $"MapNodeID = {MapNodeID}, " +
-      $"bCreate = {bCreate}, " +
-      $"stageCreated = {stageReplacer?.IsCreatedNode()}"
-  );
+                  $"[ExploreResume] " +
+                  $"RunStatus = {RunStatus}, " +
+                  $"Chapter = {Chapter}, " +
+                  $"MapNodeID = {MapNodeID}, " +
+                  $"bCreate = {bCreate}, " +
+                  $"stageCreated = {stageReplacer?.IsCreatedNode()}"
+              );
 
             switch (RunStatus)
             {
@@ -148,6 +148,7 @@ public sealed class ExploreManager : MonoBehaviour
         bAllCleared = false;
         Chapter = 1;
         MapNodeID = 0;
+        BiomeName = "";
     }
 
     public void StartExplore()
@@ -291,6 +292,9 @@ public sealed class ExploreManager : MonoBehaviour
             MapNodeID = 0;
         }
 
+
+        BiomeName = DataBaseManager.Instance.GetRandTheme(Chapter);
+
         stageReplacer.StartChapter(Chapter);
 
         MapNodeInfo starteNode =
@@ -325,31 +329,31 @@ public sealed class ExploreManager : MonoBehaviour
         ChangeState(ExploreState.READY);
     }
 
-    private RunStatus GetRunStatus()
-    {
-        if (!SaveManager.HasSavedExploreRun())
-            return RunStatus.NoSave;
+    //private RunStatus GetRunStatus()
+    //{
+    //    if (!SaveManager.HasSavedExploreRun())
+    //        return RunStatus.NoSave;
 
-        if (stageReplacer == null || stageReplacer.IsCreatedNode() == false)
-            return RunStatus.SetupIncomplete;
+    //    if (stageReplacer == null || stageReplacer.IsCreatedNode() == false)
+    //        return RunStatus.SetupIncomplete;
 
-        MapNodeInfo currentNodeInfo =
-            GetReplacedNodeInfo(MapNodeID);
+    //    MapNodeInfo currentNodeInfo =
+    //        GetReplacedNodeInfo(MapNodeID);
 
-        bool isBossNode =
-            currentNodeInfo != null &&
-            currentNodeInfo.type == StageType.Boss_Combat;
+    //    bool isBossNode =
+    //        currentNodeInfo != null &&
+    //        currentNodeInfo.type == StageType.Boss_Combat;
 
-        if (isBossNode && currentNodeInfo.isCleared)
-        {
-            if (Chapter < maxChapter)
-                return RunStatus.ChapterCleared;
+    //    if (isBossNode && currentNodeInfo.isCleared)
+    //    {
+    //        if (Chapter < maxChapter)
+    //            return RunStatus.ChapterCleared;
 
-            return RunStatus.FinalRunCleared;
-        }
+    //        return RunStatus.FinalRunCleared;
+    //    }
 
-        return RunStatus.MidRun;
-    }
+    //    return RunStatus.MidRun;
+    //}
 
     public void ClearStage(bool isWin)
     {

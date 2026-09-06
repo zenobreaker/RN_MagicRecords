@@ -57,10 +57,10 @@ public class DataBaseManager : Singleton<DataBaseManager>
     }
 
 
-    public GameObject GetTargetBiomeObj(int chapter, int idx)
-         => stageDataBase.SafeInvoke(v => v.GetTargetBiomeObj(chapter, idx));
-    public GameObject GetRandBiomeObj(int chapter)
-        => stageDataBase.SafeInvoke(v => v.GetRandomBiomeObj(chapter));
+    public GameObject GetTargetThemeObj(string themeName, int idx)
+         => stageDataBase.SafeInvoke(v => v.GetTargetThemeObj(themeName, idx));
+    public GameObject GetRandThemeObj(string themeName)
+        => stageDataBase.SafeInvoke(v => v.GetRandomThemeObj(themeName));
 
     public int GetRandomStageID(int chapter)
     {
@@ -101,9 +101,17 @@ public class DataBaseManager : Singleton<DataBaseManager>
 
     public Sprite GetThemeBgSptByBiome(string themeName)
     {
-        if (stageDataBase == null) return null;
+        if (stageDataBase == null || 
+            string.IsNullOrEmpty(themeName)) return null;
 
-        return stageDataBase.GetThemeBgSptByBiome(themeName);
+        return stageDataBase.GetThemeBgSptByTheme(themeName);
+    }
+
+    public string GetRandTheme(int chapter, bool forceTestMode = false)
+    {
+        if (stageDataBase == null) return forceTestMode ? "Test" : "";
+
+        return stageDataBase.GetRandThemeNameByChapter(chapter); 
     }
 
     public MonsterData GetMonsterData(int monsterID)
