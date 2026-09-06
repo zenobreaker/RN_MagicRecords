@@ -14,7 +14,7 @@ public static class NodeRouter
             case StageType.Boss_Combat:
                 // 전투 노드면 StageDB에 물어봅니다.
                 StageInfo combatData = AppManager.Instance.GetStageInfo(node.contentId);
-                title = $"전투: {combatData.biome}"; // 예시
+                title = $"전투: {combatData.theme}"; // 예시
                 desc = $"웨이브 수: {combatData.wave}";
                 break;
 

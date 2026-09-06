@@ -28,10 +28,13 @@ public class Module_PhaseTransition : SkillModule
         if (skill == null) return;
 
         CancellationToken token = owner.GetCancellationTokenOnDestroy();
-        ExecuteTransitionAsync(skill, token).Forget();
+        ExecuteTransitionAsync(owner, skill, token).Forget();
     }
 
-    private async UniTaskVoid ExecuteTransitionAsync(ActiveSkill skill, CancellationToken token)
+    private async UniTaskVoid ExecuteTransitionAsync(
+        Character owner, 
+        ActiveSkill skill,
+        CancellationToken token)
     {
         // 딜레이가 있다면 대기
         if (delayTime > 0f)
@@ -54,7 +57,8 @@ public class Module_PhaseTransition : SkillModule
                 skill.JumpToPhase(targetPhaseIndex);
                 break;
             case PhaseTransitionType.EndSkill:
-                skill.End_DoAction(); // 스킬 종료 함수 호출
+                owner?.SafeInvoke(v => v.End_DoAction());
+                //skill.End_DoAction(); // 스킬 종료 함수 호출
                 break;
         }
     }

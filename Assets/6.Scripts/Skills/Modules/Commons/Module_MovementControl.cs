@@ -9,7 +9,7 @@ public enum MovementControlType
     ModifySpeed         // 이동 속도 변경 (예: 차징 중 느리게 걷기)
 }
 
-[ModuleCategory("Utility/Movement Control")]
+[ModuleCategory("Movement/Movement Control")]
 [Serializable]
 public class Module_MovementControl : SkillModule
 {

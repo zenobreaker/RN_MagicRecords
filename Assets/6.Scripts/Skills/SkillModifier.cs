@@ -194,6 +194,16 @@ public sealed class HitContext
     }
 }
 
+[System.Serializable]
+public sealed class SkillChainContext
+{
+    public Vector3 Position;
+    public Quaternion Rotation;
+
+    public int PatternIndex;
+
+    public WarningSign WarningSign;
+}
 
 public sealed class SkillRuntimeContext
 {
@@ -203,6 +213,7 @@ public sealed class SkillRuntimeContext
     public ModifierContext Modifier = new();
     public CombatContext Combat = new();
     public HitContext Hit = new();
+    public SkillChainContext SkillChain = new();
 
     public int PatternCount
     {

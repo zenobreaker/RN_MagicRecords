@@ -110,7 +110,6 @@ public class ActiveSkillEditorWindow : EditorWindow
             if (GUILayout.Button(content, listItemStyle))
             {
                 selectedSkill = skill;
-                // 💡 스킬을 선택할 때 딱 한 번만 객체를 생성하여 할당합니다.
                 serializedSelectedSkill = new SerializedObject(skill);
 
                 selectedPhaseIndex = -1;
@@ -140,13 +139,11 @@ public class ActiveSkillEditorWindow : EditorWindow
 
         centerScrollPos = EditorGUILayout.BeginScrollView(centerScrollPos);
 
-        // 💡 만약 컴파일 직후 등 캐싱된 객체가 유실되었다면 다시 잡아줍니다.
         if (serializedSelectedSkill == null || serializedSelectedSkill.targetObject != selectedSkill)
         {
             serializedSelectedSkill = new SerializedObject(selectedSkill);
         }
 
-        // 💡 매 프레임 new를 하지 않고 캐싱된 객체를 사용합니다.
         SerializedObject so = serializedSelectedSkill;
         so.Update();
 
@@ -162,8 +159,6 @@ public class ActiveSkillEditorWindow : EditorWindow
             DrawPropertyIfExists(so, "actionData");
             DrawPropertyIfExists(so, "damageData");
             EditorGUILayout.Space(10f);
-
-            // 캐싱 처리 덕분에 이제 levelDatas 안의 값을 클릭하고 정상적으로 수정할 수 있습니다.
             DrawPropertyIfExists(so, "levelDatas");
         }
         else if (phaseListProp != null && selectedPhaseIndex < phaseListProp.arraySize)
@@ -176,7 +171,27 @@ public class ActiveSkillEditorWindow : EditorWindow
 
             if (selectedModuleIndex == -1)
             {
-                EditorGUILayout.LabelField($"🧩 Editing Phase [{selectedPhaseIndex}]", EditorStyles.boldLabel);
+                // 💡 [기능 추가] 중앙 패널에서도 페이즈 순서를 바꿀 수 있는 헤더 UI 적용
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField($"🧩 Editing Phase [{selectedPhaseIndex}]", EditorStyles.boldLabel, GUILayout.Width(150));
+
+                GUILayout.FlexibleSpace();
+                if (selectedPhaseIndex > 0 && GUILayout.Button("◀", EditorStyles.miniButtonLeft, GUILayout.Width(30)))
+                {
+                    phaseListProp.MoveArrayElement(selectedPhaseIndex, selectedPhaseIndex - 1);
+                    selectedPhaseIndex--;
+                    so.ApplyModifiedProperties();
+                    GUI.FocusControl(null);
+                }
+                if (selectedPhaseIndex < phaseListProp.arraySize - 1 && GUILayout.Button("▶", EditorStyles.miniButtonRight, GUILayout.Width(30)))
+                {
+                    phaseListProp.MoveArrayElement(selectedPhaseIndex, selectedPhaseIndex + 1);
+                    selectedPhaseIndex++;
+                    so.ApplyModifiedProperties();
+                    GUI.FocusControl(null);
+                }
+                EditorGUILayout.EndHorizontal();
+
                 EditorGUILayout.PropertyField(currentPhaseProp.FindPropertyRelative("isInstant"));
                 EditorGUILayout.Space(10f);
 
@@ -399,7 +414,6 @@ public class ActiveSkillEditorWindow : EditorWindow
 
     private void DrawPhaseNodes()
     {
-        // 💡 노드 캔버스에서도 캐싱된 객체 사용
         if (serializedSelectedSkill == null || serializedSelectedSkill.targetObject != selectedSkill)
         {
             serializedSelectedSkill = new SerializedObject(selectedSkill);
@@ -412,7 +426,7 @@ public class ActiveSkillEditorWindow : EditorWindow
 
         float startX = 50f + nodePanOffset.x;
         float startY = 80f + nodePanOffset.y;
-        float nodeWidth = 180f;
+        float nodeWidth = 190f; // 버튼들을 넣기 위해 폭을 살짝 키움
         float spacingX = 60f;
 
         for (int i = 0; i < phaseListProp.arraySize - 1; i++)
@@ -445,15 +459,70 @@ public class ActiveSkillEditorWindow : EditorWindow
             GUI.Box(nodeRect, "", "window");
             GUI.backgroundColor = oldBg;
 
-            if (GUI.Button(new Rect(nodeRect.x, nodeRect.y, nodeRect.width, 25f), $"Phase [{i}]", EditorStyles.boldLabel))
+            // 💡 [기능 추가] 노드 헤더 영역 버튼 분할 (타이틀, ◀, ▶, X)
+            Rect titleRect = new Rect(nodeRect.x, nodeRect.y, nodeRect.width - 70, 25f);
+            Rect moveLeftRect = new Rect(nodeRect.xMax - 68, nodeRect.y + 2, 20, 20);
+            Rect moveRightRect = new Rect(nodeRect.xMax - 46, nodeRect.y + 2, 20, 20);
+            Rect deleteRect = new Rect(nodeRect.xMax - 24, nodeRect.y + 2, 20, 20);
+
+            if (GUI.Button(titleRect, $"Phase [{i}]", EditorStyles.boldLabel))
             {
                 selectedPhaseIndex = i; selectedModuleIndex = -1; GUI.FocusControl(null);
             }
 
-            if (GUI.Button(new Rect(nodeRect.xMax - 25, nodeRect.y + 2, 20, 20), "X"))
+            // ◀ 인덱스 앞으로 이동
+            if (i > 0 && GUI.Button(moveLeftRect, "◀"))
             {
+                phaseListProp.MoveArrayElement(i, i - 1);
+
+                // 선택된 인덱스 추적 보정
+                if (selectedPhaseIndex == i) selectedPhaseIndex--;
+                else if (selectedPhaseIndex == i - 1) selectedPhaseIndex++;
+
+                so.ApplyModifiedProperties();
+                GUI.FocusControl(null);
+                break;
+            }
+
+            // ▶ 인덱스 뒤로 이동
+            if (i < phaseListProp.arraySize - 1 && GUI.Button(moveRightRect, "▶"))
+            {
+                phaseListProp.MoveArrayElement(i, i + 1);
+
+                // 선택된 인덱스 추적 보정
+                if (selectedPhaseIndex == i) selectedPhaseIndex++;
+                else if (selectedPhaseIndex == i + 1) selectedPhaseIndex--;
+
+                so.ApplyModifiedProperties();
+                GUI.FocusControl(null);
+                break;
+            }
+
+            // X 삭제 버그 방어 코드 적용
+            if (GUI.Button(deleteRect, "X"))
+            {
+                int oldSize = phaseListProp.arraySize;
                 phaseListProp.DeleteArrayElementAtIndex(i);
-                if (selectedPhaseIndex == i) selectedPhaseIndex = -1;
+
+                // 💡 [버그 수정] 오브젝트 레퍼런스 삭제 시 null만 되고 배열 칸이 안 줄어드는 유니티 버그 방어
+                if (phaseListProp.arraySize == oldSize)
+                {
+                    phaseListProp.DeleteArrayElementAtIndex(i);
+                }
+
+                // 삭제 시 선택된 인덱스가 밀리거나 에러 나는 것 방지
+                if (selectedPhaseIndex == i)
+                {
+                    selectedPhaseIndex = -1;
+                    selectedModuleIndex = -1;
+                }
+                else if (selectedPhaseIndex > i)
+                {
+                    selectedPhaseIndex--;
+                }
+
+                so.ApplyModifiedProperties();
+                GUI.FocusControl(null);
                 break;
             }
 
@@ -534,7 +603,6 @@ public class ActiveSkillEditorWindow : EditorWindow
         RefreshSkillList();
 
         selectedSkill = newSkill;
-        // 💡 새로 만들었을 때도 캐싱 처리
         serializedSelectedSkill = new SerializedObject(newSkill);
         selectedPhaseIndex = -1;
         selectedModuleIndex = -1;

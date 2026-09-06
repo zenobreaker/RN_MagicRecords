@@ -1,5 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+
+
+public enum WarningSpawnPattern
+{
+    Directional,   // 전방 기준 부채꼴/다방향
+    Radial         // 360도 전방위
+}
 
 [ModuleCategory("Combat/Spawn Warning Sign")]
 [Serializable]
@@ -12,15 +20,26 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
     [Header("Warning Sign")]
     public WarningSignType signType;
     public float duration = 1.0f;
+    [Tooltip("체크하면 세팅된 위치 값에 표시")]
     public bool isSetTargetPos = false;
 
     [Header("Warning Rect Type")]
     public RectFillMode fillMode;
 
     [Header("Multi-Spawn Settings")]
+    public WarningSpawnPattern spawnPattern = WarningSpawnPattern.Directional;
+
     public int fallbackSpawnCount = 1;
     public float fallbackAngleBetween = 0f;
     public float startAngleOffset = 0f;
+
+    [Header("Lifecycle & Chain Action")]
+    [Tooltip("워닝 사인이 끝날 때 다음 페이즈로 강제 이동할지 여부. (투사체 낙하 등 별도 흐름과 병렬 처리하려면 끄세요)")]
+    public bool endPhaseOnFinish = true;
+
+    [SerializeReference]
+    [Tooltip("워닝 사인이 끝나는 시점에 그 위치에서 즉시 실행될 연계 모듈들 (예: 데미지 처리, 이펙트 스폰, 투사체 발사 등)")]
+    public List<SkillModule> onSignEndModules = new();
 
     // --- Circle 전용 ---
     public float radius = 1.0f;
@@ -40,8 +59,13 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
     public float FanAngle => fanAngle;
     public float FanRadius => fanRadius;
 
+    private bool isIstantState = false;
+
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
+        isIstantState = phaseSkill.isInstant;
+
+
         // 값을 결정합니다 (인스펙터 값 쓸래? 블랙보드 값 쓸래?)
         int baseCount = skill.Runtime.Base.PatternCount > 0
             ? skill.Runtime.Base.PatternCount
@@ -74,33 +98,70 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
 
         for (int i = 0; i < finalSpawnCount; i++)
         {
-            // 1. 각도 계산 
-            // EX) 3개고 간격이 30도라면 -> -30, 0, 30 도 회전
-            Quaternion rotation = PositionHelpers.GetDirection
-                (owner.transform, i, finalSpawnCount, finalAngleBetween, 0f);
+            Quaternion rotation = GetSpawnRotation(
+                owner.transform,
+                i,
+                finalSpawnCount,
+                finalAngleBetween
+            );
 
-            // 2. 생성 
-            WarningSign sign = ObjectPooler.DeferredSpawnFromPool<WarningSign>(GetSignName(),
-            basePosition, rotation);
+            WarningSign sign =
+                ObjectPooler.DeferredSpawnFromPool<WarningSign>(
+                    GetSignName(),
+                    basePosition,
+                    rotation
+                );
+
+            int patternIndex = i;
 
             if (sign != null)
             {
                 SetFillMode(sign);
                 sign.Setup(this, duration);
 
-                // 3. 종료 로직 ( 중요 : 모든 장판이 끝났을 때만) 
                 sign.OnEndSign = () =>
                 {
+                    Vector3 impactPosition = sign.transform.position;
+                    Quaternion impactRotation = sign.transform.rotation;
+
+                    SkillChainContext contenxt = new SkillChainContext
+                    {
+                        Position = impactPosition,
+                        Rotation = impactRotation,
+                        PatternIndex = patternIndex,
+                        WarningSign = sign
+                    };
+
+                    foreach (var chainModule in onSignEndModules)
+                    {
+                        if (chainModule == null)
+                            continue;
+
+                        skill.Runtime.Spawn.TargetPosition =
+                            sign.transform.position;
+
+                        chainModule.OnNotify(
+                            owner,
+                            skill,
+                            phaseSkill
+                        );
+                    }
+
                     finishedCount++;
-                    if (finishedCount >= finalSpawnCount)
+
+                    if (finishedCount >= finalSpawnCount &&
+                        endPhaseOnFinish)
+                    {
                         skill.EndPhaseAndNext();
+                    }
                 };
 
                 ObjectPooler.FinishSpawn(sign.gameObject);
 
-                skill.AddTrackedEffect(sign.gameObject);
+                if (endPhaseOnFinish)
+                    skill.AddTrackedEffect(sign.gameObject);
             }
-        }
+        } // for(i) end 
     }
 
     private string GetSignName()
@@ -116,7 +177,8 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
 
     public override bool ControlsPhaseLifecycle()
     {
-        return true;
+        //즉발이 아니면서, "종료 시 페이즈를 넘긴다(endPhaseOnFinish)"가 켜져 있을 때만 페이즈를 홀드합니다.
+        return !isIstantState && endPhaseOnFinish;
     }
 
     private void SetFillMode(WarningSign sign)
@@ -126,5 +188,61 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
 
         if (sign.TryGetComponent<WarningSign_Rect>(out var rect))
             rect.fillMode = fillMode;
+    }
+
+    private Quaternion GetSpawnRotation(
+    Transform ownerTransform,
+    int index,
+    int spawnCount,
+    float angleBetween)
+    {
+        float angle;
+
+        switch (spawnPattern)
+        {
+            case WarningSpawnPattern.Directional:
+                {
+                    // 중앙을 기준으로 좌우 대칭
+                    float centerOffset =
+                        (spawnCount - 1) * 0.5f;
+
+                    angle =
+                        (index - centerOffset) * angleBetween
+                        + startAngleOffset;
+
+                    break;
+                }
+
+            case WarningSpawnPattern.Radial:
+                {
+                    // 360도를 균등 분할
+                    float sectorSize =
+                        360f / spawnCount;
+
+                    angle =
+                        startAngleOffset
+                        + sectorSize * index;
+
+                    break;
+                }
+
+            default:
+                angle = startAngleOffset;
+                break;
+        }
+
+        return ownerTransform.rotation *
+               Quaternion.Euler(0f, angle, 0f);
+    }
+
+    public override SkillModule Clone()
+    {
+        var clone = (Module_SpawnWarningSign)base.Clone();
+        clone.onSignEndModules = new List<SkillModule>();
+        foreach (var mod in this.onSignEndModules)
+        {
+            clone.onSignEndModules.Add(mod.Clone());
+        }
+        return clone;
     }
 }

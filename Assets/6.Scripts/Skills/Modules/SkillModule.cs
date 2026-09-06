@@ -11,6 +11,16 @@ public abstract class SkillModule
     public virtual void Init(Character owner) { }
     public abstract void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill);
 
+    public virtual void OnChainNotify(
+    Character owner,
+    ActiveSkill skill,
+    PhaseSkill phaseSkill,
+    SkillChainContext context)
+    {
+
+        OnNotify(owner, skill, phaseSkill);
+    }
+
     public virtual void Update (Character owner, ActiveSkill skill, 
         PhaseSkill phase, float deltaTime) { }
     public virtual void FixedUpdate(Character owner, ActiveSkill skill,

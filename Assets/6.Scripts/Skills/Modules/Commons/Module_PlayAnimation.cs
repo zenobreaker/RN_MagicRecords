@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-[ModuleCategory("Common/Play Animation")]
+[ModuleCategory("Animation/Play Animation")]
 [Serializable]
 public class Module_PlayAnimation : SkillModule
 {

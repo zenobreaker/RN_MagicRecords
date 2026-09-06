@@ -6,6 +6,7 @@ using UnityEngine;
 [Serializable]
 public class Module_SetTargetByPerception : SkillModule
 {
+    [Tooltip("해당 모듈이 계산 전에 이미 감지 된 적을 사용할 것인지")]
     public bool isAutoTarget = true;
     public float defaultDistance = 5f; // 사거리 변수화
 

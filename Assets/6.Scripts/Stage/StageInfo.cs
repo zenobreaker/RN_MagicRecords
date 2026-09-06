@@ -7,7 +7,7 @@ public class StageInfo
     public int id;
     public int chapter;
     public StageType type;
-    public string biome;
+    public string theme;
     public string battleBGM; 
 
     // 등장할 적 
