@@ -10,14 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 10b945e14b7e652458e03825cdc085cc, type: 3}
-  m_Name: TestBiome
-  m_EditorClassIdentifier: 
-  biomeName: Test
-  baseTex: {fileID: 2800000, guid: d9e72becef04d644caa5b498db1a32af, type: 3}
-  layer1Tex: {fileID: 0}
-  layer2Tex: {fileID: 0}
-  splatMap: {fileID: 0}
-  textureTiling: 4
-  maskTiling: 0.05
+  m_Name: Forest
+  m_EditorClassIdentifier: Assembly-CSharp::SO_Theme
+  themeName: Forest
+  themeBgSpt: {fileID: 21300000, guid: 1ac9f15c0929dab4c9ccd2ede76529ee, type: 3}
   possibleRoomPrefabs:
-  - {fileID: 4315248260856988482, guid: de42a6e5e97b2e04b9692cbae715b06c, type: 3}
+  - {fileID: 8494203123428702012, guid: 30d50f7f72ebf2d449e08776770399e1, type: 3}
+  - {fileID: 539247956527484442, guid: 8df53b45d722c6746b4c0e01b8a2e1f4, type: 3}

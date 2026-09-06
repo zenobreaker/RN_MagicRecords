@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 10b945e14b7e652458e03825cdc085cc, type: 3}
-  m_Name: SnowBiome
-  m_EditorClassIdentifier: 
-  biomeName: Snow
+  m_Name: Snow
+  m_EditorClassIdentifier: Assembly-CSharp::SO_Theme
+  themeName: Snow
   themeBgSpt: {fileID: 21300000, guid: e6c9714f731d5d64ea7380c1bb3100c0, type: 3}
   possibleRoomPrefabs:
-  - {fileID: 1337590941514605006, guid: 51ee30625b4c3a44f95c14814848216a, type: 3}
   - {fileID: 8711916115841257729, guid: bb04ed1ead8115542bdcbcc04ee18892, type: 3}
   - {fileID: 6944413648172673258, guid: e9e171acf8fc1794087ba9f11e343d5e, type: 3}
+  - {fileID: 1337590941514605006, guid: 51ee30625b4c3a44f95c14814848216a, type: 3}

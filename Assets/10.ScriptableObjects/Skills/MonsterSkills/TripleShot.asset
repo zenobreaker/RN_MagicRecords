@@ -59,12 +59,15 @@ MonoBehaviour:
         duration: 2
         isSetTargetPos: 0
         fillMode: 0
+        spawnPattern: 0
         fallbackSpawnCount: 3
         fallbackAngleBetween: 30
         startAngleOffset: 0
+        endPhaseOnFinish: 1
+        onSignEndModules: []
         radius: 1
-        rectSize: {x: 0, y: 0}
-        maxRectSize: {x: 0.5, y: 2}
+        rectSize: {x: 2, y: 0}
+        maxRectSize: {x: 0.25, y: 2}
         fanRadius: 2
         fanAngle: 90
     - rid: 25348301928530040
@@ -125,7 +128,7 @@ MonoBehaviour:
     - rid: 25348301928530043
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 4
+        triggerTime: 5
         soundName: 
     - rid: 25348301928530044
       type: {class: Module_LookAtTarget, ns: , asm: Assembly-CSharp}

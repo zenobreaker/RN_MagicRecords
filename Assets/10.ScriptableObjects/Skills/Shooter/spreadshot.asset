@@ -181,11 +181,6 @@ MonoBehaviour:
     - rid: 8682830518195847350
     - rid: 8682830518195847364
     - rid: 25348276825882839
-    skillObject: {fileID: 0}
-    objectName: SpreadBullet
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
   references:
     version: 2
     RefIds:
@@ -212,7 +207,7 @@ MonoBehaviour:
     - rid: 8682830518195847364
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 2
+        triggerTime: 3
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -235,7 +230,7 @@ MonoBehaviour:
             HitParticlePositionOffset: {x: 0, y: 0, z: 0}
             HitParticleScaleOffset: {x: 1, y: 1, z: 1}
           ignoreDefenseRate: 0
-        spawnPosition: {x: 0, y: 1, z: 0}
+        spawnPosition: {x: 0, y: 1, z: 1}
         spawnRotation: {x: 0, y: 0, z: 0}
         patternType: 0
         baseSpawnCount: 1

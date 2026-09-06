@@ -12,9 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ef7ca8fff93c034682276f9608bec7c, type: 3}
   m_Name: SO_ChapterData
   m_EditorClassIdentifier: 
-  chapterIndex: 0
-  chapterName: 
-  possibleBiomes:
-  - {fileID: 11400000, guid: 491cc05efba5bdd40aeee84bcde357a3, type: 2}
-  - {fileID: 11400000, guid: b2db5e8e25b8295409850354a0a2798c, type: 2}
-  - {fileID: 11400000, guid: d5b2f5ec6800f334590e069798fec2e3, type: 2}
+  chapters:
+  - chapterNumber: 1
+    chapterName: Forest
+    possibleThemes:
+    - {fileID: 11400000, guid: 7abd39a55081af4478930c6ae8c9752a, type: 2}
+  - chapterNumber: 2
+    chapterName: Snow
+    possibleThemes:
+    - {fileID: 11400000, guid: 5c3de39bb141dea47a574fe22d355f07, type: 2}
+  - chapterNumber: 999
+    chapterName: Test
+    possibleThemes:
+    - {fileID: 11400000, guid: a7d0af732b3d6554796787e979328152, type: 2}

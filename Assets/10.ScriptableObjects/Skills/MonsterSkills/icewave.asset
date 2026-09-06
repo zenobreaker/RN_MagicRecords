@@ -38,31 +38,25 @@ MonoBehaviour:
   - phaseName: 
     isInstant: 0
     modules:
-    - rid: 1371895050838999040
+    - rid: 9167118955140350064
+    - rid: 9167118955140350080
+    - rid: 9167118955140350062
+    - rid: 9167118955140350063
+  - phaseName: 
+    isInstant: 0
+    modules:
+    - rid: 9167118955140350065
+    - rid: 9167118955140350071
     - rid: 1371895074986917888
-    skillObject: {fileID: 0}
-    objectName: 
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+    - rid: 9167118955140350077
+  - phaseName: 
+    isInstant: 0
+    modules:
+    - rid: 9167118955140350072
+    - rid: 9167118955140350068
   references:
     version: 2
     RefIds:
-    - rid: 1371895050838999040
-      type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 0
-        actionData:
-          subStateName: Skill02
-          stateName: Skill
-          layerName: 
-          actionSpeed: 1
-          droneReactionType: 1
-          weaponActionName: Action
-          SoundName: 
-          impulseDirection: {x: 0, y: 0, z: 0}
-          csp: {fileID: 0}
-          bCanMove: 0
     - rid: 1371895074986917888
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
@@ -97,3 +91,86 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: IceWave
         baseLifeTime: -1
+    - rid: 9167118955140350062
+      type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        useBlackboardPattern: 0
+        signType: 2
+        duration: 1
+        isSetTargetPos: 0
+        fillMode: 0
+        spawnPattern: 0
+        fallbackSpawnCount: 1
+        fallbackAngleBetween: 0
+        startAngleOffset: 0
+        endPhaseOnFinish: 1
+        onSignEndModules: []
+        radius: 1
+        rectSize: {x: 1, y: 1}
+        maxRectSize: {x: 1, y: 1}
+        fanRadius: 5
+        fanAngle: 60
+    - rid: 9167118955140350063
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        controlType: 0
+        speedMultiplier: 0.5
+    - rid: 9167118955140350064
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        parameterName: IsCharging
+        paramType: 0
+        boolValue: 1
+        floatValue: 0
+        intValue: 0
+    - rid: 9167118955140350065
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        parameterName: IsCharging
+        paramType: 0
+        boolValue: 0
+        floatValue: 0
+        intValue: 0
+    - rid: 9167118955140350068
+      type: {class: Module_PhaseTransition, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        transitionType: 2
+        targetPhaseIndex: 0
+        delayTime: 0
+    - rid: 9167118955140350071
+      type: {class: Module_DelayEvent, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        eventType: 0
+        delay: 0
+        floatValue: 0
+        intValue: 0
+        stringValue: 
+        objectValue: {fileID: 0}
+    - rid: 9167118955140350072
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        controlType: 1
+        speedMultiplier: 0.5
+    - rid: 9167118955140350077
+      type: {class: Module_PhaseTransition, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        transitionType: 0
+        targetPhaseIndex: 0
+        delayTime: 0
+    - rid: 9167118955140350080
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        parameterName: Charging
+        paramType: 3
+        boolValue: 0
+        floatValue: 0
+        intValue: 0

@@ -39,46 +39,21 @@ MonoBehaviour:
     isInstant: 0
     modules:
     - rid: 1371895131259535445
-    - rid: 1371895244641534060
-    - rid: 1371895050838999040
     - rid: 1371895131259535441
-    - rid: 1371895131259535442
+    - rid: 9167118955140350090
     - rid: 1371895185988124755
     - rid: 1371895244641534061
-    skillObject: {fileID: 0}
-    objectName: 
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+    - rid: 1371895131259535442
+    - rid: 9167118955140350095
   - phaseName: "\uCE90\uC2A4\uD305 \uC885\uB8CC"
     isInstant: 0
     modules:
     - rid: 1371895131259535446
     - rid: 1371895131259535449
     - rid: 1371895131259535448
-    skillObject: {fileID: 0}
-    objectName: 
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
   references:
     version: 2
     RefIds:
-    - rid: 1371895050838999040
-      type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 0
-        actionData:
-          subStateName: Casting_Start
-          stateName: Casting
-          layerName: 
-          actionSpeed: 1
-          droneReactionType: 0
-          weaponActionName: 
-          SoundName: 
-          impulseDirection: {x: 0, y: 0, z: 0}
-          csp: {fileID: 0}
-          bCanMove: 0
     - rid: 1371895131259535441
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
@@ -111,7 +86,7 @@ MonoBehaviour:
     - rid: 1371895131259535448
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 3
+        triggerTime: 4
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -154,12 +129,6 @@ MonoBehaviour:
         triggerTime: 0
         spawnCount: 1
         angleBetween: 0
-    - rid: 1371895244641534060
-      type: {class: Module_Casting, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 1
-        overrideCastingTime: 1
-        castingTime: 3
     - rid: 1371895244641534061
       type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
       data:
@@ -168,11 +137,31 @@ MonoBehaviour:
         signType: 0
         duration: 1
         isSetTargetPos: 0
+        fillMode: 0
+        spawnPattern: 1
         fallbackSpawnCount: 1
         fallbackAngleBetween: 0
         startAngleOffset: 0
-        radius: 1
+        endPhaseOnFinish: 1
+        onSignEndModules: []
+        radius: 7
         rectSize: {x: 1, y: 1}
         maxRectSize: {x: 1, y: 1}
         fanRadius: 2
         fanAngle: 90
+    - rid: 9167118955140350090
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        parameterName: Casting
+        paramType: 3
+        boolValue: 0
+        floatValue: 0
+        intValue: 0
+    - rid: 9167118955140350095
+      type: {class: Module_PhaseTransition, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        transitionType: 0
+        targetPhaseIndex: 0
+        delayTime: 3

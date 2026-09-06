@@ -38,40 +38,28 @@ MonoBehaviour:
   - phaseName: 
     isInstant: 0
     modules:
-    - rid: 1371895050838999040
+    - rid: 9167118924576456796
+    - rid: 9167118924576456797
+    - rid: 9167118950637502464
+  - phaseName: 
+    isInstant: 0
+    modules:
+    - rid: 9167118950637502551
     - rid: 1371895074986917888
-    skillObject: {fileID: 0}
-    objectName: 
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+    - rid: 9167118950637502552
+    - rid: 9167118950637502571
   references:
     version: 2
     RefIds:
-    - rid: 1371895050838999040
-      type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 0
-        actionData:
-          subStateName: Skill02
-          stateName: Skill
-          layerName: 
-          actionSpeed: 1
-          droneReactionType: 0
-          weaponActionName: Action
-          SoundName: 
-          impulseDirection: {x: 0, y: 0, z: 0}
-          csp: {fileID: 0}
-          bCanMove: 0
     - rid: 1371895074986917888
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 3
-        damageApplyType: 0
+        triggerTime: 0
+        damageApplyType: 2
         damageMultiplier: 1
         damageData:
           damageType: 0
-          baseDamage: 10
+          baseDamage: 70
           statCoefficient: 1
           bDownable: 0
           bLauncher: 0
@@ -97,3 +85,60 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: IceBurst
         baseLifeTime: -1
+    - rid: 9167118924576456796
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        parameterName: IsCasting
+        paramType: 0
+        boolValue: 1
+        floatValue: 0
+        intValue: 0
+    - rid: 9167118924576456797
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        controlType: 0
+        speedMultiplier: 0.5
+    - rid: 9167118950637502464
+      type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        useBlackboardPattern: 1
+        signType: 2
+        duration: 5
+        isSetTargetPos: 0
+        fillMode: 0
+        spawnPattern: 1
+        fallbackSpawnCount: 10
+        fallbackAngleBetween: 17
+        startAngleOffset: -15
+        endPhaseOnFinish: 1
+        onSignEndModules: []
+        radius: 17
+        rectSize: {x: 1, y: 1}
+        maxRectSize: {x: 1, y: 1}
+        fanRadius: 7
+        fanAngle: 15
+    - rid: 9167118950637502551
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        parameterName: IsCasting
+        paramType: 0
+        boolValue: 0
+        floatValue: 0
+        intValue: 0
+    - rid: 9167118950637502552
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        controlType: 1
+        speedMultiplier: 0.5
+    - rid: 9167118950637502571
+      type: {class: Module_PhaseTransition, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        transitionType: 2
+        targetPhaseIndex: 0
+        delayTime: 0

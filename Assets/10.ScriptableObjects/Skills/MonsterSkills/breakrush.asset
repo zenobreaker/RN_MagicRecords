@@ -38,9 +38,10 @@ MonoBehaviour:
   - phaseName: "\uCE90\uC2A4\uD305"
     isInstant: 0
     modules:
+    - rid: 1371895267614785647
+    - rid: 9167118901003419777
     - rid: 1371895388252405760
     - rid: 1371895050838999040
-    - rid: 1371895267614785647
     - rid: 1371895267614785639
     - rid: 1371895388252405871
   - phaseName: "\uCE90\uC2A4\uD305 \uC2DC\uC791"
@@ -51,6 +52,7 @@ MonoBehaviour:
     - rid: 1371895388252405764
     - rid: 1371895399042515112
     - rid: 1371895388252405761
+    - rid: 9167118901003419779
   references:
     version: 2
     RefIds:
@@ -76,7 +78,7 @@ MonoBehaviour:
         useBlackboardPattern: 0
         signType: 1
         duration: 1
-        isSetTargetPos: 0
+        isSetTargetPos: 1
         fillMode: 0
         fallbackSpawnCount: 1
         fallbackAngleBetween: 0
@@ -205,3 +207,17 @@ MonoBehaviour:
         intValue: 0
         stringValue: 
         objectValue: {fileID: 0}
+    - rid: 9167118901003419777
+      type: {class: Module_LookAtTarget, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        useBlackboardPos: 1
+        lookAtOwnerTarget: 0
+        turnSpeed: 0
+    - rid: 9167118901003419779
+      type: {class: Module_PhaseTransition, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 7
+        transitionType: 2
+        targetPhaseIndex: 0
+        delayTime: 0
