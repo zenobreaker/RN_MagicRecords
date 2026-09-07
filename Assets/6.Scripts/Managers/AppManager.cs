@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static UnityEngine.UI.GridLayoutGroup;
 
 public class AppManager
     : Singleton<AppManager>
@@ -20,61 +19,132 @@ public class AppManager
     [SerializeField] private bool bCheat;
     public bool Cheat => bCheat;
 
-    private bool isProcessingReward = false; // 중복 실행 방지 플래그
-    // 패시브 스킬을 처리하는 시스템 클래스 
+    private bool isProcessingReward = false;
+
+    // 패시브 스킬을 처리하는 시스템 클래스
     private PassiveSystem passiveSystem = new();
+
+
+    #region Unity Lifecycle
 
     protected override void Awake()
     {
         base.Awake();
 
-        if (IsDuplicate) return; 
+        if (IsDuplicate)
+            return;
 
         if (Instance != this)
             return;
 
+
+        // --------------------------------------------------
+        // Manager Reference
+        // --------------------------------------------------
+
         databaseManager = GetComponent<DataBaseManager>();
-        skillManager = GetComponent<SkillManager>();
+
+        skillManager = SkillManager.Instance;
         skillTree = SkillTreeManager.Instance;
+
         rewardManager = GetComponent<RewardManager>();
         recordManager = GetComponent<RecordManager>();
         exploreManager = GetComponent<ExploreManager>();
 
+
+        // --------------------------------------------------
+        // 최초 초기화
+        // --------------------------------------------------
+
         if (IsInitialized == false)
         {
-            skillManager.OnDataChanaged += () => { PlayerManager.Instance.SetDirty(); };
+            if (skillManager != null)
+            {
+                skillManager.OnDataChanged +=
+                    OnSkillDataChanged;
+            }
+
             InventoryManager.Instance?.OnInit();
+
             PlayerManager.Instance?.OnInit();
-            CurrencyManager.Instance?.OnInit((CurrencyInventory)InventoryManager.Instance?.GetInvetory(ItemCategory.CURRENCY));
-            recordManager.OnInit();
-            SceneManager.sceneUnloaded += OnUnloadScene;
+
+            CurrencyManager.Instance?.OnInit(
+                (CurrencyInventory)
+                InventoryManager.Instance?.GetInvetory(
+                    ItemCategory.CURRENCY));
+
+            recordManager?.OnInit();
+
+            SceneManager.sceneUnloaded +=
+                OnUnloadScene;
         }
+
+
+        // --------------------------------------------------
+        // UI Manager
+        // --------------------------------------------------
 
         if (exploreManager != null)
         {
-            ManagerWaiter.WaitForManager<UIManager>((uiManager) =>
-            {
-                uiManager.OnReturnedStageSelect += exploreManager.OnReturnedStageSelectScene;
-            });
+            ManagerWaiter.WaitForManager<UIManager>(
+                uiManager =>
+                {
+                    uiManager.OnReturnedStageSelect +=
+                        exploreManager.OnReturnedStageSelectScene;
+                });
         }
+
+
+        // --------------------------------------------------
+        // Passive System
+        // --------------------------------------------------
 
         passiveSystem?.OnInit();
 
+
+        // --------------------------------------------------
+        // Game Manager Events
+        // --------------------------------------------------
+
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnBeginStage += OnBeginStage;
-            GameManager.Instance.OnUpdated += OnUpdate;
-            GameManager.Instance.OnFinishStage += FinishStageProcess;
+            GameManager.Instance.OnBeginStage +=
+                OnBeginStage;
+
+            GameManager.Instance.OnUpdated +=
+                OnUpdate;
+
+            GameManager.Instance.OnFinishStage +=
+                FinishStageProcess;
         }
+
+
+        // --------------------------------------------------
+        // Explore Manager Events
+        // --------------------------------------------------
 
         if (exploreManager != null)
         {
-            exploreManager.OnExploreStart += HandleExploreStart;
-            exploreManager.OnReturnToMain += HandleReturnToMain;
-            exploreManager.OnInStage += HandleInStage;
-            exploreManager.OnStageClear += HandleStageClear;
-            exploreManager.OnExploreFinish += HanldeExploreFinish;
+            exploreManager.OnExploreStart +=
+                HandleExploreStart;
+
+            exploreManager.OnReturnToMain +=
+                HandleReturnToMain;
+
+            exploreManager.OnInStage +=
+                HandleInStage;
+
+            exploreManager.OnStageClear +=
+                HandleStageClear;
+
+            exploreManager.OnExploreFinish +=
+                HanldeExploreFinish;
         }
+
+
+        // --------------------------------------------------
+        // Awake 완료
+        // --------------------------------------------------
 
         OnAwaked?.Invoke();
         OnAwaked = null;
@@ -82,14 +152,15 @@ public class AppManager
         PauseManager.Reset();
     }
 
+
     private void OnApplicationQuit()
     {
         SaveIfDirty();
     }
 
+
     protected override void SyncDataFromSingleton()
     {
-        // 기존 싱글톤 인스턴스가 자기 자신이 아니면
         if (Instance != this)
         {
             skillManager = Instance.skillManager;
@@ -105,527 +176,911 @@ public class AppManager
         }
     }
 
+
     private void OnDisable()
     {
-        if (Instance != this) return;
+        if (Instance != this)
+            return;
 
-        if (GameManager.Instance == null) return;
 
-        GameManager.Instance.OnBeginStage -= OnBeginStage;
-        GameManager.Instance.OnUpdated -= OnUpdate;
-        GameManager.Instance.OnFinishStage -= FinishStageProcess;
+        // --------------------------------------------------
+        // Skill Manager
+        // --------------------------------------------------
+
+        if (skillManager != null)
+        {
+            skillManager.OnDataChanged -=
+                OnSkillDataChanged;
+        }
+
+
+        // --------------------------------------------------
+        // Game Manager
+        // --------------------------------------------------
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnBeginStage -=
+                OnBeginStage;
+
+            GameManager.Instance.OnUpdated -=
+                OnUpdate;
+
+            GameManager.Instance.OnFinishStage -=
+                FinishStageProcess;
+        }
+
+
+        // --------------------------------------------------
+        // Explore Manager
+        // --------------------------------------------------
+
+        if (exploreManager != null)
+        {
+            exploreManager.OnExploreStart -=
+                HandleExploreStart;
+
+            exploreManager.OnReturnToMain -=
+                HandleReturnToMain;
+
+            exploreManager.OnInStage -=
+                HandleInStage;
+
+            exploreManager.OnStageClear -=
+                HandleStageClear;
+
+            exploreManager.OnExploreFinish -=
+                HanldeExploreFinish;
+        }
+
+
+        // --------------------------------------------------
+        // Scene Manager
+        // --------------------------------------------------
+
+        SceneManager.sceneUnloaded -=
+            OnUnloadScene;
     }
 
-    #region Explore 
+
+    private void OnSkillDataChanged()
+    {
+        PlayerManager.Instance?.SetDirty();
+    }
+
+    #endregion
+
+
+    #region Explore
 
     public void HandleStageResult(StageResult result)
     {
-        if (exploreManager == null) return;
+        if (exploreManager == null)
+            return;
 
-        // 1. ExploreManager에게 결과 알리기 (여기서 AllStageClear 등을 세팅)
-        exploreManager.ClearStage(result.IsSuccess);
 
-        // 2. UI 띄우기 책임 (이전에 StageManager가 하던 일을 여기서 처리)
-        bool isRunCompletelyFinished = !result.IsSuccess || exploreManager.AllStageClear;
+        // 1. ExploreManager에게 결과 전달
+        exploreManager.ClearStage(
+            result.IsSuccess);
+
+
+        // 2. 결과 UI
+        bool isRunCompletelyFinished =
+            !result.IsSuccess ||
+            exploreManager.AllStageClear;
+
 
         if (isRunCompletelyFinished)
         {
-            UIManager.Instance.OpenExploreResultPopUp();
+            UIManager.Instance?.OpenExploreResultPopUp();
         }
         else
         {
-            UIManager.Instance.SafeInvoke(v => v.ShowStageResultUI(result.IsSuccess));
+            UIManager.Instance.SafeInvoke(
+                v =>
+                    v.ShowStageResultUI(
+                        result.IsSuccess));
         }
 
-        // 3. 보상 처리 및 세이브
+
+        // 3. 보상 처리
         AcceptReward();
+
+
+        // 4. 저장
         SaveIfDirty();
     }
 
-    public ExploreManager GetExploreManager() { return exploreManager; }
+
+    public ExploreManager GetExploreManager()
+    {
+        return exploreManager;
+    }
 
 
     private void AcceptReward()
     {
-        if (isProcessingReward) return;
+        if (isProcessingReward)
+            return;
+
         isProcessingReward = true;
 
-        if (exploreManager != null && exploreManager.CurrentState != ExploreState.STAGE_CLEAR)
+
+        if (exploreManager != null &&
+            exploreManager.CurrentState !=
+            ExploreState.STAGE_CLEAR)
         {
             isProcessingReward = false;
             return;
         }
+
+
+        // --------------------------------------------------
+        // 전체 탐사 클리어
+        // --------------------------------------------------
 
         if (exploreManager.AllStageClear)
         {
-            int chapter = exploreManager.Chapter;
+            int chapter =
+                exploreManager.Chapter;
+
             SetChapterClearReward(chapter);
+
             isProcessingReward = false;
             return;
         }
 
-        // 💡 StageInfo 대신 MapNodeInfo를 가져옵니다.
-        MapNodeInfo nodeInfo = exploreManager?.GetReplacedNodeInfo();
+
+        // --------------------------------------------------
+        // 일반 스테이지 클리어
+        // --------------------------------------------------
+
+        MapNodeInfo nodeInfo =
+            exploreManager.GetReplacedNodeInfo();
+
 
         if (nodeInfo == null)
         {
-            Debug.LogWarning("보상을 받을 노드 정보를 찾을 수 없습니다.");
+            Debug.LogWarning(
+                "보상을 받을 노드 정보를 찾을 수 없습니다.");
+
             isProcessingReward = false;
             return;
         }
 
-        // 💡 껍데기에 적힌 보상 ID만 보고 바로 지급합니다!
-        // (RewardManager의 GiveStageReward 함수가 int rewardId를 받도록 수정해야 합니다)
+
         if (nodeInfo.clearRewardId > 0)
         {
-            rewardManager.SafeInvoke(v => v.GiveStageReward(nodeInfo.clearRewardId));
+            rewardManager.SafeInvoke(
+                v =>
+                    v.GiveStageReward(
+                        nodeInfo.clearRewardId));
         }
+
 
         isProcessingReward = false;
     }
 
 
-    // 최종 결과창의 [확인/로비로] 버튼에 이 함수를 연결
+    /// <summary>
+    /// 최종 결과창의 [확인 / 로비로] 버튼에 연결.
+    /// </summary>
     public void CompleteRunAndReturnToLobby()
     {
-        // 1. 최종 보상 지급 (필요하다면 여기서 지급)
-        // rewardManager?.GiveChapterReward(exploreManager.Chapter);
+        exploreManager.SafeInvoke(
+            v =>
+                v.PurgeCurrentRun());
 
-        // 2. 런이 끝났고 보상도 받았으므로, 기존 세이브 데이터를 날려버립니다!
-        exploreManager.SafeInvoke(v => v.PurgeCurrentRun());
-
-        // 3. 로비 씬으로 이동
         ReturnToLobbyScene();
     }
+
 
     public void EnterTheExplorationProcess()
     {
         // 레코드 데이터 초기화
-        recordManager.SafeInvoke(v=>v.ResetRecordFlowData());
+        recordManager.SafeInvoke(
+            v =>
+                v.ResetRecordFlowData());
 
-        // 탐사 데이터 초기화 
-        exploreManager.SafeInvoke(v => v.StartExplore());
 
-        // 스킬 정보 초기화
+        // 탐사 데이터 초기화
+        exploreManager.SafeInvoke(
+            v =>
+                v.StartExplore());
+
+
+        // 탐사 패시브 초기화
         passiveSystem.ResetExplorePassives();
-        skillManager.SafeInvoke(v => v.ResetRunTimeData());
 
-        
-        UIManager.Instance.SafeInvoke(v => v.OpenExplorationSetupPopUp());
+
+        // 스킬 런타임 데이터 초기화
+        skillManager.SafeInvoke(
+            v =>
+                v.ResetRunTimeData());
+
+
+        // 탐사 준비 UI
+        UIManager.Instance.SafeInvoke(
+            v =>
+                v.OpenExplorationSetupPopUp());
     }
+
 
     public void ContinueExplorationProcess()
     {
-        // 그러면 ExploreManager.EnsureInitialized()가 씬 로드 후 알아서 Init(false)를 호출하여 로드할 것입니다.
-        SceneManager.LoadScene("StageSelectScene");
+        SceneManager.LoadScene(
+            "StageSelectScene");
     }
+
 
     public bool HasSavedExploration()
     {
         return SaveManager.HasSavedMapData();
     }
 
+
     public bool CanEnableNode(MapNode node)
     {
-        if (node == null || exploreManager == null) return false;
+        if (node == null ||
+            exploreManager == null)
+            return false;
 
-        return exploreManager.CanEnableNode(node.id, bCheat);
+        return exploreManager.CanEnableNode(
+            node.id,
+            bCheat);
     }
-
 
 
     public StageInfo GetStageInfo(int stageID)
     {
-        if (databaseManager == null) return null;
-        return databaseManager.GetStageInfo(stageID);
+        if (databaseManager == null)
+            return null;
+
+        return databaseManager.GetStageInfo(
+            stageID);
     }
 
-    public StageInfo GetBossStageInfo(int chapter, int stageID)
+
+    public StageInfo GetBossStageInfo(
+        int chapter,
+        int stageID)
     {
-        if (databaseManager == null) return null;
-        return databaseManager.GetBossStageInfo(chapter, stageID);
+        if (databaseManager == null)
+            return null;
+
+        return databaseManager.GetBossStageInfo(
+            chapter,
+            stageID);
     }
+
 
     public int GetRandomStageId(int chapter)
     {
-        if (databaseManager == null) return -1;
+        if (databaseManager == null)
+            return -1;
 
-        return databaseManager.GetRandomStageID(chapter); 
+        return databaseManager.GetRandomStageID(
+            chapter);
     }
+
 
     public int GetRandomBossStageID(int chapter)
     {
-        int stageId = databaseManager.GetRandomBossStageID(chapter);
-        return stageId;
+        if (databaseManager == null)
+            return -1;
+
+        return databaseManager.GetRandomBossStageID(
+            chapter);
     }
+
 
     public StageInfo CreateRandomBossStage(int chapter)
     {
-        int stageID = GetRandomBossStageID(chapter);
-        return GetBossStageInfo(chapter, stageID);
+        int stageID =
+            GetRandomBossStageID(chapter);
+
+        if (stageID < 0)
+            return null;
+
+        return GetBossStageInfo(
+            chapter,
+            stageID);
     }
+
 
     public StageInfo CreateRandomStage(int chapter)
     {
-        int stageID = GetRandomStageId(chapter);
-        return GetStageInfo(stageID); 
+        int stageID =
+            GetRandomStageId(chapter);
+
+        if (stageID < 0)
+            return null;
+
+        return GetStageInfo(stageID);
     }
+
 
     public MonsterData GetMonsterData(int monsterID)
     {
-        if (databaseManager == null) return null;
-        return databaseManager.GetMonsterData(monsterID);
+        if (databaseManager == null)
+            return null;
+
+        return databaseManager.GetMonsterData(
+            monsterID);
     }
+
 
     public MonsterGroupData GetGroupData(int groupID)
     {
-        if (databaseManager == null) return null;
-        return databaseManager.GetMonsterGroupData(groupID);
+        if (databaseManager == null)
+            return null;
+
+        return databaseManager.GetMonsterGroupData(
+            groupID);
     }
 
-    public MonsterStatData GetMonsterStatData(int monsterID)
+
+    public MonsterStatData GetMonsterStatData(
+        int monsterID)
     {
-        if (databaseManager == null) return null;
-        return databaseManager.GetMonsterStatData(monsterID);
+        if (databaseManager == null)
+            return null;
+
+        return databaseManager.GetMonsterStatData(
+            monsterID);
     }
+
 
     public void EnterStageByNode(MapNode node)
     {
-        if (node != null && exploreManager != null)
-        {
-            Debug.Log($"Current Select Node ID : {node.id}");
-            exploreManager.EnterStageByNode(node);
-        }
+        if (node == null ||
+            exploreManager == null)
+            return;
 
-       // var nodeInfo = GetNodeInfoMatchedMapNode(node);
+        Debug.Log(
+            $"Current Select Node ID : {node.id}");
 
+        exploreManager.EnterStageByNode(node);
     }
+
 
     private void HandleExploreStart()
     {
-
     }
+
 
     private void HandleReturnToMain()
     {
-        // 탐사 씬 메인으로 오는 경우에도 호출 
-        if (recordManager == null) return; 
+        if (recordManager == null)
+            return;
 
-       recordManager.GenerateChapterStartRecords();
+        recordManager.GenerateChapterStartRecords();
     }
+
 
     private void HandleInStage(int stageID)
     {
-
     }
+
 
     private void HandleStageClear()
     {
-        // 스테이지 마지막인지 검사해서 아니라면 
-        // 레코드를 얻을 수 있는 플래그 켜야함
-        if(exploreManager.AllStageClear == false)
+        if (exploreManager.AllStageClear == false)
         {
             recordManager.SetReceiveRecordFlag();
         }
     }
 
+
     private void HanldeExploreFinish()
     {
-
     }
+
 
     private void FinishStageProcess()
     {
-        AcceptReward();
-
         SaveIfDirty();
     }
 
 
-    public MapNodeInfo GetNodeInfoMatchedMapNode(MapNode mapNode)
+    public MapNodeInfo GetNodeInfoMatchedMapNode(
+        MapNode mapNode)
     {
-        if (mapNode == null || exploreManager == null) return null;
+        if (mapNode == null ||
+            exploreManager == null)
+            return null;
 
-        return exploreManager.GetReplacedNodeInfo(mapNode.id);
+        return exploreManager.GetReplacedNodeInfo(
+            mapNode.id);
     }
 
     #endregion
 
-    #region Skill 
 
-    public void EquipSavedClassActiveSkill(int classID, List<int> skillIDs)
+    #region Skill
+
+    public void EquipSavedClassActiveSkill(
+        int classID,
+        List<int> skillIDs)
     {
-        if (skillManager == null || skillTree == null) return;
+        if (skillManager == null ||
+            skillTree == null)
+            return;
 
         int slot = 0;
+
         foreach (int skillID in skillIDs)
         {
-            SkillRuntimeData runtimeData = skillTree.GetSkillRuntimeData(classID, skillID);
-            EquipActiveSkill(classID, slot, runtimeData);
+            SkillRuntimeData runtimeData =
+                skillTree.GetSkillRuntimeData(
+                    classID,
+                    skillID);
+
+            EquipActiveSkill(
+                classID,
+                slot,
+                runtimeData);
+
             slot++;
         }
     }
 
-    public void EquipActiveSkill(int charId, int slot, SkillRuntimeData skill)
-    {
-        if (skillManager == null) return;
 
-        skillManager.EquipActiveSkill(charId, slot, skill);
+    public void EquipActiveSkill(
+        int charId,
+        int slot,
+        SkillRuntimeData skill)
+    {
+        if (skillManager == null)
+            return;
+
+        skillManager.EquipActiveSkill(
+            charId,
+            slot,
+            skill);
     }
 
-    public void UnequipActiveSkill(int charId, int slot)
-    {
-        if (skillManager == null) return;
 
-        skillManager.EquipActiveSkill(charId, slot, null);
+    public void UnequipActiveSkill(
+        int charId,
+        int slot)
+    {
+        if (skillManager == null)
+            return;
+
+        skillManager.EquipActiveSkill(
+            charId,
+            slot,
+            null);
     }
 
-    public List<SkillRuntimeData> GetEquippedActiveSkillListByCharID(int charId)
-    {
-        if (skillManager == null) return null;
 
-        return skillManager.GetActiveSkillList(charId);
+    public List<SkillRuntimeData>
+        GetEquippedActiveSkillListByCharID(
+            int charId)
+    {
+        if (skillManager == null)
+            return null;
+
+        return skillManager.GetActiveSkillList(
+            charId);
     }
 
-    public List<int> GetEquippedActiveSkillIDListByCharID(int charID)
+
+    public List<int>
+        GetEquippedActiveSkillIDListByCharID(
+            int charID)
     {
-        if (skillManager == null) return null;
-        return skillManager.GetActiveSkillIDList(charID);
+        if (skillManager == null)
+            return null;
+
+        return skillManager.GetActiveSkillIDList(
+            charID);
     }
 
-    public void SetActiveSkills(int jobID, SkillComponent skillComp)
+
+    public void SetActiveSkills(
+        int jobID,
+        SkillComponent skillComp)
     {
-        if (skillManager == null || skillComp == null) return;
-        skillManager.SetActiveSkills(jobID, skillComp);
+        if (skillManager == null ||
+            skillComp == null)
+            return;
+
+        skillManager.SetActiveSkills(
+            jobID,
+            skillComp);
     }
 
-    public PassiveSystem GetPassiveSystem() { return passiveSystem; }
 
-    public void AddPassiveSkill(int jobID, PassiveSkill passiveSkill)
+    public PassiveSystem GetPassiveSystem()
     {
-        if (passiveSystem == null) return;
-        passiveSystem.Add(jobID, passiveSkill);
+        return passiveSystem;
     }
 
-    public void RemovePassiveSkill(int jobID, PassiveSkill passiveSkill)
+
+    public void AddPassiveSkill(
+        int jobID,
+        PassiveSkill passiveSkill)
     {
-        if (passiveSystem == null) return;
-        passiveSystem.Remove(jobID, passiveSkill);
+        if (passiveSystem == null)
+            return;
+
+        passiveSystem.Add(
+            jobID,
+            passiveSkill);
     }
 
-    public void OnApplyStaticEffct(int jobID, Character owner)
+
+    public void RemovePassiveSkill(
+        int jobID,
+        PassiveSkill passiveSkill)
     {
-        passiveSystem?.OnApplyStaticEffect(jobID, owner);
+        if (passiveSystem == null)
+            return;
+
+        passiveSystem.Remove(
+            jobID,
+            passiveSkill);
     }
 
-    public void OnAcquire(int jobID, Character owner)
+
+    public void OnApplyStaticEffct(
+        int jobID,
+        Character owner)
     {
-        passiveSystem?.OnAcquire(jobID, owner);
+        passiveSystem?.OnApplyStaticEffect(
+            jobID,
+            owner);
     }
 
-    public void OnLose(int jobID, Character owner)
+
+    public void OnAcquire(
+        int jobID,
+        Character owner)
     {
-        passiveSystem?.OnLose(jobID, owner);
+        passiveSystem?.OnAcquire(
+            jobID,
+            owner);
     }
+
+
+    public void OnLose(
+        int jobID,
+        Character owner)
+    {
+        passiveSystem?.OnLose(
+            jobID,
+            owner);
+    }
+
 
     public void OnUpdate(float dt)
     {
         passiveSystem?.OnUpdate(dt);
     }
 
-    public void OnChangedLevelPassiveSkill(int jobID, SkillRuntimeData data)
+
+    public void OnChangedLevelPassiveSkill(
+        int jobID,
+        SkillRuntimeData data)
     {
-        passiveSystem?.OnChangedLevel(jobID, data);
+        passiveSystem?.OnChangedLevel(
+            jobID,
+            data);
     }
 
     #endregion
 
+
     #region Database
-    public ItemData GetItemData(int itemId, ItemCategory category)
+
+    public ItemData GetItemData(
+        int itemId,
+        ItemCategory category)
     {
         if (category == ItemCategory.EQUIPMENT)
             return GetEquipmentItem(itemId);
-        else if (category == ItemCategory.INGREDIANT)
+
+        if (category == ItemCategory.INGREDIANT)
             return GetIngredientItem(itemId);
-        else
-            return GetCurrencyItem(itemId);
+
+        return GetCurrencyItem(itemId);
     }
 
-    public DataBaseManager GetDataBaseManager() => databaseManager;
+
+    public DataBaseManager GetDataBaseManager()
+    {
+        return databaseManager;
+    }
+
 
     public EquipmentItem GetEquipmentItem(int itemid)
     {
-        return databaseManager.SafeInvoke(v=>v.GetEquipmentItem(itemid));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetEquipmentItem(itemid));
     }
+
 
     public IngredientItem GetIngredientItem(int itemId)
     {
-        return databaseManager.SafeInvoke(v => v.GetIngredientItem(itemId));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetIngredientItem(itemId));
     }
+
 
     public CurrencyItem GetCurrencyItem(int itemId)
     {
-        return databaseManager.SafeInvoke(v => v.GetCurrencyItem(itemId));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetCurrencyItem(itemId));
     }
 
-    public CurrencyItem GetCurrencyItemByType(CurrencyType type)
+
+    public CurrencyItem GetCurrencyItemByType(
+        CurrencyType type)
     {
-        return databaseManager.SafeInvoke(v => v.GetCurrencyItemByType(type));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetCurrencyItemByType(type));
     }
+
 
     public ShopItem GetShopItem(int itemId)
     {
-        return databaseManager.SafeInvoke(v => v.GetShopItem(itemId));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetShopItem(itemId));
     }
 
-    public List<ItemData> GetShopItems(ItemCategory category)
+
+    public List<ItemData> GetShopItems(
+        ItemCategory category)
     {
-        return databaseManager.SafeInvoke(v => v.GetShopItems(category));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetShopItems(category));
     }
 
-    public EnhanceLevelData GetEnhanceLevelData(ItemRank rank, int enhanceLevel)
+
+    public EnhanceLevelData GetEnhanceLevelData(
+        ItemRank rank,
+        int enhanceLevel)
     {
-        return databaseManager.SafeInvoke(v => v.GetEnhanceLevelData((int)rank, enhanceLevel));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetEnhanceLevelData(
+                    (int)rank,
+                    enhanceLevel));
     }
 
-    public EnhanceStatData GetEnhanceStatData(ItemRank rank, int enhanceLevel)
+
+    public EnhanceStatData GetEnhanceStatData(
+        ItemRank rank,
+        int enhanceLevel)
     {
-        return databaseManager.SafeInvoke(v => v.GetEnhanceStatData((int)rank, enhanceLevel));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetEnhanceStatData(
+                    (int)rank,
+                    enhanceLevel));
     }
 
-    public List<EnhanceStatData> GetEnhanceStatDatas(ItemRank rank)
+
+    public List<EnhanceStatData> GetEnhanceStatDatas(
+        ItemRank rank)
     {
-        return databaseManager.SafeInvoke(v => v.GetEnhanceStatDatas((int)rank));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetEnhanceStatDatas(
+                    (int)rank));
     }
 
-    public List<RecordData> GetRecordByRarity(RecordRarity rarity)
+
+    public List<RecordData> GetRecordByRarity(
+        RecordRarity rarity)
     {
-        return databaseManager.SafeInvoke(v=>v.GetRecordDatas(rarity)); 
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetRecordDatas(rarity));
     }
+
 
     public RecordData GetRecordData(int recordID)
     {
-        return databaseManager.SafeInvoke(v => v.GetRecordData(recordID));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetRecordData(recordID));
     }
+
 
     public List<RecordData> GetAllRecordData()
     {
-        return databaseManager.SafeInvoke(v => v.GetAllRecordData());
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetAllRecordData());
     }
 
+
     public RecordData GetEmptyRecord()
-    { return databaseManager.SafeInvoke(v => v.GetEmptyRecord()); }
+    {
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetEmptyRecord());
+    }
+
 
     public EventInfo GetEventInfo(int eventID)
     {
-        return databaseManager.SafeInvoke(v => v.GetEventInfo(eventID)); 
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetEventInfo(eventID));
     }
 
     #endregion
+
 
     #region Reward
+
     public RewardData GetRewardData(int rewardId)
     {
-        return databaseManager.SafeInvoke(v => v.GetRewardData(rewardId));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetRewardData(rewardId));
     }
 
-    public ClearRewardData GetStageClearRewardData(int stageid)
+
+    public ClearRewardData GetStageClearRewardData(
+        int stageid)
     {
-        return databaseManager.SafeInvoke(v=>v.GetStageClearReward(stageid));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetStageClearReward(stageid));
     }
 
-    public ClearRewardData GetChapterClearRewardData(int clearedChapter)
+
+    public ClearRewardData GetChapterClearRewardData(
+        int clearedChapter)
     {
-        // 챕터가 클리어 되면 해당 챕터에 맞 는 id로 변환되어 반환함
-        return databaseManager.SafeInvoke(v=>v.GetChapterClearReward(clearedChapter));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetChapterClearReward(
+                    clearedChapter));
     }
 
-    public void SetChapterClearReward(int clearedChapter)
+
+    public void SetChapterClearReward(
+        int clearedChapter)
     {
-        rewardManager.SafeInvoke(v => v.GiveChapterReward(clearedChapter));
+        rewardManager.SafeInvoke(
+            v =>
+                v.GiveChapterReward(
+                    clearedChapter));
     }
+
     #endregion
 
-    #region Record Data 
-    public void TriggerRecordUI(List<RecordData> records, bool canReroll = true, RecordUIMode mode = RecordUIMode.DRAFT)
+
+    #region Record Data
+
+    public void TriggerRecordUI(
+        List<RecordData> records,
+        bool canReroll = true,
+        RecordUIMode mode = RecordUIMode.DRAFT)
     {
         PauseManager.RequestPause();
-        UIManager.Instance.SafeInvoke(v=>v.OpenRecordSelectPopUp(records, canReroll, mode));
+
+        UIManager.Instance.SafeInvoke(
+            v =>
+                v.OpenRecordSelectPopUp(
+                    records,
+                    canReroll,
+                    mode));
     }
 
-    public void OnRecordSelected(RecordData selected)
+
+    public void OnRecordSelected(
+        RecordData selected)
     {
-        // 선택된 레코드 알림 
-        recordManager.SafeInvoke(v=>v.SelectedRecord(selected));
+        recordManager.SafeInvoke(
+            v =>
+                v.SelectedRecord(selected));
 
         OnSelectedRecordCard?.Invoke();
     }
 
-    
 
-    public void GenerateRecord_Test(int recordCount, bool canReroll = true)
+    public void GenerateRecord_Test(
+        int recordCount,
+        bool canReroll = true)
     {
-        recordManager.SafeInvoke(v => v.GenerateRewardRecords(recordCount, canReroll));
+        recordManager.SafeInvoke(
+            v =>
+                v.GenerateRewardRecords(
+                    recordCount,
+                    canReroll));
     }
 
 
-    public RecordManager GetRecordManager() { return recordManager; }
-
-    // TODO : 레코드 매니저에게 매개변수 없이 전달하면 내부에서 알아서 처리하게
-    // 레코드 등장 개수가 특정 이벤트에 의해서 적어지거나 하는 가변적일 수 있음 
-    // 레코드 매니저, 리워드 매니저 등 팝업을 띄우는 대상은 UI매니저의 인큐 함수를 
-    // 초기에 등록시켜서 하면 좋을 듯
+    public RecordManager GetRecordManager()
+    {
+        return recordManager;
+    }
 
     #endregion
+
 
     #region Scene Navigation (UI Event)
-    // 일반 스테이지 결과창에서 [다음으로] 버튼 클릭 시
+
     public void MoveToNextNodeScene()
     {
-        // 탐사 맵 씬으로 이동
-        SceneManager.LoadScene("StageSelectScene");
+        SceneManager.LoadScene(
+            "StageSelectScene");
     }
 
-    // 총 결산창에서 [로비로 돌아가기] 버튼 클릭 시
+
     public void ReturnToLobbyScene()
     {
-        
-        // 탐사 데이터 완전 초기화
-        //ResetData();
-        // 로비 씬으로 이동
-        SceneManager.LoadScene("Lobby");
+        SceneManager.LoadScene(
+            "Lobby");
     }
+
     #endregion
+
 
     #region Save
 
     private void OnBeginStage()
     {
-        
     }
+
 
     public void OnUnloadScene(Scene scene)
     {
         SaveIfDirty();
     }
 
+
     public void SaveIfDirty()
     {
-        skillTree.SafeInvoke(v => v.SaveIfDirty());
-        InventoryManager.Instance.SafeInvoke(v => v.SaveIfDirty());
-        PlayerManager.Instance.SafeInvoke(v => v.SaveIfDirty());
-        exploreManager.SafeInvoke(v => v.SaveExploreMap());
-        recordManager.SafeInvoke(v => v.SaveIfDirty());
+        skillTree.SafeInvoke(
+            v =>
+                v.SaveIfDirty());
+
+        InventoryManager.Instance.SafeInvoke(
+            v =>
+                v.SaveIfDirty());
+
+        PlayerManager.Instance.SafeInvoke(
+            v =>
+                v.SaveIfDirty());
+
+        exploreManager.SafeInvoke(
+            v =>
+                v.SaveExploreMap());
+
+        recordManager.SafeInvoke(
+            v =>
+                v.SaveIfDirty());
     }
+
 
     public void SaveExploreMap()
     {
-        exploreManager.SafeInvoke(v => v.SaveExploreMap());
+        exploreManager.SafeInvoke(
+            v =>
+                v.SaveExploreMap());
     }
+
     #endregion
+
 
     public Sprite GetStageIcon(StageType type)
     {
-        return databaseManager.SafeInvoke(v => v.GetStageIcon(type));
+        return databaseManager.SafeInvoke(
+            v =>
+                v.GetStageIcon(type));
     }
 }

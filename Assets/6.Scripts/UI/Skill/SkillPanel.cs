@@ -1,35 +1,22 @@
 using UnityEngine;
-using UnityEngine.UI;
+
 public class SkillPanel : MonoBehaviour
 {
     [Header("Skill Slots")]
-    [SerializeField] private SkillSlotUI[] ui_SkillSlot = new SkillSlotUI[4];
+    [SerializeField]
+    private SkillSlotUI[] ui_SkillSlot = new SkillSlotUI[4];
 
-    [Header("Skill Source")]
-    [SerializeField] private SO_SkillEventHandler handler;
-
-
-    private readonly string path = "Skills/SO_SkillEventHandler";
-
-    private void Awake()
+    private void OnEnable()
     {
-        if (handler == null)
-        {
-            handler = Resources.Load<SO_SkillEventHandler>(path);
-        }
+        RefreshSkillSlots();
     }
 
-    private void Start()
+    private void RefreshSkillSlots()
     {
-        SetSkillHandlerToSlots();
-    }
-   
-    private void SetSkillHandlerToSlots()
-    {
-        foreach(SkillSlotUI slot in ui_SkillSlot)
+        foreach (SkillSlotUI slot in ui_SkillSlot)
         {
-            if(slot == null) continue;
-            slot.SetSkillHandler(handler);
+            if (slot == null)
+                continue;
         }
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class SkillSlotUI : MonoBehaviour
 {
     [Tooltip("이 UI 슬롯이 표시할 실제 스킬 슬롯입니다. Default는 표시 대상이 아닙니다.")]
-    public SkillSlot mySlot;
+    [SerializeField] private SkillSlot mySlot;
 
     [Header("UI Settings")]
     [SerializeField] private Image img_Skill;
@@ -13,61 +13,127 @@ public class SkillSlotUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txt_Cooldown;
     [SerializeField] private Sprite emptySlot;
 
-    private SO_SkillEventHandler handler;
+    [Header("Character")]
+    [SerializeField] private int characterId = 1;
+
     private float currCooldown;
 
-    private void OnDestroy()
+    private void OnEnable()
     {
-        if (handler == null) return;
+        if (SkillManager.Instance == null)
+            return;
 
-        handler.OnSetActiveSkill -= OnDrawSkill;
-        handler.OnInSkillCooldown -= OnIsCooldown;
-        handler.OnSkillCooldown -= OnSkillCoolDown;
+        SkillManager.Instance.OnDataChanged += RefreshSkillUI;
+
+        RefreshSkillUI();
     }
 
-    public void SetSkillHandler(SO_SkillEventHandler source)
+    private void OnDisable()
     {
-        if (handler != null)
-        {
-            handler.OnSetActiveSkill -= OnDrawSkill;
-            handler.OnInSkillCooldown -= OnIsCooldown;
-            handler.OnSkillCooldown -= OnSkillCoolDown;
-        }
+        if (SkillManager.Instance == null)
+            return;
 
-        handler = source;
-        if (handler == null)
+        SkillManager.Instance.OnDataChanged -= RefreshSkillUI;
+    }
+
+    /// <summary>
+    /// SkillManager의 현재 장착 스킬 정보를 기반으로
+    /// 슬롯 UI를 갱신합니다.
+    /// </summary>
+    private void RefreshSkillUI()
+    {
+        int slotIndex = GetSlotIndex();
+
+        if (slotIndex < 0)
         {
-            SetVisible(false);
+            ClearSkill();
             return;
         }
 
-        handler.OnSetActiveSkill += OnDrawSkill;
-        handler.OnInSkillCooldown += OnIsCooldown;
-        handler.OnSkillCooldown += OnSkillCoolDown;
+        SkillRuntimeData skillData =
+            SkillManager.Instance.GetActiveSkillData(
+                characterId,
+                slotIndex);
 
-       // RefreshSkillUI();
+        if (skillData?.template is not SO_ActiveSkillData skillTemplate)
+        {
+            ClearSkill();
+            return;
+        }
+
+        Skill skill = skillTemplate.CreateSkill();
+
+        if (skill is not ActiveSkill activeSkill)
+        {
+            ClearSkill();
+            return;
+        }
+
+        OnDrawSkill(mySlot, activeSkill);
     }
 
-    private void OnDrawSkill(SkillSlot slot, ActiveSkill activeSkill)
+    /// <summary>
+    /// SkillSlot enum을 실제 List index로 변환합니다.
+    /// SLOT1 = 0
+    /// SLOT2 = 1
+    /// SLOT3 = 2
+    /// SLOT4 = 3
+    /// </summary>
+    private int GetSlotIndex()
+    {
+        int slotIndex =
+            (int)mySlot - (int)SkillSlot.SLOT1;
+
+        if (slotIndex < 0 || slotIndex >= 4)
+            return -1;
+
+        return slotIndex;
+    }
+
+    private void OnDrawSkill(
+        SkillSlot slot,
+        ActiveSkill activeSkill)
     {
         if (slot != mySlot)
             return;
 
         if (activeSkill == null)
         {
-            img_Skill.sprite = emptySlot;
+            ClearSkill();
             return;
         }
 
         SetVisible(true);
-        img_Skill.sprite = activeSkill.Icon;
-        OnIsCooldown(mySlot, activeSkill.IsOnCooldown);
+
+        if (img_Skill != null)
+            img_Skill.sprite = activeSkill.Icon;
+
+        OnIsCooldown(
+            mySlot,
+            activeSkill.IsOnCooldown);
     }
 
-    //private void RefreshSkillUI()
-    //{
-    //    OnDrawSkill(mySlot, registeredSkill);
-    //}
+    private void ClearSkill()
+    {
+        if (img_Skill != null)
+            img_Skill.sprite = emptySlot;
+
+        currCooldown = 0f;
+
+        if (img_Cooldown != null)
+        {
+            img_Cooldown.fillAmount = 0f;
+            img_Cooldown.gameObject.SetActive(false);
+        }
+
+        if (txt_Cooldown != null)
+        {
+            txt_Cooldown.text = string.Empty;
+            txt_Cooldown.gameObject.SetActive(false);
+        }
+
+        SetVisible(true);
+    }
 
     private void SetVisible(bool visible)
     {
@@ -78,30 +144,58 @@ public class SkillSlotUI : MonoBehaviour
             img_Skill.sprite = emptySlot;
     }
 
-    // 고민 사항 => 스킬 쿨타임 값이 다 돌면 어떻게 처리하게 할까?
-    // 1. 핸들러에게 그러한 정보까지 맡아놓는다.
-    // 2. 여기서 따로 처리한다. 스킬 값으로 
-    // 스킬 쿨타임 감소
-    private void OnSkillCoolDown(SkillSlot slot, float cooldown, float maxCooldown)
+    /// <summary>
+    /// 스킬 쿨타임 진행 상황을 표시합니다.
+    /// SkillEventHandler에서 쿨타임 이벤트를 전달받는 구조라면
+    /// 해당 이벤트에서 이 함수를 호출하면 됩니다.
+    /// </summary>
+    private void OnSkillCoolDown(
+        SkillSlot slot,
+        float cooldown,
+        float maxCooldown)
     {
-        if (slot != mySlot) return;
+        if (slot != mySlot)
+            return;
 
         currCooldown = cooldown;
-        img_Cooldown.fillAmount = currCooldown / maxCooldown;
 
-        string currentValue = currCooldown > 1 ? currCooldown.ToString("f0") : currCooldown.ToString("f1");
-        txt_Cooldown.text = currentValue;
+        if (img_Cooldown != null)
+        {
+            if (maxCooldown > 0f)
+                img_Cooldown.fillAmount =
+                    currCooldown / maxCooldown;
+            else
+                img_Cooldown.fillAmount = 0f;
+        }
+
+        if (txt_Cooldown != null)
+        {
+            string currentValue =
+                currCooldown > 1f
+                    ? currCooldown.ToString("f0")
+                    : currCooldown.ToString("f1");
+
+            txt_Cooldown.text = currentValue;
+        }
     }
 
-    // 스킬이 쿨타임 중인지 아닌지에 따른 동작 
-    private void OnIsCooldown(SkillSlot slot, bool isCooldown)
+    /// <summary>
+    /// 스킬 쿨타임 상태에 따라 UI를 표시합니다.
+    /// </summary>
+    private void OnIsCooldown(
+        SkillSlot slot,
+        bool isCooldown)
     {
-        if (slot != mySlot || !gameObject.activeSelf) return;
-        if (isCooldown == false)
-            currCooldown = 0;
+        if (slot != mySlot)
+            return;
 
-        img_Cooldown.gameObject.SetActive(isCooldown);
-        txt_Cooldown.gameObject.SetActive(isCooldown);
+        if (!isCooldown)
+            currCooldown = 0f;
+
+        if (img_Cooldown != null)
+            img_Cooldown.gameObject.SetActive(isCooldown);
+
+        if (txt_Cooldown != null)
+            txt_Cooldown.gameObject.SetActive(isCooldown);
     }
-
 }

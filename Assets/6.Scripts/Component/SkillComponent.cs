@@ -4,137 +4,196 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-
-public sealed class SkillComponent
-    : ActionComponent
+public sealed class SkillComponent : ActionComponent
 {
-    private string currentSlotName = "";
+    private string currentSlotName = string.Empty;
 
-    // 장착 스킬 정보 
+    // 장착 스킬 정보
     private Dictionary<string, ActiveSkill> skillSlotTable;
 
     // 어떤 인터페이스든 구현체를 저장
-    private Dictionary<Type, object> capabilityTable = new();
+    private readonly Dictionary<Type, object> capabilityTable = new();
 
-    // 스킬 사용 관련 이벤트 핸들러
-    public SO_SkillEventHandler skillEventHandler;
 
     public event Action<bool> OnSkillUse;
     public event Action<SkillSlot, ActiveSkill> OnActiveSkillChanged;
     public event Action<SkillSlot, bool> OnActiveSkillCooldownChanged;
     public event Action<SkillSlot, float, float> OnActiveSkillCooldownUpdated;
 
+
     private void Awake()
     {
         rootObject = transform.root.gameObject;
+
         Awake_SkillSlotTable();
     }
+
 
     private void Awake_SkillSlotTable()
     {
         skillSlotTable = new Dictionary<string, ActiveSkill>
         {
-            {"DEFAULT", null},
+            { "DEFAULT", null },
 
-            {"SLOT1", null },
-            {"SLOT2", null },
-            {"SLOT3", null },
-            {"SLOT4", null },
+            { "SLOT1", null },
+            { "SLOT2", null },
+            { "SLOT3", null },
+            { "SLOT4", null },
         };
     }
+
+
     private void FixedUpdate()
     {
+        if (skillSlotTable == null)
+            return;
+
         foreach (KeyValuePair<string, ActiveSkill> pair in skillSlotTable)
         {
-            if (pair.Value == null) continue;
+            if (pair.Value == null)
+                continue;
 
             pair.Value.FixedUpdate(Time.fixedDeltaTime);
         }
     }
+
 
     private void Update()
     {
         if (skillSlotTable == null)
             return;
 
-        // 쿨다운 업데이트 
         foreach (KeyValuePair<string, ActiveSkill> pair in skillSlotTable)
         {
-            // 1. 스킬이 비어있으면 쿨타임도 돌 필요 없음
-            if (pair.Value == null) continue;
+            ActiveSkill skill = pair.Value;
 
-            // 2. 💡 [핵심] Dictionary의 Key("SLOT1" 등)를 SkillSlot Enum으로 안전하게 변환
+            // 스킬이 비어있으면 처리하지 않음
+            if (skill == null)
+                continue;
+
+            // Dictionary Key를 SkillSlot으로 변환
             if (!Enum.TryParse(pair.Key, out SkillSlot currentSlot))
-            {
-                continue; // 파싱 실패 시 스킵 (확장성 대비)
-            }
+                continue;
 
-            // 3. 스킬 로직 업데이트
-            pair.Value.Update(Time.deltaTime);
-            if (skillEventHandler != null)
-                skillEventHandler.OnInCoolDown(currentSlot, pair.Value.IsOnCooldown);
-            OnActiveSkillCooldownChanged?.Invoke(currentSlot, pair.Value.IsOnCooldown);
+            // 스킬 로직 업데이트
+            skill.Update(Time.deltaTime);
 
-            if (pair.Value.IsOnCooldown == false) continue;
+            bool isCooldown = skill.IsOnCooldown;
 
-            // 4. 쿨타임 UI 이벤트 발송
-            pair.Value.Update_Cooldown(Time.deltaTime);
-            if (skillEventHandler != null)
-                skillEventHandler.OnCooldown(currentSlot, pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
-            OnActiveSkillCooldownUpdated?.Invoke(currentSlot, pair.Value.CurrentCooldown, pair.Value.MaxCooldown);
+            // SkillManager를 통해 외부에 상태 전달
+            SkillManager.Instance.SafeInvoke(v =>
+              v.NotifySkillCooldownState(
+                    currentSlot,
+                    isCooldown));
+
+            // 기존 SkillComponent 이벤트
+            OnActiveSkillCooldownChanged?
+                .Invoke(
+                    currentSlot,
+                    isCooldown);
+
+            if (!isCooldown)
+                continue;
+
+            // 쿨타임 업데이트
+            skill.Update_Cooldown(Time.deltaTime);
+
+            // SkillManager를 통해 외부에 상태 전달
+            SkillManager.Instance.SafeInvoke(v=>
+                v.NotifySkillCooldown(
+                    currentSlot,
+                    skill.CurrentCooldown,
+                    skill.MaxCooldown));
+
+            // 기존 SkillComponent 이벤트
+            OnActiveSkillCooldownUpdated?
+                .Invoke(
+                    currentSlot,
+                    skill.CurrentCooldown,
+                    skill.MaxCooldown);
         }
     }
 
 
-    // 기능 등록 (패시브가 호출)
-    public void RegisterCapability<T>(T capability) where T : class
+    ///////////////////////////////////////////////////////////////////////////
+    #region CAPABILITY
+
+    // 기능 등록
+    public void RegisterCapability<T>(T capability)
+        where T : class
     {
         var type = typeof(T);
+
         if (capabilityTable.ContainsKey(type))
-            capabilityTable[type] = capability;  // 이미 있으면 덮어쓰기 
+        {
+            capabilityTable[type] = capability;
+        }
         else
+        {
             capabilityTable.Add(type, capability);
+        }
     }
 
-    // 기능 조회 (액티브가 호출)
-    public T GetCapability<T>() where T : class
+
+    // 기능 조회
+    public T GetCapability<T>()
+        where T : class
     {
         var type = typeof(T);
-        if (capabilityTable.TryGetValue(type, out object value))
+
+        if (capabilityTable.TryGetValue(
+                type,
+                out object value))
+        {
             return (T)value;
+        }
+
         return null;
     }
 
-    // 기능 해제 (패시브가 사라지거나 해제 시) 
+
+    // 기능 해제
     public void UnregisterCapability<T>()
     {
         var type = typeof(T);
+
         if (capabilityTable.ContainsKey(type))
         {
             capabilityTable.Remove(type);
         }
     }
 
+    #endregion
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    #region SKILL
 
     public void ReleaseSkill(string slot)
     {
-        if (currentSlotName == slot)
+        if (currentSlotName != slot)
+            return;
+
+        if (skillSlotTable.TryGetValue(
+                slot,
+                out ActiveSkill skill))
         {
-            if (skillSlotTable.TryGetValue(slot, out ActiveSkill skill))
-            {
-                // 현재 실행 중인 스킬이 뗐다고 보고된 스킬과 일치한다면
-                skill?.OnReleaseKey();
-            }
+            skill?.OnReleaseKey();
         }
     }
-    protected override async UniTaskVoid ManualActionRoutine(CancellationToken token)
+
+
+    protected override async UniTaskVoid ManualActionRoutine(
+        CancellationToken token)
     {
         try
         {
             BeginDoAction();
 
             if (string.IsNullOrEmpty(currentSlotName) ||
-                !skillSlotTable.TryGetValue(currentSlotName, out ActiveSkill currentSkill) ||
+                !skillSlotTable.TryGetValue(
+                    currentSlotName,
+                    out ActiveSkill currentSkill) ||
                 currentSkill == null)
             {
                 EndDoAction();
@@ -149,21 +208,25 @@ public sealed class SkillComponent
                     cancellationToken: token);
             }
 
+
             while (true)
             {
-                // ★ 항상 ActiveSkill의 실제 PhaseIndex를 가져온다.
-                int phaseIndex = currentSkill.PhaseIndex;
+                int phaseIndex =
+                    currentSkill.PhaseIndex;
 
                 // 범위를 벗어나면 종료
-                if (phaseIndex < 0 || phaseIndex >= currentSkill.MaxPhaseCount)
+                if (phaseIndex < 0 ||
+                    phaseIndex >= currentSkill.MaxPhaseCount)
+                {
                     break;
+                }
 
                 bool hasAnimation =
-                    currentSkill.HasActionData(phaseIndex);
+                    currentSkill.HasActionData(
+                        phaseIndex);
 
-                // --------------------------------------------------
+
                 // Animation이 있는 경우 선딜레이
-                // --------------------------------------------------
                 if (hasAnimation)
                 {
                     await UniTask.Delay(
@@ -171,39 +234,36 @@ public sealed class SkillComponent
                         cancellationToken: token);
                 }
 
-                // --------------------------------------------------
+
                 // 현재 Phase 공격 이벤트
-                // --------------------------------------------------
                 BeginJudgeAttack(null);
                 EndJudgeAttack(null);
 
-                // --------------------------------------------------
+
                 // 현재 Phase가 스스로 종료되는지 확인
-                // --------------------------------------------------
                 bool isSelfControlled =
-                    currentSkill.DoesPhaseControlItself(phaseIndex);
+                    currentSkill.DoesPhaseControlItself(
+                        phaseIndex);
 
                 if (isSelfControlled)
                 {
-                    // ★ 이 Phase가 끝나면서 PhaseIndex가 변경되기를 기다린다.
-                    int waitingPhase = phaseIndex;
+                    int waitingPhase =
+                        phaseIndex;
 
                     while (currentSkill != null &&
-                           currentSkill.PhaseIndex == waitingPhase)
+                           currentSkill.PhaseIndex ==
+                           waitingPhase)
                     {
                         await UniTask.Yield(
                             PlayerLoopTiming.Update,
                             cancellationToken: token);
                     }
 
-                    // PhaseIndex가 변경됐으므로
-                    // 다음 while에서 새로운 PhaseIndex를 읽는다.
                     continue;
                 }
 
-                // --------------------------------------------------
+
                 // 일반 Phase
-                // --------------------------------------------------
                 if (hasAnimation)
                 {
                     await UniTask.Delay(
@@ -217,6 +277,7 @@ public sealed class SkillComponent
                         cancellationToken: token);
                 }
 
+
                 // 현재 Phase가 마지막인지 확인
                 if (currentSkill.PhaseIndex >=
                     currentSkill.MaxPhaseCount - 1)
@@ -224,7 +285,8 @@ public sealed class SkillComponent
                     break;
                 }
 
-                // 다음 Phase로 넘어감
+
+                // 다음 Phase로 이동
                 currentSkill.End_DoAction();
 
                 await UniTask.Yield(
@@ -247,240 +309,387 @@ public sealed class SkillComponent
         }
     }
 
+
     public bool CanUseSkill(string skillName)
     {
-        if (skillSlotTable.TryGetValue(skillName, out var skill))
-            return skill != null && skill.IsOnCooldown == false && InAction == false;
+        if (skillSlotTable.TryGetValue(
+                skillName,
+                out var skill))
+        {
+            return skill != null &&
+                   skill.IsOnCooldown == false &&
+                   InAction == false;
+        }
 
         return false;
     }
 
-    // 스킬 장착 
-    public void SetActiveSkill(SkillSlot slot, ActiveSkill skill)
+
+    // SkillSlot을 이용한 스킬 장착
+    public void SetActiveSkill(
+        SkillSlot slot,
+        ActiveSkill skill)
     {
-        SetActiveSkill(slot.ToString(), skill);
-        OnActiveSkillChanged?.Invoke(slot, skill);
-        if (skillEventHandler != null)
-            skillEventHandler.OnSetting_ActiveSkill(slot, skill);
+        SetActiveSkill(
+            slot.ToString(),
+            skill);
+
+        // SkillComponent 자체 이벤트
+        OnActiveSkillChanged?
+            .Invoke(
+                slot,
+                skill);
+
+        // 외부 전달은 SkillManager에게 위임
+        SkillManager.Instance?
+            .NotifyActiveSkillChanged(
+                slot,
+                skill);
     }
 
-    public bool TryGetRegisteredActiveSkill(SkillSlot slot, out ActiveSkill skill)
+
+    public bool TryGetRegisteredActiveSkill(
+        SkillSlot slot,
+        out ActiveSkill skill)
     {
         skill = null;
 
-        // 기본 공격은 내부 전용 슬롯이므로 스킬 UI 표시 대상으로 사용하지 않습니다.
-        if (slot < SkillSlot.SLOT1 || slot > SkillSlot.SLOT4)
+        // 기본 공격은 내부 전용 슬롯
+        if (slot < SkillSlot.SLOT1 ||
+            slot > SkillSlot.SLOT4)
+        {
             return false;
+        }
 
-        return skillSlotTable.TryGetValue(slot.ToString(), out skill) && skill != null;
+        return skillSlotTable.TryGetValue(
+                   slot.ToString(),
+                   out skill) &&
+               skill != null;
     }
 
-    // AI에서 접근할 때는 첫 번째 인자는 스킬 이름으로 오므로 주의해야 함 
-    public void SetActiveSkill(string slotName, ActiveSkill skill)
+
+    // 실제 스킬 등록
+    public void SetActiveSkill(
+        string slotName,
+        ActiveSkill skill)
     {
         if (skillSlotTable.ContainsKey(slotName))
+        {
             skillSlotTable[slotName] = skill;
+        }
         else
-            skillSlotTable.Add(slotName, skill);
+        {
+            skillSlotTable.Add(
+                slotName,
+                skill);
+        }
 
         skillSlotTable[slotName]?.SetOwner(rootObject);
         skillSlotTable[slotName]?.InitializedData();
     }
 
-    // 슬롯의 있는 스킬 사용 
-    public void UseSkill(SkillSlot slot, int phaseIndex = -1)
+
+    // 슬롯에 등록된 스킬 사용
+    public void UseSkill(
+        SkillSlot slot,
+        int phaseIndex = -1)
     {
-        UseSkill(slot.ToString(), phaseIndex);
+        UseSkill(
+            slot.ToString(),
+            phaseIndex);
     }
 
-    public void UseSkill(string slotName, int phaseIndex = -1)
+
+    public void UseSkill(
+        string slotName,
+        int phaseIndex = -1)
     {
-        if (!skillSlotTable.TryGetValue(slotName, out var skill) || skill == null) return;
-
-        if (phaseIndex > -1)
-            skill.PhaseIndex = phaseIndex;
-
-        // 동시 사용 가능 스킬은 행동거지를 같이해선 안되므로 호출하고 return
-        if (skill.isConcurrentSkill)
+        if (!skillSlotTable.TryGetValue(
+                slotName,
+                out var skill) ||
+            skill == null)
         {
-            if (skill.IsOnCooldown) return;
-
-            skill.Cast();
-
-            ExecuteConcurrentSkillAsync(skill).Forget();
             return;
         }
 
 
-        if (InAction || CanUseSkill(slotName) == false)
+        if (phaseIndex > -1)
+        {
+            skill.PhaseIndex = phaseIndex;
+        }
+
+
+        // 동시 사용 가능 스킬
+        if (skill.isConcurrentSkill)
+        {
+            if (skill.IsOnCooldown)
+                return;
+
+            skill.Cast();
+
+            ExecuteConcurrentSkillAsync(
+                skill).Forget();
+
+            return;
+        }
+
+
+        if (InAction ||
+            CanUseSkill(slotName) == false)
         {
             OnSkillUse?.Invoke(false);
             return;
         }
 
+
         currentSlotName = slotName;
+
         OnSkillUse?.Invoke(true);
 
         base.DoAction();
 
         skill.Cast();
 
-        if (!skill.HasActionData(skill.PhaseIndex))
+
+        if (!skill.HasActionData(
+                skill.PhaseIndex))
         {
-            SimulateAnimationEventsAsync(skill).Forget();
+            SimulateAnimationEventsAsync(
+                skill).Forget();
         }
     }
 
-    private async UniTaskVoid SimulateAnimationEventsAsync(ActiveSkill skill)
+
+    private async UniTaskVoid SimulateAnimationEventsAsync(
+        ActiveSkill skill)
     {
         try
         {
-            while (skill != null && skill.IsCasting)
-                await UniTask.Yield(PlayerLoopTiming.Update);
-
-            if (skill == null) return;
-
-            // 1프레임 대기 (로직 꼬임 방지)
-            await UniTask.Yield(PlayerLoopTiming.Update);
-
-            // 장판 모듈처럼 스스로 끝나는 스킬이라면 조용히 대기
-            if (skill.DoesPhaseControlItself(skill.PhaseIndex))
+            while (skill != null &&
+                   skill.IsCasting)
             {
-                int cachedPhase = skill.PhaseIndex;
-                while (skill.PhaseIndex == cachedPhase)
+                await UniTask.Yield(
+                    PlayerLoopTiming.Update);
+            }
+
+            if (skill == null)
+                return;
+
+
+            // 1프레임 대기
+            await UniTask.Yield(
+                PlayerLoopTiming.Update);
+
+
+            // 스스로 종료되는 스킬
+            if (skill.DoesPhaseControlItself(
+                    skill.PhaseIndex))
+            {
+                int cachedPhase =
+                    skill.PhaseIndex;
+
+                while (skill.PhaseIndex ==
+                       cachedPhase)
                 {
-                    // 피격 등으로 강제로 InAction이 풀렸다면 루틴 안전 종료
-                    if (!InAction) return;
-                    await UniTask.Yield(PlayerLoopTiming.Update);
+                    if (!InAction)
+                        return;
+
+                    await UniTask.Yield(
+                        PlayerLoopTiming.Update);
                 }
             }
             else
             {
-                // 💡 애니메이션이 없으므로, 아주 짧은 시간(0.1초) 간격으로
-                // 공격 판정과 종료 이벤트를 유니태스크가 대신 타다닥! 쏴줍니다.
+                BeginJudgeAttack(null);
 
-                BeginJudgeAttack(null); // 공격 판정 시작! (오브젝트 스폰 등)
-                await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
+                await UniTask.Delay(
+                    TimeSpan.FromSeconds(0.1f));
 
-                EndJudgeAttack(null);   // 공격 판정 끝!
-                await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
+                EndJudgeAttack(null);
 
-                // 💡 드디어 플레이어를 굳음 상태에서 해방시켜주는 궁극의 함수!
+                await UniTask.Delay(
+                    TimeSpan.FromSeconds(0.1f));
+
                 EndDoAction();
             }
         }
         catch (Exception e)
         {
-            Debug.LogError($"가짜 애니메이션 이벤트 발생 중 에러!\n{e}");
-            EndDoAction(); // 에러가 나도 무조건 풀어줍니다!
+            Debug.LogError(
+                $"가짜 애니메이션 이벤트 발생 중 에러!\n{e}");
+
+            EndDoAction();
         }
     }
 
-    private async UniTaskVoid ExecuteConcurrentSkillAsync(ActiveSkill skill)
+
+    private async UniTaskVoid ExecuteConcurrentSkillAsync(
+        ActiveSkill skill)
     {
-        while (skill != null && skill.IsCasting)
-            await UniTask.Yield(PlayerLoopTiming.Update);
+        while (skill != null &&
+               skill.IsCasting)
+        {
+            await UniTask.Yield(
+                PlayerLoopTiming.Update);
+        }
 
-        if (skill == null) return;
+        if (skill == null)
+            return;
 
-        for (int i = 0; i < skill.MaxPhaseCount; i++)
+
+        for (int i = 0;
+             i < skill.MaxPhaseCount;
+             i++)
         {
             skill.Begin_JudgeAttack(null);
             skill.End_JudgeAttack(null);
 
             if (i < skill.MaxPhaseCount - 1)
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
+                await UniTask.Delay(
+                    TimeSpan.FromSeconds(0.1f));
+
                 skill.End_DoAction();
             }
         }
+
         skill.End_DoAction();
     }
 
+    #endregion
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    #region ACTION
+
     public override void StartAction()
     {
-        if (string.IsNullOrEmpty(currentSlotName)) return;
+        if (string.IsNullOrEmpty(currentSlotName))
+            return;
+
         base.StartAction();
 
-        skillSlotTable[currentSlotName]?.Start_DoAction();
+        skillSlotTable[currentSlotName]
+            ?.Start_DoAction();
     }
+
 
     public override void BeginDoAction()
     {
-        if (string.IsNullOrEmpty(currentSlotName)) return;
+        if (string.IsNullOrEmpty(currentSlotName))
+            return;
+
         base.BeginDoAction();
 
-        skillSlotTable[currentSlotName]?.Begin_DoAction();
+        skillSlotTable[currentSlotName]
+            ?.Begin_DoAction();
 
         OnBeginDoAction?.Invoke();
-        if (skillEventHandler != null)
-            skillEventHandler.OnBegin_UseSkill();
+
+        // SkillManager를 통해 전달
+        SkillManager.Instance?
+            .NotifySkillUseBegin();
     }
+
 
     public override void EndDoAction()
     {
-        if (string.IsNullOrEmpty(currentSlotName)) return;
+        if (string.IsNullOrEmpty(currentSlotName))
+            return;
 
-        ActiveSkill skill = skillSlotTable[currentSlotName];
+        ActiveSkill skill =
+            skillSlotTable[currentSlotName];
+
         skill?.End_DoAction();
 
-        if (skill != null && skill.IsCasting)
+        if (skill != null &&
+            skill.IsCasting)
         {
             return;
         }
 
         base.EndDoAction();
+
         currentSlotName = string.Empty;
 
         OnEndDoAction?.Invoke();
-        if (skillEventHandler != null)
-            skillEventHandler.OnEnd_UseSkill();
+
+        // SkillManager를 통해 전달
+        SkillManager.Instance?
+            .NotifySkillUseEnd();
     }
 
-    public override void BeginJudgeAttack(AnimationEvent e)
+
+    public override void BeginJudgeAttack(
+        AnimationEvent e)
     {
-        if (string.IsNullOrEmpty(currentSlotName)) return;
+        if (string.IsNullOrEmpty(currentSlotName))
+            return;
+
         base.BeginJudgeAttack(e);
 
-        skillSlotTable[currentSlotName]?.Begin_JudgeAttack(e);
+        skillSlotTable[currentSlotName]
+            ?.Begin_JudgeAttack(e);
     }
 
-    public override void EndJudgeAttack(AnimationEvent e)
+
+    public override void EndJudgeAttack(
+        AnimationEvent e)
     {
-        if (string.IsNullOrEmpty(currentSlotName)) return;
+        if (string.IsNullOrEmpty(currentSlotName))
+            return;
+
         base.EndJudgeAttack(e);
-        skillSlotTable[currentSlotName]?.End_JudgeAttack(e);
+
+        skillSlotTable[currentSlotName]
+            ?.End_JudgeAttack(e);
     }
+
 
     public override void PlaySound()
     {
-        if (string.IsNullOrEmpty(currentSlotName)) return;
+        if (string.IsNullOrEmpty(currentSlotName))
+            return;
+
         base.PlaySound();
 
-        skillSlotTable[currentSlotName]?.Play_Sound();
+        skillSlotTable[currentSlotName]
+            ?.Play_Sound();
     }
+
 
     public override void PlayCameraShake()
     {
-        if (string.IsNullOrEmpty(currentSlotName)) return;
+        if (string.IsNullOrEmpty(currentSlotName))
+            return;
+
         base.PlayCameraShake();
 
-        skillSlotTable[currentSlotName]?.Play_CameraShake();
+        skillSlotTable[currentSlotName]
+            ?.Play_CameraShake();
     }
+
+    #endregion
 
 
     ///////////////////////////////////////////////////////////////////////////
     #region NOTIFY
+
     public void NotifyBulletInit(int bulletCount)
     {
-        if (skillEventHandler != null)
-            skillEventHandler.OnUpdateMagciBulletLoad(bulletCount);
+        SkillManager.Instance.SafeInvoke(v=>
+        v.NotifyMagicBulletLoad(
+                bulletCount)); 
+            
     }
 
-    public void NotifyMagicBulletChanged(Queue<BulletData> bullets)
+
+    public void NotifyMagicBulletChanged(
+        Queue<BulletData> bullets)
     {
-        if (skillEventHandler != null)
-            skillEventHandler.OnChangedBullets(bullets);
+        SkillManager.Instance.SafeInvoke(v => 
+        v.NotifyMagicBulletChanged(
+                bullets));
     }
 
     #endregion

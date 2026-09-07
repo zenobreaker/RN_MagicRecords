@@ -2213,7 +2213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f409d3c189cac747ad9c9f84f2e79e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bCheat: 0
+  bCheat: 1
 --- !u!114 &8802727893416295790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2226,6 +2226,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72e17df9c59dced42801b5254f8f1d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skillEventHandler: {fileID: 11400000, guid: 03331a23dc591c047a374450029fd111, type: 2}
 --- !u!114 &7184774083390554323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2351,7 +2352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cc73c9c91a273542a2c97b56f611e2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxChapter: 1
+  maxChapter: 2
 --- !u!114 &7870455255664782143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3425,6 +3426,7 @@ MonoBehaviour:
   biomeJson: {fileID: 4900000, guid: bfcf26fb6c15da94bb1bc1eed6fce690, type: 3}
   stageJson: {fileID: 4900000, guid: 9a4e7b29df426a74ea8d6c61f3a3ede8, type: 3}
   chapterData: {fileID: 11400000, guid: 1c4641159b49caf478103b3291c69003, type: 2}
+  ThemeList: []
 --- !u!114 &2185832905276735178
 MonoBehaviour:
   m_ObjectHideFlags: 0
