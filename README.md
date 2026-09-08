@@ -38,20 +38,8 @@ ScriptableObject 기반 데이터 구성만으로 다양한 스킬을 제작할 
 스킬의 동작을 작은 단위의 **Skill Module**로 분리하고,
 Phase와 Trigger에 Module을 조합하는 방식으로 스킬을 구성했습니다.
 
-```text
-Active Skill
-│
-├── Phase
-│   ├── Trigger
-│   │   ├── Module
-│   │   ├── Module
-│   │   └── Module
-│   └── Trigger
-│       └── Module
-│
-└── Phase
-    └── ...
-```
+<img width="295" height="623" alt="Image" src="https://github.com/user-attachments/assets/f5925212-a6d9-44d6-908d-499809bcf942" />
+
 ### 주요 구현
 GenericActiveSkill  
 SO_ActiveSkillData  
@@ -137,6 +125,7 @@ SO_ActiveSkillData
 새로운 콘텐츠 추가 시 기존 시스템의 수정 범위를 최소화했습니다.
 
 ## 4. Custom Skill Editor
+[![Skill Editor Demo](https://img.youtube.com/vi/pkhctxqAjGE/maxresdefault.jpg)](https://youtu.be/pkhctxqAjGE)
 
 Module 기반 구조에서는 많은 Module을 Inspector에서 직접 관리해야 하기 때문에
 기본 Unity Inspector만으로 Skill Data를 편집하기 불편한 문제가 있었습니다.
@@ -200,23 +189,8 @@ Inventory
 새로운 아이템 타입을 추가할 때 기존 Inventory 코드에 대한 변경을 최소화했습니다.
 
 ## 🧩 Architecture
-``` text
-                     ScriptableObject
-                          Data
-                           │
-                           ▼
-                      Game System
-                           │
-             ┌─────────────┼─────────────┐
-             ▼             ▼             ▼
-        Skill System   Stage System   Inventory
-             │             │             │
-             ▼             ▼             ▼
-       Active/Passive   Async Flow    Item Policy
-             │
-             ▼
-       Module Composition
-```
+<img width="302" height="623" alt="Image" src="https://github.com/user-attachments/assets/f2e17d3b-5f44-4083-9f44-b29503420df1" />
+
 ## 🛠 Tech Stack
 Category	Technology  
 Engine	Unity 6  
@@ -229,31 +203,7 @@ Stage Flow	async / await
 Object Management	Object Pooling  
 
 ### 📂 Project Structure
-```text
-Assets
-├── Editor
-│   ├── SkillModuleDrawer.cs
-│   ├── PhaseSkillDrawer.cs
-│   ├── PassiveModuleDrawer.cs
-│   └── SelectImplementationDrawer.cs
-│
-├── 6.Scripts
-│   ├── ScriptableObjects
-│   │   ├── SO_ActiveSkillData.cs
-│   │   └── SO_PassiveSkillData.cs
-│   │
-│   └── Skills
-│       ├── ActiveSkills
-│       │   ├── GenericActiveSkill.cs
-│       │   └── ...
-│       ├── PassiveSkills
-│       │   ├── GenericPassiveSkill.cs
-│       │   └── ...
-│       └── Modules
-│           ├── Commons
-│           ├── Combats
-│           └── Passive
-``` 
+<img width="296" height="639" alt="Image" src="https://github.com/user-attachments/assets/8eaf8f09-637f-4f00-9d71-f50c7070065d" />
 👤 Developer
 
 Choi Je-seong
