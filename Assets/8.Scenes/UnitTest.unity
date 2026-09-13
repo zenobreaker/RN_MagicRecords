@@ -1270,14 +1270,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 819020891725054645, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 819020891725054645, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1163274314246688096, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1294,29 +1286,9 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1753364290892856481, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1753364290892856481, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1753364290892856481, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1932776284738236466, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
       propertyPath: m_Name
       value: PlayerUI_PC
-      objectReference: {fileID: 0}
-    - target: {fileID: 2104469392343158992, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2104469392343158992, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2447972378282078672, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1360,30 +1332,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4597534035726720278, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5882176612287798744, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5882176612287798744, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5882176612287798744, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6164972774044128579, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6164972774044128579, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6164972774044128579, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
-      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8312557885548543211, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
@@ -1741,7 +1689,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
-  skillEventHandler: {fileID: 0}
 --- !u!114 &431370927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5331,7 +5278,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
-  skillEventHandler: {fileID: 0}
 --- !u!1 &355404037544070759
 GameObject:
   m_ObjectHideFlags: 0
@@ -8145,7 +8091,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
-  skillEventHandler: {fileID: 11400000, guid: 03331a23dc591c047a374450029fd111, type: 2}
 --- !u!1 &4248613751839309091
 GameObject:
   m_ObjectHideFlags: 0
@@ -8609,7 +8554,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
-  skillEventHandler: {fileID: 0}
 --- !u!1 &5169761270745285328
 GameObject:
   m_ObjectHideFlags: 0
@@ -10105,7 +10049,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
-  skillEventHandler: {fileID: 0}
 --- !u!1 &7037203216624080806
 GameObject:
   m_ObjectHideFlags: 0
