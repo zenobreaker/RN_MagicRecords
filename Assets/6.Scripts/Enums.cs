@@ -11,6 +11,7 @@ public enum SkillSlot
     SLOT3, 
     SLOT4, 
     MAX = SLOT4 + 1,
+    SubAction = 77,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -231,6 +232,10 @@ public enum SkillTriggerTime
     OnSoundEvent,
     OnCameraShake,
     OnEndJudgeAttack,
+    OnPhaseTime, // Append to preserve serialized event values.
+    OnMovementStart,
+    OnMovementProgress,
+    OnMovementEnd,
 }
 
 ///////////////////////////////////////////////////////////////////////////////

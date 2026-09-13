@@ -17,7 +17,8 @@ public class Module_Channeling : SkillModule
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        CancellationToken token = owner.GetCancellationTokenOnDestroy();
+        if (owner == null || skill == null || !skill.IsPhaseRunning || skill.IsEnding) return;
+        CancellationToken token = skill.PhaseToken;
         ExecuteChannelingAsync(owner, skill, token).Forget();
     }
 
@@ -54,6 +55,7 @@ public class Module_Channeling : SkillModule
             // 💡 3. [핵심] 빔이 끝날 때까지 유니태스크로 캐릭터를 대기시킵니다!
             await UniTask.Delay(TimeSpan.FromSeconds(channelingDuration), cancellationToken: token);
         }
+        catch (OperationCanceledException) { }
         finally
         {
             // 💡 4. 시간이 다 되거나 몬스터한테 맞아서 스킬이 취소되면?

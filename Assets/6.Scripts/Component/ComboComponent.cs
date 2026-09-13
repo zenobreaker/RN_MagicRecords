@@ -117,7 +117,7 @@ public class ComboComponent : MonoBehaviour
     }
     private void TryProcess_Dash(InputCommand newInput)
     {
-        movement.SafeInvoke(v => v.TryDash());
+        skill.SafeInvoke(v => v.UseSkill(SkillSlot.SubAction));
     }
 
     private void TryProcess_Action(InputCommand newInput)

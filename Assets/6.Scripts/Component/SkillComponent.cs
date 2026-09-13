@@ -39,9 +39,35 @@ public sealed class SkillComponent : ActionComponent
             { "SLOT2", null },
             { "SLOT3", null },
             { "SLOT4", null },
+            { nameof(SkillSlot.SubAction), null },
         };
     }
 
+
+    protected override void OnDisable()
+    {
+        if (skillSlotTable != null)
+            foreach (var skill in skillSlotTable.Values) skill?.EndSkill(false);
+        currentSlotName = string.Empty;
+        base.EndDoAction();
+        base.OnDisable();
+    }
+
+    public void CancelCurrentSkill()
+    {
+        if (skillSlotTable != null && skillSlotTable.TryGetValue(currentSlotName, out var skill))
+            skill?.EndSkill();
+    }
+
+    public void CompleteSkillAction(ActiveSkill completedSkill)
+    {
+        if (string.IsNullOrEmpty(currentSlotName) ||
+            !skillSlotTable.TryGetValue(currentSlotName, out var current) ||
+            !ReferenceEquals(current, completedSkill)) return;
+        var character = rootObject != null ? rootObject.GetComponent<Character>() : null;
+        if (character != null && InAction) character.End_DoAction();
+        else EndDoAction();
+    }
 
     private void FixedUpdate()
     {
@@ -206,6 +232,8 @@ public sealed class SkillComponent : ActionComponent
     {
         try
         {
+            // DoAction starts this routine before Cast initializes the skill.
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
             BeginDoAction();
 
             if (string.IsNullOrEmpty(currentSlotName) ||
@@ -229,6 +257,8 @@ public sealed class SkillComponent : ActionComponent
 
             while (true)
             {
+                if (!currentSkill.IsActive) break;
+                int phaseVersion = currentSkill.PhaseVersion;
                 int phaseIndex =
                     currentSkill.PhaseIndex;
 
@@ -253,9 +283,12 @@ public sealed class SkillComponent : ActionComponent
                 }
 
 
-                // 현재 Phase 공격 이벤트
+                // A timer/loop may have restarted the same index during the await.
+                if (!currentSkill.IsCurrentPhase(phaseVersion)) continue;
                 BeginJudgeAttack(null);
+                if (!currentSkill.IsCurrentPhase(phaseVersion)) continue;
                 EndJudgeAttack(null);
+                if (!currentSkill.IsCurrentPhase(phaseVersion)) continue;
 
 
                 // 현재 Phase가 스스로 종료되는지 확인
@@ -265,12 +298,8 @@ public sealed class SkillComponent : ActionComponent
 
                 if (isSelfControlled)
                 {
-                    int waitingPhase =
-                        phaseIndex;
-
-                    while (currentSkill != null &&
-                           currentSkill.PhaseIndex ==
-                           waitingPhase)
+                    while (currentSkill != null && currentSkill.IsActive &&
+                           currentSkill.PhaseVersion == phaseVersion)
                     {
                         await UniTask.Yield(
                             PlayerLoopTiming.Update,
@@ -296,6 +325,8 @@ public sealed class SkillComponent : ActionComponent
                 }
 
 
+                if (!currentSkill.IsCurrentPhase(phaseVersion)) continue;
+
                 // 현재 Phase가 마지막인지 확인
                 if (currentSkill.PhaseIndex >=
                     currentSkill.MaxPhaseCount - 1)
@@ -305,7 +336,7 @@ public sealed class SkillComponent : ActionComponent
 
 
                 // 다음 Phase로 이동
-                currentSkill.End_DoAction();
+                currentSkill.EndPhaseAndNext();
 
                 await UniTask.Yield(
                     PlayerLoopTiming.Update,
@@ -328,14 +359,24 @@ public sealed class SkillComponent : ActionComponent
     }
 
 
+    private bool CanUseSlot(string slotName)
+    {
+        if (slotName != nameof(SkillSlot.SubAction)) return true;
+        if (!isActiveAndEnabled) return false;
+        var character = rootObject != null ? rootObject.GetComponent<Character>() : null;
+        var state = rootObject != null ? rootObject.GetComponent<StateComponent>() : null;
+        return character != null && character.isActiveAndEnabled &&
+               state != null && state.IdleMode && !InAction;
+    }
+
     public bool CanUseSkill(string skillName)
     {
-        if (skillSlotTable.TryGetValue(
+        if (CanUseSlot(skillName) && skillSlotTable != null && skillSlotTable.TryGetValue(
                 skillName,
                 out var skill))
         {
             return skill != null &&
-                   skill.IsOnCooldown == false &&
+                   skill.IsOnCooldown == false && !skill.IsActive && !skill.IsCasting && !skill.IsEnding &&
                    InAction == false;
         }
 
@@ -373,8 +414,8 @@ public sealed class SkillComponent : ActionComponent
         skill = null;
 
         // 기본 공격은 내부 전용 슬롯
-        if (slot < SkillSlot.SLOT1 ||
-            slot > SkillSlot.SLOT4)
+        if (slot != SkillSlot.SubAction && (slot < SkillSlot.SLOT1 ||
+            slot > SkillSlot.SLOT4))
         {
             return false;
         }
@@ -391,6 +432,9 @@ public sealed class SkillComponent : ActionComponent
         string slotName,
         ActiveSkill skill)
     {
+        if (skillSlotTable.TryGetValue(slotName, out var previousSkill) && !ReferenceEquals(previousSkill, skill))
+            previousSkill?.EndSkill();
+
         if (skillSlotTable.ContainsKey(slotName))
         {
             skillSlotTable[slotName] = skill;
@@ -422,7 +466,7 @@ public sealed class SkillComponent : ActionComponent
         string slotName,
         int phaseIndex = -1)
     {
-        if (!skillSlotTable.TryGetValue(
+        if (!CanUseSlot(slotName) || skillSlotTable == null || !skillSlotTable.TryGetValue(
                 slotName,
                 out var skill) ||
             skill == null)
@@ -431,19 +475,18 @@ public sealed class SkillComponent : ActionComponent
         }
 
 
-        if (phaseIndex > -1)
-        {
-            skill.PhaseIndex = phaseIndex;
-        }
+        int startPhaseIndex = phaseIndex < 0 ? 0 : phaseIndex;
+        if (startPhaseIndex >= skill.MaxPhaseCount)
+            return;
 
 
         // 동시 사용 가능 스킬
         if (skill.isConcurrentSkill)
         {
-            if (skill.IsOnCooldown)
+            if (skill.IsOnCooldown || skill.IsActive || skill.IsCasting || skill.IsEnding)
                 return;
 
-            skill.Cast();
+            skill.Cast(startPhaseIndex);
             NotifyCooldownState(slotName, skill);
 
             ExecuteConcurrentSkillAsync(
@@ -467,11 +510,11 @@ public sealed class SkillComponent : ActionComponent
 
         base.DoAction();
 
-        skill.Cast();
+        skill.Cast(startPhaseIndex);
         NotifyCooldownState(slotName, skill);
 
 
-        if (!skill.HasActionData(
+        if (useAnimationEvents && !skill.HasActionData(
                 skill.PhaseIndex))
         {
             SimulateAnimationEventsAsync(
@@ -480,102 +523,62 @@ public sealed class SkillComponent : ActionComponent
     }
 
 
-    private async UniTaskVoid SimulateAnimationEventsAsync(
-        ActiveSkill skill)
+    private async UniTaskVoid SimulateAnimationEventsAsync(ActiveSkill skill)
     {
+        if (skill == null || !skill.IsActive) return;
+        CancellationToken lifetime = skill.SkillToken;
         try
         {
-            while (skill != null &&
-                   skill.IsCasting)
-            {
-                await UniTask.Yield(
-                    PlayerLoopTiming.Update);
-            }
-
-            if (skill == null)
-                return;
-
-
-            // 1프레임 대기
-            await UniTask.Yield(
-                PlayerLoopTiming.Update);
-
-
-            // 스스로 종료되는 스킬
-            if (skill.DoesPhaseControlItself(
-                    skill.PhaseIndex))
-            {
-                int cachedPhase =
-                    skill.PhaseIndex;
-
-                while (skill.PhaseIndex ==
-                       cachedPhase)
-                {
-                    if (!InAction)
-                        return;
-
-                    await UniTask.Yield(
-                        PlayerLoopTiming.Update);
-                }
-            }
-            else
-            {
-                BeginJudgeAttack(null);
-
-                await UniTask.Delay(
-                    TimeSpan.FromSeconds(0.1f));
-
-                EndJudgeAttack(null);
-
-                await UniTask.Delay(
-                    TimeSpan.FromSeconds(0.1f));
-
-                EndDoAction();
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(
-                $"가짜 애니메이션 이벤트 발생 중 에러!\n{e}");
-
-            EndDoAction();
-        }
-    }
-
-
-    private async UniTaskVoid ExecuteConcurrentSkillAsync(
-        ActiveSkill skill)
-    {
-        while (skill != null &&
-               skill.IsCasting)
-        {
-            await UniTask.Yield(
-                PlayerLoopTiming.Update);
-        }
-
-        if (skill == null)
-            return;
-
-
-        for (int i = 0;
-             i < skill.MaxPhaseCount;
-             i++)
-        {
+            while (skill.IsCasting)
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: lifetime);
+            if (!skill.IsActive || lifetime.IsCancellationRequested || skill.DoesPhaseControlItself(skill.PhaseIndex)) return;
+            int version = skill.PhaseVersion;
+            CancellationToken phaseToken = skill.PhaseToken;
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: phaseToken);
+            if (!skill.IsCurrentPhase(version)) return;
             skill.Begin_JudgeAttack(null);
+            await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: phaseToken);
+            if (!skill.IsCurrentPhase(version)) return;
             skill.End_JudgeAttack(null);
-
-            if (i < skill.MaxPhaseCount - 1)
-            {
-                await UniTask.Delay(
-                    TimeSpan.FromSeconds(0.1f));
-
-                skill.End_DoAction();
-            }
+            await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: phaseToken);
+            if (skill.IsCurrentPhase(version)) EndDoAction();
         }
-
-        skill.End_DoAction();
+        catch (OperationCanceledException) { }
+        catch (Exception error)
+        {
+            Debug.LogException(error);
+            if (!lifetime.IsCancellationRequested) skill.EndSkill();
+        }
     }
 
+    private async UniTaskVoid ExecuteConcurrentSkillAsync(ActiveSkill skill)
+    {
+        if (skill == null || !skill.IsActive) return;
+        CancellationToken lifetime = skill.SkillToken;
+        try
+        {
+            while (skill.IsCasting)
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: lifetime);
+            while (skill.IsActive && !lifetime.IsCancellationRequested)
+            {
+                if (skill.DoesPhaseControlItself(skill.PhaseIndex)) return;
+                int version = skill.PhaseVersion;
+                CancellationToken phaseToken = skill.PhaseToken;
+                skill.Begin_JudgeAttack(null);
+                if (!skill.IsCurrentPhase(version)) continue;
+                skill.End_JudgeAttack(null);
+                if (!skill.IsCurrentPhase(version)) continue;
+                await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: phaseToken);
+                if (skill.IsCurrentPhase(version)) skill.EndPhaseAndNext();
+            }
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception error)
+        {
+            Debug.LogException(error);
+            if (!lifetime.IsCancellationRequested) skill.EndSkill(false);
+        }
+    }
     #endregion
 
 
@@ -622,8 +625,10 @@ public sealed class SkillComponent : ActionComponent
 
         skill?.End_DoAction();
 
+        if (string.IsNullOrEmpty(currentSlotName)) return;
+
         if (skill != null &&
-            skill.IsCasting)
+            skill.IsActive)
         {
             return;
         }

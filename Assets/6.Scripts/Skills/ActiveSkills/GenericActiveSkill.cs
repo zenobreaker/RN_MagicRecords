@@ -2,157 +2,186 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-///  스킬 모듈화 시 최종적으로 만들어지는 클래스 
-/// </summary>
-
-public class GenericActiveSkill
-    : ActiveSkill
+public class GenericActiveSkill : ActiveSkill
 {
-    // [PhaseIndex][TriggerTime] -> List<Module>
-    private Dictionary<int, Dictionary<SkillTriggerTime, List<SkillModule>>> phaseModuleCache; 
-    public GenericActiveSkill(SO_SkillData skillData) : base(skillData)
-    {
-        phaseModuleCache = new Dictionary<int, Dictionary<SkillTriggerTime, List<SkillModule>>>();
-    }
+    private readonly Dictionary<int, Dictionary<SkillTriggerTime, List<SkillModule>>> phaseModuleCache = new();
+    private readonly Dictionary<int, List<SkillModule>> phaseModules = new();
+    private readonly HashSet<SkillModule> executedModules = new();
+    private readonly Dictionary<SkillModule, float> nextMovementTimes = new();
+
+    public GenericActiveSkill(SO_SkillData skillData) : base(skillData) { }
 
     public override void SetOwner(GameObject gameObject)
     {
         base.SetOwner(gameObject);
-        for(int i =0; i < phaseList.Count; i++)
-            CacheModules(i, phaseList[i]); 
+        phaseModuleCache.Clear();
+        phaseModules.Clear();
+        if (phaseList == null) return;
+        for (int i = 0; i < phaseList.Count; i++) CacheModules(i, phaseList[i]);
     }
 
-    private void CacheModules(int phaseIndex, PhaseSkill phase)
+    private void CacheModules(int index, PhaseSkill phase)
     {
-        var timingCache = new Dictionary<SkillTriggerTime, List<SkillModule>>(); 
-
-        //  타이밍 별로 미리 리스트를 만들어 놓는다. 
+        var timingCache = new Dictionary<SkillTriggerTime, List<SkillModule>>();
+        var modules = new List<SkillModule>();
         foreach (SkillTriggerTime timing in Enum.GetValues(typeof(SkillTriggerTime)))
+            timingCache[timing] = new List<SkillModule>();
+        if (phase?.modules != null)
         {
-            timingCache[timing] = new List<SkillModule>(); 
+            for (int i = 0; i < phase.modules.Count; i++)
+            {
+                var module = phase.modules[i]?.Clone();
+                if (module == null) continue;
+                module.RuntimeKey = $"{index}:{i}";
+                module.Init(ownerCharacter);
+                modules.Add(module);
+                timingCache[module.triggerTime].Add(module);
+            }
         }
-
-        // 모듈들을 미리 분류해서 담아둔다.
-        foreach (var module in phase.modules)
-        {
-            if (module == null) continue;
-            SkillModule runtimeModule = module.Clone();
-
-            if (runtimeModule == null)
-                continue;
-
-            runtimeModule.Init(ownerCharacter); 
-            timingCache[runtimeModule.triggerTime].Add(runtimeModule);
-        }
-
-        // 전체 캐시에 저장 
-        phaseModuleCache[phaseIndex] = timingCache;
+        phaseModules[index] = modules;
+        phaseModuleCache[index] = timingCache;
     }
 
-    protected void NotifyModules(int phaseIndex, SkillTriggerTime timing)
+    protected void NotifyModules(int index, SkillTriggerTime timing)
     {
-        // 해당 타이밍의 바구니만 꺼내서 돌림 
-        if (phaseModuleCache.TryGetValue(phaseIndex, out var timingCache)) 
+        if (!IsActive || !phaseModuleCache.TryGetValue(index, out var cache) ||
+            !cache.TryGetValue(timing, out var modules)) return;
+        int version = PhaseVersion;
+        foreach (var module in modules)
         {
-            if(timingCache.TryGetValue(timing, out var modules))
-            {
-                foreach(var module in modules)
-                    module.OnNotify(ownerCharacter, this, phaseSkill); 
-            }
+            if (!IsActive || PhaseVersion != version || HasPendingPhaseChange) break;
+            if (IsEnding && timing != SkillTriggerTime.OnEndDoAction) break;
+            bool once = module.executeOncePerPhase || timing == SkillTriggerTime.OnPhaseTime ||
+                timing == SkillTriggerTime.OnEndDoAction || module is Module_PhaseLoop;
+            if (timing == SkillTriggerTime.OnPhaseTime && PhaseElapsedTime < module.GetTriggerDelay(this))
+                continue;
+            if (once && !executedModules.Add(module)) continue;
+            module.OnNotify(ownerCharacter, this, phaseSkill);
+        }
+        var loop = Runtime.ActivePhaseLoop;
+        if (loop != null && loop.triggerTime == timing && IsCurrentPhase(version) && !HasPendingPhaseChange &&
+            Runtime.PhaseLoopTargetIndex == phaseIndex &&
+            (timing != SkillTriggerTime.OnPhaseTime || PhaseElapsedTime >= loop.GetTriggerDelay(this)))
+            loop.OnNotify(ownerCharacter, this, phaseSkill);
+    }
+
+    public override void NotifyMovement(SkillTriggerTime timing, float elapsed = 0f)
+    {
+        int version = PhaseVersion;
+        if (!IsCurrentPhase(version) || HasPendingPhaseChange) return;
+        if (timing == SkillTriggerTime.OnMovementStart || timing == SkillTriggerTime.OnMovementEnd)
+        {
+            NotifyModules(phaseIndex, timing);
+            return;
+        }
+        if (timing != SkillTriggerTime.OnMovementProgress ||
+            !phaseModuleCache.TryGetValue(phaseIndex, out var cache)) return;
+        foreach (var module in cache[timing])
+        {
+            if (!IsCurrentPhase(version) || HasPendingPhaseChange) break;
+            if (nextMovementTimes.TryGetValue(module, out float next) && elapsed < next) continue;
+            if (module.executeOncePerPhase && !executedModules.Add(module)) continue;
+            float interval = module.movementRepeatInterval;
+            if (float.IsNaN(interval) || float.IsInfinity(interval)) interval = 0.1f;
+            nextMovementTimes[module] = elapsed + Mathf.Max(0.01f, interval);
+            module.OnNotify(ownerCharacter, this, phaseSkill);
         }
     }
 
     protected override void PrepareCasting()
     {
+        executedModules.Clear();
         NotifyModules(phaseIndex, SkillTriggerTime.OnCastingStart);
     }
 
-    protected override void ApplyEffects()
+    protected override void ApplyEffects() { }
+
+    protected override void OnPhaseEntered()
     {
+        executedModules.Clear();
+        nextMovementTimes.Clear();
+        int version = PhaseVersion;
+        if (phaseModules.TryGetValue(phaseIndex, out var modules))
+            foreach (var module in modules)
+            {
+                if (!IsCurrentPhase(version) || HasPendingPhaseChange) break;
+                module.OnPhaseEnter(ownerCharacter, this, phaseSkill);
+            }
     }
 
-    public override void EndPhaseAndNext()
+    protected override void OnPhaseExited()
     {
-        if (isCasting || IsPhaseRunning == false) return;
+        if (phaseModules.TryGetValue(phaseIndex, out var modules))
+            foreach (var module in modules) module.OnPhaseExit(ownerCharacter, this, phaseSkill);
+    }
 
-        IsPhaseRunning = false; 
-
-        int nextPhase = phaseIndex + 1;
-        
-        // 다음 페이즈가 정상적으로 남아있으면 실행
-        if (nextPhase < phaseList.Count)
-        {
-            ExecutePhase(nextPhase);
-        }
-        else
-        {
-            End_DoAction(); 
-        }
+    protected override void OnSkillEnding()
+    {
+        NotifyModules(phaseIndex, SkillTriggerTime.OnEndDoAction);
+        executedModules.Clear();
+        nextMovementTimes.Clear();
     }
 
     public override void Update(float deltaTime)
     {
+        int version = PhaseVersion;
         base.Update(deltaTime);
-
-        if(!IsPhaseRunning ) return;
-
-        if (phaseSkill == null || phaseSkill.modules == null)
-            return;
-
-        foreach(var module in phaseSkill.modules)
-            module?.Update(ownerCharacter, this, phaseSkill, deltaTime);
+        if (!IsCurrentPhase(version)) return;
+        NotifyModules(phaseIndex, SkillTriggerTime.OnPhaseTime);
+        if (!IsCurrentPhase(version) || !phaseModules.TryGetValue(phaseIndex, out var modules)) return;
+        foreach (var module in modules)
+        {
+            if (!IsCurrentPhase(version)) break;
+            module.Update(ownerCharacter, this, phaseSkill, deltaTime);
+        }
     }
 
     public override void FixedUpdate(float fixedDeltaTime)
     {
-        if (!IsPhaseRunning) return;
-
-        if (phaseSkill == null || phaseSkill.modules == null)
-            return;
-
-        foreach (var module in phaseSkill.modules)
+        int version = PhaseVersion;
+        if (!IsCurrentPhase(version) || !phaseModules.TryGetValue(phaseIndex, out var modules)) return;
+        foreach (var module in modules)
         {
-            module?.FixedUpdate(ownerCharacter, this, phaseSkill, fixedDeltaTime);
+            if (!IsCurrentPhase(version)) break;
+            module.FixedUpdate(ownerCharacter, this, phaseSkill, fixedDeltaTime);
         }
     }
 
     public override void Begin_JudgeAttack(AnimationEvent e)
     {
+        if (!IsActive || !IsPhaseRunning || IsEnding) return;
         base.Begin_JudgeAttack(e);
-        phaseSkill?.BeginJudgeAttack(ownerCharacter, this); 
+        phaseSkill?.BeginJudgeAttack(ownerCharacter, this);
         NotifyModules(phaseIndex, SkillTriggerTime.OnJudgeAttack);
     }
 
     public override void End_JudgeAttack(AnimationEvent e)
     {
+        if (!IsActive || !IsPhaseRunning || IsEnding) return;
         base.End_JudgeAttack(e);
         phaseSkill?.EndJudgeAttack(ownerCharacter, this);
         NotifyModules(phaseIndex, SkillTriggerTime.OnEndJudgeAttack);
     }
 
+    public override void Begin_DoAction() => NotifyModules(phaseIndex, SkillTriggerTime.OnBeginDoAction);
     public override void Play_Sound() => NotifyModules(phaseIndex, SkillTriggerTime.OnSoundEvent);
     public override void Play_CameraShake() => NotifyModules(phaseIndex, SkillTriggerTime.OnCameraShake);
+
     public override void End_DoAction()
     {
+        if (!IsActive || IsEnding || isCasting) return;
+        int version = PhaseVersion;
         NotifyModules(phaseIndex, SkillTriggerTime.OnEndDoAction);
-        base.End_DoAction();
+        if (PhaseVersion == version && !HasPendingPhaseChange) base.End_DoAction();
     }
-    protected override void ExecutePhase(int phaseIndex)
+
+    protected override void ExecutePhase(int index)
     {
-        if (isCasting == true) return;
-        if (phaseList == null) return;
-        if (phaseIndex < 0 || phaseIndex >= phaseList.Count) return;
-
-        expectedAnimEventPhaseIndex = phaseIndex;
-        Debug.Log($"{this.SkillID} : execute phase {phaseIndex}");
-
-        SetCurrentPhaseSkill(phaseIndex);
-
-        // 타이밍으로 모든 등록된 모듈 실행 
-        NotifyModules(this.phaseIndex, SkillTriggerTime.OnExecute);
-
-        if (phaseSkill.isInstant)
-            EndPhaseAndNext(); 
+        int version = PhaseVersion;
+        NotifyModules(index, SkillTriggerTime.OnExecute);
+        if (!IsCurrentPhase(version) || HasPendingPhaseChange) return;
+        NotifyModules(index, SkillTriggerTime.OnPhaseTime);
+        if (IsCurrentPhase(version) && !HasPendingPhaseChange && phaseSkill.isInstant)
+            EndPhaseAndNext();
     }
 }

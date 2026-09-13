@@ -16,12 +16,14 @@ public class Player
     private ComboComponent comboComponent;
     private WeaponComponent weapon;
     private SkillComponent skill;
+    [SerializeField] private SO_ActiveSkillData subActionSkill;
     private DamageHandleComponent damageHandle;
     private LaunchComponent launch;
     private EquipmentComponent equipment;
 
     private WeaponController weaponController;
 
+    private InputActionMap playerActionMap;
     private Action<InputAction.CallbackContext> onAction;
     private Action<InputAction.CallbackContext> onMove;
     private Action<InputAction.CallbackContext> onDash;
@@ -58,6 +60,7 @@ public class Player
 
         InputActionMap actionMap = input.actions.FindActionMap("Player");
         Debug.Assert(actionMap != null);
+        playerActionMap = actionMap;
 
         onAction = (context) =>
         {
@@ -79,9 +82,7 @@ public class Player
 
         Awake_SkillAcitonInput(actionMap);
 
-        actionMap.FindAction("Action").started += onAction;
-        actionMap.FindAction("Dash").started += onDash;
-        actionMap.FindAction("Move").started += onMove;
+
     }
 
 
@@ -106,9 +107,7 @@ public class Player
                 skill.ReleaseSkill(slot.ToString());
             };
 
-            string actionName = $"SkillAction{index + 1}";
-            actionMap.FindAction(actionName).started += onSkillActions[i];
-            actionMap.FindAction(actionName).canceled += onSkillCancels[i];
+
         }
     }
 
@@ -117,9 +116,12 @@ public class Player
         base.Start();
 
         SetGenericTeamId(1);
+        if (skill != null && subActionSkill != null)
+            skill.SetActiveSkill(SkillSlot.SubAction, subActionSkill.CreateSkill() as ActiveSkill);
     }
     protected void OnEnable()
     {
+        SetInputSubscriptions(true);
         if (state != null)
             state.OnStateTypeChanged += ChangeType;
 
@@ -139,22 +141,33 @@ public class Player
         if (skill != null)
             skill.OnDoAction -= DoAction;
 
-        var input = GetComponent<PlayerInput>();
-        if (input != null)
-        {
-            var actionMap = input.actions.FindActionMap("Player");
-
-            actionMap.FindAction("Action").started -= onAction;
-            actionMap.FindAction("Dash").started -= onDash;
-
-            for (int i = 0; i < 4; i++)
-            {
-                string actionName = $"SkillAction{i + 1}";
-                actionMap.FindAction(actionName).started -= onSkillActions[i];
-            }
-        }
+        SetInputSubscriptions(false);
 
         BattleManager.Instance.SafeInvoke(v => v.UnreistPlayer(this));
+    }
+
+    private void SetInputSubscriptions(bool subscribe)
+    {
+        if (playerActionMap == null) return;
+        void Bind(string name, Action<InputAction.CallbackContext> started,
+            Action<InputAction.CallbackContext> canceled = null)
+        {
+            var action = playerActionMap.FindAction(name, false);
+            if (action == null) return;
+            if (started != null) action.started -= started;
+            if (canceled != null) action.canceled -= canceled;
+            if (subscribe)
+            {
+                if (started != null) action.started += started;
+                if (canceled != null) action.canceled += canceled;
+            }
+        }
+        Bind("Action", onAction);
+        Bind("Dash", onDash);
+        Bind("Move", onMove);
+        if (onSkillActions == null || onSkillCancels == null) return;
+        for (int i = 0; i < onSkillActions.Length; i++)
+            Bind($"SkillAction{i + 1}", onSkillActions[i], onSkillCancels[i]);
     }
 
     private void DoAction()
@@ -180,17 +193,21 @@ public class Player
 
     public override void End_DoAction()
     {
-        bInAction = false;
-        Debug.Log("Player End DoAction");
-
-        if (skill.SafeInvoke(v => v.InAction))
-            skill.EndDoAction();
-
-        state.SafeInvoke(v => v.SetIdleMode());
-
-        OnEndDoAction?.Invoke();
+        if (endingAction) return;
+        endingAction = true;
+        try
+        {
+            if (skill.SafeInvoke(v => v.InAction))
+            {
+                skill.EndDoAction();
+                if (skill.InAction) return;
+            }
+            bInAction = false;
+            if (state != null && !state.DamagedMode && !state.DeadMode && !state.StopMode) state.SetIdleMode();
+            OnEndDoAction?.Invoke();
+        }
+        finally { endingAction = false; }
     }
-
     public override void Begin_JudgeAttack(AnimationEvent e)
     {
         base.Begin_JudgeAttack(e);
@@ -279,7 +296,7 @@ public class Player
         {
             // 현재 행동 중(InAction)인 모든 컴포넌트들을 강제로 캔슬시킵니다!
             if (skill.SafeInvoke(v => v.InAction))
-                skill.EndDoAction();
+                skill.CancelCurrentSkill();
         }
     }
 
@@ -289,7 +306,7 @@ public class Player
 
         state.SafeInvoke(v => v.SetIdleMode());
         if (skill.SafeInvoke(v => v.InAction))
-            skill.EndDoAction();
+            skill.CancelCurrentSkill();
     }
 
     public void ApplyLaunch(GameObject attacker, Weapon causer, DamageEvent devt)

@@ -1,70 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-
+using UnityEngine.Serialization;
 
 [ModuleCategory("Common/SpawnWeaponVFX")]
 [Serializable]
 public class Module_SpawnWeaponVFX : SkillModule
 {
-    [Header("Muzzle Flash Settings")]
-    public GameObject muzzleFlashPrefab;
+    [Header("Effect Spawn Settings")]
+    [FormerlySerializedAs("muzzleFlashPrefab")]
+    public GameObject effectPrefab;
+    [Tooltip("무기 대신 Character 위치에 생성합니다.")]
+    public bool spawnAtOwner;
 
-    // 💡 1. 모든 총구를 다 쓸 것인가? 아니면 특정 총구만 쓸 것인가?
-    [Tooltip("체크하면 무기에 달린 모든 총구에서 플래시가 터집니다.")]
-    public bool useAllMuzzles = true;
+    [Tooltip("무기의 모든 이펙트 생성 지점에 생성합니다.")]
+    [FormerlySerializedAs("useAllMuzzles")]
+    public bool useAllEffectSpawnPoints = true;
 
-    // 💡 2. 특정 총구만 쓴다면 몇 번 총구를 쓸 것인가? (배열)
-    [Tooltip("useAllMuzzles가 꺼져있을 때 작동합니다. (예: 0 넣으면 첫 번째 총구, 0과 1 넣으면 두 개)")]
-    public int[] specificMuzzleIndices;
+    [Tooltip("전체 생성이 꺼져 있을 때 사용할 생성 지점 인덱스입니다. (0부터 시작)")]
+    [FormerlySerializedAs("specificMuzzleIndices")]
+    public int[] specificEffectSpawnIndices;
+
+    protected virtual string EffectId => string.Empty;
+    protected virtual bool FollowEffectSpawnPoint => false;
+    protected virtual bool ReplaceExistingEffects => false;
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (owner.TryGetComponent<WeaponComponent>(out var weaponComp))
+        if (owner == null || !owner.isActiveAndEnabled || effectPrefab == null) return;
+        if (spawnAtOwner)
         {
-            Weapon currentWeapon = weaponComp.GetCurrentWeapon();
+            if (!owner.TryGetComponent<SkillVFXComponent>(out var effects))
+                effects = owner.gameObject.AddComponent<SkillVFXComponent>();
+            if (!effects.isActiveAndEnabled) return;
+            if (ReplaceExistingEffects) effects.RemoveEffects(skill, EffectId);
+            SpawnEffect(owner.transform, effects, skill);
+            return;
+        }
+        if (!owner.TryGetComponent<WeaponComponent>(out var weaponComponent)) return;
+        if (!(weaponComponent.GetCurrentWeapon() is IAttackOriginProvider originProvider)) return;
 
-            // 현재 들고 있는 무기가 Gun일 때만 작동
-            if (currentWeapon is Gun gun)
+        var effectSpawnPoints = originProvider.GetAttackOrigins();
+        if (effectSpawnPoints == null || effectSpawnPoints.Count == 0) return;
+
+        if (!owner.TryGetComponent<SkillVFXComponent>(out var skillVFX))
+            skillVFX = owner.gameObject.AddComponent<SkillVFXComponent>();
+        if (!skillVFX.isActiveAndEnabled) return;
+
+        if (ReplaceExistingEffects)
+            skillVFX.RemoveEffects(skill, EffectId);
+
+        if (useAllEffectSpawnPoints)
+        {
+            foreach (var effectSpawnPoint in effectSpawnPoints)
+                SpawnEffect(effectSpawnPoint, skillVFX, skill);
+        }
+        else if (specificEffectSpawnIndices != null)
+        {
+            foreach (int index in specificEffectSpawnIndices)
             {
-                List<Transform> muzzles = gun.GetMuzzleTransforms();
-                if (muzzles == null || muzzles.Count == 0) return;
-
-                // 💡 3. 조건에 따라 불을 뿜을 총구를 걸러냅니다.
-                if (useAllMuzzles)
-                {
-                    // [전체 다 쏘기]
-                    foreach (var muzzle in muzzles)
-                    {
-                        SpawnFlash(muzzle);
-                    }
-                }
-                else
-                {
-                    // [특정 번호만 쏘기]
-                    if (specificMuzzleIndices != null)
-                    {
-                        foreach (int idx in specificMuzzleIndices)
-                        {
-                            // 인덱스가 배열 범위를 벗어나지 않도록 안전장치(방어 코드)
-                            if (idx >= 0 && idx < muzzles.Count)
-                            {
-                                SpawnFlash(muzzles[idx]);
-                            }
-                        }
-                    }
-                }
+                if (index >= 0 && index < effectSpawnPoints.Count)
+                    SpawnEffect(effectSpawnPoints[index], skillVFX, skill);
             }
         }
     }
 
-    private void SpawnFlash(Transform muzzleTransform)
+    private void SpawnEffect(Transform effectSpawnPoint, SkillVFXComponent skillVFX, ActiveSkill skill)
     {
-        if (muzzleFlashPrefab != null)
-        {
-            // ObjectPooler가 있다면 ObjectPooler.SpawnFromPool(...) 로 교체하세요!
-            GameObject.Instantiate(muzzleFlashPrefab, muzzleTransform.position, muzzleTransform.rotation);
-        }
+        if (effectSpawnPoint == null) return;
+
+        var instance = UnityEngine.Object.Instantiate(effectPrefab,
+            effectSpawnPoint.position, effectSpawnPoint.rotation,
+            FollowEffectSpawnPoint ? effectSpawnPoint : null);
+        skillVFX.RegisterEffect(skill, EffectId, instance);
     }
 }
-

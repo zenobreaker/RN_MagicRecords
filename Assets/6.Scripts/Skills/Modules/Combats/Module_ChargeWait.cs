@@ -45,6 +45,8 @@ public class Module_ChargeWait : SkillModule
     }
 
 
+    public override void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase) => CancelCharge();
+
     private void CancelCharge()
     {
         if (chargeCts == null)

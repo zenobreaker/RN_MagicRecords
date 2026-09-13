@@ -17,21 +17,21 @@ public class WeaponController : MonoBehaviour
         weaponAnimator.runtimeAnimatorController = overrideController;
     }
 
-    public void DoAction(ActionData actionData)
+    public void DoAction(ActionData actionData, bool restartFromBeginning = false)
     {
         if (weaponAnimator == null) return; 
 
         int layer = AnimatorLayerCache.GetLayerIndex(weaponAnimator, actionData?.LayerName);
-        DoAction(actionData?.WeaponActionName, layer); 
+        DoAction(actionData?.WeaponActionName, layer, restartFromBeginning);
     }
 
-    public void DoAction(string stateName, int layerIndex = 0)
+    public void DoAction(string stateName, int layerIndex = 0, bool restartFromBeginning = false)
     {
         if (weaponAnimator == null)
             return;
 
         if (string.IsNullOrEmpty(stateName) == false)
-            weaponAnimator.Play(stateName, layerIndex);
+            weaponAnimator.Play(stateName, layerIndex, restartFromBeginning ? 0f : float.NegativeInfinity);
     }
 
 

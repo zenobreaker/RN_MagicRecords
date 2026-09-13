@@ -27,6 +27,7 @@ public class Character
     public StatusComponent Status => status;
 
     protected bool bInAction = false;
+    protected bool endingAction;
     public virtual bool InAction { get { return bInAction; } protected set { bInAction = value; } }
 
     // 슬로우 관리를 위한 토큰 (코루틴 대체)
@@ -70,6 +71,7 @@ public class Character
 
     protected virtual void OnDisable()
     {
+        if (TryGetComponent<SkillComponent>(out var activeSkills)) activeSkills.CancelCurrentSkill();
         OnDead = null;
 
         // 메모리 누수 방지
@@ -99,13 +101,23 @@ public class Character
     // Visual 스크립트에서 이 함수들을 호출해주도록 브릿지(Bridge) 연결이 필요합니다!
     public virtual void Start_DoAction() { }
     public virtual void Begin_DoAction() { OnBeginDoAction?.Invoke(); }
-    public virtual void End_DoAction() 
+    public virtual void End_DoAction()
     {
-
-        state.SafeInvoke(v => v.SetIdleMode());
-        OnEndDoAction?.Invoke(); 
+        if (endingAction) return;
+        endingAction = true;
+        try
+        {
+            if (TryGetComponent<SkillComponent>(out var activeSkills) && activeSkills.InAction)
+            {
+                activeSkills.EndDoAction();
+                if (activeSkills.InAction) return;
+            }
+            bInAction = false;
+            if (state != null && !state.DamagedMode && !state.DeadMode && !state.StopMode) state.SetIdleMode();
+            OnEndDoAction?.Invoke();
+        }
+        finally { endingAction = false; }
     }
-
     public virtual void Begin_JudgeAttack(AnimationEvent e = null) { }
     public virtual void End_JudgeAttack(AnimationEvent e = null) { }
     public virtual void Play_Sound() { }

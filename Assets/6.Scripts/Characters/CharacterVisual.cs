@@ -148,14 +148,15 @@ public sealed class CharacterVisual : MonoBehaviour
 
     #region Animation Controls
     // 💡 1. 액션(스킬/공격) 애니메이션 재생
-    public void PlayActionAnimation(ActionData actionData, int layer, float statSpeedMultiplier)
+    public void PlayActionAnimation(ActionData actionData, int layer, float statSpeedMultiplier, bool restartFromBeginning = false)
     {
         if (actionData == null || Animator == null) return;
 
         float finalSpeed = actionData.ActionSpeed * statSpeedMultiplier;
         Animator.SetFloat(actionData.ActionSpeedHash, finalSpeed);
         Debug.Log($"{actionData.StateName} play anim");
-        Animator.CrossFade(actionData.StateName, 0.1f, layer);
+        if (restartFromBeginning) Animator.Play(actionData.StateName, layer, 0f);
+        else Animator.CrossFade(actionData.StateName, 0.1f, layer);
     }
 
     // 💡 2. 피격 애니메이션 재생

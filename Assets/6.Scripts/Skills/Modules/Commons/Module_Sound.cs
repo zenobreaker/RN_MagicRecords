@@ -10,6 +10,7 @@ public class Module_Sound : SkillModule
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
+        if (string.IsNullOrWhiteSpace(soundName)) return;
         SoundManager.Instance.SafeInvoke(v => v.PlaySFX(soundName)); 
     }
 }

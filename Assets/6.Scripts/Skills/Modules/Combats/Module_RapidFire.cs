@@ -59,12 +59,14 @@ public class Module_RapidFire : SkillModule
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        CancellationToken token = owner.GetCancellationTokenOnDestroy();
+        if (owner == null || skill == null || !skill.IsPhaseRunning || skill.IsEnding) return;
+        CancellationToken token = skill.PhaseToken;
         RapidFireAsync(owner, skill, phaseSkill, token).Forget();
     }
 
     private async UniTaskVoid RapidFireAsync(Character owner, ActiveSkill skill, PhaseSkill phaseSkill, CancellationToken token)
     {
+        int phaseVersion = skill.PhaseVersion;
         float finalFireInterval = Mathf.Max(
             0.01f,
             fireInterval * (skill != null ? skill.Runtime.FireIntervalMultiplier : 1.0f));
@@ -169,28 +171,30 @@ public class Module_RapidFire : SkillModule
                 }
             }
         }
+        catch (OperationCanceledException) { }
         finally
         {
             // 💡 4. 연사가 끝나거나 취소되면 애니메이션 속도를 원래대로 복구
-            if (isCharacterComp && syncAnimSpeed)
+            if (skill.PhaseVersion == phaseVersion && isCharacterComp && syncAnimSpeed)
             {
                 ReturnAnimSpeed();
 
-                ownerChar.End_DoAction();
+                // Completion is handled below, only for the original phase generation.
                 // (선택) 연사가 끝난 후 부드럽게 Idle로 돌아가게 하려면 
                 // 애니메이터에 설정해둔 Idle 상태로 강제 전환하거나 Trigger를 보내주면 됩니다.
                 // anim.CrossFade("Idle", 0.1f);
             }
-            else if (anim != null && syncAnimSpeed)
+            else if (skill.PhaseVersion == phaseVersion && anim != null && syncAnimSpeed)
             {
                 ReturnAnimSpeed();
             }
 
-            if (agent != null && agent.isActiveAndEnabled)
+            if (skill.IsCurrentPhase(phaseVersion) && agent != null && agent.isActiveAndEnabled)
             {
                 agent.isStopped = false;
                 agent.updateRotation = true;
             }
+            if (!token.IsCancellationRequested && skill.IsCurrentPhase(phaseVersion)) skill.EndSkill();
         }
     }
 
@@ -223,6 +227,13 @@ public class Module_RapidFire : SkillModule
     {
         return damageData;
     }
+
+    public override void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase)
+    {
+        if (syncAnimSpeed && runtimeActionData != null) ReturnAnimSpeed();
+    }
+
+    public override bool ControlsPhaseLifecycle() => true;
 
     public override bool HasAnimationData()
     {

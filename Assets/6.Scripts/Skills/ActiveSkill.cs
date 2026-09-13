@@ -86,7 +86,21 @@ public abstract class ActiveSkill
 
     // 모듈들의 비동기 타이머를 관리할 토큰 소스 
     protected CancellationTokenSource phaseCts;
-    public CancellationToken PhaseToken => phaseCts?.Token ?? default;
+    private CancellationTokenSource skillCts;
+    public CancellationToken SkillToken => skillCts?.Token ?? new CancellationToken(true);
+    public CancellationToken PhaseToken => phaseCts?.Token ?? new CancellationToken(true);
+    public bool IsActive { get; private set; }
+    public bool IsEnding { get; private set; }
+    public float PhaseElapsedTime { get; private set; }
+    public int PhaseVersion { get; private set; }
+    private bool enteringPhase;
+    private int pendingPhaseIndex = -1;
+    private int transitionFrame = -1;
+    private int transitionsThisFrame;
+
+    public bool IsValidPhaseIndex(int index) => phaseList != null && index >= 0 && index < phaseList.Count;
+    public bool IsInstantPhase(int index) => IsValidPhaseIndex(index) && phaseList[index].isInstant;
+    public bool IsCurrentPhase(int version) => IsActive && !IsEnding && IsPhaseRunning && PhaseVersion == version;
 
     protected readonly ActiveSkillData activeSkillData;
 
@@ -133,6 +147,8 @@ public abstract class ActiveSkill
 
         bonusOptionList = levelData.bonusOptionList;
     }
+
+    public virtual void NotifyMovement(SkillTriggerTime timing, float elapsed = 0f) { }
 
     public virtual void SetOwner(GameObject gameObject)
     {
@@ -232,14 +248,27 @@ public abstract class ActiveSkill
             currentCooldown -= deltaTime;
     }
 
-    public void Cast()
+    public void Cast(int startPhaseIndex = 0)
     {
-        if (IsOnCooldown || isCasting)
+        if (IsOnCooldown || isCasting || IsActive || IsEnding)
             return;
 
-        phaseCts?.Cancel();
-        phaseCts?.Dispose();
-        phaseCts = new CancellationTokenSource();
+        if (phaseList == null || startPhaseIndex < 0 || startPhaseIndex >= phaseList.Count)
+            return;
+
+        CancelToken(ref phaseCts);
+        CancelToken(ref skillCts);
+        skillCts = ownerCharacter != null
+            ? CancellationTokenSource.CreateLinkedTokenSource(ownerCharacter.GetCancellationTokenOnDestroy())
+            : new CancellationTokenSource();
+        IsActive = true;
+        phaseCts = CancellationTokenSource.CreateLinkedTokenSource(SkillToken);
+
+        // 새 사용은 이전 종료 경로에 남은 페이즈를 이어받지 않습니다.
+        phaseIndex = startPhaseIndex;
+        expectedAnimEventPhaseIndex = startPhaseIndex;
+        phaseSkill = phaseList[startPhaseIndex];
+        IsPhaseRunning = false;
 
         SetRunTimeContext();
 
@@ -260,12 +289,13 @@ public abstract class ActiveSkill
         chargeStartTime = Time.time;
 
         PrepareCasting();
+        if (!IsActive || IsEnding) return;
 
         if (Runtime.Cast.CastingTime > 0f)
         {
             isCasting = true;
             currentCastingTime = Runtime.Cast.CastingTime;
-            WaitForCastingAsync(Runtime.Cast.CastingTime, phaseCts.Token).Forget();
+            WaitForCastingAsync(Runtime.Cast.CastingTime, SkillToken).Forget();
         }
         else
         {
@@ -284,12 +314,8 @@ public abstract class ActiveSkill
             TimeSpan.FromSeconds(duration),
             cancellationToken: token).SuppressCancellationThrow();
 
-        if (isCancelled || token.IsCancellationRequested)
-        {
-            isCasting = false;
-            currentCastingTime = 0f;
+        if (isCancelled || token.IsCancellationRequested || !IsActive)
             return;
-        }
 
         isCasting = false;
         currentCastingTime = 0f;
@@ -301,7 +327,7 @@ public abstract class ActiveSkill
     {
         if (isConcurrentSkill)
         {
-            ExecutePhase(PhaseIndex);
+            EnterPhase(PhaseIndex);
             return;
         }
 
@@ -315,7 +341,7 @@ public abstract class ActiveSkill
         if (state != null)
             state.SetActionMode();
 
-        ExecutePhase(PhaseIndex);
+        EnterPhase(PhaseIndex);
     }
 
     private void SetRunTimeContext()
@@ -374,6 +400,8 @@ public abstract class ActiveSkill
 
     public virtual void Update(float deltaTime)
     {
+        if (!IsActive || IsEnding) return;
+        if (IsPhaseRunning) PhaseElapsedTime += Mathf.Max(0f, deltaTime);
         if (isWaitingForRelease)
         {
             // 현재까지 누르고 있는 시간 계산
@@ -395,27 +423,85 @@ public abstract class ActiveSkill
 
     }
 
-    public virtual void EndPhaseAndNext() { }   // 페이즈를 종료 후 넘기는 처리 
-
-    public void JumpToPhase(int index)
+    public virtual void EndPhaseAndNext()
     {
-        if (IsPhaseRunning == false)
-            return; 
-
-        if (phaseList.Count <= index) return;
-
-        ExecutePhase(index);
-    }
-    protected virtual void ExecutePhase(int phaseIndex)
-    {
-        if (isCasting == true) return;
-        if (phaseList == null) return;
-        if (phaseIndex < 0 || phaseIndex >= phaseList.Count) return; 
-
-        expectedAnimEventPhaseIndex = phaseIndex;
-        Debug.Log($"{this.SkillID} : execute phase {phaseIndex}");
+        if (!IsActive || IsEnding || isCasting || !IsPhaseRunning) return;
+        if (IsValidPhaseIndex(phaseIndex + 1)) ChangePhase(phaseIndex + 1);
+        else EndSkill();
     }
 
+    public void JumpToPhase(int index) => ChangePhase(index);
+
+    public bool ChangePhase(int index)
+    {
+        if (!IsActive || IsEnding || isCasting || !IsPhaseRunning || !IsValidPhaseIndex(index))
+            return false;
+        EnterPhase(index);
+        return true;
+    }
+
+    public bool RestartCurrentPhase()
+    {
+        if (!IsActive || IsEnding || isCasting || !IsPhaseRunning) return false;
+        EnterPhase(phaseIndex);
+        return true;
+    }
+
+    // Change/restart both retire the previous generation before notifying new modules.
+    private void EnterPhase(int index)
+    {
+        if (!IsActive || IsEnding || !IsValidPhaseIndex(index)) return;
+        pendingPhaseIndex = index;
+        if (enteringPhase) return;
+        enteringPhase = true;
+        try
+        {
+            while (pendingPhaseIndex >= 0 && IsActive && !IsEnding)
+            {
+                if (transitionFrame != Time.frameCount)
+                {
+                    transitionFrame = Time.frameCount;
+                    transitionsThisFrame = 0;
+                }
+                if (++transitionsThisFrame > 64)
+                {
+                    Debug.LogError($"[{Name}] Too many phase transitions in one frame. Check instant phase cycles.");
+                    EndSkill();
+                    break;
+                }
+                int next = pendingPhaseIndex;
+                pendingPhaseIndex = -1;
+                CancelToken(ref phaseCts);
+                if (IsPhaseRunning) OnPhaseExited();
+                ClearTrackedEffects();
+                Runtime.Hit.End();
+                phaseCts = CancellationTokenSource.CreateLinkedTokenSource(SkillToken);
+                PhaseVersion++;
+                PhaseElapsedTime = 0f;
+                isWaitingForRelease = false;
+                expectedAnimEventPhaseIndex = next;
+                SetCurrentPhaseSkill(next);
+                OnPhaseEntered();
+                ExecutePhase(next);
+            }
+        }
+        finally { enteringPhase = false; }
+    }
+
+    protected bool HasPendingPhaseChange => pendingPhaseIndex >= 0;
+    protected virtual void OnPhaseEntered() { }
+    protected virtual void OnPhaseExited() { }
+    protected virtual void OnSkillEnding() { }
+    protected virtual void ExecutePhase(int index) { }
+
+    private static void CancelToken(ref CancellationTokenSource source)
+    {
+        var previous = source;
+        source = null;
+        if (previous == null) return;
+        previous.Cancel();
+        previous.Dispose();
+    }
     protected abstract void ApplyEffects();     // 개별 효과 적용 
 
 
@@ -445,7 +531,7 @@ public abstract class ActiveSkill
         if (index < 0 || index >= phaseList.Count)
             return false;
 
-        return phaseList[index].DoesPhaseControlItself();
+        return (Runtime.ActivePhaseLoop != null && Runtime.PhaseLoopTargetIndex == index) || phaseList[index].DoesPhaseControlItself();
     }
 
     // 모듈이 무언가를 소환하면 여기에 신고(등록)하게 만듭니다.
@@ -465,53 +551,63 @@ public abstract class ActiveSkill
     {
 
     }
+    // Animation completion is not necessarily skill completion (charge/loop/timer phases).
     public virtual void End_DoAction()
     {
-        if (expectedAnimEventPhaseIndex != phaseIndex)
-        {
-            return;
-        }
-
-        foreach (var effect in trackedEffects)
-        {
-            if (effect != null && effect.activeInHierarchy)
-            {
-                effect.SetActive(false);
-            }
-        }
-
-        // 다음 번 스킬 사용을 위해 리스트를 비워줍니다.
-        trackedEffects.Clear();
-
-
-        phaseCts?.Cancel();
-
-        // 장판 등이 진행 중이여서 다음 페이즈가 남아있다면,
-        // 애니메이션이 끝났다고 해서 취소하지 않은다. 
-        if (phaseIndex < phaseList.Count - 1)
-        {
-            return;
-        }
-
-        // 다음 번 스킬을 위해 초기화
-        phaseIndex = 0;
-        isCasting = false;
-        IsPhaseRunning = false;
-
-        if (!isConcurrentSkill && ownerObject != null)
-        {
-            NavMeshAgent agent = ownerObject.GetComponent<NavMeshAgent>();
-            if (agent != null && agent.isActiveAndEnabled)
-            {
-                agent.updateRotation = true;
-                agent.isStopped = false;
-            }
-
-            if (state != null)
-                state.SetIdleMode();
-        }
+        if (!IsActive || IsEnding || isCasting) return;
+        if (IsPhaseRunning && DoesPhaseControlItself(phaseIndex)) return;
+        EndSkill(false);
     }
 
+    private void ClearTrackedEffects()
+    {
+        var effects = trackedEffects.ToArray();
+        trackedEffects.Clear();
+        foreach (var effect in effects)
+            if (effect != null && effect.activeInHierarchy) effect.SetActive(false);
+    }
+
+    public void EndSkill(bool notifyOwner = true)
+    {
+        if (!IsActive || IsEnding) return;
+        IsEnding = true;
+        pendingPhaseIndex = -1;
+        try
+        {
+            CancelToken(ref phaseCts);
+            CancelToken(ref skillCts);
+            OnSkillEnding();
+            if (IsPhaseRunning) OnPhaseExited();
+            ClearTrackedEffects();
+            Runtime.Hit.End();
+            Runtime.ResetPhaseLoopCounts();
+            IsPhaseRunning = false;
+            IsActive = false;
+            isCasting = false;
+            currentCastingTime = 0f;
+            isWaitingForRelease = false;
+            pendingPhaseIndex = -1;
+            phaseIndex = 0;
+            expectedAnimEventPhaseIndex = 0;
+            phaseSkill = null;
+            PhaseElapsedTime = 0f;
+            if (ownerCharacter != null && ownerCharacter.TryGetComponent<SkillVFXComponent>(out var vfx))
+                vfx.RemoveSkillEffects(this);
+            if (!isConcurrentSkill && ownerObject != null)
+            {
+                var agent = ownerObject.GetComponent<NavMeshAgent>();
+                if (agent != null && agent.isActiveAndEnabled)
+                {
+                    agent.updateRotation = true;
+                    agent.isStopped = false;
+                }
+                if (state != null && !state.DamagedMode && !state.DeadMode && !state.StopMode) state.SetIdleMode();
+            }
+            if (notifyOwner && !isConcurrentSkill && skillComponent != null)
+                skillComponent.CompleteSkillAction(this);
+        }
+        finally { IsEnding = false; }
+    }
     public virtual void Begin_JudgeAttack(AnimationEvent e)
     {
         if (ownerCharacter != null)

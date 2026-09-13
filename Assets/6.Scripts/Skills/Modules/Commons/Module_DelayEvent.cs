@@ -30,21 +30,22 @@ public class Module_DelayEvent : SkillModule
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
+        if (skill == null || !skill.IsPhaseRunning || skill.IsEnding) return;
         CancelDelay();
 
         delayCts = CancellationTokenSource.CreateLinkedTokenSource(skill.PhaseToken);
 
-        ExecuteAsync(owner, skill).Forget();
+        ExecuteAsync(owner, skill, skill.PhaseVersion, delayCts.Token).Forget();
     }
 
    private async UniTaskVoid ExecuteAsync(Character owner, 
-       ActiveSkill skill)
+       ActiveSkill skill, int phaseVersion, CancellationToken token)
     {
         bool canceled = await UniTask.Delay(
             TimeSpan.FromSeconds(delay), 
-            cancellationToken : delayCts.Token).SuppressCancellationThrow();
+            cancellationToken : token).SuppressCancellationThrow();
 
-        if (canceled)
+        if (canceled || token.IsCancellationRequested || !skill.IsCurrentPhase(phaseVersion))
             return;
 
         AnimationEvent eventData = new();
@@ -66,6 +67,8 @@ public class Module_DelayEvent : SkillModule
                 break;
         }
     }
+    public override void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase) => CancelDelay();
+
     private void CancelDelay()
     {
         if (delayCts == null)

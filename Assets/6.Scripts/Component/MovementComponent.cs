@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -19,9 +17,9 @@ public class MovementComponent : MonoBehaviour
     [SerializeField] private float dashCollisionSearchPadding = 0.5f;
     [SerializeField] private LayerMask characterLayer;
 
-    [Header("Dash Settings")]
-    [SerializeField] private float dashSpeed = 5.0f;
-    [SerializeField] private float dashDistance = 5.0f;
+    // Retained for serialized legacy prefabs. Dash skill data now owns these values.
+    [SerializeField, HideInInspector] private float dashSpeed = 5.0f;
+    [SerializeField, HideInInspector] private float dashDistance = 5.0f;
 
     private float speed;
     private float originSpeed;
@@ -73,11 +71,13 @@ public class MovementComponent : MonoBehaviour
     {
         originSpeed = speed; 
         if (statusEffect != null) statusEffect.OnStatusEffectChanged += OnStatusEffectChanged;
+        if (state != null) state.OnStateTypeChanged += OnStateChanged;
     }
 
     private void OnDisable()
     {
         if (statusEffect != null) statusEffect.OnStatusEffectChanged -= OnStatusEffectChanged;
+        if (state != null) state.OnStateTypeChanged -= OnStateChanged;
         CancelDashTimer();
     }
 
@@ -95,7 +95,7 @@ public class MovementComponent : MonoBehaviour
     public void RecoverSpeed() => speed = originSpeed; 
 
     public void Move() { bCanMove = true; }
-    public void Stop() { bCanMove = false; }
+    public void Stop() { bCanMove = false; CancelDashTimer(); }
 
     // --------------------------------------------------------
     // 💡 1. [로직 분리] Update: 회전과 애니메이션만 담당
@@ -171,250 +171,121 @@ public class MovementComponent : MonoBehaviour
     // --------------------------------------------------------
     // 💡 3. 대시(Dash) 로직 통합
     // --------------------------------------------------------
+    [Obsolete("Player input uses SkillComponent.UseSkill(SkillSlot.SubAction).")]
     public void TryDash()
     {
-        if (state == null || state.EvadeMode || !state.IdleMode) return;
-
-        DashDirection dd = DashDirection.Forward;
-        bool isDash;
-        if (targetDirection.magnitude == 0.0f)
-        {
-            dd = DashDirection.Backward;
-            isDash = true;
-
-        }
-        else
-        {
-            isDash = false;
-        }
-
-        Vector3 localDir =
-        dd == DashDirection.Backward
-            ? Vector3.back
-            : Vector3.forward;
-
-        Vector3 direction =
-       transform.TransformDirection(localDir);
-
-        if (visual != null)
-            visual.PlayDashAnimation(isDash);
-
-        Dash(direction, dashDistance, dashDistance / dashSpeed, null);
+        // Compatibility entry point; animation and movement remain skill-driven.
+        GetComponent<SkillComponent>()?.UseSkill(SkillSlot.SubAction);
     }
 
-    public void Dash(
-    Vector3 direction,
-    float distance,
-    float duration,
-    AnimationCurve speedCurve = null)
+    public bool CanStartExternalMovement => isActiveAndEnabled && rigid != null &&
+        !rigid.isKinematic && state != null && !state.EvadeMode &&
+        !state.DeadMode && !state.DamagedMode && !state.StopMode && !bIsExternalMoving;
+
+    public void Dash(Vector3 direction, float distance, float duration,
+        AnimationCurve speedCurve = null, Action onStarted = null,
+        Action<float> onProgress = null, Action<bool> onFinished = null,
+        CancellationToken cancellationToken = default)
     {
-        if (state == null || state.EvadeMode)
-            return;
+        StartMovement(direction, distance, duration, speedCurve, true, true,
+            onStarted, onProgress, onFinished, cancellationToken);
+    }
 
-        if (direction.sqrMagnitude <= 1e-3f)
-            return;
+    public void MoveOverTime(Vector3 direction, float distance, float duration,
+        bool ghostMode = false, Action onStarted = null,
+        Action<float> onProgress = null, Action<bool> onFinished = null,
+        CancellationToken cancellationToken = default)
+    {
+        StartMovement(direction, distance, duration, null, false, ghostMode,
+            onStarted, onProgress, onFinished, cancellationToken);
+    }
 
+    private void StartMovement(Vector3 direction, float distance, float duration,
+        AnimationCurve curve, bool evade, bool ghost, Action onStarted,
+        Action<float> onProgress, Action<bool> onFinished, CancellationToken lifetime)
+    {
         direction.y = 0f;
-        direction.Normalize();
-        state.SetEvadeMode();
-
-        CancelDashTimer();
-        dashCts = new CancellationTokenSource();
-
-        DashRoutine(
-            direction,
-            distance,
-            duration,
-            speedCurve,
-            dashCts.Token
-        ).Forget();
-    }
-
-    private async UniTaskVoid DashRoutine(
-    Vector3 direction,
-    float distance,
-    float duration,
-    AnimationCurve speedCurve,
-    CancellationToken token)
-    {
-        try
+        if (!CanStartExternalMovement || lifetime.IsCancellationRequested ||
+            !float.IsFinite(direction.x) || !float.IsFinite(direction.z) ||
+            direction.sqrMagnitude <= 0.001f || !float.IsFinite(distance) || distance <= 0f ||
+            !float.IsFinite(duration) || duration <= 0f)
         {
-            OnBeginDash?.Invoke();
-
-            rigid.linearVelocity =
-                new Vector3(
-                    0f,
-                    rigid.linearVelocity.y,
-                    0f);
-
-            float elapsed = 0f;
-
-            Vector3 start = transform.position;
-            Vector3 end = start + direction * distance;
-            
-            // 캐릭터간 무시 시작 
-            BeginDashCollisionIgnore(start, end); 
-
-            while (elapsed < duration)
-            {
-                token.ThrowIfCancellationRequested();
-
-                elapsed += Time.fixedDeltaTime;
-
-                float t = Mathf.Clamp01(elapsed / duration);
-
-                float curveValue =
-                    speedCurve != null
-                        ? speedCurve.Evaluate(t)
-                        : t;
-
-                Vector3 currentTarget =
-                    Vector3.Lerp(
-                        start,
-                        end,
-                        curveValue);
-
-                Vector3 velocity =
-                    (currentTarget - transform.position)
-                    / Time.fixedDeltaTime;
-
-                rigid.linearVelocity = new Vector3(
-                    velocity.x,
-                    rigid.linearVelocity.y,
-                    velocity.z);
-
-                await UniTask.WaitForFixedUpdate(
-                    cancellationToken: token);
-            }
-
-            rigid.linearVelocity =
-                new Vector3(
-                    0f,
-                    rigid.linearVelocity.y,
-                    0f);
-        }
-        catch (OperationCanceledException)
-        {
-        }
-        finally
-        {
-            RestoreDashCollision(); 
-
-            OnEndDash?.Invoke();
-
-            rigid.linearVelocity =
-                new Vector3(
-                    0f,
-                    rigid.linearVelocity.y,
-                    0f);
-
-            if (state != null && state.EvadeMode)
-                state.SetIdleMode();
-
-            bIsExternalMoving = false; 
-        }
-    }
-
-    public void MoveOverTime(
-    Vector3 direction,
-    float distance,
-    float duration,
-    bool ghostMode = false)
-    {
-        if (state == null || state.EvadeMode)
+            onFinished?.Invoke(false);
             return;
-
-        if (direction.sqrMagnitude <= 1e-3f)
-            return;
-
-        if (distance <= 0f || duration <= 0f)
-            return;
-
-        direction.y = 0f;
-        direction.Normalize();
-
-        CancelDashTimer();
+        }
+        var source = CancellationTokenSource.CreateLinkedTokenSource(lifetime, this.GetCancellationTokenOnDestroy());
+        dashCts = source;
         bIsExternalMoving = true;
-        dashCts = new CancellationTokenSource();
-
-        MoveOverTimeRoutine(
-            direction,
-            distance,
-            duration,
-            dashCts.Token,
-            ghostMode
-        ).Forget();
+        MovementRoutine(direction.normalized, distance, duration, curve, evade, ghost,
+            source, onStarted, onProgress, onFinished).Forget();
     }
 
-    private async UniTaskVoid MoveOverTimeRoutine(
-    Vector3 direction,
-    float distance,
-    float duration,
-    CancellationToken token,
-    bool ghostMode = false) 
+    private async UniTaskVoid MovementRoutine(Vector3 direction, float distance, float duration,
+        AnimationCurve curve, bool evade, bool ghost, CancellationTokenSource source,
+        Action onStarted, Action<float> onProgress, Action<bool> onFinished)
     {
+        bool completed = false;
+        CancellationToken token = source.Token;
         try
         {
-            float elapsed = 0f;
-
-            Vector3 start = transform.position;
+            if (evade) state.SetEvadeMode();
+            token.ThrowIfCancellationRequested();
+            Vector3 start = rigid.position;
             Vector3 end = start + direction * distance;
-            if (ghostMode)
-            {
-                BeginDashCollisionIgnore(start, end);
-            }
-
+            if (ghost) BeginDashCollisionIgnore(start, end);
+            if (evade) OnBeginDash?.Invoke();
+            token.ThrowIfCancellationRequested();
+            onStarted?.Invoke();
+            token.ThrowIfCancellationRequested();
+            float elapsed = 0f;
+            Vector3 previousTarget = start;
             while (elapsed < duration)
             {
                 token.ThrowIfCancellationRequested();
-
                 elapsed += Time.fixedDeltaTime;
-
                 float t = Mathf.Clamp01(elapsed / duration);
-
-                Vector3 targetPosition =
-                    Vector3.Lerp(start, end, t);
-
-                Vector3 velocity =
-                    (targetPosition - transform.position)
-                    / Time.fixedDeltaTime;
-
-                rigid.linearVelocity = new Vector3(
-                    velocity.x,
-                    rigid.linearVelocity.y,
-                    velocity.z
-                );
-
-                await UniTask.WaitForFixedUpdate(
-                    cancellationToken: token);
+                float fraction = curve != null ? curve.Evaluate(t) : t;
+                Vector3 target = Vector3.Lerp(start, end, fraction);
+                // A blocked move must not accumulate catch-up velocity against a wall.
+                Vector3 velocity = (target - previousTarget) / Time.fixedDeltaTime;
+                previousTarget = target;
+                float verticalVelocity = evade ? rigid.linearVelocity.y : (start.y - rigid.position.y) / Time.fixedDeltaTime;
+                rigid.linearVelocity = new Vector3(velocity.x, verticalVelocity, velocity.z);
+                // Immediate cancellation restores physics before a new phase can start a move.
+                // Enter the next physics step first, even when started from LastFixedUpdate.
+                await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token, cancelImmediately: true);
+                await UniTask.WaitForFixedUpdate(token, cancelImmediately: true);
+                token.ThrowIfCancellationRequested();
+                if (elapsed < duration) onProgress?.Invoke(elapsed);
             }
-
-            // 이동 종료
-            rigid.linearVelocity = new Vector3(
-                0f,
-                rigid.linearVelocity.y,
-                0f);
+            completed = true;
         }
-        catch (OperationCanceledException)
-        {
-            RestoreDashCollision();
-
-            bIsExternalMoving = false;
-            targetDirection = Vector2.zero;
-        }
+        catch (OperationCanceledException) { }
         finally
         {
-            RestoreDashCollision();
-
-            rigid.linearVelocity = new Vector3(
-                0f,
-                rigid.linearVelocity.y,
-                0f
-            );
-            bIsExternalMoving = false;
-            targetDirection = Vector2.zero;
+            if (ReferenceEquals(dashCts, source))
+            {
+                dashCts = null;
+                RestoreDashCollision();
+                if (rigid != null && !rigid.isKinematic)
+                    rigid.linearVelocity = new Vector3(0f, rigid.linearVelocity.y, 0f);
+                bIsExternalMoving = false;
+                if (!evade) targetDirection = Vector2.zero;
+                if (evade && state != null && state.EvadeMode) state.SetIdleMode();
+            }
+            source.Dispose();
+            try { if (evade) OnEndDash?.Invoke(); }
+            finally { onFinished?.Invoke(completed); }
         }
     }
+
+    private void OnStateChanged(StateType previous, StateType current)
+    {
+        if (current == StateType.Dead || current == StateType.Damaged || current == StateType.Stop ||
+            (previous == StateType.Evade && current != StateType.Evade))
+            CancelDashTimer();
+    }
+
     private void BeginDashCollisionIgnore(Vector3 start, Vector3 end)
     {
         RestoreDashCollision();
@@ -469,6 +340,8 @@ public class MovementComponent : MonoBehaviour
                 if (ownerColiider == null)
                     continue;
 
+                if (Physics.GetIgnoreCollision(ownerColiider, targetCollider)) continue;
+
                 if (IsAlreadyIgnored(
                     ownerColiider,
                     targetCollider))
@@ -520,12 +393,9 @@ public class MovementComponent : MonoBehaviour
 
     private void CancelDashTimer()
     {
-        if (dashCts != null)
-        {
-            dashCts.Cancel();
-            dashCts.Dispose();
-            dashCts = null;
-        }
+        // The owning routine disposes its source after synchronous cleanup.
+        var source = dashCts;
+        if (source != null && !source.IsCancellationRequested) source.Cancel();
     }
 
     private void OnStatusEffectChanged(StatusEffectType prevType, StatusEffectType newType)

@@ -46,6 +46,7 @@ public class JumpPress
     public override void Update(float deltaTime)
     {
         base.Update(deltaTime);
+        if (!IsActive || IsEnding) return;
 
         if (phaseIndex == 0  && isSoaring)
         {
@@ -115,7 +116,7 @@ public class JumpPress
         {
             visual?.HideModel();
             isFalling = true; 
-            ExecutePhase(phaseIndex + 1);
+            ChangePhase(phaseIndex + 1);
         }
         else
         {
@@ -132,7 +133,7 @@ public class JumpPress
         }
         
         isFalling = false; 
-        ExecutePhase(phaseIndex + 1);
+        ChangePhase(phaseIndex + 1);
     }
 
 
@@ -172,16 +173,19 @@ public class JumpPress
 
     public override void End_DoAction()
     {
+        // The ascent/descent owns its phase lifecycle; an animation ending is not cancellation.
+        if (IsActive && phaseIndex < MaxPhaseCount - 1) return;
         base.End_DoAction();
-
-        isSoaring = false; 
-        isFalling = false; 
-
-        if (phaseIndex == 2)
-            agent.enabled = true; 
     }
 
-
+    protected override void OnSkillEnding()
+    {
+        isSoaring = false;
+        isFalling = false;
+        visual?.ShowModel();
+        if (agent != null && ownerObject != null && ownerObject.activeInHierarchy) agent.enabled = true;
+        base.OnSkillEnding();
+    }
     public override void Begin_JudgeAttack(AnimationEvent e)
     {
         base.Begin_JudgeAttack(e);

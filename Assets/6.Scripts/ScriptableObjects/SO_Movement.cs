@@ -18,7 +18,7 @@ public class SO_Movement : ScriptableObject
     [SerializeField] private float walkToRunRatio = 2.0f;
     public float WalkSpeed { get => walkSpeed; }
     public float RunSpeed { get => runSpeed; }
-    public float SprintSpeed { get => SprintSpeed; }
+    public float SprintSpeed { get => sprintSpeed; }
 
     public float Ratio { get => walkToRunRatio; }
 
@@ -28,6 +28,8 @@ public class SO_Movement : ScriptableObject
         movement.walkSpeed = walkSpeed;
         movement.runSpeed = runSpeed;
         movement.sprintSpeed = sprintSpeed;
+        movement.walkToRunRatio = walkToRunRatio;
+
         return movement;
     }
 }

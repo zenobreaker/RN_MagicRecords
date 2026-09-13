@@ -95,6 +95,8 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
 
         // 여러 개의 장판 중 몇 개가 끝나는지 카운팅하기 위한 변수
         int finishedCount = 0;
+        var phaseToken = skill.PhaseToken;
+        int phaseVersion = skill.PhaseVersion;
 
         for (int i = 0; i < finalSpawnCount; i++)
         {
@@ -121,6 +123,7 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
 
                 sign.OnEndSign = () =>
                 {
+                    if (phaseToken.IsCancellationRequested || !skill.IsCurrentPhase(phaseVersion)) return;
                     Vector3 impactPosition = sign.transform.position;
                     Quaternion impactRotation = sign.transform.rotation;
 

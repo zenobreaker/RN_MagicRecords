@@ -94,16 +94,21 @@ public class Enemy
 
     public override void End_DoAction()
     {
-        base.End_DoAction();
-        bInAction = false;
-        if (skill.SafeInvoke(v => v.InAction))
-            skill.EndDoAction();
-
-        state.SafeInvoke(v => v.SetIdleMode());
-
-        OnEndDoAction?.Invoke();
+        if (endingAction) return;
+        endingAction = true;
+        try
+        {
+            if (skill.SafeInvoke(v => v.InAction))
+            {
+                skill.EndDoAction();
+                if (skill.InAction) return;
+            }
+            bInAction = false;
+            if (state != null && !state.DamagedMode && !state.DeadMode && !state.StopMode) state.SetIdleMode();
+            OnEndDoAction?.Invoke();
+        }
+        finally { endingAction = false; }
     }
-
     public override void Begin_JudgeAttack(AnimationEvent e)
     {
         base.Begin_JudgeAttack(e);
@@ -203,7 +208,7 @@ public class Enemy
 
 
         if (skill !=null)
-            skill.EndDoAction();
+            skill.CancelCurrentSkill();
     }
 
     private async UniTaskVoid HandleDeath()
@@ -223,6 +228,9 @@ public class Enemy
 
     private void ChangeType(StateType prevType, StateType newType)
     {
+        if (newType == StateType.Damaged || newType == StateType.Stop || newType == StateType.Dead)
+            skill?.CancelCurrentSkill();
+
         if (newType == StateType.Dead)
         {
             OnDead?.Invoke(this);

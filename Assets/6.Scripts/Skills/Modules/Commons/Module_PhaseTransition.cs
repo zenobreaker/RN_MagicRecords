@@ -25,15 +25,16 @@ public class Module_PhaseTransition : SkillModule
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (skill == null) return;
+        if (skill == null || !skill.IsActive || skill.IsEnding || !skill.IsPhaseRunning) return;
 
-        CancellationToken token = owner.GetCancellationTokenOnDestroy();
-        ExecuteTransitionAsync(owner, skill, token).Forget();
+        CancellationToken token = skill.PhaseToken;
+        ExecuteTransitionAsync(owner, skill, skill.PhaseVersion, token).Forget();
     }
 
     private async UniTaskVoid ExecuteTransitionAsync(
         Character owner, 
         ActiveSkill skill,
+        int phaseVersion,
         CancellationToken token)
     {
         // 딜레이가 있다면 대기
@@ -45,7 +46,7 @@ public class Module_PhaseTransition : SkillModule
             if (isCancelled) return; // 애니메이션이 끝나거나 캔슬당했으면 발동 안 함!
         }
 
-        if (token.IsCancellationRequested) return;
+        if (token.IsCancellationRequested || !skill.IsCurrentPhase(phaseVersion)) return;
 
         // ActiveSkill에게 페이즈 전환을 명령합니다!
         switch (transitionType)
@@ -57,7 +58,7 @@ public class Module_PhaseTransition : SkillModule
                 skill.JumpToPhase(targetPhaseIndex);
                 break;
             case PhaseTransitionType.EndSkill:
-                owner?.SafeInvoke(v => v.End_DoAction());
+                skill.EndSkill();
                 //skill.End_DoAction(); // 스킬 종료 함수 호출
                 break;
         }
