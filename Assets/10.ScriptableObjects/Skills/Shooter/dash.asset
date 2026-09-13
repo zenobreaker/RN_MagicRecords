@@ -16,11 +16,25 @@ MonoBehaviour:
   skillName: name_dash
   skillDescription: 
   learnableLevel: 0
-  maxLevel: 0
+  maxLevel: 1
   skillUpgradeCost: 
   skillImage: {fileID: 21300000, guid: 24159eb5a316fcc48bc820607bbe5a23, type: 3}
   leadingSkillList: 
-  levelDatas: []
+  levelDatas:
+  - range: 0
+    limitMinCooldown: 0
+    cooldown: 0.2
+    castingTime: -1
+    chargeTime: 0
+    damageData:
+      damageType: 0
+      baseDamage: 0
+      statCoefficient: 0
+      hitData:
+        DamageType: 0
+    bonusOptionList: []
+    spawnCount: 1
+    angle: 0
   range: -1
   isConcurrentSkill: 0
   actionData:
@@ -35,10 +49,13 @@ MonoBehaviour:
     csp: {fileID: 0}
     bCanMove: 0
   phaseList:
-  - phaseName: 
+  - phaseName: Dash
     isInstant: 0
     modules:
     - rid: 1371895267614785654
+    - rid: 1371895267614785655
+    - rid: 1371895267614785656
+    - rid: 1371895267614785657
     skillObject: {fileID: 0}
     objectName: 
     soundName: 
@@ -52,16 +69,19 @@ MonoBehaviour:
       data:
         triggerTime: 0
         distance: 5
-        duration: 0.3
+        duration: 0.2
         useTargetPosition: 0
+        directionType: 1
+        backwardWhenNoInput: 1
+        advancePhaseOnFinish: 1
         speedCurve:
           serializedVersion: 2
           m_Curve:
           - serializedVersion: 3
             time: 0
             value: 0
-            inSlope: 0
-            outSlope: 0
+            inSlope: 1
+            outSlope: 1
             tangentMode: 0
             weightedMode: 0
             inWeight: 0
@@ -69,8 +89,8 @@ MonoBehaviour:
           - serializedVersion: 3
             time: 1
             value: 1
-            inSlope: 0
-            outSlope: 0
+            inSlope: 1
+            outSlope: 1
             tangentMode: 0
             weightedMode: 0
             inWeight: 0
@@ -78,3 +98,23 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
+    - rid: 1371895267614785655
+      type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 9
+        useMovementAnimation: 1
+    - rid: 1371895267614785656
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 9
+        soundName: Whoosh
+    - rid: 1371895267614785657
+      type: {class: Module_StartWeaponVFX, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 9
+        effectPrefab: {fileID: 1531956021792348658, guid: fe9facd006cb6164bbfdc14a8e7b25f3, type: 3}
+        spawnAtOwner: 1
+        useAllEffectSpawnPoints: 1
+        specificEffectSpawnIndices: []
+        effectId: DashTrail
+        followEffectSpawnPoint: 1

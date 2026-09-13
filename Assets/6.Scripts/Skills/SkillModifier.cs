@@ -207,6 +207,41 @@ public sealed class SkillChainContext
 
 public sealed class SkillRuntimeContext
 {
+    private readonly Dictionary<string, int> phaseLoopCounts = new();
+    internal Module_PhaseLoop ActivePhaseLoop;
+    internal int PhaseLoopSourceIndex;
+    internal int PhaseLoopTargetIndex;
+    internal int PhaseLoopLastVersion = -1;
+
+    public int GetPhaseLoopCount(string key) =>
+        !string.IsNullOrEmpty(key) && phaseLoopCounts.TryGetValue(key, out int count) ? count : 0;
+
+    public int IncrementPhaseLoopCount(string key)
+    {
+        if (string.IsNullOrEmpty(key)) return 0;
+        int count = GetPhaseLoopCount(key) + 1;
+        phaseLoopCounts[key] = count;
+        return count;
+    }
+
+    public void ResetPhaseLoopCount(string key)
+    {
+        if (!string.IsNullOrEmpty(key)) phaseLoopCounts.Remove(key);
+    }
+
+    public void ResetPhaseLoopCounts()
+    {
+        phaseLoopCounts.Clear();
+        ActivePhaseLoop = null;
+        PhaseLoopLastVersion = -1;
+    }
+
+    // Per-cast movement values; passives can modify these before phase entry.
+    public float DashDistanceMultiplier = 1f;
+    public float DashDurationMultiplier = 1f;
+    public Vector3 MovementDirection;
+    public bool IsBackwardMovement;
+
     public BaseValues Base = new();
     public CastContext Cast = new();
     public SpawnContext Spawn = new();

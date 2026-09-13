@@ -181,11 +181,6 @@ MonoBehaviour:
     - rid: 8682830537020145741
     - rid: 8682830537020145742
     - rid: 25348276825882838
-    skillObject: {fileID: 0}
-    objectName: SprialBullet
-    soundName: Gun_Normal2
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
   references:
     version: 2
     RefIds:
@@ -193,11 +188,19 @@ MonoBehaviour:
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 5
-        soundName: Gun_Normal2
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        soundName: Magic_Spell_01
     - rid: 8682830537020145741
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         actionData:
           subStateName: Skill01
           stateName: Skill
@@ -209,10 +212,18 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           bCanMove: 0
+        restartFromBeginning: 0
+        useMovementAnimation: 0
+        syncFireInterval: 0
+        fireInterval: 0.1
     - rid: 8682830537020145742
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         damageApplyType: 0
         damageMultiplier: 1
         damageData:

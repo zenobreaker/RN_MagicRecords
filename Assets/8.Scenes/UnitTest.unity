@@ -5654,6 +5654,7 @@ GameObject:
   - component: {fileID: 7909426983919096592}
   - component: {fileID: 626277244181622539}
   - component: {fileID: 8962975015275012106}
+  - component: {fileID: 8962975015275012107}
   m_Layer: 3
   m_Name: Namsaengyi_Test
   m_TagString: Player
@@ -8788,6 +8789,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cafd96edbe1b257448f7fca491e72677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  subActionSkill: {fileID: 11400000, guid: 3d194fef15a1a4a4587105d03cd80665, type: 2}
 --- !u!1 &5627385614616570148
 GameObject:
   m_ObjectHideFlags: 0
@@ -11571,6 +11573,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb4ed7ed95f83cc45b39d1c0a5adfebd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8962975015275012107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 877220993117259683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd7a7d64252042da9486a84b4f686d00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillVFXComponent
 --- !u!114 &8973307234841707273
 MonoBehaviour:
   m_ObjectHideFlags: 0

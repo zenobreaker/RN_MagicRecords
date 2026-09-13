@@ -179,11 +179,6 @@ MonoBehaviour:
     isInstant: 0
     modules:
     - rid: 8682830572024496210
-    skillObject: {fileID: 0}
-    objectName: Consecutive
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
   references:
     version: 2
     RefIds:
@@ -191,7 +186,7 @@ MonoBehaviour:
       type: {class: Module_RapidFire, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
-        objectName: Bullet
+        objectName: SharpOrangeBullet
         spawnPosition: {x: 0, y: 1, z: 1}
         totalShots: 5
         fireInterval: 0.25
@@ -213,7 +208,7 @@ MonoBehaviour:
         damageData:
           damageType: 0
           baseDamage: 10
-          statCoefficient: 0
+          statCoefficient: 1
           bDownable: 0
           bLauncher: 0
           SoundName: 
@@ -223,7 +218,7 @@ MonoBehaviour:
             DamageType: 0
             Distance: 0
             HeightValue: 0
-            StopFrame: 0
+            StopFrame: 1
             HitImpactIndex: 0
             HitSoundName: 
             HitParticle: {fileID: 0}

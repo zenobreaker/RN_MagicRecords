@@ -179,40 +179,28 @@ MonoBehaviour:
     isInstant: 0
     modules:
     - rid: 8682830698810441813
+    - rid: 9167119120672227468
     - rid: 8682830680103845989
     - rid: 8682830680103845977
     - rid: 25348276825882832
     - rid: 7840629750711451775
-    skillObject: {fileID: 5904922040541714445, guid: 4d08b90daa2f6e646b2a16a1baee277c, type: 3}
-    objectName: HyperCannon
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
+    - rid: 9167119120672227464
   - phaseName: "\uC0AC\uACA9"
     isInstant: 0
     modules:
     - rid: 7840629750711451761
     - rid: 8682830616796856405
     - rid: 8682830698810441814
-    - rid: 8682830616796856406
+    - rid: 9167119120672227469
     - rid: 8682830616796856407
+    - rid: 8682830616796856406
     - rid: 25348276825882833
     - rid: 7840629750711451766
-    skillObject: {fileID: 5904922040541714445, guid: 4d08b90daa2f6e646b2a16a1baee277c, type: 3}
-    objectName: HyperCannon
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
   - phaseName: "\uCDA9\uC804\uD574\uC81C"
     isInstant: 0
     modules:
     - rid: 8682830680103845981
     - rid: 8682830698810441881
-    skillObject: {fileID: 5904922040541714445, guid: 4d08b90daa2f6e646b2a16a1baee277c, type: 3}
-    objectName: HyperCannon
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
   references:
     version: 2
     RefIds:
@@ -373,3 +361,24 @@ MonoBehaviour:
         transitionType: 2
         targetPhaseIndex: 0
         delayTime: 0
+    - rid: 9167119120672227464
+      type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        effectPrefab: {fileID: 0}
+        useAllEffectSpawnPoints: 1
+        specificEffectSpawnIndices: 
+    - rid: 9167119120672227468
+      type: {class: Module_StartWeaponVFX, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        effectPrefab: {fileID: 5732568103209889489, guid: e23741b3f14f27e46a31d8d542a2033e, type: 3}
+        useAllEffectSpawnPoints: 1
+        specificEffectSpawnIndices: 
+        effectId: hyperbeam_charge
+        followEffectSpawnPoint: 1
+    - rid: 9167119120672227469
+      type: {class: Module_StopWeaponVFX, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        effectId: hyperbeam_charge

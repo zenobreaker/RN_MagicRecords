@@ -47,6 +47,22 @@ MonoBehaviour:
   playerObjectSo: {fileID: 11400000, guid: a761f4fddefcc1e4d86c46c115789591, type: 2}
   npcObjectSo: {fileID: 11400000, guid: 066a14d0300340d4991f619d490319cf, type: 2}
   pools:
+  - tag: SharpOrangeBullet
+    prefab: {fileID: 6988419373127682827, guid: b573c10b4a8504d4caf7ef14d905e0d7, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: ThickOrangeBullet
+    prefab: {fileID: 1481338670680297681, guid: d7ce825ff1bad3b4ca9b93432faa3d88, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: PurpleBullet
+    prefab: {fileID: 6401559045447197086, guid: 955f831f013b6314095e2fd0e483110f, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: RedBullet
+    prefab: {fileID: 5719180261453518754, guid: 2ac1411b4115ef643ae37e23e75c2e34, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
   - tag: Bullet
     prefab: {fileID: 2279059859523066276, guid: bddf0be12093797459da7022461c87e5, type: 3}
     size: 5
@@ -54,14 +70,6 @@ MonoBehaviour:
   - tag: PierceBullet
     prefab: {fileID: 2279059859523066276, guid: ecdf96f365540c04f915b063d226a33f, type: 3}
     size: 10
-    parentTransform: {fileID: 0}
-  - tag: MagicBullet
-    prefab: {fileID: 2006234525802268607, guid: dde41a89eab7c2b4da740fab69c4796e, type: 3}
-    size: 5
-    parentTransform: {fileID: 0}
-  - tag: ReinForcedMagicBullet
-    prefab: {fileID: 2006234525802268607, guid: 7f2142c16bdeec74dad86fb5f1d6e421, type: 3}
-    size: 5
     parentTransform: {fileID: 0}
   - tag: Explosion_01
     prefab: {fileID: 8072707120742324082, guid: 1f656291919e89f45a04804f51180112, type: 3}
@@ -165,5 +173,33 @@ MonoBehaviour:
     parentTransform: {fileID: 0}
   - tag: HitEffect_02
     prefab: {fileID: 9195378185894143248, guid: afa8ef8c069267a4c9ad04dbaa91a1f2, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: ChargeHitEffect_01
+    prefab: {fileID: 4550076289710732121, guid: 6863ce4e345ba8947ad4e877ee1d1fc4, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: OrangeHit_01
+    prefab: {fileID: 8428584151837272525, guid: 2edf43811be76a24ebc0d30ed4e2c64a, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: OrangeHit_02
+    prefab: {fileID: 8428584151837272525, guid: b72e7c982f4c9c345a174b6910ea5841, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: EnergyExplosionHit
+    prefab: {fileID: 4550076289710732121, guid: 6863ce4e345ba8947ad4e877ee1d1fc4, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: PurpleHit_01
+    prefab: {fileID: 2585137204373214539, guid: 82eb2380e8f93e64b9f170537430be84, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: RedHit_01
+    prefab: {fileID: 2585137204373214539, guid: aea6938645addf84fa322db3b7a5cb58, type: 3}
+    size: 5
+    parentTransform: {fileID: 0}
+  - tag: IceHit_01
+    prefab: {fileID: 4186470608034871016, guid: 4b780a14d074f2f4cb9b853b6644dce1, type: 3}
     size: 5
     parentTransform: {fileID: 0}

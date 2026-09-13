@@ -190,6 +190,10 @@ MonoBehaviour:
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -218,12 +222,16 @@ MonoBehaviour:
         baseSpawnCount: 1
         baseAngleBetween: 0
         spawnObj: {fileID: 0}
-        objectName: ReinForcedMagicBullet
+        objectName: PurpleBullet
         baseLifeTime: -1
     - rid: 7840629605693390967
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         actionData:
           subStateName: Skill01
           stateName: Skill
@@ -235,21 +243,38 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           bCanMove: 0
+        restartFromBeginning: 0
+        useMovementAnimation: 0
+        syncFireInterval: 0
+        fireInterval: 0.1
     - rid: 7840629605693390968
       type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 5
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         impulseDirection: {x: 0, y: 0, z: 0}
         settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
     - rid: 7840629605693390969
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 5
-        soundName: Gun_Normal2
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        soundName: Gun_03
     - rid: 9167119102629380211
       type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
-        muzzleFlashPrefab: {fileID: 2019486499795581864, guid: 2248359051ce1f943bc5c0e82352b590, type: 3}
-        useAllMuzzles: 1
-        specificMuzzleIndices: 
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        effectPrefab: {fileID: 2019486499795581864, guid: 2248359051ce1f943bc5c0e82352b590, type: 3}
+        spawnAtOwner: 0
+        useAllEffectSpawnPoints: 1
+        specificEffectSpawnIndices: 

@@ -115,6 +115,10 @@ MonoBehaviour:
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         actionData:
           subStateName: Combo_1
           stateName: Action
@@ -126,10 +130,18 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           bCanMove: 0
+        restartFromBeginning: 0
+        useMovementAnimation: 0
+        syncFireInterval: 0
+        fireInterval: 0.1
     - rid: 1371894983370473473
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         damageApplyType: 2
         damageMultiplier: 1
         damageData:
@@ -158,22 +170,34 @@ MonoBehaviour:
         baseSpawnCount: 1
         baseAngleBetween: 0
         spawnObj: {fileID: 0}
-        objectName: Bullet
+        objectName: ThickOrangeBullet
         baseLifeTime: -1
     - rid: 1371894983370473474
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 5
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         soundName: Gun_Normal1
     - rid: 1371894983370473572
       type: {class: Module_CalcSpawnPosition, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         type: 1
     - rid: 1371895004803629155
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         actionData:
           subStateName: Combo_2
           stateName: Action
@@ -185,10 +209,18 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           bCanMove: 0
+        restartFromBeginning: 0
+        useMovementAnimation: 0
+        syncFireInterval: 0
+        fireInterval: 0.1
     - rid: 1371895004803629156
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         damageApplyType: 2
         damageMultiplier: 1
         damageData:
@@ -217,17 +249,25 @@ MonoBehaviour:
         baseSpawnCount: 1
         baseAngleBetween: 0
         spawnObj: {fileID: 0}
-        objectName: Bullet
+        objectName: ThickOrangeBullet
         baseLifeTime: -1
     - rid: 1371895004803629157
       type: {class: Module_CalcSpawnPosition, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         type: 1
     - rid: 1371895004803629158
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         actionData:
           subStateName: Combo_3
           stateName: Action
@@ -239,10 +279,18 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           bCanMove: 0
+        restartFromBeginning: 0
+        useMovementAnimation: 0
+        syncFireInterval: 0
+        fireInterval: 0.1
     - rid: 1371895004803629159
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         damageApplyType: 2
         damageMultiplier: 1
         damageData:
@@ -271,32 +319,52 @@ MonoBehaviour:
         baseSpawnCount: 1
         baseAngleBetween: 0
         spawnObj: {fileID: 0}
-        objectName: Bullet
+        objectName: ThickOrangeBullet
         baseLifeTime: -1
     - rid: 1371895004803629160
       type: {class: Module_CalcSpawnPosition, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         type: 1
     - rid: 1371895004803629161
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 5
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         soundName: Gun_Normal1
     - rid: 1371895004803629164
       type: {class: Module_CalcSpawnPosition, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         type: 1
     - rid: 1371895004803629165
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 5
-        soundName: Gun_Normal2
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        soundName: Gun_03
     - rid: 1371895004803629166
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         actionData:
           subStateName: Combo_4
           stateName: Action
@@ -308,10 +376,18 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           bCanMove: 0
+        restartFromBeginning: 0
+        useMovementAnimation: 0
+        syncFireInterval: 0
+        fireInterval: 0.1
     - rid: 1371895004803629167
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         damageApplyType: 2
         damageMultiplier: 1
         damageData:
@@ -340,12 +416,16 @@ MonoBehaviour:
         baseSpawnCount: 1
         baseAngleBetween: 0
         spawnObj: {fileID: 0}
-        objectName: Bullet
+        objectName: RedBullet
         baseLifeTime: -1
     - rid: 1371895004803629236
       type: {class: Module_SelectSpawnPoint, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         selectType: 1
         spawnPointIndex: 0
         indices: 
@@ -353,6 +433,10 @@ MonoBehaviour:
       type: {class: Module_SelectSpawnPoint, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         selectType: 0
         spawnPointIndex: 0
         indices: 
@@ -360,6 +444,10 @@ MonoBehaviour:
       type: {class: Module_SelectSpawnPoint, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         selectType: 1
         spawnPointIndex: 0
         indices: 
@@ -367,6 +455,10 @@ MonoBehaviour:
       type: {class: Module_SelectSpawnPoint, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         selectType: 1
         spawnPointIndex: 0
         indices: 
@@ -374,86 +466,146 @@ MonoBehaviour:
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 0
         speedMultiplier: 0
     - rid: 1371895025776984065
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 4
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 1
         speedMultiplier: 0
     - rid: 1371895025776984066
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 0
         speedMultiplier: 0
     - rid: 1371895025776984067
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 4
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 1
         speedMultiplier: 0.5
     - rid: 1371895025776984068
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 0
         speedMultiplier: 0.5
     - rid: 1371895025776984069
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 4
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 1
         speedMultiplier: 0.5
     - rid: 1371895025776984070
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 0
         speedMultiplier: 0.5
     - rid: 1371895025776984071
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 4
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 1
         speedMultiplier: 0.5
     - rid: 1371895131259535483
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 5
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         soundName: Gun_Normal1
     - rid: 9167119102629380179
       type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 6
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         impulseDirection: {x: 0, y: 0, z: 0}
         settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
     - rid: 9167119102629380204
       type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
-        muzzleFlashPrefab: {fileID: 183874007921423211, guid: 1574dcd3866ae6048a2ad399d17aca84, type: 3}
-        useAllMuzzles: 1
-        specificMuzzleIndices: 
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        effectPrefab: {fileID: 183874007921423211, guid: 1574dcd3866ae6048a2ad399d17aca84, type: 3}
+        spawnAtOwner: 0
+        useAllEffectSpawnPoints: 1
+        specificEffectSpawnIndices: 
     - rid: 9167119102629380205
       type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
-        muzzleFlashPrefab: {fileID: 183874007921423211, guid: 1574dcd3866ae6048a2ad399d17aca84, type: 3}
-        useAllMuzzles: 1
-        specificMuzzleIndices: 
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        effectPrefab: {fileID: 183874007921423211, guid: 1574dcd3866ae6048a2ad399d17aca84, type: 3}
+        spawnAtOwner: 0
+        useAllEffectSpawnPoints: 1
+        specificEffectSpawnIndices: 
     - rid: 9167119102629380206
       type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
-        muzzleFlashPrefab: {fileID: 183874007921423211, guid: 1574dcd3866ae6048a2ad399d17aca84, type: 3}
-        useAllMuzzles: 1
-        specificMuzzleIndices: 
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        effectPrefab: {fileID: 183874007921423211, guid: 1574dcd3866ae6048a2ad399d17aca84, type: 3}
+        spawnAtOwner: 0
+        useAllEffectSpawnPoints: 1
+        specificEffectSpawnIndices: 
     - rid: 9167119102629380207
       type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
-        muzzleFlashPrefab: {fileID: 183874007921423211, guid: 1574dcd3866ae6048a2ad399d17aca84, type: 3}
-        useAllMuzzles: 1
-        specificMuzzleIndices: 
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        effectPrefab: {fileID: 2019486499795581864, guid: 16990fe99bfbc1b4ca56773271ad3ce7, type: 3}
+        spawnAtOwner: 0
+        useAllEffectSpawnPoints: 1
+        specificEffectSpawnIndices: 

@@ -524,6 +524,7 @@ GameObject:
   - component: {fileID: 4347954965331480737}
   - component: {fileID: 4016163101208496260}
   - component: {fileID: 1911086930814470473}
+  - component: {fileID: 45869999281673809}
   m_Layer: 3
   m_Name: Namsaengyi
   m_TagString: Player
@@ -638,6 +639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cafd96edbe1b257448f7fca491e72677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  subActionSkill: {fileID: 11400000, guid: 3d194fef15a1a4a4587105d03cd80665, type: 2}
 --- !u!114 &5503946844936160860
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -705,7 +707,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
-  skillEventHandler: {fileID: 11400000, guid: 03331a23dc591c047a374450029fd111, type: 2}
 --- !u!114 &3816881467583088079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -837,6 +838,18 @@ MonoBehaviour:
     m_Bits: 264
   dashSpeed: 25
   dashDistance: 5
+--- !u!114 &45869999281673809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2169032415967224289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd7a7d64252042da9486a84b4f686d00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillVFXComponent
 --- !u!1 &2324507759493812046
 GameObject:
   m_ObjectHideFlags: 0

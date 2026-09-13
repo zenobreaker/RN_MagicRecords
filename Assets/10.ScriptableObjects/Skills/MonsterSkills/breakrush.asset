@@ -52,7 +52,6 @@ MonoBehaviour:
     - rid: 1371895388252405764
     - rid: 1371895399042515112
     - rid: 1371895388252405761
-    - rid: 9167118901003419779
   references:
     version: 2
     RefIds:
@@ -185,6 +184,7 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
+        advancePhaseOnFinish: 1
         bIsMoveOverTime: 1
         bIsGhostMode: 1
     - rid: 1371895399042515057
@@ -214,10 +214,3 @@ MonoBehaviour:
         useBlackboardPos: 1
         lookAtOwnerTarget: 0
         turnSpeed: 0
-    - rid: 9167118901003419779
-      type: {class: Module_PhaseTransition, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 7
-        transitionType: 2
-        targetPhaseIndex: 0
-        delayTime: 0
