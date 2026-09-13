@@ -71,13 +71,9 @@ MonoBehaviour:
     - rid: 1371895004803629236
     - rid: 1371894983370473472
     - rid: 1371895025776984065
+    - rid: 9167119102629380204
     - rid: 1371894983370473473
     - rid: 1371894983370473474
-    skillObject: {fileID: 0}
-    objectName: 
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
   - phaseName: Default 2
     isInstant: 0
     modules:
@@ -86,13 +82,9 @@ MonoBehaviour:
     - rid: 1371895004803629238
     - rid: 1371895004803629155
     - rid: 1371895025776984067
+    - rid: 9167119102629380205
     - rid: 1371895004803629156
     - rid: 1371895131259535483
-    skillObject: {fileID: 0}
-    objectName: 
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
   - phaseName: Default 3
     isInstant: 0
     modules:
@@ -101,13 +93,9 @@ MonoBehaviour:
     - rid: 1371895004803629240
     - rid: 1371895004803629158
     - rid: 1371895025776984069
+    - rid: 9167119102629380206
     - rid: 1371895004803629159
     - rid: 1371895004803629161
-    skillObject: {fileID: 0}
-    objectName: 
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
   - phaseName: Default 4
     isInstant: 0
     modules:
@@ -115,14 +103,11 @@ MonoBehaviour:
     - rid: 1371895025776984070
     - rid: 1371895004803629239
     - rid: 1371895004803629166
+    - rid: 9167119102629380207
     - rid: 1371895004803629167
     - rid: 1371895004803629165
     - rid: 1371895025776984071
-    skillObject: {fileID: 0}
-    objectName: 
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
+    - rid: 9167119102629380179
   references:
     version: 2
     RefIds:
@@ -438,3 +423,37 @@ MonoBehaviour:
       data:
         triggerTime: 5
         soundName: Gun_Normal1
+    - rid: 9167119102629380179
+      type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 6
+        impulseDirection: {x: 0, y: 0, z: 0}
+        settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
+    - rid: 9167119102629380204
+      type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        muzzleFlashPrefab: {fileID: 183874007921423211, guid: 1574dcd3866ae6048a2ad399d17aca84, type: 3}
+        useAllMuzzles: 1
+        specificMuzzleIndices: 
+    - rid: 9167119102629380205
+      type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        muzzleFlashPrefab: {fileID: 183874007921423211, guid: 1574dcd3866ae6048a2ad399d17aca84, type: 3}
+        useAllMuzzles: 1
+        specificMuzzleIndices: 
+    - rid: 9167119102629380206
+      type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        muzzleFlashPrefab: {fileID: 183874007921423211, guid: 1574dcd3866ae6048a2ad399d17aca84, type: 3}
+        useAllMuzzles: 1
+        specificMuzzleIndices: 
+    - rid: 9167119102629380207
+      type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        muzzleFlashPrefab: {fileID: 183874007921423211, guid: 1574dcd3866ae6048a2ad399d17aca84, type: 3}
+        useAllMuzzles: 1
+        specificMuzzleIndices: 

@@ -181,6 +181,7 @@ MonoBehaviour:
     - rid: 7840629605693390968
     - rid: 7840629605693390969
     - rid: 7840629605693390967
+    - rid: 9167119102629380211
     - rid: 7840629605693390966
   references:
     version: 2
@@ -245,3 +246,10 @@ MonoBehaviour:
       data:
         triggerTime: 5
         soundName: Gun_Normal2
+    - rid: 9167119102629380211
+      type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        muzzleFlashPrefab: {fileID: 2019486499795581864, guid: 2248359051ce1f943bc5c0e82352b590, type: 3}
+        useAllMuzzles: 1
+        specificMuzzleIndices: 
