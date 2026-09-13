@@ -80,17 +80,7 @@ public sealed class SkillComponent : ActionComponent
 
             bool isCooldown = skill.IsOnCooldown;
 
-            // SkillManager를 통해 외부에 상태 전달
-            SkillManager.Instance.SafeInvoke(v =>
-              v.NotifySkillCooldownState(
-                    currentSlot,
-                    isCooldown));
-
-            // 기존 SkillComponent 이벤트
-            OnActiveSkillCooldownChanged?
-                .Invoke(
-                    currentSlot,
-                    isCooldown);
+            NotifyCooldownState(currentSlot, skill, isCooldown);
 
             if (!isCooldown)
                 continue;
@@ -98,20 +88,48 @@ public sealed class SkillComponent : ActionComponent
             // 쿨타임 업데이트
             skill.Update_Cooldown(Time.deltaTime);
 
-            // SkillManager를 통해 외부에 상태 전달
-            SkillManager.Instance.SafeInvoke(v=>
-                v.NotifySkillCooldown(
-                    currentSlot,
-                    skill.CurrentCooldown,
-                    skill.MaxCooldown));
-
-            // 기존 SkillComponent 이벤트
-            OnActiveSkillCooldownUpdated?
-                .Invoke(
-                    currentSlot,
-                    skill.CurrentCooldown,
-                    skill.MaxCooldown);
+            NotifyCooldownProgress(currentSlot, skill);
         }
+    }
+
+    private void NotifyCooldownState(
+        SkillSlot slot,
+        ActiveSkill skill,
+        bool? isCooldown = null,
+        bool notifyProgressImmediately = false)
+    {
+        if (skill == null)
+            return;
+
+        bool value = isCooldown ?? skill.IsOnCooldown;
+
+        SkillManager.Instance.SafeInvoke(v =>
+            v.NotifySkillCooldownState(slot, value));
+
+        OnActiveSkillCooldownChanged?.Invoke(slot, value);
+
+        if (value && notifyProgressImmediately)
+            NotifyCooldownProgress(slot, skill);
+    }
+
+    private void NotifyCooldownState(string slotName, ActiveSkill skill)
+    {
+        if (Enum.TryParse(slotName, out SkillSlot slot))
+            NotifyCooldownState(slot, skill, notifyProgressImmediately: true);
+    }
+
+    private void NotifyCooldownProgress(SkillSlot slot, ActiveSkill skill)
+    {
+        if (skill == null)
+            return;
+
+        SkillManager.Instance.SafeInvoke(v =>
+            v.NotifySkillCooldown(slot, skill.CurrentCooldown, skill.MaxCooldown));
+
+        OnActiveSkillCooldownUpdated?.Invoke(
+            slot,
+            skill.CurrentCooldown,
+            skill.MaxCooldown);
     }
 
 
@@ -426,6 +444,7 @@ public sealed class SkillComponent : ActionComponent
                 return;
 
             skill.Cast();
+            NotifyCooldownState(slotName, skill);
 
             ExecuteConcurrentSkillAsync(
                 skill).Forget();
@@ -449,6 +468,7 @@ public sealed class SkillComponent : ActionComponent
         base.DoAction();
 
         skill.Cast();
+        NotifyCooldownState(slotName, skill);
 
 
         if (!skill.HasActionData(

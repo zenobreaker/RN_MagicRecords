@@ -1,6 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class SkillSlotUI : MonoBehaviour
 {
@@ -13,27 +14,124 @@ public class SkillSlotUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txt_Cooldown;
     [SerializeField] private Sprite emptySlot;
 
+    [Header("PC key hint")]
+    [SerializeField] private TextMeshProUGUI txt_Key;
+    [SerializeField] private InputActionAsset inputActions;
+
+    public void RefreshKeyLabel()
+    {
+        if (txt_Key == null) return;
+        int index = GetSlotIndex();
+        txt_Key.text = string.Empty;
+        if (index < 0 || inputActions == null) return;
+        var action = inputActions.FindAction($"Player/SkillAction{index + 1}", false);
+        if (action == null) return;
+        foreach (var player in PlayerInput.all)
+        {
+            var liveAction = player.actions?.FindAction(action.id);
+            if (liveAction != null) { action = liveAction; break; }
+        }
+        for (int i = 0; i < action.bindings.Count; i++)
+        {
+            var binding = action.bindings[i];
+            if (!binding.isComposite && !string.IsNullOrEmpty(binding.effectivePath) &&
+                binding.effectivePath.StartsWith("<Keyboard>/", System.StringComparison.OrdinalIgnoreCase))
+            {
+                txt_Key.text = action.GetBindingDisplayString(i).ToUpperInvariant();
+                return;
+            }
+        }
+    }
+
+    private void OnInputActionChange(object source, InputActionChange change)
+    {
+        if (change == InputActionChange.BoundControlsChanged) RefreshKeyLabel();
+    }
+
+    private void OnValidate() => RefreshKeyLabel();
+
     [Header("Character")]
     [SerializeField] private int characterId = 1;
 
     private float currCooldown;
+    private SkillManager skillManager;
+    private SO_SkillEventHandler skillEventHandler;
+    private System.IDisposable managerWaitRegistration;
 
     private void OnEnable()
     {
-        if (SkillManager.Instance == null)
-            return;
+        InputSystem.onActionChange += OnInputActionChange;
+        RefreshKeyLabel();
+        BindSkillManager(SkillManager.Instance);
 
-        SkillManager.Instance.OnDataChanged += RefreshSkillUI;
+        if (skillManager == null)
+        {
+            managerWaitRegistration = ManagerWaiter.WaitForManagerDisposable<SkillManager>(
+                OnSkillManagerReady);
+        }
 
         RefreshSkillUI();
     }
 
     private void OnDisable()
     {
-        if (SkillManager.Instance == null)
+        InputSystem.onActionChange -= OnInputActionChange;
+        managerWaitRegistration?.Dispose();
+        managerWaitRegistration = null;
+        UnbindSkillManager();
+    }
+
+    private void OnSkillManagerReady(SkillManager manager)
+    {
+        if (!isActiveAndEnabled)
             return;
 
-        SkillManager.Instance.OnDataChanged -= RefreshSkillUI;
+        BindSkillManager(manager);
+        RefreshSkillUI();
+    }
+
+    private void BindSkillManager(SkillManager manager)
+    {
+        if (skillManager == manager)
+            return;
+
+        UnbindSkillManager();
+        skillManager = manager;
+
+        if (skillManager == null)
+        {
+            ClearSkill();
+            return;
+        }
+
+        skillManager.OnDataChanged += RefreshSkillUI;
+        skillEventHandler = skillManager.SkillEventHandler;
+
+        if (skillEventHandler == null)
+        {
+            Debug.LogWarning("[SkillSlotUI] SkillManager에 SO_SkillEventHandler가 연결되지 않았습니다.", this);
+            return;
+        }
+
+        skillEventHandler.OnSetActiveSkill += OnDrawSkill;
+        skillEventHandler.OnInSkillCooldown += OnIsCooldown;
+        skillEventHandler.OnSkillCooldown += OnSkillCoolDown;
+    }
+
+    private void UnbindSkillManager()
+    {
+        if (skillManager != null)
+            skillManager.OnDataChanged -= RefreshSkillUI;
+
+        if (skillEventHandler != null)
+        {
+            skillEventHandler.OnSetActiveSkill -= OnDrawSkill;
+            skillEventHandler.OnInSkillCooldown -= OnIsCooldown;
+            skillEventHandler.OnSkillCooldown -= OnSkillCoolDown;
+        }
+
+        skillManager = null;
+        skillEventHandler = null;
     }
 
     /// <summary>
@@ -50,8 +148,14 @@ public class SkillSlotUI : MonoBehaviour
             return;
         }
 
+        if (skillManager == null)
+        {
+            ClearSkill();
+            return;
+        }
+
         SkillRuntimeData skillData =
-            SkillManager.Instance.GetActiveSkillData(
+            skillManager.GetActiveSkillData(
                 characterId,
                 slotIndex);
 
@@ -61,15 +165,20 @@ public class SkillSlotUI : MonoBehaviour
             return;
         }
 
-        Skill skill = skillTemplate.CreateSkill();
+        // 장착 목록 변경 시에는 SO의 아이콘만 갱신합니다.
+        // 실제 쿨다운과 런타임 인스턴스는 SO_SkillEventHandler 이벤트로 갱신됩니다.
+        SetSkillIcon(skillTemplate.skillImage);
 
-        if (skill is not ActiveSkill activeSkill)
+        // UI가 핸들러 구독보다 늦게 열려도 현재 전투 중인 런타임 스킬 상태를 복원합니다.
+        int enumIndex = (int)mySlot;
+        if (skillEventHandler != null &&
+            enumIndex >= 0 &&
+            enumIndex < skillEventHandler.CurrentActiveSkills.Length)
         {
-            ClearSkill();
-            return;
+            ActiveSkill activeSkill = skillEventHandler.CurrentActiveSkills[enumIndex];
+            if (activeSkill != null)
+                OnDrawSkill(mySlot, activeSkill);
         }
-
-        OnDrawSkill(mySlot, activeSkill);
     }
 
     /// <summary>
@@ -103,20 +212,23 @@ public class SkillSlotUI : MonoBehaviour
             return;
         }
 
-        SetVisible(true);
-
-        if (img_Skill != null)
-            img_Skill.sprite = activeSkill.Icon;
+        SetSkillIcon(activeSkill.Icon);
 
         OnIsCooldown(
             mySlot,
             activeSkill.IsOnCooldown);
     }
 
+    private void SetSkillIcon(Sprite sprite)
+    {
+        if (img_Skill == null) return;
+        img_Skill.sprite = sprite;
+        img_Skill.enabled = sprite != null;
+    }
+
     private void ClearSkill()
     {
-        if (img_Skill != null)
-            img_Skill.sprite = emptySlot;
+        SetSkillIcon(emptySlot);
 
         currCooldown = 0f;
 
@@ -132,16 +244,6 @@ public class SkillSlotUI : MonoBehaviour
             txt_Cooldown.gameObject.SetActive(false);
         }
 
-        SetVisible(true);
-    }
-
-    private void SetVisible(bool visible)
-    {
-        if (gameObject.activeSelf != visible)
-            gameObject.SetActive(visible);
-
-        if (!visible && img_Skill != null)
-            img_Skill.sprite = emptySlot;
     }
 
     /// <summary>

@@ -9,6 +9,9 @@ public class SkillManager : Singleton<SkillManager>
     [SerializeField]
     private SO_SkillEventHandler skillEventHandler;
 
+    // UI와 HUD는 Resources.Load 대신 이 단일 진입점으로 이벤트 채널을 받습니다.
+    public SO_SkillEventHandler SkillEventHandler => skillEventHandler;
+
     private const int SKILL_SLOT_MAX_COUNT = 4;
 
     // 캐릭터별 장착 스킬
@@ -21,6 +24,9 @@ public class SkillManager : Singleton<SkillManager>
     protected override void Awake()
     {
         base.Awake();
+
+        if (IsDuplicate)
+            return;
 
         ResetRunTimeData();
     }
@@ -170,6 +176,8 @@ public class SkillManager : Singleton<SkillManager>
     public void ResetRunTimeData()
     {
         equippedActiveSkills.Clear();
+        skillEventHandler?.ClearCache();
+        skillEventHandler?.OnUnequipment();
 
         var slots =
             new List<SkillRuntimeData>(SKILL_SLOT_MAX_COUNT);
