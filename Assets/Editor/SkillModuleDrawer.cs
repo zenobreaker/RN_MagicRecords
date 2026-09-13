@@ -50,7 +50,7 @@ public class SkillModuleDrawer : PropertyDrawer
         menu.AddSeparator("");
 
         var types = TypeCache.GetTypesDerivedFrom<SkillModule>()
-            .Where(t => !t.IsAbstract && !t.IsInterface);
+            .Where(t => !t.IsAbstract && !t.IsInterface && t.IsVisible);
 
         foreach (var type in types)
         {
