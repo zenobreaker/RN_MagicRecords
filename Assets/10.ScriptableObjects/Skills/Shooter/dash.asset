@@ -30,9 +30,23 @@ MonoBehaviour:
       damageType: 0
       baseDamage: 0
       statCoefficient: 0
+      bDownable: 0
+      bLauncher: 0
+      SoundName: 
+      impulseDirection: {x: 0, y: 0, z: 0}
+      csp: {fileID: 0}
       hitData:
         DamageType: 0
-    bonusOptionList: []
+        Distance: 0
+        HeightValue: 0
+        StopFrame: 0
+        HitImpactIndex: 0
+        HitSoundName: 
+        HitParticle: {fileID: 0}
+        HitParticlePositionOffset: {x: 0, y: 0, z: 0}
+        HitParticleScaleOffset: {x: 1, y: 1, z: 1}
+      ignoreDefenseRate: 0
+    bonusOptionList: 
     spawnCount: 1
     angle: 0
   range: -1
@@ -56,11 +70,6 @@ MonoBehaviour:
     - rid: 1371895267614785655
     - rid: 1371895267614785656
     - rid: 1371895267614785657
-    skillObject: {fileID: 0}
-    objectName: 
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 0}
   references:
     version: 2
     RefIds:
@@ -68,12 +77,15 @@ MonoBehaviour:
       type: {class: Module_Dash, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         distance: 5
         duration: 0.2
         useTargetPosition: 0
         directionType: 1
         backwardWhenNoInput: 1
-        advancePhaseOnFinish: 1
         speedCurve:
           serializedVersion: 2
           m_Curve:
@@ -98,23 +110,52 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
+        advancePhaseOnFinish: 1
+        bIsMoveOverTime: 0
+        bIsGhostMode: 0
     - rid: 1371895267614785655
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 9
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        actionData:
+          subStateName: 
+          stateName: 
+          layerName: 
+          actionSpeed: 1
+          droneReactionType: 1
+          weaponActionName: 
+          SoundName: 
+          impulseDirection: {x: 0, y: 0, z: 0}
+          csp: {fileID: 0}
+          bCanMove: 0
+        restartFromBeginning: 0
         useMovementAnimation: 1
+        syncFireInterval: 0
+        fireInterval: 0.1
     - rid: 1371895267614785656
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 9
-        soundName: Whoosh
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        soundName: Explode_01
     - rid: 1371895267614785657
       type: {class: Module_StartWeaponVFX, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 9
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         effectPrefab: {fileID: 1531956021792348658, guid: fe9facd006cb6164bbfdc14a8e7b25f3, type: 3}
         spawnAtOwner: 1
         useAllEffectSpawnPoints: 1
-        specificEffectSpawnIndices: []
+        specificEffectSpawnIndices: 
         effectId: DashTrail
         followEffectSpawnPoint: 1

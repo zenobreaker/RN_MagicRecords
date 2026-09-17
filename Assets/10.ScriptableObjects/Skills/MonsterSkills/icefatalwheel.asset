@@ -61,17 +61,29 @@ MonoBehaviour:
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 0
         speedMultiplier: 0.5
     - rid: 1371895131259535442
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 5
-        soundName: 
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        soundName: Ice_Spell_02
     - rid: 1371895131259535445
       type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         parameterName: IsCasting
         paramType: 0
         boolValue: 1
@@ -81,6 +93,10 @@ MonoBehaviour:
       type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         parameterName: IsCasting
         paramType: 0
         boolValue: 0
@@ -90,6 +106,10 @@ MonoBehaviour:
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -124,24 +144,40 @@ MonoBehaviour:
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 4
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 1
         speedMultiplier: 0.5
     - rid: 1371895185988124755
       type: {class: Module_SetPatternData, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         spawnCount: 1
         angleBetween: 0
     - rid: 1371895244641534060
       type: {class: Module_Casting, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         overrideCastingTime: 1
         castingTime: 3
     - rid: 1371895244641534061
       type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         useBlackboardPattern: 0
         signType: 1
         duration: 3
@@ -152,6 +188,7 @@ MonoBehaviour:
         fallbackAngleBetween: 0
         startAngleOffset: 0
         endPhaseOnFinish: 1
+        waitForSignBeforeSkillEnd: 1
         onSignEndModules: []
         radius: 1
         rectSize: {x: 1, y: 0}
@@ -162,6 +199,10 @@ MonoBehaviour:
       type: {class: Module_LookAtTarget, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         useBlackboardPos: 0
         lookAtOwnerTarget: 0
         turnSpeed: 0
@@ -169,12 +210,20 @@ MonoBehaviour:
       type: {class: Module_SetTargetByPerception, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         isAutoTarget: 1
         defaultDistance: 50
     - rid: 9167118955140350098
       type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         parameterName: Casting
         paramType: 3
         boolValue: 0
@@ -184,6 +233,10 @@ MonoBehaviour:
       type: {class: Module_DelayEvent, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         eventType: 0
         delay: 0
         floatValue: 0

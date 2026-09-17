@@ -2160,9 +2160,9 @@ GameObject:
   - component: {fileID: 7553756754230816220}
   - component: {fileID: 4345023308211783602}
   - component: {fileID: 8802727893416295790}
+  - component: {fileID: 3337285038975108788}
   - component: {fileID: 7184774083390554323}
   - component: {fileID: 7053035957550731466}
-  - component: {fileID: 3337285038975108788}
   - component: {fileID: 3806654061284044991}
   - component: {fileID: 2982591067945177240}
   - component: {fileID: 7870455255664782143}
@@ -2227,31 +2227,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillEventHandler: {fileID: 11400000, guid: 03331a23dc591c047a374450029fd111, type: 2}
---- !u!114 &7184774083390554323
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6372159647807091890}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78ef2eaf724c6454c8b08d7aa96ee49f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stageIconDb: {fileID: 11400000, guid: 430160871fb22c548a9d1b29fdd2ac6e, type: 2}
---- !u!114 &7053035957550731466
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6372159647807091890}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd763ab6d7a96ed4faf1e77bf4095521, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3337285038975108788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2304,6 +2279,31 @@ MonoBehaviour:
   onwerSkillTreeList:
   - id: 1
     allSkills: []
+--- !u!114 &7184774083390554323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6372159647807091890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78ef2eaf724c6454c8b08d7aa96ee49f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stageIconDb: {fileID: 11400000, guid: 430160871fb22c548a9d1b29fdd2ac6e, type: 2}
+--- !u!114 &7053035957550731466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6372159647807091890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd763ab6d7a96ed4faf1e77bf4095521, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3806654061284044991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2466,8 +2466,16 @@ MonoBehaviour:
   sfxSounds:
   - soundName: Gun_Normal1
     clip: {fileID: 8300000, guid: ef1aa073dba5df24886ea9765dc5893f, type: 3}
+  - soundName: Gun_01
+    clip: {fileID: 8300000, guid: 22ede43c0aa58ea4ca701f9a649bc9a4, type: 3}
+  - soundName: Gun_02
+    clip: {fileID: 8300000, guid: e227b59662cbf434d8b9e17410dd3e3f, type: 3}
   - soundName: Gun_03
     clip: {fileID: 8300000, guid: 0561032dd5a2e16418e21ab524a543cc, type: 3}
+  - soundName: Gun_04
+    clip: {fileID: 8300000, guid: f8a61f2e490fcdc4e8429ca11e6a5e25, type: 3}
+  - soundName: Gun_06
+    clip: {fileID: 8300000, guid: 6f9967d93adaf6b49b92c758c648aa6e, type: 3}
   - soundName: UI_Click1
     clip: {fileID: 8300000, guid: adcad27f62af0134a9b20d8bd0377257, type: 3}
   - soundName: UI_Click2
@@ -2484,22 +2492,32 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 15c24a404348e714f97bb762b902c05b, type: 3}
   - soundName: Laser_Charging
     clip: {fileID: 8300000, guid: 5646f18f27bc1f948b29f22b0478802d, type: 3}
-  - soundName: Gun_01
-    clip: {fileID: 8300000, guid: 22ede43c0aa58ea4ca701f9a649bc9a4, type: 3}
-  - soundName: Gun_02
-    clip: {fileID: 8300000, guid: e227b59662cbf434d8b9e17410dd3e3f, type: 3}
-  - soundName: Gun_06
-    clip: {fileID: 8300000, guid: 6f9967d93adaf6b49b92c758c648aa6e, type: 3}
-  - soundName: Gun_04
-    clip: {fileID: 8300000, guid: f8a61f2e490fcdc4e8429ca11e6a5e25, type: 3}
   - soundName: Hit_02
     clip: {fileID: 8300000, guid: bd6c37d1c2fc79645bec411fbd8b86aa, type: 3}
   - soundName: Whoosh
     clip: {fileID: 8300000, guid: df545e7f91c778c47906d6f7e5e0ee10, type: 3}
-  - soundName: Explode_02
-    clip: {fileID: 8300000, guid: e981d21ac51758e44b519c6148c4911c, type: 3}
   - soundName: Explode_01
     clip: {fileID: 8300000, guid: 3579e974c427b1247be5a4ea67f414be, type: 3}
+  - soundName: Explode_02
+    clip: {fileID: 8300000, guid: e981d21ac51758e44b519c6148c4911c, type: 3}
+  - soundName: Ice_Impact
+    clip: {fileID: 8300000, guid: 1b656aaaece8d664e9138fce0fc6d012, type: 3}
+  - soundName: Ice_Crack
+    clip: {fileID: 8300000, guid: 3b364fb40b8237547ba072d7d4037d15, type: 3}
+  - soundName: Ice_Fast
+    clip: {fileID: 8300000, guid: 8a70c2d71cecb5046bf0ec7132ab0272, type: 3}
+  - soundName: Rock_Break
+    clip: {fileID: 8300000, guid: 25780d44390feaf4c952aec18db01928, type: 3}
+  - soundName: Ice_Spell_01
+    clip: {fileID: 8300000, guid: 906d24a46de5d7f4aab48da8d2c5dd29, type: 3}
+  - soundName: Ice_Spell_02
+    clip: {fileID: 8300000, guid: 9f3a6c4c712064343aeccaa9c8285ae7, type: 3}
+  - soundName: Ice_Spell_03
+    clip: {fileID: 8300000, guid: f44499261234cc94ea428c74c2f9c6c7, type: 3}
+  - soundName: Ice_Spell_04
+    clip: {fileID: 8300000, guid: a92c3e4ace5e0fa48afd371b7a3d94c3, type: 3}
+  - soundName: Ice_Spell_05
+    clip: {fileID: 8300000, guid: c42d3f50857a5124caaf17ef7499953f, type: 3}
   masterMixer: {fileID: 24100000, guid: abf4aac28bd7b5e42b06c0bff1367cc4, type: 2}
   bgmGroup: {fileID: 2889626302884008671, guid: abf4aac28bd7b5e42b06c0bff1367cc4, type: 2}
   sfxGroup: {fileID: -809776525529572944, guid: abf4aac28bd7b5e42b06c0bff1367cc4, type: 2}

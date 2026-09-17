@@ -49,6 +49,7 @@ MonoBehaviour:
     - rid: 9167118955140350071
     - rid: 1371895074986917888
     - rid: 9167118955140350077
+    - rid: 9167119197875208280
   - phaseName: 
     isInstant: 0
     modules:
@@ -61,6 +62,10 @@ MonoBehaviour:
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -95,6 +100,10 @@ MonoBehaviour:
       type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         useBlackboardPattern: 0
         signType: 2
         duration: 1
@@ -105,6 +114,7 @@ MonoBehaviour:
         fallbackAngleBetween: 0
         startAngleOffset: 0
         endPhaseOnFinish: 1
+        waitForSignBeforeSkillEnd: 1
         onSignEndModules: []
         radius: 1
         rectSize: {x: 1, y: 1}
@@ -115,12 +125,20 @@ MonoBehaviour:
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 0
         speedMultiplier: 0.5
     - rid: 9167118955140350064
       type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         parameterName: IsCharging
         paramType: 0
         boolValue: 1
@@ -130,6 +148,10 @@ MonoBehaviour:
       type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         parameterName: IsCharging
         paramType: 0
         boolValue: 0
@@ -139,6 +161,10 @@ MonoBehaviour:
       type: {class: Module_PhaseTransition, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         transitionType: 2
         targetPhaseIndex: 0
         delayTime: 0
@@ -146,6 +172,10 @@ MonoBehaviour:
       type: {class: Module_DelayEvent, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         eventType: 0
         delay: 0
         floatValue: 0
@@ -156,12 +186,20 @@ MonoBehaviour:
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 1
         speedMultiplier: 0.5
     - rid: 9167118955140350077
       type: {class: Module_PhaseTransition, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         transitionType: 0
         targetPhaseIndex: 0
         delayTime: 0
@@ -169,8 +207,21 @@ MonoBehaviour:
       type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         parameterName: Charging
         paramType: 3
         boolValue: 0
         floatValue: 0
         intValue: 0
+    - rid: 9167119197875208280
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        soundName: Ice_Spell_03
