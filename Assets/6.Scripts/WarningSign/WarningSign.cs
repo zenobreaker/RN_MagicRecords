@@ -23,6 +23,7 @@ public abstract class WarningSign : MonoBehaviour
     private float currentScale;
 
     public Action OnEndSign;
+    public Action OnStopped;
 
     protected virtual void OnEnable()
     {
@@ -34,6 +35,10 @@ public abstract class WarningSign : MonoBehaviour
 
     protected virtual void OnDisable()
     {
+        var stopped = OnStopped;
+        OnStopped = null;
+        OnEndSign = null;
+        stopped?.Invoke();
         ObjectPooler.ReturnToPool(gameObject);
         OnEndSign = null;
     }
@@ -50,7 +55,7 @@ public abstract class WarningSign : MonoBehaviour
         }
         else
         {
-            OnEndSign?.Invoke(); 
+            OnEndSign?.Invoke();
             gameObject.SetActive(false);
         }
     }

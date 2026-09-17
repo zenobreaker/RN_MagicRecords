@@ -44,6 +44,30 @@ public abstract class ActiveSkill
     public StatusComponent Status { get { return status; } }
 
     protected List<GameObject> trackedEffects = new List<GameObject>();
+    private readonly List<GameObject> skillTrackedEffects = new();
+    private readonly HashSet<object> completionHolds = new();
+    private bool completionRequested;
+
+    // Normal completion can wait for parallel work; EndSkill remains immediate cancellation.
+    public Action HoldCompletion()
+    {
+        if (!IsActive || IsEnding) return () => { };
+        var key = new object();
+        completionHolds.Add(key);
+        return () =>
+        {
+            if (!completionHolds.Remove(key)) return;
+            if (completionRequested && completionHolds.Count == 0 && IsActive && !IsEnding)
+                EndSkill();
+        };
+    }
+
+    public void CompleteWhenReady(bool notifyOwner = true)
+    {
+        if (!IsActive || IsEnding) return;
+        if (completionHolds.Count > 0) completionRequested = true;
+        else EndSkill(notifyOwner);
+    }
 
     /// <summary>
     /// AI가 사용할 때 해당 스킬 패턴의 기준을 정리하는 값 
@@ -427,7 +451,7 @@ public abstract class ActiveSkill
     {
         if (!IsActive || IsEnding || isCasting || !IsPhaseRunning) return;
         if (IsValidPhaseIndex(phaseIndex + 1)) ChangePhase(phaseIndex + 1);
-        else EndSkill();
+        else CompleteWhenReady();
     }
 
     public void JumpToPhase(int index) => ChangePhase(index);
@@ -451,6 +475,7 @@ public abstract class ActiveSkill
     private void EnterPhase(int index)
     {
         if (!IsActive || IsEnding || !IsValidPhaseIndex(index)) return;
+        completionRequested = false;
         pendingPhaseIndex = index;
         if (enteringPhase) return;
         enteringPhase = true;
@@ -535,8 +560,13 @@ public abstract class ActiveSkill
     }
 
     // 모듈이 무언가를 소환하면 여기에 신고(등록)하게 만듭니다.
-    public void AddTrackedEffect(GameObject effect)
+    public void AddTrackedEffect(GameObject effect, bool untilSkillEnd = false)
     {
+        if (untilSkillEnd)
+        {
+            if (effect != null && !skillTrackedEffects.Contains(effect)) skillTrackedEffects.Add(effect);
+            return;
+        }
         if (effect != null && !trackedEffects.Contains(effect))
         {
             trackedEffects.Add(effect);
@@ -547,6 +577,12 @@ public abstract class ActiveSkill
     {
 
     }
+
+    public void RemoveTrackedEffect(GameObject effect)
+    {
+        trackedEffects.Remove(effect);
+        skillTrackedEffects.Remove(effect);
+    }
     public virtual void Begin_DoAction()
     {
 
@@ -556,7 +592,7 @@ public abstract class ActiveSkill
     {
         if (!IsActive || IsEnding || isCasting) return;
         if (IsPhaseRunning && DoesPhaseControlItself(phaseIndex)) return;
-        EndSkill(false);
+        CompleteWhenReady(false);
     }
 
     private void ClearTrackedEffects()
@@ -571,6 +607,8 @@ public abstract class ActiveSkill
     {
         if (!IsActive || IsEnding) return;
         IsEnding = true;
+        completionRequested = false;
+        completionHolds.Clear();
         pendingPhaseIndex = -1;
         try
         {
@@ -579,6 +617,10 @@ public abstract class ActiveSkill
             OnSkillEnding();
             if (IsPhaseRunning) OnPhaseExited();
             ClearTrackedEffects();
+            var remainingEffects = skillTrackedEffects.ToArray();
+            skillTrackedEffects.Clear();
+            foreach (var effect in remainingEffects)
+                if (effect != null && effect.activeInHierarchy) effect.SetActive(false);
             Runtime.Hit.End();
             Runtime.ResetPhaseLoopCounts();
             IsPhaseRunning = false;

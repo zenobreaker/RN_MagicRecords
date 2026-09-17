@@ -181,7 +181,8 @@ public class GenericActiveSkill : ActiveSkill
         NotifyModules(index, SkillTriggerTime.OnExecute);
         if (!IsCurrentPhase(version) || HasPendingPhaseChange) return;
         NotifyModules(index, SkillTriggerTime.OnPhaseTime);
-        if (IsCurrentPhase(version) && !HasPendingPhaseChange && phaseSkill.isInstant)
+        if (IsCurrentPhase(version) && !HasPendingPhaseChange && phaseSkill.isInstant &&
+            !DoesPhaseControlItself(index))
             EndPhaseAndNext();
     }
 }

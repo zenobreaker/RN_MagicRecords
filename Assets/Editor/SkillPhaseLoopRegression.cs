@@ -93,7 +93,9 @@ public static class SkillPhaseLoopRegression
         DelayedTransitionCancellation();
         AnimationReplay();
         CharacterEndBridge();
-        Debug.Log("PHASE_LOOP_REGRESSION_PASS: 9 groups (counts, recast, runtime preservation, trigger reset, isolation, phase cancellation, completion, validation, modifiers, delayed transition, character/weapon animation replay).");
+        WarningSignLifetime();
+        CompletionHolds();
+        Debug.Log("PHASE_LOOP_REGRESSION_PASS: 11 groups (counts, recast, runtime preservation, trigger reset, isolation, phase cancellation, completion, validation, modifiers, delayed transition, character/weapon animation replay).");
     }
 
     public static void RunBatch()
@@ -232,6 +234,104 @@ public static class SkillPhaseLoopRegression
         var oldToken = f.Skill.PhaseToken;
         component.CancelCurrentSkill();
         Check(!component.InAction && !f.Skill.IsActive && endEvents == 2 && oldToken.IsCancellationRequested, "explicit cancellation completes character once");
+    }
+
+    private static void CompletionHolds()
+    {
+        using var f = new Fixture(Phase());
+        var first = f.Skill.HoldCompletion();
+        var second = f.Skill.HoldCompletion();
+        f.Skill.EndPhaseAndNext();
+        Check(f.Skill.IsActive && !f.Skill.SkillToken.IsCancellationRequested, "normal finish waits for parallel work");
+        first(); first();
+        Check(f.Skill.IsActive, "completion releases are idempotent and all signs must finish");
+        second();
+        Check(!f.Skill.IsActive, "last completion releases skill");
+        f.Skill.Cast();
+        var canceled = f.Skill.HoldCompletion();
+        f.Skill.EndSkill(false);
+        Check(!f.Skill.IsActive, "forced cancellation bypasses completion holds");
+        f.Skill.Cast();
+        var current = f.Skill.HoldCompletion();
+        f.Skill.End_DoAction(); canceled();
+        Check(f.Skill.IsActive, "old completion cannot release a new cast");
+        current();
+        Check(!f.Skill.IsActive, "animation completion also waits for parallel work");
+    }
+
+    private static void WarningSignLifetime()
+    {
+        var oldPool = ObjectPooler.Instance;
+        var poolObject = new GameObject("Warning regression pool"); poolObject.SetActive(false);
+        var pool = poolObject.AddComponent<ObjectPooler>();
+        ObjectPooler.Instance = pool;
+        var signObject = new GameObject("WarningSign_Circle"); signObject.SetActive(false);
+        var sign = signObject.AddComponent<WarningSign_Circle>();
+        var main = new GameObject("main"); main.transform.SetParent(signObject.transform);
+        var sub = new GameObject("sub"); sub.transform.SetParent(signObject.transform);
+        typeof(WarningSign).GetField("mainPlane", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(sign, main.transform);
+        typeof(WarningSign).GetField("subPlane", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(sign, sub.transform);
+        var queue = new Queue<GameObject>(); queue.Enqueue(signObject);
+        typeof(ObjectPooler).GetField("poolDictionary", BindingFlags.Instance | BindingFlags.NonPublic)
+            .SetValue(pool, new Dictionary<string, Queue<GameObject>> { { "WarningSign_Circle", queue } });
+        try
+        {
+            var hits = new ProbeState();
+            var warning = new Module_SpawnWarningSign { endPhaseOnFinish = false,
+                onSignEndModules = new List<SkillModule> { null, Shot(hits) } };
+            var instant = Phase(warning); instant.isInstant = true;
+            using (var f = new Fixture(instant, Phase(Loop())))
+            {
+                Check(f.Skill.PhaseIndex == 1 && signObject.activeSelf, "parallel warning survives phase transition");
+                f.Skill.Runtime.Spawn.TargetPosition = Vector3.right * 123;
+                var completed = sign.OnEndSign;
+                completed(); completed();
+                Check(hits.Shots == 1 && f.Skill.PhaseIndex == 1, "parallel warning chain executes once without advancing current phase");
+                Check(f.Skill.Runtime.Spawn.TargetPosition == Vector3.right * 123, "parallel chain restores current target");
+                signObject.SetActive(false);
+                if (!queue.Contains(signObject)) queue.Enqueue(signObject);
+                warning.OnNotify(f.Owner.GetComponent<Character>(), f.Skill, instant);
+                var stale = sign.OnEndSign;
+                f.Skill.EndSkill(false);
+                Check(!signObject.activeSelf, "skill cancellation removes parallel warning");
+                if (!queue.Contains(signObject)) queue.Enqueue(signObject);
+                f.Skill.Cast(); stale();
+                Check(hits.Shots == 1, "old warning cannot execute in a new cast");
+                f.Skill.EndSkill(false);
+                Check(!signObject.activeSelf, "stale callback cannot untrack the new cast's pooled sign");
+                if (!queue.Contains(signObject)) queue.Enqueue(signObject);
+            }
+            hits = new ProbeState();
+            warning = new Module_SpawnWarningSign { endPhaseOnFinish = true,
+                onSignEndModules = new List<SkillModule> { Shot(hits) } };
+            instant = Phase(warning); instant.isInstant = true;
+            using (var f = new Fixture(instant, Phase(Loop())))
+            {
+                Check(f.Skill.PhaseIndex == 0, "instant phase waits for owning warning");
+                sign.OnEndSign();
+                Check(hits.Shots == 1 && f.Skill.PhaseIndex == 1, "owning warning executes chain before next phase");
+                signObject.SetActive(false);
+            }
+            if (!queue.Contains(signObject)) queue.Enqueue(signObject);
+            hits = new ProbeState();
+            warning = new Module_SpawnWarningSign { endPhaseOnFinish = false,
+                onSignEndModules = new List<SkillModule> { Shot(hits) } };
+            instant = Phase(warning); instant.isInstant = true;
+            using (var f = new Fixture(instant, Phase()))
+            {
+                f.Skill.EndPhaseAndNext();
+                Check(f.Skill.IsActive && signObject.activeSelf, "last phase waits for unfinished parallel sign");
+                sign.OnEndSign();
+                Check(hits.Shots == 1 && !f.Skill.IsActive, "sign chain finishes before deferred skill completion");
+                signObject.SetActive(false);
+            }
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(signObject);
+            ObjectPooler.Instance = oldPool;
+            UnityEngine.Object.DestroyImmediate(poolObject);
+        }
     }
 
     private static void AnimationReplay()
