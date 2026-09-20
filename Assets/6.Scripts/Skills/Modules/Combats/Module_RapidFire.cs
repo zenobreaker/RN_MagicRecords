@@ -44,6 +44,7 @@ public class Module_RapidFire : SkillModule
     public override void Init(  Character owner)
     {
         base.Init(owner);
+        if (owner == null) return;
 
         ownerChar = owner.GetComponent<Character>();
         weaponCont = owner.GetComponent<IWeaponUser>()?.GetWeaponController();

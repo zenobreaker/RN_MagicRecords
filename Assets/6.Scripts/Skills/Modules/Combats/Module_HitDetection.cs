@@ -197,8 +197,6 @@ public class Module_HitDetection : SkillModule
                 hits = fanHits.ToArray();
 
                 break;
-
-                break;
             default:
                 break;
         }

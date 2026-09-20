@@ -9,6 +9,7 @@ public class Module_Passive_BonusProjectile : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (0이면 조건 없이 발동)")]
     public int targetSkillID = 0;
+    public override int TargetSkillID => targetSkillID;
 
     [Header("Bonus Projectile")]
     [Tooltip("한 번의 발사에 추가할 프로젝타일 개수 (기본 1발에 이 값만큼 더해집니다)")]

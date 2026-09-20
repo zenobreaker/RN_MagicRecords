@@ -7,6 +7,7 @@ public sealed class Module_Passive_OrbInstallation : PassiveModule
 {
     [Header("Target Filter")]
     public int targetSkillID;
+    public override int TargetSkillID => targetSkillID;
 
     [Header("Orb Settings")]
     [Tooltip("기존 광선 대신 소환할 구체의 프리팹 이름")]

@@ -47,6 +47,9 @@ public class HealthPointComponent : MonoBehaviour
         
         InitCurrentHealth();
 
+        if (ownerChar is Player player && gameObject.scene.name == "Stage")
+            AppManager.Instance?.GetExploreManager()?.RegisterRunHealth(player.CharID, this);
+
         if (ownerChar is Enemy enemyComp)
         {
             isEnemy = true;
@@ -139,6 +142,22 @@ public class HealthPointComponent : MonoBehaviour
             uiEnemyCanvas.SafeInvoke(v => v.gameObject.SetActive(true));
         }
 
+        OnChangedHP_TwoParam?.Invoke(currentHealthPoint, maxHealthPoint);
+    }
+
+    public static float HealedValue(float current, float maximum, float amount)
+        => current <= 0 ? 0 : Mathf.Clamp(current + Mathf.Max(0, amount), 0, maximum);
+
+    public void Heal(float amount)
+    {
+        if (Dead) return;
+        RestoreCurrentHealth(HealedValue(currentHealthPoint, maxHealthPoint, amount));
+    }
+
+    public void RestoreCurrentHealth(float value)
+    {
+        currentHealthPoint = Mathf.Clamp(value, 0, maxHealthPoint);
+        handler.SafeInvoke(v => v.OnChangeValue_HP(currentHealthPoint, maxHealthPoint));
         OnChangedHP_TwoParam?.Invoke(currentHealthPoint, maxHealthPoint);
     }
 }

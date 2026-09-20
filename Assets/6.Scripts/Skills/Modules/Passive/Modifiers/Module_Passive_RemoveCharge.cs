@@ -7,6 +7,7 @@ public sealed class Module_Passive_RemoveCharge : PassiveModule
 {
     [Header("Target Filter")]
     public int targetSkillID;
+    public override int TargetSkillID => targetSkillID;
 
     public Module_Passive_RemoveCharge()
     {

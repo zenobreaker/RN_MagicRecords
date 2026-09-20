@@ -79,6 +79,7 @@ public class ComboComponent : MonoBehaviour
 
     public void InputQueue(InputCommandType commandType, int skillIndex = -1)
     {
+        if (SceneLoadingController.IsLoading || ObjectPooler.IsPrewarming) return;
         float currentTime = Time.time;
         var inputCommand = new InputCommand
         {

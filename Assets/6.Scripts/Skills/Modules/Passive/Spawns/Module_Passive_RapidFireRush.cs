@@ -8,6 +8,7 @@ public sealed class Module_Passive_RapidFireRush : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (0이면 조건 없이 발동)")]
     public int targetSkillID = 0;
+    public override int TargetSkillID => targetSkillID;
 
     [Header("Rapid Fire Settings")]
     [Tooltip("발사 간격 배율입니다. 0.7이면 기존 간격의 70%가 되어 더 빠르게 발사합니다.")]

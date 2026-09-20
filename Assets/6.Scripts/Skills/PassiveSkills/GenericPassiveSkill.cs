@@ -16,6 +16,7 @@ public enum PassiveTriggerTime
 [System.Serializable]
 public abstract class PassiveModule
 {
+    public virtual int TargetSkillID => 0;
     // 이 모듈이 언제 실행될 것인가?
     public PassiveTriggerTime triggerTime;
 

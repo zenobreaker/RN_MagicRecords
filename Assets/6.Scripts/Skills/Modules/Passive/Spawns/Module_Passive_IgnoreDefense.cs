@@ -8,6 +8,7 @@ public sealed class Module_Passive_IgnoreDefense : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (예: 1014 = 절단광선)")]
     public int targetSkillID = 1014;
+    public override int TargetSkillID => targetSkillID;
 
     [Header("Defense Ignore Settings")]
     [Tooltip("방어력 무시 비율 (1.0 = 100% 무시, 0.5 = 50% 무시)")]

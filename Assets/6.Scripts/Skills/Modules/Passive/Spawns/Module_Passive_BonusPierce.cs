@@ -8,6 +8,7 @@ public sealed class Module_Passive_BonusPierce : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (0이면 조건 없이 발동)")]
     public int targetSkillID = 0;
+    public override int TargetSkillID => targetSkillID;
 
     [Header("Pierce Settings")]
     [Tooltip("추가할 관통 횟수")]

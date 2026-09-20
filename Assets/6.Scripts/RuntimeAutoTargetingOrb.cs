@@ -7,6 +7,7 @@ using UnityEngine;
 public class RuntimeAutoTargetingOrb 
     : MonoBehaviour
     , ISkillEffect
+    , ISpawnActivationHandler
 {
     [Header("Orb Settings")]
     [SerializeField] private float delayTime = 2.0f;       // 발사 전 대기 시간
@@ -31,16 +32,8 @@ public class RuntimeAutoTargetingOrb
 
     private bool bIsInstalled;
 
-    private void Awake()
+    public void OnSpawnActivated()
     {
-        bIsInstalled = false; 
-    }
-
-    private void OnEnable()
-    {
-        // 활성화될 때마다 새로운 취소 토큰 생성
-        cancelTokenSource = new CancellationTokenSource();
-
         Install();
     }
 
@@ -54,17 +47,22 @@ public class RuntimeAutoTargetingOrb
             cancelTokenSource = null;
         }
 
-        bIsInstalled = false; 
-
-        SoundManager.Instance.SafeInvoke(v => v.PlaySFX(destroyOrbSoundName));
+        bool wasInstalled = bIsInstalled;
+        bIsInstalled = false;
+        owner = null;
+        cachedDamageData = null;
+        ignores = new HashSet<GameObject>();
+        if (wasInstalled)
+            SoundManager.Instance.SafeInvoke(v => v.PlaySFX(destroyOrbSoundName));
         ObjectPooler.ReturnToPool(gameObject);    // 한 객체에 한번만 
     }
 
     public void Install()
     {
-        if (bIsInstalled)
+        if (bIsInstalled || !isActiveAndEnabled)
             return;
 
+        cancelTokenSource = new CancellationTokenSource();
         bIsInstalled = true;
         SoundManager.Instance.SafeInvoke(v => v.PlaySFX(createOrbSoundName));
         // UniTask 실행 (Forget()을 붙여 경고 메시지 제거 및 Fire-and-forget 처리)

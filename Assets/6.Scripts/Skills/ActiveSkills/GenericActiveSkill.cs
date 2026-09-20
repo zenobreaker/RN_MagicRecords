@@ -16,7 +16,7 @@ public class GenericActiveSkill : ActiveSkill
         base.SetOwner(gameObject);
         phaseModuleCache.Clear();
         phaseModules.Clear();
-        if (phaseList == null) return;
+        if (ownerCharacter == null || phaseList == null) return;
         for (int i = 0; i < phaseList.Count; i++) CacheModules(i, phaseList[i]);
     }
 

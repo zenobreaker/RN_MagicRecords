@@ -8,6 +8,7 @@ public sealed class Module_Passive_SplitChildHoming : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (0이면 조건 없이 발동)")]
     public int targetSkillID = 0;
+    public override int TargetSkillID => targetSkillID;
 
     [Header("Homing Settings")]
     [Tooltip("플레이어 기준으로 우선 대상(보스 → 엘리트 → 노멀)을 탐색할 반경")]

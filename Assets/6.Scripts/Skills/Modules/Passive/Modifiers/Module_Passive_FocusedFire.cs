@@ -8,6 +8,7 @@ public sealed class Module_Passive_FocusedFire : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (예: 산탄 사격 스킬 ID)")]
     public int targetSkillID;
+    public override int TargetSkillID => targetSkillID;
 
     [Header("Focused Fire Settings")]
     [Tooltip("추가로 발사할 산탄의 개수")]

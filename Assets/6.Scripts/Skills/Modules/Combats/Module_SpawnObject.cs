@@ -419,7 +419,9 @@ public class Module_SpawnObject : SkillModule
             }
 
             if (isPoolerSpawn)
-                ObjectPooler.FinishSpawn(obj); 
+                ObjectPooler.FinishSpawn(obj);
+            else
+                ObjectPooler.NotifySpawnActivated(obj);
         }
     }
 

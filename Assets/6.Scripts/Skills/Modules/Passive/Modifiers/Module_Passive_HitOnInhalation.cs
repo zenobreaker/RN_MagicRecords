@@ -6,6 +6,7 @@ using UnityEngine;
 public class Module_Passive_HitOnInhalation : PassiveModule
 {
     public int targetSkillID;
+    public override int TargetSkillID => targetSkillID;
     public float radius = 5.0f;
     public float force = 10.0f;
     public LayerMask enemyLayer;

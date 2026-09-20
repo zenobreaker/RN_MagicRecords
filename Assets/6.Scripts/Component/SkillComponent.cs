@@ -23,7 +23,7 @@ public sealed class SkillComponent : ActionComponent
 
     private void Awake()
     {
-        rootObject = transform.root.gameObject;
+        ResolveOwner();
 
         Awake_SkillSlotTable();
     }
@@ -31,7 +31,7 @@ public sealed class SkillComponent : ActionComponent
 
     private void Awake_SkillSlotTable()
     {
-        skillSlotTable = new Dictionary<string, ActiveSkill>
+        skillSlotTable ??= new Dictionary<string, ActiveSkill>
         {
             { "DEFAULT", null },
 
@@ -361,6 +361,7 @@ public sealed class SkillComponent : ActionComponent
 
     private bool CanUseSlot(string slotName)
     {
+        if (ObjectPooler.IsPrewarming || SceneLoadingController.IsLoading) return false;
         if (slotName != nameof(SkillSlot.SubAction)) return true;
         if (!isActiveAndEnabled) return false;
         var character = rootObject != null ? rootObject.GetComponent<Character>() : null;
@@ -432,6 +433,13 @@ public sealed class SkillComponent : ActionComponent
         string slotName,
         ActiveSkill skill)
     {
+        ResolveOwner();
+        Awake_SkillSlotTable();
+        if (skill != null && rootObject == null)
+        {
+            Debug.LogError("[SkillComponent] Character owner is missing.", this);
+            return;
+        }
         if (skillSlotTable.TryGetValue(slotName, out var previousSkill) && !ReferenceEquals(previousSkill, skill))
             previousSkill?.EndSkill();
 
@@ -448,6 +456,12 @@ public sealed class SkillComponent : ActionComponent
 
         skillSlotTable[slotName]?.SetOwner(rootObject);
         skillSlotTable[slotName]?.InitializedData();
+    }
+
+    private void ResolveOwner()
+    {
+        var character = GetComponentInParent<Character>(true);
+        rootObject = character != null ? character.gameObject : null;
     }
 
 

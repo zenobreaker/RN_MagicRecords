@@ -176,6 +176,13 @@ public abstract class ActiveSkill
 
     public virtual void SetOwner(GameObject gameObject)
     {
+        if (gameObject == null || gameObject.GetComponent<Character>() == null)
+        {
+            ownerObject = null;
+            ownerCharacter = null;
+            Debug.LogWarning($"[Skill] {Name}: SetOwner requires a Character.");
+            return;
+        }
         ownerObject = gameObject;
         ownerCharacter = gameObject.GetComponent<Character>();
         state = gameObject.GetComponent<StateComponent>();
@@ -274,6 +281,7 @@ public abstract class ActiveSkill
 
     public void Cast(int startPhaseIndex = 0)
     {
+        if (ownerCharacter == null || ObjectPooler.IsPrewarming || SceneLoadingController.IsLoading) return;
         if (IsOnCooldown || isCasting || IsActive || IsEnding)
             return;
 

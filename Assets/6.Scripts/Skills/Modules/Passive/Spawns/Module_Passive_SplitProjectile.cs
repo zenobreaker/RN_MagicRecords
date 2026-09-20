@@ -9,6 +9,7 @@ public sealed class Module_Passive_SplitProjectile : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (예: 1002 = 매그넘샷)")]
     public int targetSkillID;
+    public override int TargetSkillID => targetSkillID;
 
     [Header("Split Settings")]
     public int splitCount = 6;

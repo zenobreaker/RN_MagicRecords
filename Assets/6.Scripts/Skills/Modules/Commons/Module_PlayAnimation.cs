@@ -20,7 +20,7 @@ public class Module_PlayAnimation : SkillModule
     {
         actionData?.Initialize();
 
-        weaponController = owner.GetComponent<IWeaponUser>()?.GetWeaponController();
+        weaponController = owner != null ? owner.GetComponent<IWeaponUser>()?.GetWeaponController() : null;
     }
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
@@ -28,7 +28,7 @@ public class Module_PlayAnimation : SkillModule
         if (useMovementAnimation)
         {
             if (owner != null && skill != null)
-                owner.Visual?.PlayDashAnimation(skill.Runtime.IsBackwardMovement);
+                owner.Visual.SafeInvoke(v=>v.PlayDashAnimation(skill.Runtime.IsBackwardMovement));
             return;
         }
         if (owner == null || actionData == null) return;

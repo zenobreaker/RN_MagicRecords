@@ -6,6 +6,7 @@ public sealed class Module_Passive_RemovePierce : PassiveModule
 {
     // 필터: 특정 스킬(예: 매그넘샷)에만 적용하고 싶을 때
     public int targetSkillID = 1002;
+    public override int TargetSkillID => targetSkillID;
 
     public Module_Passive_RemovePierce()
     {

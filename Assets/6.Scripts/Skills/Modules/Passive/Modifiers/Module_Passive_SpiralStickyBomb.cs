@@ -8,6 +8,7 @@ public sealed class Module_Passive_SpiralStickyBomb : PassiveModule
     [Header("타겟 스킬 설정")]
     [Tooltip("이 효과를 적용할 특정 스킬의 ID (0이면 모든 스킬에 적용)")]
     public int targetSkillID;
+    public override int TargetSkillID => targetSkillID;
 
     [Header("끈적이 폭탄 설정")]
     //public float tickInterval = 0.2f;    // 다단 히트 간격

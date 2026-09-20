@@ -8,6 +8,7 @@ public sealed class Module_Passive_IncreaseBeamRadius : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (예: 1013 = 과충전)")]
     public int targetSkillID = 1013;
+    public override int TargetSkillID => targetSkillID;
 
     [Header("Beam Settings")]
     [Tooltip("증가시킬 빔의 두께 (반지름)")]

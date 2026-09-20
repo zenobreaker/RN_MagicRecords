@@ -8,6 +8,7 @@ public sealed class Module_Passive_StatusEffectBullet : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (0이면 조건 없이 발동)")]
     public int targetSkillID = 0;
+    public override int TargetSkillID => targetSkillID;
 
     [Header("Status Effect Settings")]
     [Tooltip("부여할 상태이상 ID (예: Burn, Bleed, Poison)")]
