@@ -11,6 +11,7 @@ public class DataBaseManager : Singleton<DataBaseManager>
     private ItemDataBase itemDataBase;
     private RewardDataBase rewardDataBase;
     private ShopDataBase shopDataBase;
+    public ShopJsonAllData ExploreShopPolicy => shopDataBase?.ExplorePolicy;
     private EnhanceDataBase enhanceDataBase;
     private RecordDataBase recordDataBase;
     private EventDataBase eventDataBase;

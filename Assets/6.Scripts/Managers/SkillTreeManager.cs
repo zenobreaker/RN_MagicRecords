@@ -163,6 +163,16 @@ public class SkillTreeManager
     }
 
 
+    public IEnumerable<SkillRuntimeData> GetAvailableSkills(int classID)
+    {
+        var trees = new List<SkillTree>();
+        if (skillByClassIdTable.TryGetValue(classID, out var tree)) trees.Add(tree);
+        if (commonSkillTree != null) trees.Add(commonSkillTree);
+        return trees.Where(t => t.allSkills != null).SelectMany(t => t.allSkills
+            .Where(s => s != null).Select(s => t.GetSkillRuntimeDataByID(s.id)))
+            .Where(s => s != null).GroupBy(s => s.GetSkillID()).Select(g => g.First());
+    }
+
     public void SkillUnlock(SkillRuntimeData data)
     {
         data.isUnlocked = true;

@@ -145,7 +145,7 @@ public static class EventActionProcessor
                 break;
 
             case EventActionType.RECORD_SKILL_UP:
-                Debug.Log("스킬 강화 창을 엽니다.");
+                UIManager.Instance?.OpenRecordSkillUpPopUp(choice);
                 break;
 
             case EventActionType.ARCHIVE_SAVE:

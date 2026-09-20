@@ -35,14 +35,13 @@ public sealed class StageManager : MonoBehaviour
     private SpawnManager spawnManager;
     private RoomMaker roomMaker;
 
-    private bool bEnableSpawn = false;
 
     public event Action OnProcessBattle;
 
     private void Awake()
     {
         spawnManager = GetComponent<SpawnManager>();
-        roomMaker = new RoomMaker();    
+        roomMaker = new RoomMaker();
     }
 
     private void OnEnable()
@@ -58,13 +57,10 @@ public sealed class StageManager : MonoBehaviour
     private void OnPoolReady()
     {
         Debug.Log("[StageManager] Pool Ready! 스테이지 생성을 시작합니다.");
-        bEnableSpawn = true;
-        // AwaitStage 코루틴이 이 플래그를 보고 루프를 탈출함
     }
 
     public void ResetStageData()
     {
-        bEnableSpawn = false;
         stageState = StageState.None;
     }
 
@@ -75,23 +71,30 @@ public sealed class StageManager : MonoBehaviour
     {
         try
         {
-            if (currentStage == null || roomMaker == null)
-                return new StageResult(); 
+            if (currentStage == null || roomMaker == null || spawnManager == null)
+                throw new InvalidOperationException("Stage preparation dependencies are missing.");
 
             stageState = StageState.Preparing;
             int currentWave = 1;
 
             // 풀러 대기
-            while (!bEnableSpawn)
+            while (ObjectPooler.Instance == null || !ObjectPooler.Instance.IsInitialized)
             {
+                if (ObjectPooler.Instance != null && ObjectPooler.Instance.InitializationError != null)
+                    throw new InvalidOperationException("Object pool initialization failed.", ObjectPooler.Instance.InitializationError);
                 await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
             }
 
-            // 맵 로드 
+            // 맵 로드
+            spawnManager.ResetStageSpawns();
             RoomData roomData = roomMaker.CreateRoom(currentStage);
+            // Room Start methods may build the NavMesh used by character agents.
+            await UniTask.NextFrame(cancellationToken: token);
 
             // 플레이어 스폰 대기
             await spawnManager.SpawnCharacterAsync(1, roomData.MainSpawnPoints, token);
+            if (spawnManager.ActivePlayerCount == 0)
+                throw new InvalidOperationException("Stage player could not be spawned.");
 
             bool isPlayerDead = false;
 
@@ -99,12 +102,18 @@ public sealed class StageManager : MonoBehaviour
             while (currentWave <= currentStage.wave)
             {
                 var groupIds = currentStage.groupIds;
-                if (groupIds.Count > 0)
+                if (groupIds != null && groupIds.Count > 0)
                 {
                     // 적 스폰 대기
+                    if (currentWave > groupIds.Count) throw new InvalidOperationException("Missing monster group for stage wave.");
                     await spawnManager.SpawnNPCAsync(groupIds[currentWave - 1], roomData.EnemySpawnPoints, true, token);
                 }
 
+                if (currentWave == 1)
+                {
+                    await UniTask.NextFrame(cancellationToken: token);
+                    await SceneLoadingController.CompleteStagePreparationAsync(token);
+                }
                 stageState = StageState.Battle;
                 OnProcessBattle?.Invoke();
 
@@ -122,6 +131,8 @@ public sealed class StageManager : MonoBehaviour
                 currentWave++;
             }
 
+            if (currentStage.wave <= 0)
+                await SceneLoadingController.CompleteStagePreparationAsync(token);
             stageState = StageState.Result;
 
             // 결과 포장해서 던지기
@@ -135,7 +146,7 @@ public sealed class StageManager : MonoBehaviour
         catch (OperationCanceledException)
         {
             Debug.Log("[StageManager] 스테이지 진행 취소됨");
-            return new StageResult { IsSuccess = false, IsPlayerDead = true, ClearedWave = 0 };
+            throw;
         }
     }
 
@@ -146,8 +157,4 @@ public sealed class StageManager : MonoBehaviour
         currentStage = stage;
     }
 
-    private void OnStartStage()
-    {
-        bEnableSpawn = true;
-    }
 }

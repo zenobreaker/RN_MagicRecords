@@ -22,6 +22,12 @@ public class ObjectPoolerEditor : Editor
 }
 #endif
 
+/// <summary>Actual spawn notification; pool prewarming does not invoke this.</summary>
+public interface ISpawnActivationHandler
+{
+    void OnSpawnActivated();
+}
+
 public partial class ObjectPooler : MonoBehaviour
 {
     public static ObjectPooler Instance;
@@ -43,7 +49,7 @@ public partial class ObjectPooler : MonoBehaviour
 
     [SerializeField] private SO_PlayerObjects playerObjectSo;
     [SerializeField] private SO_NPCObjects npcObjectSo;
-    [SerializeField] private List<Pool> pools;
+    [SerializeField] private List<Pool> pools = new();
 
     private List<GameObject> spawnObjects;
     private Dictionary<string, Queue<GameObject>> poolDictionary;
@@ -51,12 +57,18 @@ public partial class ObjectPooler : MonoBehaviour
     private Dictionary<string, Transform> parentDictionary = new Dictionary<string, Transform>();
     public static event Action OnPoolInitialized;
     private bool bComplete = false;
+    public bool IsInitialized => bComplete;
+    public Exception InitializationError { get; private set; }
+    public static bool IsPrewarming { get; private set; }
+    [SerializeField, Min(1)] private int prewarmBatchSize = 24;
+    [SerializeField, Min(0.1f)] private float prewarmFrameBudgetMs = 4f;
 
     private struct SpawnCommand
     {
         public string tag;
         public Vector3 pos;
         public Quaternion rot;
+        public bool isDeferred;
         public Action<GameObject> callback; 
     }
 
@@ -76,27 +88,51 @@ public partial class ObjectPooler : MonoBehaviour
     {
         bComplete = false;
         
-        if (npcObjectSo != null)
-            CreatePoolsFromScriptableObject(npcObjectSo, false);
+        try
+        {
+            if (npcObjectSo != null) CreatePoolsFromScriptableObject(npcObjectSo, false);
+        }
+        catch (Exception error) { InitializationError = error; Debug.LogException(error, this); yield break; }
 
 
-        yield return StartCoroutine(Start_CreatePoolHierachy());
+        var work = Start_CreatePoolHierachy();
+        while (true)
+        {
+            object current;
+            try { if (!work.MoveNext()) break; current = work.Current; }
+            catch (Exception error) { InitializationError = error; Debug.LogException(error, this); yield break; }
+            yield return current;
+        }
 
         bComplete = true;
-        OnPoolInitialized?.Invoke(); // 초기화 완료 알림
 
         // 쌓여있던 명령들 처리
         while (commandQueue.Count > 0)
         {
             var cmd = commandQueue.Dequeue();
             // 예약된 건 Deferred 여부를 선택하게 하거나, 기본적으로 로직 수행
-            GameObject obj = _DeferredSpawnFromPool(cmd.tag, cmd.pos, cmd.rot);
-            cmd.callback?.Invoke(obj);
+            try
+            {
+                GameObject obj = cmd.isDeferred
+                    ? _DeferredSpawnFromPool(cmd.tag, cmd.pos, cmd.rot)
+                    : _SpawnFromPool(cmd.tag, cmd.pos, cmd.rot);
+                cmd.callback?.Invoke(obj);
+            }
+            catch (Exception error)
+            {
+                bComplete = false;
+                InitializationError = error;
+                Debug.LogException(error, this);
+                yield break;
+            }
         }
+        OnPoolInitialized?.Invoke(); // Queued spawn configuration is ready as well.
     }
 
     private void OnDestroy()
     {
+        if (creationRoot != null)
+            Destroy(creationRoot.gameObject);
         if (Instance == this)
             Instance = null;
     }
@@ -118,7 +154,7 @@ public partial class ObjectPooler : MonoBehaviour
         if (!bComplete)
         {
             // 준비 안됐으면 큐에 정보와 콜백을 저장
-            commandQueue.Enqueue(new SpawnCommand { tag = tag, pos = pos, rot = rot, callback = callback });
+            commandQueue.Enqueue(new SpawnCommand { tag = tag, pos = pos, rot = rot, callback = callback, isDeferred = isDeferred });
             Debug.LogWarning($"[Pooler] {tag} 예약됨. 초기화 후 콜백 실행 예정.");
             return;
         }
@@ -245,13 +281,15 @@ public partial class ObjectPooler : MonoBehaviour
 
     public static void ReturnToPool(GameObject obj)
     {
-        if (Instance == null || !Instance.poolDictionary.ContainsKey(obj.name))
+        if (obj == null || Instance == null || !Instance.poolDictionary.ContainsKey(obj.name))
         {
             //throw new Exception($"Pool with tag {obj.name} doesn't exist.");
             return;
         }
 
-        Instance.poolDictionary[obj.name].Enqueue(obj);
+        var queue = Instance.poolDictionary[obj.name];
+        if (!queue.Contains(obj))
+            queue.Enqueue(obj);
     }
 
     [ContextMenu("GetSpawnObjectsInfo")]
@@ -276,6 +314,7 @@ public partial class ObjectPooler : MonoBehaviour
         // 3. 상태 설정 및 활성화
         objectToSpawn.transform.SetPositionAndRotation(position, rotation);
         objectToSpawn.SetActive(true);
+        NotifySpawnActivated(objectToSpawn);
 
         return objectToSpawn;
     }
@@ -337,11 +376,11 @@ public partial class ObjectPooler : MonoBehaviour
         if (!foundInactive || poolQueue.Count <= 0)
         {
             Pool pool = pools.Find(x => x.tag == tag) ?? throw new Exception($"Pool settings for {tag} not found.");
-            GameObject newObj = CreateNewObjectSetParent(pool.tag, pool.prefab);
+            GameObject newObj = CreateNewObjectSetParent(pool.tag, pool.prefab, pool.parentTransform);
             newObj.SetActive(false); // 혹시 켜져서 나올까 봐 확실히 꺼둠
             ArrangePool(pool.parentTransform, tag, newObj);
             
-            poolQueue.Enqueue(newObj);
+            // CreatePooledObject has already registered this object once.
 
             // ArrangePool이 새 객체를 큐 맨 뒤에 넣었을 테니, 맨 앞으로 가져옵니다.
             while (poolQueue.Count > 0 && poolQueue.Peek() != newObj)
@@ -352,6 +391,17 @@ public partial class ObjectPooler : MonoBehaviour
 
         // 이제 Peek()에는 무조건 '비활성화된(안전한)' 객체만 잡힙니다!
         return poolQueue.Peek();
+    }
+
+    public static void NotifySpawnActivated(GameObject obj)
+    {
+        if (obj == null || !obj.activeInHierarchy) return;
+        foreach (var component in obj.GetComponentsInChildren<MonoBehaviour>())
+        {
+            if (component != null && component.isActiveAndEnabled &&
+                component is ISpawnActivationHandler handler)
+                handler.OnSpawnActivated();
+        }
     }
 
     public static void FinishSpawn(GameObject obj)
@@ -369,6 +419,7 @@ public partial class ObjectPooler : MonoBehaviour
         Queue<GameObject> poolQueue = Instance.poolDictionary[tag];
         GameObject objectToSpawn = poolQueue.Dequeue();
         objectToSpawn.SetActive(true);
+        NotifySpawnActivated(objectToSpawn);
     }
 
 
@@ -380,6 +431,7 @@ public partial class ObjectPooler : MonoBehaviour
             if (bIsPlayer)
                 tag = $"PC_{co.id}";
 
+            if (pools.Exists(p => p != null && p.tag == tag)) continue;
             Pool pool = new();
             pool.tag = tag;
             pool.prefab = co.obj;
@@ -411,22 +463,7 @@ public partial class ObjectPooler : MonoBehaviour
 
     GameObject CreateNewObject(string tag, GameObject prefab)
     {
-        // Pooler를 부모로 하여금 해당 오브젝트 생성
-        var obj = Instantiate(prefab, transform);
-        obj.name = tag;
-        
-        // 프리팹이 원래 꺼져있었는지 확인합니다.
-        bool wasActive = obj.activeSelf;
-
-        obj.SetActive(false);
-
-        // 프리팹이 원래 꺼져있었다면 OnDisable이 발동하지 않았을 테니 강제로 큐에 넣어줍니다!
-        if (wasActive == false)
-        {
-            ReturnToPool(obj);
-        }
-
-        return obj;
+        return CreatePooledObject(tag, prefab, transform);
     }
 
     void ArrangePool(GameObject obj)

@@ -2,7 +2,7 @@
 using UnityEngine;
 
 public class BeamProjectile
-    : BaseProjectile
+    : BaseProjectile, ISpawnActivationHandler
 {
     [Header("Beam Settings")]
     [SerializeField] private float beamRadius = 1.5f; // 레이저 두께 (반지름)
@@ -23,6 +23,7 @@ public class BeamProjectile
     private float currentLifeTimer = 0f;
     private float tickTimer = 0f;
     private bool isBeamActive = false;
+    private bool spawnActivated;
 
 
     // =========================================================
@@ -66,7 +67,7 @@ public class BeamProjectile
     }
     protected override void OnEnable()
     {
-        base.OnEnable();
+        spawnActivated = false;
 
         // 빔이 켜질 때마다 초기화
         hitTargets.Clear();
@@ -76,7 +77,14 @@ public class BeamProjectile
         currentDelayTimer = hitDelay;
         currentLifeTimer = lifeTime;
 
-        // 단발 빔이라면 켜지자마자 즉시 1회 판정 쫙!
+    }
+
+    public void OnSpawnActivated()
+    {
+        if (spawnActivated || !isActiveAndEnabled) return;
+        spawnActivated = true;
+        base.OnEnable();
+        // 실제 스폰이 완료된 후에만 타격 및 효과음을 실행합니다.
         if (hitDelay <= 0f)
         {
             ActivateBeam();
@@ -85,6 +93,7 @@ public class BeamProjectile
 
     protected override void OnDisable()
     {
+        spawnActivated = false;
         base.OnDisable();
         ObjectPooler.ReturnToPool(gameObject);    // 한 객체에 한번만 
 
@@ -97,6 +106,7 @@ public class BeamProjectile
 
     protected override void Update()
     {
+        if (!spawnActivated) return;
         base.Update();
 
         // 1. 수명 관리

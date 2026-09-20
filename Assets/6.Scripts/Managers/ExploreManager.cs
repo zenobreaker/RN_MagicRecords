@@ -27,7 +27,7 @@ public enum RunStatus
 //SetupIncomplete
 /// </summary>
 
-public sealed class ExploreManager : MonoBehaviour
+public sealed partial class ExploreManager : MonoBehaviour
 {
     public ExploreState CurrentState { get; private set; } = ExploreState.NONE;
 
@@ -46,6 +46,10 @@ public sealed class ExploreManager : MonoBehaviour
 
     private string chapterBiomeName;
     public RunStatus RunStatus { get; private set; }
+    // MidRun is saved as soon as setup finishes. Keep this session-only intent
+    // separate so loading a MidRun never grants another starting draft.
+    public bool InitialRecordRewardPending { get; private set; }
+    public void ConsumeInitialRecordReward() => InitialRecordRewardPending = false;
 
     public int Chapter { get; private set; } = 1;
     public int MapNodeID { get; private set; }
@@ -144,6 +148,9 @@ public sealed class ExploreManager : MonoBehaviour
 
     public void ResetData()
     {
+        runHealth.Clear();
+        liveHealth.Clear();
+        InitialRecordRewardPending = false;
         bCreate = false;
         bAllCleared = false;
         Chapter = 1;
@@ -198,6 +205,7 @@ public sealed class ExploreManager : MonoBehaviour
 
     private void ReplaceLevel(bool forceGenerate)
     {
+        InitialRecordRewardPending = false;
         ExploreRunSaveData loadData = forceGenerate ? null : SaveManager.LoadExploreRun();
         //MapData loadData  = forceGenerate ? null : SaveManager.LoadMap();
 
@@ -206,6 +214,7 @@ public sealed class ExploreManager : MonoBehaviour
         {
             RunStatus = loadData.runStatus;
             CurrentSetupData = loadData.setupData;
+            runHealth = loadData.partyHealth ?? new();
 
             // 세팅 중이었다면 맵/스테이지는 없으므로 로드 중단
             if (RunStatus == RunStatus.SetupIncomplete)
@@ -257,7 +266,7 @@ public sealed class ExploreManager : MonoBehaviour
 
             if (mapData != null)
             {
-                Chapter = mapData.chapter <= 0 ? 1 : Chapter;
+                Chapter = mapData.chapter <= 0 ? 1 : mapData.chapter;
 
                 MapNodeID = mapData.currentNodeId;
                 BiomeName = mapData.biomeName;
@@ -313,8 +322,21 @@ public sealed class ExploreManager : MonoBehaviour
     // 유저가 세팅창에서 최종 시작 버튼을 눌렀을 때 호출
     public void FinallizeSetupAndGenerateMap(ExplorationSetupData finalSetup)
     {
-        CurrentSetupData = finalSetup;
+        if (finalSetup == null) return;
+        // A resumed setup can enter here without StartExplore/Init(true).
+        // Initialize before committing so SaveExploreMap cannot reject this run.
+        Init(false);
+        bool startingNewRun = Chapter == 1 &&
+            (RunStatus == RunStatus.SetupIncomplete || RunStatus == RunStatus.NoSave);
+        if (startingNewRun) { runHealth.Clear(); liveHealth.Clear(); }
+        CurrentSetupData = new ExplorationSetupData
+        {
+            SelectedCharacterId = finalSetup.SelectedCharacterId,
+            SelectedClassId = finalSetup.SelectedClassId,
+            IsContinue = finalSetup.IsContinue
+        };
         RunStatus = RunStatus.MidRun;
+        InitialRecordRewardPending = startingNewRun;
 
         MapNodeID = 0;
 
@@ -425,6 +447,7 @@ public sealed class ExploreManager : MonoBehaviour
     public bool CanEnableNode(int targetNodeId, bool bCheat = false)
     {
         if (bCheat) return true;
+        if (targetNodeId == MapNodeID && GetReplacedNodeInfo()?.type == StageType.Shop) return true;
 
         // 1. 현재 노드를 아직 못 깼다면? 
         // 오직 "지금 그 노드"만 다시 들어갈 수 있음 (이어하기/재도전)
@@ -442,6 +465,7 @@ public sealed class ExploreManager : MonoBehaviour
         // 1. 플레이어가 서 있는 바로 그곳
         if (MapNodeID == targetNodeId)
         {
+            if (GetReplacedNodeInfo()?.type == StageType.Shop) return MapNodeState.Current;
             return IsCurrentNodeCleared ? MapNodeState.Cleared : MapNodeState.Current;
         }
 
@@ -466,7 +490,7 @@ public sealed class ExploreManager : MonoBehaviour
 
     public void EnterStageByNode(MapNode node)
     {
-        if (node == null) return;
+        if (node == null || !CanEnableNode(node.id)) return;
 
         MapNodeID = node.id;
 
@@ -581,7 +605,14 @@ public sealed class ExploreManager : MonoBehaviour
     // UI에서 '다음'버튼을 누를 때 임시저장
     public void SaveSetupProgress(ExplorationSetupData currentSetup)
     {
-        CurrentSetupData = currentSetup;
+        if (currentSetup == null) return;
+        Init(false);
+        CurrentSetupData = new ExplorationSetupData
+        {
+            SelectedCharacterId = currentSetup.SelectedCharacterId,
+            SelectedClassId = currentSetup.SelectedClassId,
+            IsContinue = currentSetup.IsContinue
+        };
         RunStatus = RunStatus.SetupIncomplete;
         SaveExploreMap();
     }
@@ -597,7 +628,8 @@ public sealed class ExploreManager : MonoBehaviour
         ExploreRunSaveData saveData = new ExploreRunSaveData
         {
             runStatus = RunStatus,
-            setupData = CurrentSetupData
+            setupData = CurrentSetupData,
+            partyHealth = runHealth
         };
 
         if (RunStatus != RunStatus.SetupIncomplete)

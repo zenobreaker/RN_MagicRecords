@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using System;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -15,6 +16,7 @@ public class GameManager
     };
 
     private GameState state;
+    private CancellationTokenSource stageLifetime;
 
     public event Action OnBeginStage;
     public event Action OnBattleStage;
@@ -69,23 +71,43 @@ public class GameManager
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        stageLifetime?.Cancel();
+        stageLifetime?.Dispose();
+        stageLifetime = null;
         if (scene.name == "Stage")
         {
-            RunStageAsync().Forget();
+            stageLifetime = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+            RunStageAsync(stageLifetime.Token).Forget();
         }
     }
 
-    private async UniTaskVoid RunStageAsync()
+    private async UniTaskVoid RunStageAsync(CancellationToken token)
     {
-        SetGameState(GameState.BEGIN_STAGE);
+        SceneLoadingController.BeginStagePreparation();
+        try
+        {
+            SetGameState(GameState.BEGIN_STAGE);
+            StageResult result = await stageManager.RunStageFlowAsync(token);
+            token.ThrowIfCancellationRequested();
+            SetGameState(GameState.FINISH_STAGE);
+            AppManager.Instance.HandleStageResult(result);
+        }
+        catch (OperationCanceledException error)
+        {
+            SceneLoadingController.FailStagePreparation(error);
+        }
+        catch (Exception error)
+        {
+            Debug.LogException(error, this);
+            SceneLoadingController.FailStagePreparation(error);
+        }
+    }
 
-        // 스테이지 돌리고 결과 가져오기
-        StageResult result = await stageManager.RunStageFlowAsync(this.GetCancellationTokenOnDestroy());
-
-        SetGameState(GameState.FINISH_STAGE);
-
-        //  결과를 (AppManager)에게 넘겨서 뒷수습을 맡김.
-        AppManager.Instance.HandleStageResult(result);
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= HandleSceneLoaded;
+        stageLifetime?.Cancel();
+        stageLifetime?.Dispose();
     }
 
     public void OnPrecessBattle()
@@ -106,10 +128,11 @@ public class GameManager
 
     public void EnterStage(StageInfo info)
     {
-        if (info == null) return;
+        if (info == null || SceneLoadingController.IsLoading) return;
 
         state = GameState.NONE;
         stageManager.SetEnteredStage(info);
-        SceneManager.LoadScene("Stage");
+        stageManager.ResetStageData();
+        SceneLoadingController.LoadScene("Stage", true);
     }
 }

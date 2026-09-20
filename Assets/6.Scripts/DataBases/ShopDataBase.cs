@@ -15,10 +15,14 @@ public class ShopJsonData
 public class ShopJsonAllData
 {
     public List<ShopJsonData> shopItemJsonData;
+    public List<ExploreRecordPrice> exploreRecordPrices = new();
+    public int exploreHeal15Price = -1;
+    public int exploreHeal60Price = -1;
 }
 
 public class ShopDataBase : DataBase
 {
+    public ShopJsonAllData ExplorePolicy { get; private set; }
     // key : id
     [SerializeField] private Dictionary<int, ShopItem> shopItems = new();
 
@@ -27,6 +31,7 @@ public class ShopDataBase : DataBase
     public override void Initialize()
     {
         if (jsonAsset == null) return;
+        ExplorePolicy = JsonUtility.FromJson<ShopJsonAllData>(jsonAsset.text);
 
         Debug.Log("Shop DataBase Init");
 

@@ -1,16 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
 public partial class ObjectPooler : MonoBehaviour
 {
+    private Transform creationRoot;
     public IEnumerator Start_CreatePoolHierachy()
     {
+        int batchCount = 0;
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        // Register every tag before any Awake/OnEnable can reference another pool.
+        foreach (Pool pool in pools)
+        {
+            if (pool == null || string.IsNullOrEmpty(pool.tag) || pool.prefab == null)
+                throw new System.InvalidOperationException("Invalid pool entry (tag/prefab).");
+            if (poolDictionary.ContainsKey(pool.tag))
+                throw new System.InvalidOperationException($"Duplicate pool tag: {pool.tag}");
+            poolDictionary.Add(pool.tag, new Queue<GameObject>());
+        }
         foreach(Pool pool in pools)
         {
-            poolDictionary.Add(pool.tag, new Queue<GameObject>());
 
             // 기존 오브젝트 생성 및 부모 설정
             for(int i = 0; i< pool.size; i++)
@@ -18,11 +28,16 @@ public partial class ObjectPooler : MonoBehaviour
                 // Ver 25.05.04 : 하나의 함수로 처리하게 
                 GameObject obj = CreateNewObjectSetParent(pool.tag, pool.prefab, pool.parentTransform);
                 ArrangePool(pool.parentTransform, pool.tag, obj);
-                yield return null;
+                if (++batchCount >= Mathf.Max(1, prewarmBatchSize) || watch.Elapsed.TotalMilliseconds >= Mathf.Max(.1f, prewarmFrameBudgetMs))
+                {
+                    yield return null;
+                    batchCount = 0;
+                    watch.Restart();
+                }
             }
 
             // OnDisable에 ReturnToPool 구현여부와 중복구현 검사
-            if (poolDictionary[pool.tag].Count <= 0)
+            if (pool.size > 0 && poolDictionary[pool.tag].Count <= 0)
                 Debug.LogError($"{pool.tag}{INFO}");
             else if (poolDictionary[pool.tag].Count != pool.size)
                 Debug.LogError($"{pool.tag}에 ReturnToPool이 중복됩니다");
@@ -31,10 +46,56 @@ public partial class ObjectPooler : MonoBehaviour
 
     private GameObject CreateNewObjectNoParent(string tag, GameObject prefab)
     {
-        // Version up : 2024 11 03 => 풀링될 대상의 부모를 생성할 때 거기에 만들고 배치시킴
-        var obj = Instantiate(prefab);
+        return CreatePooledObject(tag, prefab, null);
+    }
+
+    // Instantiate under an inactive hierarchy so native agents cannot register
+    // with a NavMesh before we have a chance to disable them.
+    private GameObject CreatePooledObject(string tag, GameObject prefab, Transform parent)
+    {
+        if (prefab == null)
+        {
+            Debug.LogWarning("prefab is not set.");
+            return null;
+        }
+
+        if (creationRoot == null)
+        {
+            var root = new GameObject("ObjectPooler_CreationRoot");
+            root.hideFlags = HideFlags.HideInHierarchy;
+            root.SetActive(false);
+            creationRoot = root.transform;
+        }
+
+        GameObject obj = Instantiate(prefab, creationRoot);
         obj.name = tag;
-        obj.SetActive(false); // 비활성화시 ReturnToPool을 하므로 Enqueue가 됨
+        var agents = obj.GetComponentsInChildren<NavMeshAgent>(true);
+        var enabledAgents = new List<NavMeshAgent>();
+        foreach (var agent in agents)
+        {
+            if (!agent.enabled) continue;
+            enabledAgents.Add(agent);
+            agent.enabled = false;
+        }
+
+        // Preserve the existing Awake/OnEnable initialization before callers
+        // configure a deferred spawn (e.g. Enemy.SetStatData).
+        bool wasPrewarming = IsPrewarming;
+        IsPrewarming = true;
+        try
+        {
+            obj.transform.SetParent(parent, true);
+            obj.SetActive(false);
+        }
+        finally { IsPrewarming = wasPrewarming; }
+        foreach (var agent in enabledAgents)
+        {
+            if (agent != null) agent.enabled = true;
+        }
+
+        // Inactive prefabs/parents do not receive OnDisable. Register explicitly;
+        // ReturnToPool also handles the existing OnDisable registration once.
+        ReturnToPool(obj);
         return obj;
     }
 
@@ -63,19 +124,8 @@ public partial class ObjectPooler : MonoBehaviour
     // 오브젝트 생성 후 부모에 할당
     private GameObject CreateNewObjectSetParent(string tag, GameObject prefab, Transform parentTransform = null)
     {
-        if (prefab == null)
-        {
-            Debug.LogWarning($"prefab is not set.");
-            return null;
-        }
-        GameObject newObj = Instantiate(prefab);
-        newObj.name = tag;
-        
         Transform parent = parentTransform != null ? parentTransform : GetOrCreateParent(tag);
-        newObj.transform.SetParent(parent);
-        
-        newObj.SetActive(false);
-        return newObj;
+        return CreatePooledObject(tag, prefab, parent);
     }
 
     void ArrangePool(string tag, GameObject obj)
@@ -85,44 +135,11 @@ public partial class ObjectPooler : MonoBehaviour
 
     void ArrangePool(Transform parentTransform, string tag, GameObject obj)
     {
-        // 해당 태그의 부모 오브젝트 찾음 
-        Transform parent = null;
-        // 우선 parentTransform 있으면 사용
-        if (parentTransform != null)
-        {
-            parent = parentTransform;
-        }
-        else
-        {
-            // Pool 클래스에서 가져오기
-            var pool = pools.FirstOrDefault<Pool>(p => p.tag == tag);
-            if (pool != null && pool.parentTransform != null)
-                parent = pool.parentTransform;
-        }
-
-        // 아직 null이면 GetOrCreateParent 사용
-        if (parent == null)
-            parent = GetOrCreateParent(tag);
-
-        // 추가된 오브젝트 묶어서 정렬
-        bool isFind = false;
-        for (int i = 0; i < parent.childCount; i++)
-        {
-            if (i == parent.childCount - 1)
-            {
-                obj.transform.SetSiblingIndex(i);
-                spawnObjects.Insert(i, obj);
-                break;
-            }
-            else if (parent.GetChild(i).name == obj.name)
-                isFind = true;
-            else if (isFind)
-            {
-                obj.transform.SetSiblingIndex(i);
-                spawnObjects.Insert(i, obj);
-                break;
-            }
-        }
+        // Creation already chose the correct parent. Avoid scanning siblings and
+        // inserting into the middle of a growing global list for every object.
+        if (obj != null) spawnObjects.Add(obj);
     }
+
+
 
 }

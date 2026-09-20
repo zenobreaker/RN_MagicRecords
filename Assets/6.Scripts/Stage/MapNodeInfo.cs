@@ -10,6 +10,7 @@ public class MapNodeInfo
     
     public bool isCleared;
     public int clearRewardId;
+    public ExploreShopStock shopStock;
     public MapNodeInfo Copy()
     {
         return new MapNodeInfo
@@ -20,7 +21,8 @@ public class MapNodeInfo
             biome = this.biome,
             mapIndex = this.mapIndex,
             isCleared = this.isCleared,
-            clearRewardId = this.clearRewardId
+            clearRewardId = this.clearRewardId,
+            shopStock = shopStock?.Copy()
         };
     }
 

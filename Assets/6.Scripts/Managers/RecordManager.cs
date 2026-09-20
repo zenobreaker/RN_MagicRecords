@@ -21,6 +21,7 @@ public sealed class RecordManager : MonoBehaviour
     private RecordInventory recordInventory = new();
     private RecordInventory transferInventory = new();
     private bool isReceived = false;
+    private bool filterStartingSkills;
 
     private bool isDirty = false;
 
@@ -29,6 +30,7 @@ public sealed class RecordManager : MonoBehaviour
     public void ResetRecordFlowData()
     {
         isReceived = false;
+        filterStartingSkills = false;
         rerollCount = maxRerollCount;
         recordInventory.ClearAll();
     }
@@ -130,8 +132,10 @@ public sealed class RecordManager : MonoBehaviour
     {
         // 이미 이번 스테이지에서 기본 보상을 받았다면 무시
         if (isReceived || AppManager.Instance == null) return;
+        var explore = AppManager.Instance.GetExploreManager();
+        if (explore == null || !explore.InitialRecordRewardPending || explore.Chapter != 1 || explore.MapNodeID != 0) return;
 
-        GenerateDraftRecords(count, canReroll);
+        GenerateDraftRecords(count, canReroll, true);
     }
 
     // 💡 2. 이벤트 보상 시 호출 (중복 방지 플래그 검사 X - 무조건 지급)
@@ -144,11 +148,13 @@ public sealed class RecordManager : MonoBehaviour
     }
 
     // 💡 3. 실제 레코드를 뽑고 UI를 띄우는 핵심 내부 로직 (은닉화)
-    private void GenerateDraftRecords(int count, bool canReroll)
+    private void GenerateDraftRecords(int count, bool canReroll, bool startingSkillsOnly = false)
     {
         DataBaseManager db = AppManager.Instance.GetDataBaseManager();
         if (db == null) return;
 
+        filterStartingSkills = startingSkillsOnly;
+        generateCount = Mathf.Max(1, count);
         SelectedRecords = new List<RecordData>();
 
         // 1. 전체 데이터에서 랜덤 추출 
@@ -160,33 +166,50 @@ public sealed class RecordManager : MonoBehaviour
             allRecord.RemoveAll(data => recordInventory.Records.Any(last => last.id == data.id));
         }
 
-        if (CurrentOptions.Count > 0)
+        CurrentOptions = FilterDraftCandidates(allRecord, startingSkillsOnly)
+            .OrderBy(_ => Random.value).Take(generateCount).ToList();
+        while (CurrentOptions.Count < generateCount)
         {
-            allRecord.RemoveAll(data => CurrentOptions.Exists(last => last.id == data.id));
-        }
-
-        // 3. 현재 플레이 중인 직업 정보 
-        //TODO : 플레이 중인 것의 job 정보가 필요함 
-        int job = 1;
-
-        if (allRecord.Count > 0)
-        {
-            // 4. 필터링 
-            CurrentOptions = allRecord
-                .Where(r => r.targetFilter == TargetFilterType.ALL || r.IsTarget(job))
-                .OrderBy(x => Random.value)
-                .Take(count)
-                .ToList();
-        }
-        // 5. 가질 레코드가 하나도 없다면 빈 메모리 레코드를 쥐어준다. 
-        else
-        {
-            CurrentOptions.Add(db.GetEmptyRecord());
+            var empty = db.GetEmptyRecord();
+            if (empty == null) break;
+            CurrentOptions.Add(empty);
         }
 
         // 5. AppManager를 통해 UI 오픈 이벤트 발행
         PauseManager.RequestPause();
         UIManager.Instance.OpenRecordSelectPopUp(CurrentOptions, canReroll, RecordUIMode.DRAFT);
+        if (startingSkillsOnly) AppManager.Instance.GetExploreManager()?.ConsumeInitialRecordReward();
+    }
+
+    private List<RecordData> FilterDraftCandidates(IEnumerable<RecordData> source, bool startingOnly)
+    {
+        var setup = AppManager.Instance?.GetExploreManager()?.CurrentSetupData;
+        int job = setup?.SelectedClassId ?? 1;
+        var equipped = new HashSet<int>(AppManager.Instance?.GetEquippedActiveSkillIDListByCharID(
+            setup?.SelectedCharacterId ?? 1) ?? new List<int>());
+        return (source ?? Enumerable.Empty<RecordData>()).Where(r => r != null &&
+            (r.targetFilter == TargetFilterType.ALL || r.IsTarget(job)) &&
+            (!startingOnly || IsStartingRecordEligible(r, equipped))).ToList();
+    }
+
+    public bool IsStartingRecordEligible(RecordData record, ISet<int> equipped)
+    {
+        if (record == null || equipped == null) return false;
+        var targets = new HashSet<int>((record.Skills ?? new List<RecordSkillData>())
+            .Where(s => s != null && s.SkillID > 0).Select(s => s.SkillID));
+        if (!recordsDict.TryGetValue(record.id, out var so) || so == null)
+            return targets.Count == 0 || targets.Overlaps(equipped);
+        var passive = SkillTreeManager.Instance?.GetSkillRuntimeData(
+            so.targetFilter == TargetFilterType.ALL ? 0 : (int)so.targetFilter,
+            so.linkedPassiveSkillID)?.template as SO_PassiveSkillData;
+        if (passive?.Modules != null)
+            foreach (var module in passive.Modules)
+                if (module != null && module.TargetSkillID > 0) targets.Add(module.TargetSkillID);
+        // Stats and general passives have no particular skill target.
+        // An unresolved skill modifier must not bypass the equipment filter.
+        if (targets.Count == 0 && passive == null && so.linkedPassiveSkillID > 0 &&
+            (record.type == RecordType.AUGMENT || record.type == RecordType.MODIFY)) return false;
+        return targets.Count == 0 || targets.Overlaps(equipped);
     }
 
     public RecordData GetEmptyRecord()
@@ -289,6 +312,17 @@ public sealed class RecordManager : MonoBehaviour
         isDirty = true;
     }
 
+    // Same SO enrichment, job eligibility and unowned rule as the existing draft.
+    public List<RecordData> GetShopCandidates()
+    {
+        return FilterDraftCandidates(GetAllEnrichedRecordData(), false)
+            .Where(r => r.id > 0 && !recordInventory.Records.Any(owned => owned.id == r.id))
+            .GroupBy(r => r.id).Select(g => g.First()).ToList();
+    }
+
+    public RecordData GetShopRecord(int id) => recordsDict.TryGetValue(id, out var record) && record != null
+        ? record.GetRecordData() : null;
+
     public void RemoveTransferedRecord(RecordData target)
     {
         transferInventory.RemoveRecord(target);
@@ -303,7 +337,7 @@ public sealed class RecordManager : MonoBehaviour
         // 현재 떠 있는 것(CurrentOptions)은 제외하지 않습니다. 
         // 그래야 리롤 시점에 다시 나올 기회를 얻어 '빈 레코드'가 성급하게 뜨지 않습니다.
         var allRecord = GetAllEnrichedRecordData();
-        var candidates = allRecord
+        var candidates = FilterDraftCandidates(allRecord, filterStartingSkills)
             .Where(data => !recordInventory.Records.Any(p => p.id == data.id))
             .ToList();
 

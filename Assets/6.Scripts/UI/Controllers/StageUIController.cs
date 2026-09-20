@@ -47,6 +47,7 @@ public class StageUIController
     protected void Start()
     {
         exploreManager = AppManager.Instance.GetExploreManager();
+        exploreManager.OnStageClear += RefreshMainUI;
 
 
         //exploreManager.OnStageClear += RefreshMainUI;
@@ -60,6 +61,7 @@ public class StageUIController
 
     protected void OnDisable()
     {
+        if (exploreManager != null) exploreManager.OnStageClear -= RefreshMainUI;
         if (ManagerWaiter.TryGetManager<UIManager>(out UIManager ui))
             ui.OnReturnedStageSelect -= UpdateCurrencies;
 
@@ -104,7 +106,10 @@ public class StageUIController
 
     private void RefreshMainUI()
     {
-        Debug.Assert(exploreManager != null);
+        // A shop can disable while the scene/run managers are already being destroyed.
+        if (!isActiveAndEnabled || exploreManager == null || uiMapReplacer == null) return;
+        var nodes = new List<UIMapNode>();
+        uiMapReplacer.UpdateMapUIState(exploreManager, ref nodes);
 
         //exploreManager.SafeInvoke(v => v.UpdateMapUIState(uiMapReplacer));
 

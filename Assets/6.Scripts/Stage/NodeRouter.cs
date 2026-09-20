@@ -41,6 +41,9 @@ public static class NodeRouter
     {
         switch (node.type)
         {
+            case StageType.Shop:
+                UIManager.Instance.OpenExploreShop(node);
+                break;
             case StageType.Combat:
                 StageInfo combatData =
                     DataBaseManager.Instance.SafeInvoke(v=>v.GetStageInfo(node.contentId));

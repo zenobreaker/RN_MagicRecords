@@ -21,6 +21,7 @@ public class StageReplacer
         currentChapter = chapter;
         this.eventChance = eventChance;
         nodeReplacer ??= new NodeReplacer();
+        nodeReplacer.SetMaxNodeLevel(6);
         nodeReplacer?.ClearMap();
         nodeReplacer?.GenerateNodeMap(width, height);
 
@@ -50,13 +51,20 @@ public class StageReplacer
         nodeInfoDict.Clear();
         nodeInfoDict[0] = new MapNodeInfo { nodeId = 0, type = StageType.None, contentId = 0, mapIndex = 0 };
 
-        foreach (MapNodeInfo savedInfo in stageNodeData.nodeInfos)
+        foreach (MapNodeInfo savedInfo in stageNodeData?.nodeInfos ?? new List<MapNodeInfo>())
         {
             if (savedInfo.contentId == 0 && savedInfo.nodeId == 0) continue;
 
             // 저장된 껍데기를 깊은 복사(Copy)해서 딕셔너리에 연결!
             nodeInfoDict[savedInfo.nodeId] = savedInfo.Copy();
         }
+        if (!System.Linq.Enumerable.Any(nodeInfoDict.Values, n => n.type == StageType.Shop))
+        {
+            var shop = nodeReplacer.InsertShopBeforeBoss();
+            if (shop != null) nodeInfoDict[shop.id] = new MapNodeInfo { nodeId = shop.id, type = StageType.Shop, mapIndex = -1 };
+        }
+        if (!nodeReplacer.ValidateShopConnections())
+            Debug.LogError("Restored map contains invalid shop/boss connections.");
     }
 
     public Dictionary<int, MapNodeInfo> GetNodeToInfo() => nodeInfoDict;
@@ -149,6 +157,7 @@ public class StageReplacer
         Debug.Assert(DataBaseManager.Instance != null, $"DataBaseManager is Null");
 
         var levels = nodeReplacer.GetLevels();
+        nodeInfoDict.Clear();
         
         for (int level = 0; level < levels.Count; level++)
         {
@@ -183,6 +192,11 @@ public class StageReplacer
                     info.contentId = bossStage.id;
                     info.mapIndex = -1; // 보스 전용 맵
                     info.clearRewardId = bossStage.clearRewardId;
+                }
+                else if (level == levels.Count - 2)
+                {
+                    info.type = StageType.Shop;
+                    info.mapIndex = -1;
                 }
                 else
                 {

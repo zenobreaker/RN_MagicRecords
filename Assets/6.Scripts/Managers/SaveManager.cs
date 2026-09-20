@@ -11,6 +11,7 @@ public sealed class ExploreRunSaveData
 
     public MapData mapData;
     public StageNodeData stageNodeData; 
+    public List<ExploreHealthState> partyHealth = new();
 }
 
 
@@ -110,13 +111,34 @@ public sealed class RecordSaveListData
 
 public static class SaveManager
 {
-    private static readonly string runSaveDataPath = Path.Combine(Application.persistentDataPath, "runSaveData.json");
-    private static readonly string mapDataPath = Path.Combine(Application.persistentDataPath, "mapdata.json");
-    private static readonly string stageDataPath = Path.Combine(Application.persistentDataPath, "stagedata.json");
-    private static readonly string charInfoDatPah = Path.Combine(Application.persistentDataPath, "charinfo.json");
-    private static readonly string inventoryPath = Path.Combine(Application.persistentDataPath, "invetory.json");
-    private static readonly string skillPath = Path.Combine(Application.persistentDataPath, "learnskill.json");
-    private static readonly string recordPath = Path.Combine(Application.persistentDataPath, "record.json");
+    private static string SaveDirectory
+    {
+        get
+        {
+#if UNITY_EDITOR
+            string shopTestDirectory = UnityEditor.SessionState.GetString("ShopRegression.SaveDirectory", "");
+            if (!string.IsNullOrEmpty(shopTestDirectory))
+            {
+                Directory.CreateDirectory(shopTestDirectory);
+                return shopTestDirectory;
+            }
+            if (UnityEditor.SessionState.GetBool("EventScenario.UseSandbox", false))
+            {
+                string directory = Path.Combine(Application.persistentDataPath, "EventScenario");
+                Directory.CreateDirectory(directory);
+                return directory;
+            }
+#endif
+            return Application.persistentDataPath;
+        }
+    }
+    private static string runSaveDataPath => Path.Combine(SaveDirectory, "runSaveData.json");
+    private static string mapDataPath => Path.Combine(SaveDirectory, "mapdata.json");
+    private static string stageDataPath => Path.Combine(SaveDirectory, "stagedata.json");
+    private static string charInfoDatPah => Path.Combine(SaveDirectory, "charinfo.json");
+    private static string inventoryPath => Path.Combine(SaveDirectory, "invetory.json");
+    private static string skillPath => Path.Combine(SaveDirectory, "learnskill.json");
+    private static string recordPath => Path.Combine(SaveDirectory, "record.json");
 
 
     public static void SaveExploreRun(ExploreRunSaveData data)

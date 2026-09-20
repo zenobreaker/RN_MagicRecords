@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Audio; // 💡 [추가] AudioMixer를 사용하기 위한 네임스페이스
 
 [System.Serializable]
@@ -38,6 +39,7 @@ public class SoundManager : MonoBehaviour
     private Dictionary<string, AudioClip> sfxSoundTable = new Dictionary<string, AudioClip>();
 
     private CancellationTokenSource bgmFadeCts;
+    private float bgmVolumeBeforeFade;
 
     private void Awake()
     {
@@ -56,16 +58,38 @@ public class SoundManager : MonoBehaviour
         Awake_InitSFXTable();
         Awake_InitBGMTable();
         Awake_InitMixerGroups(); // 💡 믹서 그룹 자동 할당
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void Start()
     {
         GameManager.Instance.SafeInvoke(v => v.OnBattleStage += PlayBattleBGM);
+        OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
     }
 
     private void OnDestroy()
     {
+        if (instance != this) return;
+        SceneManager.sceneLoaded -= OnSceneLoaded;
         GameManager.Instance.SafeInvoke(v => v.OnBattleStage -= PlayBattleBGM);
+        CancelBGMFade();
+        instance = null;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Temporary stage-selection music, including direct scene entry.
+        if (scene.name == "StageSelectScene")
+            PlayBGM("Battle1");
+    }
+
+    private void CancelBGMFade()
+    {
+        if (bgmFadeCts == null) return;
+        bgmFadeCts.Cancel();
+        bgmFadeCts.Dispose();
+        bgmFadeCts = null;
+        if (bgmPlayer != null) bgmPlayer.volume = bgmVolumeBeforeFade;
     }
 
     private void Awake_InitSFXTable()
@@ -109,14 +133,14 @@ public class SoundManager : MonoBehaviour
 
     public void ChangeBGM(string soundName, float fadeDuration = 1.0f)
     {
-        if (bgmSoundTable.TryGetValue(soundName, out AudioClip newClip))
+        if (bgmPlayer != null && bgmSoundTable.TryGetValue(soundName, out AudioClip newClip))
         {
             // 이미 똑같은 음악이 나오고 있다면 무시
-            if (bgmPlayer.clip == newClip && bgmPlayer.isPlaying) return;
+            if (bgmFadeCts == null && bgmPlayer.clip == newClip && bgmPlayer.isPlaying) return;
 
             // 💡 1. 진행 중인 페이드 작업이 있다면 즉시 취소 (안전한 스레드 종료)
-            bgmFadeCts?.Cancel();
-            bgmFadeCts?.Dispose();
+            CancelBGMFade();
+            bgmVolumeBeforeFade = bgmPlayer.volume;
             bgmFadeCts = new CancellationTokenSource();
 
             // 💡 2. UniTask 실행 (Forget을 붙여 워닝을 없애고 비동기로 흘려보냄)
@@ -153,6 +177,11 @@ public class SoundManager : MonoBehaviour
         }
 
         bgmPlayer.volume = startVolume;
+        if (bgmFadeCts != null && bgmFadeCts.Token == token)
+        {
+            bgmFadeCts.Dispose();
+            bgmFadeCts = null;
+        }
     }
 
     public void PlayRandomBGM()
@@ -163,16 +192,17 @@ public class SoundManager : MonoBehaviour
         // bgmSounds.Length - 1 을 넣으면 마지막 요소가 절대 나오지 않으므로 Length를 그대로 넣어야 합니다.
         int random = Random.Range(0, bgmSounds.Length);
 
-        bgmPlayer.clip = bgmSounds[random].clip;
-        bgmPlayer.Play();
+        PlayBGM(bgmSounds[random].soundName);
     }
 
     public void PlayBGM(string soundName)
     {
-        if (string.IsNullOrEmpty(soundName) || bgmSoundTable == null) return;
+        if (string.IsNullOrEmpty(soundName) || bgmSoundTable == null || bgmPlayer == null) return;
 
         if (bgmSoundTable.ContainsKey(soundName))
         {
+            CancelBGMFade();
+            if (bgmPlayer.clip == bgmSoundTable[soundName] && bgmPlayer.isPlaying) return;
             bgmPlayer.clip = bgmSoundTable[soundName];
             bgmPlayer.Play();
         }

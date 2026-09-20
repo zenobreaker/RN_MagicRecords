@@ -59,6 +59,7 @@ public class AIController : MonoBehaviour
 
     public void Update()
     {
+        if (SceneLoadingController.IsLoading || ObjectPooler.IsPrewarming) return;
         UpdateContext();
 
         if (aiBehaivour != null)
@@ -97,6 +98,7 @@ public class AIController : MonoBehaviour
 
     public void DoAction()
     {
+        if (SceneLoadingController.IsLoading || ObjectPooler.IsPrewarming) return;
         // 상태가 Idle이 아니면 실행 불가 (기절, 피격 등 방어)
         if (state != null && state.IdleMode == false) return;
 

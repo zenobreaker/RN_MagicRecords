@@ -159,6 +159,7 @@ public class UIManager : Singleton<UIManager>
     // 💡ESC 처리 로직 통합: 스택 맨 위에 있는 것(팝업이든 UI든)을 하나씩 무조건 닫습니다.
     private void OnCancelPressed(InputAction.CallbackContext context)
     {
+        if (SceneLoadingController.IsLoading) return;
         if (openedUIs.Count > 0)
         {
             CloseTopUI();
@@ -173,6 +174,7 @@ public class UIManager : Singleton<UIManager>
     // 💡 엔터/스페이스를 눌렀을 때
     private void OnSubmitPressed(InputAction.CallbackContext context)
     {
+        if (SceneLoadingController.IsLoading) return;
         // 최상단에 열려있는 팝업이나 UI가 있다면
         if (openedUIs.Count > 0)
         {
@@ -233,6 +235,7 @@ public class UIManager : Singleton<UIManager>
         // 켜져 있는지 확인 
         if (uiInstances.TryGetValue(uiType, out UiBase existingUI) && existingUI != null)
         {
+            if (openedUIs.Contains(existingUI) && existingUI.gameObject.activeSelf) return existingUI as T;
             existingUI.gameObject.SetActive(true);
             
             existingUI.transform.SetAsLastSibling();
@@ -264,11 +267,12 @@ public class UIManager : Singleton<UIManager>
 
     public void CloseTopUI()
     {
-        if (openedUIs.Count > 0)
-        {
-            var top = openedUIs.Pop();
-            top.gameObject.SetActive(false); // 또는 top.CloseUI(); (UiBase 내부 구현에 맞게 사용)
-        }
+        while (openedUIs.Count > 0 && openedUIs.Peek() == null) openedUIs.Pop();
+        if (openedUIs.Count == 0) return;
+        var top = openedUIs.Peek();
+        top.CloseUI(); // Allow transactional popups to ask before closing on Esc.
+        if (top == null || !top.gameObject.activeSelf)
+            CloseSpecificUI(top);
     }
 
     public void CloseAllOpenedUI()
@@ -285,33 +289,23 @@ public class UIManager : Singleton<UIManager>
     /// </summary>
     public void CloseSpecificUI(UiBase targetUI)
     {
-        if (openedUIs.Count == 0 || targetUI == null) return;
+        var remaining = new List<UiBase>(openedUIs);
+        remaining.RemoveAll(ui => ui == null || ui == targetUI);
+        remaining.Reverse();
+        openedUIs = new Stack<UiBase>(remaining);
+        if (targetUI != null) targetUI.gameObject.SetActive(false);
+    }
 
-        // 1. 타겟이 마침 스택 맨 위라면 기존 함수를 재사용하여 깔끔하게 Pop
-        if (openedUIs.Peek() == targetUI)
-        {
-            CloseTopUI();
-            return;
-        }
+    public void OpenRecordSkillUpPopUp(EventChoice choice)
+    {
+        var ui = OpenUI<UIRecordSkillUpPopUp>(true);
+        if (ui != null) ui.SetData(choice);
+    }
 
-        // 2. 타겟이 스택 중간에 껴있다면? (Stack은 중간 삭제가 안 되므로 분해 후 재조립)
-        if (openedUIs.Contains(targetUI))
-        {
-            // 스택을 리스트로 변환 (주의: 인덱스 0이 스택의 Top입니다)
-            List<UiBase> tempUiList = new List<UiBase>(openedUIs);
-
-            // 타겟 제거
-            tempUiList.Remove(targetUI);
-
-            // 다시 스택으로 만들기 위해 순서를 뒤집어줍니다 (Top이 마지막으로 들어가야 하므로)
-            tempUiList.Reverse();
-
-            // 스택 재할당
-            openedUIs = new Stack<UiBase>(tempUiList);
-
-            // UI 끄기
-            targetUI.gameObject.SetActive(false);
-        }
+    public void OpenSkillEventConfirmation(string title, string message, bool showCheckbox, Action<bool> onConfirm)
+    {
+        var ui = OpenUI<UISkillEventConfirmation>(true);
+        if (ui != null) ui.SetData(title, message, showCheckbox, onConfirm);
     }
 
     private void SetStageUserInterface()
@@ -391,11 +385,20 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
-    public void OpenShopPopUp(ItemData itemData, int price, CurrencyType currencyType)
+    public UIPopUpShop OpenShopPopUp(ItemData itemData, int price, CurrencyType currencyType)
     {
         var ui = OpenUI<UIPopUpShop>(true); // 팝업이므로 true
         if (ui != null && ui.TryGetComponent<UIPopUpShop>(out var target))
+        {
             target.SetData(itemData, price, currencyType);
+        }
+        return ui;
+    }
+
+    public void OpenExploreShop(MapNodeInfo node)
+    {
+        var ui = OpenUI<ShopUI>(true);
+        if (ui != null) ui.SetExploreShop(node);
     }
 
     public void OpenItemPopUp(ItemData itemData)

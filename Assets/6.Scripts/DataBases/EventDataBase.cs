@@ -76,6 +76,7 @@ public class EventInfoJson : InfoJson
 
     public int probability;
     public string resulttextkey;
+    public string resultbuttontextkey;
 
     // Fail
     public string failactiontype; // NEW
@@ -198,6 +199,8 @@ public sealed class EventDataBase : DataBase
                     // Result & Probability
                     newChoice.Probability = row.probability == 0 ? 100 : row.probability;
                     newChoice.ResultTextKey = row.resulttextkey;
+                    newChoice.ResultButtonTextKey = string.IsNullOrEmpty(row.resultbuttontextkey)
+                        ? "ui_btn_leave" : row.resultbuttontextkey;
                     newChoice.FailTextKey = row.failtextkey;
 
                     // 💡 Fail Action 파싱 (추가됨)
@@ -228,6 +231,17 @@ public sealed class EventDataBase : DataBase
         }
         return null;
     }
+
+#if UNITY_EDITOR
+    public IEnumerable<EventInfo> GetTestEvents() => eventInfos.Values;
+
+    // Editor scenarios replace only the in-memory copy, never the JSON asset.
+    public void SetTestEvent(EventInfo info)
+    {
+        if (info == null || info.id <= 0) throw new ArgumentException("A positive event ID is required.");
+        eventInfos[info.id] = JsonUtility.FromJson<EventInfo>(JsonUtility.ToJson(info));
+    }
+#endif
 
     public int GetRandomEventID(int chapter)
     {

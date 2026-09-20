@@ -44,9 +44,10 @@ public sealed class SpawnManager : MonoBehaviour
             soNpcObject.Init();
     }
 
-    // 플레이어 스폰 비동기 래퍼 
+    // 플레이어 스폰 비동기 래퍼
     public UniTask SpawnCharacterAsync(int id, List<Transform> points, CancellationToken token)
     {
+        token.ThrowIfCancellationRequested();
         SpawnCharacter(id, points);
 
         return UniTask.CompletedTask;
@@ -72,17 +73,17 @@ public sealed class SpawnManager : MonoBehaviour
             var playerGO = Instantiate(playerObj, spawnPoints[0].position, spawnPoints[0].rotation);
 
             // Connect Camera
-            if (Camera.main.TryGetComponent<CinemachineCamera>(out var cc))
+            if (Camera.main != null && Camera.main.TryGetComponent<CinemachineCamera>(out var cc))
                 cc.Target.TrackingTarget = playerGO.transform;
 
             if(playerGO.TryGetComponent<Player>(out var player))
             {
-                // Char ID 
+                // Char ID
                 player.CharID = id;
                 PlayerManager.Instance.SafeInvoke(v => v.SetCurrentPlayer(player));
 
                 //TODO : class(=job) 기능이 생기면 그 아이디로 지정해야 한다.
-                int jobID = 1; 
+                int jobID = 1;
                 player.JobID = jobID;
 
                 // Passive 등록한 이력 처리
@@ -94,14 +95,14 @@ public sealed class SpawnManager : MonoBehaviour
                 // Setting Status
                 player.SetStatus();
 
-                // Setting Passive Status 
+                // Setting Passive Status
                 AppManager.Instance.SafeInvoke(v=> v.OnApplyStaticEffct(jobID, player));
                 AppManager.Instance.SafeInvoke(v => v.OnApplyStaticEffct(Constants.GLOBAL_RECORD_JOB_ID, player));
 
-                // Setting Equipment 
+                // Setting Equipment
                 player.SetEquipments();
-                
-                // Recalculate Status 
+
+                // Recalculate Status
                 if(player.TryGetComponent<StatusComponent>(out var status))
                 {
                     status.RefreshAllStatus();
@@ -110,7 +111,7 @@ public sealed class SpawnManager : MonoBehaviour
                 // Add to List
                 spawnedPlayers.Add(player);
 
-                // Dead Event 
+                // Dead Event
                 player.OnDead += OnPlayerDead;
 
                 BattleManager.Instance.SafeInvoke(v => v.RegistPlayer(player));
@@ -121,10 +122,13 @@ public sealed class SpawnManager : MonoBehaviour
     // 💡 풀러 콜백을 기다려주는 진짜 비동기 NPC 스폰 함수!
     public async UniTask SpawnNPCAsync(int groupID, List<Transform> spawnPoints, bool isEnemy, CancellationToken token)
     {
-        if (spawnPoints == null || spawnPoints.Count <= 0) return;
+        token.ThrowIfCancellationRequested();
+        if (spawnPoints == null || spawnPoints.Count <= 0)
+            throw new InvalidOperationException("NPC spawn points are missing.");
 
         MonsterGroupData data = AppManager.Instance.GetGroupData(groupID);
-        if (data == null || data.monsterIDs.Count == 0) return;
+        if (data == null) throw new InvalidOperationException($"Monster group {groupID} is missing.");
+        if (data.monsterIDs.Count == 0) return;
 
         var tcs = new UniTaskCompletionSource();
         int totalToSpawn = data.monsterIDs.Count;
@@ -132,50 +136,68 @@ public sealed class SpawnManager : MonoBehaviour
 
         foreach (var id in data.monsterIDs)
         {
+            token.ThrowIfCancellationRequested();
             int idx = Random.Range(0, spawnPoints.Count);
             string tag = $"NPC_{id}";
 
             ObjectPooler.DeferredSpawnWithCallback(tag, spawnPoints[idx], (npc) =>
             {
-                int enemyLayer = LayerMask.NameToLayer("Enemy");
-                if (enemyLayer != -1 && isEnemy)
-                    SetLayerRecursively(npc, enemyLayer);
-
-                MonsterStatData statData = AppManager.Instance.SafeInvoke(v => v.GetMonsterStatData(id));
-                if (npc.TryGetComponent<Enemy>(out Enemy enemy))
+                try
                 {
-                    spawnedEnemies.Add(enemy);
-                    enemy.SetStatData(statData);
+                    token.ThrowIfCancellationRequested();
+                    if (npc == null) throw new InvalidOperationException($"Pool {tag} returned no NPC.");
+                    int enemyLayer = LayerMask.NameToLayer("Enemy");
+                    if (enemyLayer != -1 && isEnemy)
+                        SetLayerRecursively(npc, enemyLayer);
 
-                    if(AppManager.Instance != null)
-                        enemy.SetGrade(AppManager.Instance.SafeInvoke(v=>v.GetMonsterData(id)));
-                    
-                    enemy.OnDead += OnEnemyDead;
+                    MonsterStatData statData = AppManager.Instance.SafeInvoke(v => v.GetMonsterStatData(id));
+                    if (npc.TryGetComponent<Enemy>(out Enemy enemy))
+                    {
+                        spawnedEnemies.Add(enemy);
+                        enemy.SetStatData(statData);
 
-                    if (enemy.TryGetComponent<NavMeshAgent>(out var agent)) 
-                        agent.enabled = true;
+                        if(AppManager.Instance != null)
+                            enemy.SetGrade(AppManager.Instance.SafeInvoke(v=>v.GetMonsterData(id)));
+
+                        enemy.OnDead += OnEnemyDead;
+
+                        if (enemy.TryGetComponent<NavMeshAgent>(out var agent))
+                            agent.enabled = true;
 
 
-                    BattleManager.Instance.SafeInvoke(v => v.ResistEnemy(enemy));
-                    
+                        BattleManager.Instance.SafeInvoke(v => v.ResistEnemy(enemy));
+
+                    }
+
+                    if(npc.TryGetComponent<StateComponent>(out StateComponent component))
+                    {
+                        component.SetIdleMode();
+                    }
+
+                    ObjectPooler.FinishSpawn(npc);
+
+                    spawnedCount++;
+                    if (spawnedCount >= totalToSpawn)
+                    {
+                        tcs.TrySetResult(); // 스폰 완료!
+                    }
                 }
-
-                if(npc.TryGetComponent<StateComponent>(out StateComponent component))
-                {
-                    component.SetIdleMode();
-                }
-
-                ObjectPooler.FinishSpawn(npc);
-
-                spawnedCount++;
-                if (spawnedCount >= totalToSpawn)
-                {
-                    tcs.TrySetResult(); // 스폰 완료!
-                }
+                catch (OperationCanceledException) { tcs.TrySetCanceled(token); }
+                catch (Exception error) { tcs.TrySetException(error); }
             });
         }
 
-        await tcs.Task;
+        await tcs.Task.AttachExternalCancellation(token);
+    }
+
+    public void ResetStageSpawns()
+    {
+        foreach (var player in spawnedPlayers)
+            if (player != null) player.OnDead -= OnPlayerDead;
+        foreach (var enemy in spawnedEnemies)
+            if (enemy != null) enemy.OnDead -= OnEnemyDead;
+        spawnedPlayers.Clear();
+        spawnedEnemies.Clear();
     }
 
     public void OnEndSpawn() { }
@@ -193,7 +215,7 @@ public sealed class SpawnManager : MonoBehaviour
         spawnedEnemies.Remove(enemy);
 
         if (spawnedEnemies.Count == 0)
-            OnAllEnemiesDead?.Invoke(); 
+            OnAllEnemiesDead?.Invoke();
     }
 
     // 자식 오브젝트들까지 모조리 레이어를 바꿔주는 마법의 헬퍼 함수

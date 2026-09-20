@@ -228,6 +228,7 @@ public class ShopItem : ItemData
             this.targetItemID = shopItem.targetItemID;
             this.price = shopItem.Price;
             this.currencyType = shopItem.currencyType;
+            TargetItemData = shopItem.TargetItemData?.Copy();
         }
     }
 
@@ -248,6 +249,6 @@ public class ShopItem : ItemData
 
     public override ItemData Copy()
     {
-        return new ShopItem(id, targetItemID, iconPath, price, currencyType);
+        return new ShopItem(this);
     }
 }
