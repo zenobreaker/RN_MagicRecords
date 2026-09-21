@@ -107,7 +107,9 @@ public class UIMapReplacer : MonoBehaviour
                 CustomLine cl = Instantiate<CustomLine>(CustomLineObject, LineContainer.transform);
 
                 Vector2 a = new Vector2(mapNodes[i].position.x + width * 0.5f, mapNodes[i].position.y);
-                Vector2 b = new Vector2(mapNodes[id].position.x + width * 0.5f, mapNodes[id].position.y);
+                var next = mapNodes.Find(n => n.id == id);
+                if (next == null) continue;
+                Vector2 b = new Vector2(next.position.x + width * 0.5f, next.position.y);
 
                 cl.DrawLine(a, b);
             }

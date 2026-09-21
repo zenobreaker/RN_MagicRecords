@@ -19,20 +19,29 @@ public class JobButton
 {
     public int jobID;
     public GameObject jobButtonObj;
+    public Image buttonIcon;
     public Button jobButton;
     public event Action<int> OnJobButtonClicked;
 
     public void SetButtonEvent()
     {
-        if(jobButton != null)
+        if (jobButton != null)
         {
             jobButton.onClick.RemoveAllListeners();
             jobButton.onClick.AddListener(() => OnJobButtonClicked.Invoke(jobID));
         }
     }
+
+    public void SetJobSprite(Sprite sprite)
+    {
+        if (sprite != null && buttonIcon != null)
+        {
+            buttonIcon.sprite = sprite;
+        }
+    }
 }
 
-public class CharacterSelectUI 
+public class CharacterSelectUI
     : SelectBaseUI
     , IExplorationSetupPage
 {
@@ -86,8 +95,8 @@ public class CharacterSelectUI
             // 아무것도 안 골라져 있다면 맨 첫 번째 캐릭터를 기본으로 선택
             SelectCharacter(characterList[0]);
         }
-        
-        ShowPopUp(); 
+
+        ShowPopUp();
     }
 
     private void DrawCharacterList()
@@ -126,7 +135,7 @@ public class CharacterSelectUI
     private void OnCharacterSlotClicked(CharData data)
     {
         // 이미 선택된 데이터라면 무시 
-        if (selectedCharacter == data.charId) return; 
+        if (selectedCharacter == data.charId) return;
 
         SelectCharacter(data.charId);
     }
@@ -172,19 +181,22 @@ public class CharacterSelectUI
 
         foreach (var btn in jobButtons)
         {
-            if (btn.jobButtonObj!= null)
+            if (btn.jobButtonObj != null)
                 btn.jobButtonObj.SetActive(false);
         }
 
         // 가져온 직업 데이터를 바탕으로 하단의 UI 버튼들의 아이콘과 이벤트를 세팅합니다.
         if (jobButtons.Count > 0 && availableJobs.Count > 0)
         {
-            foreach(var job in availableJobs)
+            foreach (var job in availableJobs)
             {
                 var targetButton = jobButtons.FirstOrDefault(b => b.jobID == job.id);
 
-                if (targetButton != null && targetButton.jobButtonObj!= null)
+                if (targetButton != null && targetButton.jobButtonObj != null)
                 {
+                    Sprite jobSpt = PlayerManager.Instance.SafeInvoke(v => v.GetJobInfo(job.id)?.jobSprite);
+                    targetButton.SetJobSprite(jobSpt);
+
                     // 3. 컨테이너(classButtonContainer)의 자식으로 붙여줍니다. (false는 로컬 스케일 유지용)
                     targetButton.jobButtonObj.transform.SetParent(classButtonContainer, false);
 
@@ -196,7 +208,7 @@ public class CharacterSelectUI
 
                     targetButton.OnJobButtonClicked -= SelectClass;
                     targetButton.OnJobButtonClicked += SelectClass;
-                    targetButton.SetButtonEvent(); 
+                    targetButton.SetButtonEvent();
                 }
             }
         }
@@ -213,10 +225,10 @@ public class CharacterSelectUI
     public void SelectClass(int classId)
     {
         if (selectedClass != -1)
-            selectedClass  = selectedClass == classId ? -1 : classId;
-        else 
+            selectedClass = selectedClass == classId ? -1 : classId;
+        else
             selectedClass = classId;
-        
+
         currentContext.SelectedClassId = selectedClass;
 
         RefreshJobSlotSelectionUI();
@@ -263,6 +275,4 @@ public class CharacterSelectUI
             selectJobImage.gameObject.SetActive(true);
         }
     }
-
-
 }

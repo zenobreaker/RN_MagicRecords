@@ -14,11 +14,11 @@ public enum ExplorationStep
 [System.Serializable]
 public class ExplorationSetupData
 {
-    public int SelectedCharacterId { get; set; } = -1;
-    public int SelectedClassId { get; set; } = -1;
+    public int SelectedCharacterId = -1;
+    public int SelectedClassId = -1;
 
     // 이어하기 모드인지 여부 
-    public bool IsContinue { get; set; } = false;
+    public bool IsContinue = false;
 
 
     public void Reset()
@@ -90,15 +90,22 @@ public class UIExplorationSetup : UIPopUp
 
     public void OpenSetupFlow()
     {
-        setupData.Reset();
+        setupData = new ExplorationSetupData();
         ChangeStep(ExplorationStep.Character);
         ShowPopUp();
     }
 
     public void OpenForContinue(ExplorationSetupData savedData)
     {
-        setupData = savedData;
-        setupData.IsContinue = true;
+        // Keep UI edits separate from the manager/save snapshot.
+        setupData = new ExplorationSetupData
+        {
+            SelectedCharacterId = savedData?.SelectedCharacterId ?? -1,
+            SelectedClassId = savedData?.SelectedClassId ?? -1,
+            IsContinue = true
+        };
+        cachedManager = AppManager.Instance.SafeInvoke(v => v.GetExploreManager());
+        cachedManager.SafeInvoke(v => v.Init(false));
 
         ExplorationStep resumeStep = DetermineResumeStep();
 
@@ -205,13 +212,15 @@ public class UIExplorationSetup : UIPopUp
 
     private void OnClickStart()
     {
+        if (SceneLoadingController.IsLoading) return;
         if (!pages[currentStep].IsReadyToProceed()) return;
 
         cachedManager = cachedManager == null ? AppManager.Instance.SafeInvoke(v => v.GetExploreManager()) : cachedManager;
-        cachedManager.SafeInvoke(v => v.FinallizeSetupAndGenerateMap(setupData));
+        if (cachedManager == null) return;
+        cachedManager.FinallizeSetupAndGenerateMap(setupData);
         CloseUI();
 
-        SceneManager.LoadScene("StageSelectScene");
+        SceneLoadingController.LoadScene("StageSelectScene");
     }
 
 }

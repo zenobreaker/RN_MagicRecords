@@ -13,6 +13,7 @@ public class UICurrency : MonoBehaviour
 
     public CurrencyType Type => type; 
     private int currencyValue;
+    private TMP_FontAsset numberFont;
 
     private void Awake()
     {
@@ -29,7 +30,7 @@ public class UICurrency : MonoBehaviour
         if(currencyIcon != null)
         {
             // 타입에 맞는 아이콘을 SO에서 찾아 적용
-            currencyIcon.sprite = iconDatabase.GetIcon(type);
+            currencyIcon.sprite = iconDatabase != null ? iconDatabase.GetIcon(type) : null;
         }
 
 
@@ -43,5 +44,17 @@ public class UICurrency : MonoBehaviour
     {
         currencyValue = value;
         Draw(); 
+    }
+
+    public void SetValue(int value, CurrencyType currencyType, string label = null, TMP_FontAsset labelFont = null)
+    {
+        type = currencyType;
+        if (currencyText != null)
+        {
+            if (numberFont == null) numberFont = currencyText.font;
+            currencyText.font = label != null && labelFont != null ? labelFont : numberFont;
+        }
+        SetValue(value);
+        if (label != null && currencyText != null) currencyText.text = label;
     }
 }

@@ -190,12 +190,14 @@ public class UIPopupEventScreen : UIPopUp
 
     private void OnChoiceSelected(EventChoice choice)
     {
+        if (isProcessingChoice || isClosing) return;
         currentResult =
             EventChoiceExecutor.Execute(choice);
 
         if (currentResult == null)
             return;
 
+        isProcessingChoice = true;
         ProcessRewardAndResult(currentResult);
     }
 

@@ -87,7 +87,7 @@ public class UIStageInfo
 
     public void EnterStage()
     {
-        if (node == null || mapNodeInfo.isCleared
+        if (node == null || (mapNodeInfo.isCleared && mapNodeInfo.type != StageType.Shop)
             || AppManager.Instance.CanEnableNode(node) == false)
             return;
 

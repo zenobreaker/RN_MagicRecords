@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,179 +12,122 @@ public class UIPopUpShop : UIPopUp
     [SerializeField] protected TextMeshProUGUI priceText;
     [SerializeField] protected Button buyButton;
     [SerializeField] protected Button exitButton;
-
     [SerializeField] protected Button plusButton;
     [SerializeField] protected Button minusButton;
     [SerializeField] protected Button maximumButton;
     [SerializeField] protected TMP_InputField amountField;
 
-    private int price = 0;
-    private CurrencyType priceCurrency = CurrencyType.NONE;
-
-    private int amount = 1;
+    private int price, unitPrice, amount = 1;
+    private CurrencyType priceCurrency;
+    private Func<bool> purchase;
+    private bool submitting, completed, offerMode;
+    private Sprite offerIcon;
+    private string offerName, offerDescription;
 
     protected override void Awake()
     {
         base.Awake();
-
-        if (exitButton != null)
-        {
-            exitButton.onClick.AddListener(() =>
-            {
-                UIManager.Instance.CloseTopUI();
-            });
-        }
-
-        if (buyButton != null)
-        {
-            buyButton.onClick.AddListener(() =>
-            {
-                TryBuyItem();
-            });
-        }
-
-        if (plusButton != null)
-        {
-            plusButton.onClick.AddListener(() =>
-            {
-                amount++;
-                CalcPrice();
-            });
-        }
-
-        if (minusButton != null)
-        {
-            minusButton.onClick.AddListener(() =>
-            {
-                amount = Math.Max(1, amount - 1);
-                CalcPrice();
-            });
-        }
+        // RequireComponent does not repair prefabs saved before the requirement.
+        if (canvasGroup == null) canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        if (exitButton != null) exitButton.onClick.AddListener(CloseUI);
+        if (buyButton != null) buyButton.onClick.AddListener(TryBuyItem);
+        if (plusButton != null) plusButton.onClick.AddListener(() => SetAmount(amount == int.MaxValue ? amount : amount + 1));
+        if (minusButton != null) minusButton.onClick.AddListener(() => SetAmount(Math.Max(1, amount - 1)));
+        if (maximumButton != null) maximumButton.onClick.AddListener(() => SetAmount(unitPrice > 0 && CurrencyManager.Instance != null
+            ? CurrencyManager.Instance.GetCurrency(priceCurrency) / unitPrice : 1));
+        if (amountField != null) amountField.onEndEdit.AddListener(text => SetAmount(int.TryParse(text, out var value) ? value : 1));
     }
 
-    // 호출자는 item, 가격, 통화 타입을 함께 넘겨야 함
     public void SetData(ItemData item, int price, CurrencyType currency)
     {
         this.item = item;
-        this.price = price;
-        this.priceCurrency = currency;
-        this.amount = 1;
-        DrawPopUp();
+        unitPrice = this.price = price;
+        priceCurrency = currency;
+        amount = 1;
+        purchase = null;
+        offerMode = false;
+        submitting = completed = false;
+        ShowPopUp();
     }
+
+    // The same popup/serialized visual references serve exploration purchases.
+    public void SetOffer(Sprite icon, string title, string description, int cost, Func<bool> onPurchase)
+    {
+        item = null;
+        offerMode = true;
+        offerIcon = icon; offerName = title; offerDescription = description;
+        price = unitPrice = cost; amount = 1;
+        priceCurrency = CurrencyType.EXPOLORE_COIN;
+        purchase = onPurchase;
+        submitting = completed = false;
+        ShowPopUp();
+    }
+
+    private bool CanChooseAmount => !offerMode && item is ShopItem shop && !(shop.TargetItemData is EquipmentItem);
 
     protected override void DrawPopUp()
     {
-        if (item == null) return;
-
-        Debug.Assert(LocalizationManager.Instance != null, $"LocalizationManager가 필요");
-
-        if (itemIconImage != null)
-            itemIconImage.sprite = item.Icon;
-
-        if (itemNameText != null)
-            itemNameText.text = LocalizationManager.Instance.GetText(item.name);
-
-        if (itemMainDescText != null)
-            itemMainDescText.text = LocalizationManager.Instance.GetText(item.description);
-
-        if (priceText != null)
-            priceText.text = $"{price}";
-
-        DrawAmountButtons();
-        DrawAmount();
-    }
-
-
-    private void DrawAmountButtons()
-    {
-        if (item == null) return;
-
-        if (item is ShopItem shopItem)
+        if (itemIconImage != null) itemIconImage.sprite = offerMode ? offerIcon : item?.Icon;
+        if (itemNameText != null) itemNameText.text = offerMode ? offerName : item?.LocalizedName;
+        if (itemMainDescText != null) itemMainDescText.text = offerMode ? offerDescription : item?.LocalizedDescription;
+        if (priceText != null) priceText.text = price.ToString();
+        if (plusButton != null) plusButton.gameObject.SetActive(CanChooseAmount);
+        if (minusButton != null) minusButton.gameObject.SetActive(CanChooseAmount);
+        if (maximumButton != null) maximumButton.gameObject.SetActive(CanChooseAmount);
+        if (amountField != null)
         {
-            if (shopItem.TargetItemData == null)
-                return;
-
-            if (shopItem.TargetItemData is EquipmentItem)
-            {
-                if (plusButton != null) plusButton.gameObject.SetActive(false);
-                if (minusButton != null) minusButton.gameObject.SetActive(false);
-                if (maximumButton != null) maximumButton.gameObject.SetActive(false);
-            }
-            else
-            {
-                if (plusButton != null) plusButton.gameObject.SetActive(true);
-                if (minusButton != null) minusButton.gameObject.SetActive(true);
-                if (maximumButton != null) maximumButton.gameObject.SetActive(true);
-            }
+            amountField.gameObject.SetActive(!offerMode);
+            amountField.interactable = CanChooseAmount;
+            amountField.SetTextWithoutNotify(amount.ToString());
         }
+        if (buyButton != null) buyButton.interactable = !completed && price >= 0;
     }
 
-    private void DrawAmount()
+    private void SetAmount(int value)
     {
-        if (amountField == null) return;
-
-        amountField.text = amount.ToString();
+        if (!CanChooseAmount) return;
+        amount = Math.Max(1, Math.Min(value, unitPrice > 0 ? int.MaxValue / unitPrice : int.MaxValue));
+        price = unitPrice * amount;
+        DrawPopUp();
     }
 
-    private void CalcPrice()
-    {
-        if (item == null) return;
-
-        if (item is ShopItem shopItem)
-        {
-            price = shopItem.Price * amount;
-            DrawPopUp();
-            return;
-        }
-
-        return;
-    }
-
-    public override void OnSubmit()
-    {
-        TryBuyItem(); 
-    }
+    public override void OnSubmit() => TryBuyItem();
 
     private void TryBuyItem()
     {
-        if (item == null) return;
-
-        if (item is ShopItem shopItem)
+        if (!isActiveAndEnabled || submitting || completed || price < 0) return;
+        submitting = true;
+        try
         {
-            if (shopItem.TargetItemData == null)
+            if (offerMode)
             {
-                Debug.LogWarning("Target Item Missing.");
-                return;
+                if (purchase == null || !purchase()) return;
             }
-
-            // CurrencyManager로 지불 시도
-            if (CurrencyManager.Instance == null)
+            else
             {
-                Debug.LogWarning("CurrencyManager missing.");
-                return;
+                if (!(item is ShopItem shop) || shop.TargetItemData == null ||
+                    InventoryManager.Instance == null || CurrencyManager.Instance == null) return;
+                var granted = shop.TargetItemData.Copy();
+                if (granted == null) return;
+                granted.uniqueID = Guid.NewGuid().ToString();
+                granted.SetCount(amount);
+                if (!CurrencyManager.Instance.SpendCurrency(priceCurrency, price))
+                {
+                    UIManager.Instance?.ShowToast("ui_toast_not_enough_cost_coin");
+                    return;
+                }
+                InventoryManager.Instance.AddItem(granted);
             }
-
-            bool success = CurrencyManager.Instance.SpendCurrency(priceCurrency, price);
-            if (!success)
-            {
-                // 피드백: 통화 부족
-                Debug.Log($"Not enough currency: need {price} of {priceCurrency}");
-                
-                UIManager.Instance.ShowToast("ui_toast_not_enough_cost_coin"); 
-                return;
-            }
-
-            // 아이템을 인벤토리에 추가: 복사하여 고유 ID 생성
-            ItemData newItem = shopItem.TargetItemData.Copy();
-            if (newItem != null)
-                newItem.uniqueID = Guid.NewGuid().ToString();
-            //TODO 아이템 데이터 넣을 때 개수까지 처리하도록 해보게 
-            InventoryManager.Instance?.AddItem(newItem ?? item);
-
-            // 구매 후 팝업 닫기
-            UIManager.Instance.CloseTopUI();
-
-            UIManager.Instance.ShowToast("ui_toast_success_buy_item");
+            completed = true;
+            CloseUI();
+            UIManager.Instance?.ShowToast("ui_toast_success_buy_item");
         }
+        finally { submitting = false; }
+    }
+
+    protected override void OnDisable()
+    {
+        purchase = null;
+        base.OnDisable();
     }
 }
