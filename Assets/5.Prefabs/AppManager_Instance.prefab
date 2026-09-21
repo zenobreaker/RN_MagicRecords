@@ -2177,6 +2177,7 @@ GameObject:
   - component: {fileID: 1125104943671024952}
   - component: {fileID: 6486475408223570010}
   - component: {fileID: 1067182459609308709}
+  - component: {fileID: 7860000000000000001}
   m_Layer: 0
   m_Name: AppManager_Instance
   m_TagString: Untagged
@@ -3546,3 +3547,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jsonAsset: {fileID: 4900000, guid: 9cc0852bf4f7a6e4190edb84ed7a4d72, type: 3}
+--- !u!114 &7860000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6372159647807091890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d96aa24d6a3462dbc0288782c0ab1f7, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  spinnerSprite: {fileID: 21300000, guid: b0506978b23a83942822532e46b9c340, type: 3}
+  fadeDuration: 0.25
+  rotationSpeed: 240
+  spinnerSize: {x: 96, y: 96}

@@ -46,6 +46,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerObjectSo: {fileID: 11400000, guid: a761f4fddefcc1e4d86c46c115789591, type: 2}
   npcObjectSo: {fileID: 11400000, guid: 066a14d0300340d4991f619d490319cf, type: 2}
+  prewarmBatchSize: 24
+  prewarmFrameBudgetMs: 4
   pools:
   - tag: SharpOrangeBullet
     prefab: {fileID: 6988419373127682827, guid: b573c10b4a8504d4caf7ef14d905e0d7, type: 3}

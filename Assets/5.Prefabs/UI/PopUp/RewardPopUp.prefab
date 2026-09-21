@@ -340,6 +340,7 @@ GameObject:
   - component: {fileID: 6287177976054679120}
   - component: {fileID: 1867538876159654565}
   - component: {fileID: 6303747767195033130}
+  - component: {fileID: 8596115526052567604}
   m_Layer: 5
   m_Name: RewardPopUp
   m_TagString: Untagged
@@ -421,6 +422,18 @@ MonoBehaviour:
   childObject: {fileID: 2132534311800463770, guid: ec5db17c806c58c4da805a4676f765cd, type: 3}
   popupArea: {fileID: 1566935047135457420}
   exitButton: {fileID: 6341407546126455170}
+--- !u!225 &8596115526052567604
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2134219137220241582}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &4692670412530496873
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,7 +609,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e2f9e1fa56c488b429192dcc819e7791, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ca69404b52dcb0f4e9f6599f7bf717b0, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -805,7 +818,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1802491452, guid: 6437abcf8868f8b4ba462a71adacafcd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c888d4d7ff3a4564398cf26841617822, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -890,8 +903,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -919,6 +932,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1069,6 +1083,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0

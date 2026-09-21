@@ -1,0 +1,91 @@
+Execution date: 2026-09-21 (Asia/Seoul), skill move / unequip follow-up
+Project: RN_MagicRecords
+Environment: running Unity Editor 6000.3.19f1 on Windows, actual Play Mode.
+Save data: isolated Library/ShopRegressionSave-<guid>; real user saves not used.
+
+FINAL RUN: 62 shop/map checks passed. Map check covers 1000 random seeds.
+Actual prefab callbacks were invoked in Play Mode. Healing used fixture HealthPointComponents.
+Temporary record/heal prices were injected in memory for tests and restored; production prices remain undefined.
+Mouse-based visual check: selected the equipped skill in slot 4, selected slot 1, observed slot 4 empty and slot 1 equipped;
+clicked the reused Unequip button, observed slot 1 empty and the button disabled. Currency remained 670 throughout.
+Both selection orders, occupied destinations, displaced skill re-equip, stale selection prevention, cancellation,
+and existing equip API application were checked by the actual Play Mode UI regression below.
+Apply and Close persists changes. Escape cancels the draft. Rearrangement does not count as a new purchase.
+A teardown assertion in StageUIController was fixed by guarding destroyed managers; all 62 checks and 36 session checks were rerun, followed by a clean Play Mode exit.
+Unity 6000.3.19f1 Play Mode
+PASS 1000 seeds: six levels, <=3 nodes, mandatory shop, save/restore, injected bypass rejection
+PASS legacy migration preserves boss ID and mandatory shop
+PASS existing SkillEventRegression.Run and Dash asset validation completed
+PASS float HP rule, maximum clamp, no resurrection
+PASS lobby slots each have exactly one callback
+PASS shop copy preserves resolved data
+PASS lobby actual slot button shows popup and enables raycasts
+PASS selected item and UI stacking order
+PASS lobby cancel preserves money and inventory
+PASS lobby purchase grants and charges exactly once on repeated submit
+PASS exploration checks run in the real map scene
+PASS movement denies boss bypass and allows shop
+PASS shop node opens existing ShopUI without scene transition
+PASS up to three unique eligible records without placeholders
+PASS reused slots contain only name, price and icons
+PASS insufficient record click opens no popup and does not spend
+PASS insufficient purchase uses the existing localized toast
+PASS insufficient swap click opens no skill popup
+PASS record detail reuses shop popup with description
+PASS record cancel preserves money and availability
+PASS record confirmation rechecks changed balance
+PASS record repeated confirmation grants/charges once
+PASS sold slot disabled with sold label
+PASS sold label uses a font with Korean glyphs
+PASS 15 percent uses each run member max HP, caps, preserves dead and unrelated HP
+PASS 15 percent is one purchase per node
+PASS 60 percent heals the same run party and is one purchase per node
+PASS shop candidates start at Lv.1 without granting or charging on open
+PASS first selection is visible and does not equip an implicit default
+PASS skill-first selection immediately equips draft including empty slots
+PASS repeat selection does not charge twice; former replace button now unequips
+PASS swap Escape/cancel preserves money and original skill
+PASS shop candidates start at Lv.1 without granting or charging on open
+PASS first selection is visible and does not equip an implicit default
+PASS skill-first selection immediately equips draft including empty slots
+PASS repeat selection does not charge twice; former replace button now unequips
+PASS swap confirmation charges once and permits subsequent purchase 1
+PASS shop candidates start at Lv.1 without granting or charging on open
+PASS first selection is visible and does not equip an implicit default
+PASS slot-first selection immediately equips draft including empty slots
+PASS repeat selection does not charge twice; former replace button now unequips
+PASS existing level-up button is visible and enabled in shop
+PASS canceling level-up confirmation preserves cost and level
+PASS shop level-up reuses existing cost and increments the equipped draft
+PASS changed balance blocks combined apply without changing equipped skills
+PASS swap confirmation charges once and permits subsequent purchase 2
+PASS skill-first occupied-slot move clears source and replaces destination without duplicate
+PASS slot-first re-equip restores displaced skill from existing entries
+PASS selecting slot for removal does not move the previous selected skill
+PASS existing button shows enabled unequip action for occupied slot
+PASS unequip clears only selected slot and disables itself on empty slot
+PASS cancel restores move/unequip draft without spending
+PASS move and unequip commit through existing equip API without additional purchase or charge
+PASS closing shop unlocks boss and permits current shop revisit
+PASS shop reopen preserves stock, purchase state and currency
+PASS run save contains exact stock and party HP
+PASS restored stock is an independent copy
+PASS purchased record is saved once through the existing record inventory
+PASS existing inventory save contains the exact post-purchase exploration balance
+PASS ExploreManager reload preserves node and shop stock
+PASS healed HP survives run reload and binds to the next character instance
+PASS exploration transactions leave lobby gold intact
+
+Skill event/session regression with move and unequip tests, executed in Unity Play Mode:
+SKILL_EVENT_REGRESSION_PASS: 36 checks (draft, commit, cost, cancellation, record eligibility, real JSON)
+
+Dash asset validation ran in this run. The full Dash Play Mode regression was last run successfully
+in the preceding selection/level-up UX task on 2026-09-21; it was not rerun for this move/unequip-only follow-up.
+
+Limitations:
+- This is not a full manual multi-battle exploration playthrough or a player build test.
+- Legacy saves without partyHealth cannot reconstruct past damage.
+- Existing multi-file JSON save format has no crash-atomic transaction.
+- Existing unrelated editor warnings (save-menu registration and child DontDestroyOnLoad) remain.
+- Record sale grades/prices and 15%/60% heal prices still require design input.
+

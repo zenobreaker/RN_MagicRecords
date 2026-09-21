@@ -39,15 +39,18 @@ MonoBehaviour:
     isInstant: 0
     modules:
     - rid: 9167118924576456796
+    - rid: 9167119229834494040
     - rid: 9167118924576456797
     - rid: 9167118950637502464
   - phaseName: 
     isInstant: 0
     modules:
     - rid: 9167118950637502551
+    - rid: 9167119229834494030
     - rid: 1371895074986917888
-    - rid: 9167118950637502552
     - rid: 9167118950637502571
+    - rid: 9167119229834494031
+    - rid: 9167118950637502552
   references:
     version: 2
     RefIds:
@@ -55,6 +58,10 @@ MonoBehaviour:
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         damageApplyType: 2
         damageMultiplier: 1
         damageData:
@@ -89,6 +96,10 @@ MonoBehaviour:
       type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         parameterName: IsCasting
         paramType: 0
         boolValue: 1
@@ -98,12 +109,20 @@ MonoBehaviour:
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 0
         speedMultiplier: 0.5
     - rid: 9167118950637502464
       type: {class: Module_SpawnWarningSign, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         useBlackboardPattern: 1
         signType: 2
         duration: 5
@@ -114,6 +133,7 @@ MonoBehaviour:
         fallbackAngleBetween: 17
         startAngleOffset: -15
         endPhaseOnFinish: 1
+        waitForSignBeforeSkillEnd: 1
         onSignEndModules: []
         radius: 17
         rectSize: {x: 1, y: 1}
@@ -124,6 +144,10 @@ MonoBehaviour:
       type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         parameterName: IsCasting
         paramType: 0
         boolValue: 0
@@ -133,12 +157,55 @@ MonoBehaviour:
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 4
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 1
         speedMultiplier: 0.5
     - rid: 9167118950637502571
       type: {class: Module_PhaseTransition, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         transitionType: 2
         targetPhaseIndex: 0
         delayTime: 0
+    - rid: 9167119229834494030
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        soundName: Ice_Spell_03
+    - rid: 9167119229834494031
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        parameterName: IsCasting
+        paramType: 0
+        boolValue: 0
+        floatValue: 0
+        intValue: 0
+    - rid: 9167119229834494040
+      type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        parameterName: Casting
+        paramType: 3
+        boolValue: 0
+        floatValue: 0
+        intValue: 0
