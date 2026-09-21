@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public class SkillTestWindow : EditorWindow
@@ -18,6 +18,7 @@ public class SkillTestWindow : EditorWindow
     [MenuItem("Tools/Skill Tester")]
     public static void ShowWindow()
     {
+        ReleaseAnimatorTransitionSelection();
         SkillTestWindow window = GetWindow<SkillTestWindow>("Skill Tester");
         window.minSize = new Vector2(860f, 520f);
         window.Show();
@@ -27,6 +28,25 @@ public class SkillTestWindow : EditorWindow
     {
         minSize = new Vector2(860f, 520f);
         RefreshSkills();
+    }
+
+    private void OnFocus()
+    {
+        ReleaseAnimatorTransitionSelection();
+    }
+
+    private static void ReleaseAnimatorTransitionSelection()
+    {
+        // Unity's transition Inspector can retain a preview without destination
+        // state data after the Animator window loses focus. Inspect the owning
+        // controller when entering the tester instead of retaining that preview.
+        if (!(Selection.activeObject is AnimatorTransitionBase transition))
+            return;
+
+        string path = AssetDatabase.GetAssetPath(transition);
+        Selection.activeObject = string.IsNullOrEmpty(path)
+            ? null
+            : AssetDatabase.LoadAssetAtPath<AnimatorController>(path);
     }
 
     private void RefreshSkills()
@@ -94,28 +114,34 @@ public class SkillTestWindow : EditorWindow
 
     private void DrawSlotButtons()
     {
-        const int columns = 2;
-        int buttonIndex = 0;
-        foreach (SkillSlot slot in Enum.GetValues(typeof(SkillSlot)))
+        using (new EditorGUILayout.VerticalScope("box"))
         {
-            if (slot == SkillSlot.MAX 
-                || slot.ToString().Equals("Default", StringComparison.OrdinalIgnoreCase))
-                continue;
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                DrawSlotButton(SkillSlot.SLOT1);
+                DrawSlotButton(SkillSlot.SLOT2);
+            }
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                DrawSlotButton(SkillSlot.SLOT3);
+                DrawSlotButton(SkillSlot.SLOT4);
+            }
+        }
+        EditorGUILayout.Space(4f);
+        DrawSlotButton(SkillSlot.SubAction);
+    }
 
-            if (buttonIndex % columns == 0)
-                EditorGUILayout.BeginHorizontal();
-            Color previousColor = GUI.backgroundColor;
+    private void DrawSlotButton(SkillSlot slot)
+    {
+        Color previousColor = GUI.backgroundColor;
+        try
+        {
             if (slot == selectedSlot)
                 GUI.backgroundColor = new Color(0.45f, 0.75f, 1f);
             if (GUILayout.Button(slot.ToString(), GUILayout.Height(28f)))
                 selectedSlot = slot;
-            GUI.backgroundColor = previousColor;
-            buttonIndex++;
-            if (buttonIndex % columns == 0)
-                EditorGUILayout.EndHorizontal();
         }
-        if (buttonIndex % columns != 0)
-            EditorGUILayout.EndHorizontal();
+        finally { GUI.backgroundColor = previousColor; }
     }
 
     private void DrawSkillList()
