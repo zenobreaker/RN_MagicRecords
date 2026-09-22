@@ -33,6 +33,8 @@ public sealed class RecordManager : MonoBehaviour
         filterStartingSkills = false;
         rerollCount = maxRerollCount;
         recordInventory.ClearAll();
+        SelectedRecords.Clear();
+        CurrentOptions.Clear();
     }
 
 
@@ -64,29 +66,40 @@ public sealed class RecordManager : MonoBehaviour
         // 소지 중인 레코드 복구 
         foreach (RecordSaveData savedInfo in saveData.recordIDs)
         {
-            if (recordsDict.ContainsKey(savedInfo.recordID))
-            {
-                RecordData restoredData = recordsDict[savedInfo.recordID].GetRecordData();
-                restoredData.uniqueID = savedInfo.uniqueID;
-                recordInventory.AddRecord(restoredData);
-            }
+            recordInventory.AddRecord(RestoreRecord(savedInfo));
         }
 
         // 다음 회차로 인계된 레코드 복구
         foreach (RecordSaveData transferInfo in saveData.transferedrecordIDs)
         {
-            if (recordsDict.ContainsKey(transferInfo.recordID))
-            {
-                RecordData restoredTransferData = recordsDict[transferInfo.recordID].GetRecordData();
-                restoredTransferData.uniqueID = transferInfo.uniqueID;
-                transferInventory.AddRecord(restoredTransferData);
-            }
+            transferInventory.AddRecord(RestoreRecord(transferInfo));
         }
 
         isReceived = saveData.isReceived;
     }
 
+    private RecordData RestoreRecord(RecordSaveData saved)
+    {
+        if (saved == null) return null;
+        var record = saved.recordID == RecordDataBase.EmptyRecordId ? GetEmptyRecord() :
+            recordsDict.TryGetValue(saved.recordID, out var template) ? template.GetRecordData() : null;
+        if (record != null) record.uniqueID = saved.uniqueID;
+        return record;
+    }
+
     public List<RecordData> GetPossesRecord() => recordInventory.Records.ToList();
+
+    // Inventory restoration happens during AppManager.Awake, before PassiveSystem.OnInit.
+    // Rebuild effects afterwards so resumed records keep their gameplay effects too.
+    public void RestoreOwnedPassives()
+    {
+        var passives = AppManager.Instance?.GetPassiveSystem();
+        if (passives == null) return;
+        passives.ResetExplorePassives();
+        foreach (var record in recordInventory.Records)
+            if (record.id != RecordDataBase.EmptyRecordId)
+                passives.Add(Constants.GLOBAL_RECORD_JOB_ID, GetRecordPassive(record.id));
+    }
     public List<RecordData> GetTransferedRecordIDs() => transferInventory.Records.ToList();
 
     // 특정 레코드를 다음 회차에 사용할 수 있도록 보내는 함수 
@@ -99,6 +112,7 @@ public sealed class RecordManager : MonoBehaviour
 
         recordInventory.RemoveRecord(find);
         transferInventory.AddRecord(find);
+        SaveIfDirty();
     }
 
 
@@ -306,10 +320,17 @@ public sealed class RecordManager : MonoBehaviour
     }
 
     public void AddRecord(RecordData recordData)
+        => GrantRecord(recordData);
+
+    // Return the actual item so result UI and passive registration cannot use a duplicate's original data.
+    public RecordData GrantRecord(RecordData recordData)
     {
-        recordInventory.AddRecord(recordData);
+        var granted = recordInventory.AddRecord(recordData);
+        if (granted == null) return null;
         isReceived = true;
         isDirty = true;
+        SaveIfDirty();
+        return granted;
     }
 
     // Same SO enrichment, job eligibility and unowned rule as the existing draft.
@@ -326,6 +347,7 @@ public sealed class RecordManager : MonoBehaviour
     public void RemoveTransferedRecord(RecordData target)
     {
         transferInventory.RemoveRecord(target);
+        SaveIfDirty();
     }
 
     public List<RecordData> RerollAllCurrentRecords()
@@ -477,6 +499,7 @@ public sealed class RecordManager : MonoBehaviour
         }
 
         SelectedRecords.Clear();
+        SaveIfDirty();
         PauseManager.RequestResume();
 
         return true;
@@ -499,11 +522,9 @@ public sealed class RecordManager : MonoBehaviour
 
         foreach (RecordData data in selectedRecords)
         {
-            // 선택된 레코드를 패시브 시스템에 등록
-            var rp = GetRecordPassive(data.id);
-            // 선택된 레코드를 소지품에 추가 
-            AddRecord(data);
-            ps.Add(9999, rp); // 레코드는 공용 패시브처리이므로 9999 
+            var granted = GrantRecord(data);
+            if (granted != null && granted.id != RecordDataBase.EmptyRecordId)
+                ps.Add(Constants.GLOBAL_RECORD_JOB_ID, GetRecordPassive(granted.id));
         }
 
         SelectedRecords.Clear();
@@ -539,10 +560,10 @@ public sealed class RecordManager : MonoBehaviour
 
         foreach (RecordData data in selectedRecords)
         {
-            var rp = GetRecordPassive(data.id);
-            // 선택된 레코드를 소지품에 추가 
-            AddRecord(data);
-            ps.Add(9999, rp); // 레코드는 공용 패시브처리이므로 9999 
+            var granted = GrantRecord(data);
+            if (granted == null) continue;
+            if (granted.id != RecordDataBase.EmptyRecordId)
+                ps.Add(Constants.GLOBAL_RECORD_JOB_ID, GetRecordPassive(granted.id));
             RemoveTransferedRecord(data);
         }
 

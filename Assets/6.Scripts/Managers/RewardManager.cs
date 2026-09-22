@@ -110,7 +110,6 @@ public class RecordReward : IReward
                         .GetRecordByRarity(rarity);
 
                     record = list.Random();
-                    OpenRecordRewardUI(record);
                 }
                 break;
 
@@ -120,14 +119,15 @@ public class RecordReward : IReward
                         .GetAllRecordData();
 
                     record = list.Random();
-                    OpenRecordRewardUI(record);
                 }
                 break;
         }
 
         if (record != null)
         {
-            AppManager.Instance.SafeInvoke(v => v.GetRecordManager().SafeInvoke(v => v.AddRecord(record)));
+            var granted = AppManager.Instance?.GetRecordManager()?.GrantRecord(record);
+            if (granted != null && mode != RecordRewardMode.FixedRecord)
+                OpenRecordRewardUI(granted);
         }
     }
 

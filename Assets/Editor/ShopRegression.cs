@@ -41,6 +41,7 @@ public static class ShopRegression
             if (action == "checks") { ShopRegressionChecks.Run(); return; }
             if (action == "explore") { ShopRegressionChecks.PrepareExplore(); return; }
             if (action == "explore-checks") { ShopRegressionChecks.Explore(); return; }
+            if (action == "chapter-checks") { ShopRegressionChecks.Chapters(); return; }
             if (action == "dash") { SkillDashRegression.RunBatch(); return; }
             if (action == "restore-lobby" && !EditorApplication.isPlaying)
             { EditorSceneManager.OpenScene("Assets/8.Scenes/Lobby.unity"); return; }

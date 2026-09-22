@@ -271,21 +271,23 @@ public sealed class RecordInventory
 
     public IReadOnlyList<RecordData> Records => records;
 
-    public void AddRecord(RecordData record)
+    public RecordData AddRecord(RecordData record)
     {
-        if (record == null) return;
+        if (record == null) return null;
 
-        if(recordIdSet.Contains(record.id))
+        // Older positive-ID stat records also serialize type=EMPTY; the reserved ID
+        // identifies the actual empty reward without changing existing SO data.
+        if (record.id != RecordDataBase.EmptyRecordId && recordIdSet.Contains(record.id))
         {
-            // 이미 존재하는 레코드 이므로 빈 레코드를 리스트에 추가 
-            RecordData emptyRecord = AppManager.Instance.GetEmptyRecord();
-            if (emptyRecord != null)
-            {
-                records.Add(emptyRecord);
+            // Convert before insertion so every index and caller sees the actual grant.
+            record = AppManager.Instance?.GetEmptyRecord();
+            if (record == null) return null;
+        }
 
-                OnInventoryChanged?.Invoke(this);
-            }
-            return; 
+        if (string.IsNullOrEmpty(record.uniqueID) || recordUniqueMap.ContainsKey(record.uniqueID))
+        {
+            record = record.GetData();
+            record.uniqueID = Guid.NewGuid().ToString();
         }
 
         records.Add(record);
@@ -303,6 +305,7 @@ public sealed class RecordInventory
         recordIdSet.Add(record.id);
 
         OnInventoryChanged?.Invoke(this);
+        return record;
     }
 
     public void RemoveRecord(int id)

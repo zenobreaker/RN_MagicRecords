@@ -8,6 +8,7 @@ public class SkillSelectUI
 {
     [Header("References")]
     [SerializeField] private SkillTreeController skillController;
+    [SerializeField] private UIExplorationSkills preparationSkills;
 
 
     private ExplorationSetupData currentContext;
@@ -20,7 +21,7 @@ public class SkillSelectUI
 
     public bool IsReadyToProceed()
     {
-        return skillController != null;
+        return preparationSkills != null ? preparationSkills.IsReady : skillController != null;
     }
 
     public void OnShowPage(ExplorationSetupData setupData)
@@ -36,6 +37,11 @@ public class SkillSelectUI
 
     protected override void DrawPopUp()
     {
+        if (preparationSkills != null)
+        {
+            preparationSkills.SetContext(currentContext);
+            return;
+        }
         if (skillController != null)
         {
             skillController.SetSelectPopupType();

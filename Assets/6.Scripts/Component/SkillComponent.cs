@@ -7,6 +7,7 @@ using UnityEngine;
 public sealed class SkillComponent : ActionComponent
 {
     private string currentSlotName = string.Empty;
+    private bool isPlayerOwner;
 
     // 장착 스킬 정보
     private Dictionary<string, ActiveSkill> skillSlotTable;
@@ -129,8 +130,10 @@ public sealed class SkillComponent : ActionComponent
 
         bool value = isCooldown ?? skill.IsOnCooldown;
 
-        SkillManager.Instance.SafeInvoke(v =>
-            v.NotifySkillCooldownState(slot, value));
+        // The shared HUD channel has no owner key. AI slots must stay local.
+        if (isPlayerOwner)
+            SkillManager.Instance.SafeInvoke(v =>
+                v.NotifySkillCooldownState(slot, value));
 
         OnActiveSkillCooldownChanged?.Invoke(slot, value);
 
@@ -149,8 +152,9 @@ public sealed class SkillComponent : ActionComponent
         if (skill == null)
             return;
 
-        SkillManager.Instance.SafeInvoke(v =>
-            v.NotifySkillCooldown(slot, skill.CurrentCooldown, skill.MaxCooldown));
+        if (isPlayerOwner)
+            SkillManager.Instance.SafeInvoke(v =>
+                v.NotifySkillCooldown(slot, skill.CurrentCooldown, skill.MaxCooldown));
 
         OnActiveSkillCooldownUpdated?.Invoke(
             slot,
@@ -400,11 +404,12 @@ public sealed class SkillComponent : ActionComponent
                 slot,
                 skill);
 
-        // 외부 전달은 SkillManager에게 위임
-        SkillManager.Instance?
-            .NotifyActiveSkillChanged(
-                slot,
-                skill);
+        // Only the player's registration belongs in the shared HUD cache.
+        if (isPlayerOwner)
+            SkillManager.Instance?
+                .NotifyActiveSkillChanged(
+                    slot,
+                    skill);
     }
 
 
@@ -462,6 +467,7 @@ public sealed class SkillComponent : ActionComponent
     {
         var character = GetComponentInParent<Character>(true);
         rootObject = character != null ? character.gameObject : null;
+        isPlayerOwner = character is Player;
     }
 
 

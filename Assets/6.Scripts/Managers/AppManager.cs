@@ -100,6 +100,7 @@ public class AppManager
         // --------------------------------------------------
 
         passiveSystem?.OnInit();
+        recordManager?.RestoreOwnedPassives();
 
 
         // --------------------------------------------------
@@ -371,6 +372,9 @@ public class AppManager
             v =>
                 v.PurgeCurrentRun());
 
+        recordManager?.ResetRecordFlowData();
+        passiveSystem.ResetExplorePassives();
+        SaveIfDirty();
         ReturnToLobbyScene();
     }
 
@@ -381,6 +385,7 @@ public class AppManager
         recordManager.SafeInvoke(
             v =>
                 v.ResetRecordFlowData());
+        recordManager?.SaveIfDirty();
 
 
         // 탐사 데이터 초기화
@@ -415,7 +420,7 @@ public class AppManager
 
     public bool HasSavedExploration()
     {
-        return SaveManager.HasSavedMapData();
+        return SaveManager.HasSavedExploreRun();
     }
 
 

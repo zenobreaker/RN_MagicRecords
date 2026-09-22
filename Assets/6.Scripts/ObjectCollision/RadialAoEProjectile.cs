@@ -151,6 +151,10 @@ public class RadialAoEProjectile : BaseProjectile
     {
         Vector3 offset = targetPosition - transform.position;
 
+        // The warning and effect rotate with the caster. Test in that same frame,
+        // rather than leaving the damage sectors fixed to world north.
+        offset = Quaternion.Inverse(transform.rotation) * offset;
+
         // Y축 제거
         offset.y = 0f;
 
@@ -161,6 +165,9 @@ public class RadialAoEProjectile : BaseProjectile
             return false;
 
         if (distance > currentRadius)
+            return false;
+
+        if (shardCount <= 0)
             return false;
 
         if (distance <= 0.001f)
@@ -214,6 +221,7 @@ public class RadialAoEProjectile : BaseProjectile
 
     private void DrawRadialGizmo()
     {
+        if (shardCount <= 0) return;
         Vector3 origin = transform.position;
 
         float sectorSize = 360f / shardCount;
@@ -226,11 +234,11 @@ public class RadialAoEProjectile : BaseProjectile
             float halfAngle = shardAngle * 0.5f;
 
             Vector3 left =
-                Quaternion.Euler(0f, centerAngle - halfAngle, 0f)
+                transform.rotation * Quaternion.Euler(0f, centerAngle - halfAngle, 0f)
                 * Vector3.forward;
 
             Vector3 right =
-                Quaternion.Euler(0f, centerAngle + halfAngle, 0f)
+                transform.rotation * Quaternion.Euler(0f, centerAngle + halfAngle, 0f)
                 * Vector3.forward;
 
             Gizmos.DrawLine(

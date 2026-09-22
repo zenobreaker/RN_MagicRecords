@@ -10,7 +10,17 @@ public class UISkillOnlyReplaceSlots : MonoBehaviour
     [SerializeField] private Sprite emptySlotSprite;
 
     private SkillTreeManager stManager;
+    private bool selectionOnly;
     public Action<int> ClickedSlot;
+
+    // Preparation screens own the selection pair; legacy skill-tree screens still equip on click.
+    public void SetSelectionOnly(bool value) => selectionOnly = value;
+
+    public void SetSelectedSlot(int selected)
+    {
+        for (int i = 0; i < slots.Length; i++)
+            slots[i].image.color = i == selected ? new Color(.6f, .9f, 1f) : Color.white;
+    }
 
     private void Awake()
     {
@@ -29,7 +39,7 @@ public class UISkillOnlyReplaceSlots : MonoBehaviour
     private void OnClickSlot(int index)
     {
         ClickedSlot?.Invoke(index);
-        ReplaceSlot(index);
+        if (!selectionOnly) ReplaceSlot(index);
     }
 
     public void DrawSlots(int charid)
@@ -38,9 +48,9 @@ public class UISkillOnlyReplaceSlots : MonoBehaviour
 
         List<SkillRuntimeData> list = AppManager.Instance.GetEquippedActiveSkillListByCharID(charid);
 
-        for (int i = 0; i < list.Count; i++)
+        for (int i = 0; i < slots.Length; i++)
         {
-            DrawSkillIcon(i, list[i]);
+            DrawSkillIcon(i, list != null && i < list.Count ? list[i] : null);
         }
     }
 

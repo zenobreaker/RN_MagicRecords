@@ -148,6 +148,9 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public void ResetData()
     {
+        CurrentState = ExploreState.NONE;
+        RunStatus = RunStatus.NoSave;
+        CurrentSetupData = new ExplorationSetupData();
         runHealth.Clear();
         liveHealth.Clear();
         InitialRecordRewardPending = false;
@@ -176,10 +179,16 @@ public sealed partial class ExploreManager : MonoBehaviour
         Chapter++;
 
         MapNodeID = 0;
-        bCreate = false;
-
-        // 다음 챕터의 맵 생성
-        Init(true);
+        // Advancing a chapter continues the same run. Init(true) follows the
+        // new-run path and erases CurrentSetupData (character/class become -1).
+        BiomeName = DataBaseManager.Instance.GetRandTheme(Chapter);
+        stageReplacer ??= new StageReplacer();
+        stageReplacer.StartChapter(Chapter);
+        var startNode = stageReplacer.GetReplacedNodeInfo(MapNodeID);
+        if (startNode != null) startNode.isCleared = true;
+        bCreate = true;
+        InitialRecordRewardPending = false;
+        RunStatus = RunStatus.MidRun;
 
         return true;
     }
@@ -236,21 +245,8 @@ public sealed partial class ExploreManager : MonoBehaviour
                 }
 
                 // 다음 챕터로 이동
-                if (Chapter < maxChapter)
+                if (TryAdvanceChapter())
                 {
-                    Chapter++;
-                    MapNodeID = 0;
-
-                    stageReplacer.StartChapter(Chapter);
-
-                    MapNodeInfo startNode =
-                        stageReplacer.GetReplacedNodeInfo(MapNodeID);
-
-                    if (startNode != null)
-                        startNode.isCleared = true;
-
-                    RunStatus = RunStatus.MidRun;
-
                     SaveExploreMap();
 
                     return;
@@ -589,11 +585,8 @@ public sealed partial class ExploreManager : MonoBehaviour
     {
         Debug.Log("[ExploreManager] 런 종료 완료. 세이브 파일 파기 및 메모리 데이터를 초기화합니다.");
         SaveManager.DeleteExploreRun();
-
-        // 1. 실제 세이브 파일 완전 삭제
-        //SaveManager.DeleteMapData();
-        // 필요하다면 스테이지 노드 정보 파일도 삭제 (SaveManager에 구현된 경우)
-        //SaveManager.DeleteStageNodeData();
+        SaveManager.DeleteMapData();
+        SaveManager.DeleteStageNodeData();
 
         // 2. 메모리에 들고 있던 배치 클래스들을 null로 밀어버려 유령 저장을 원천 차단합니다.
         ResetExploreProgress();

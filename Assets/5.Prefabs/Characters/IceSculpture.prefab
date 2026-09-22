@@ -910,7 +910,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
-  skillEventHandler: {fileID: 0}
 --- !u!114 &3503717415820007791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -956,7 +955,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   combatStyle: 1
-  defaultStopRange: 1.5
+  defaultStopRange: 5
   patternEntries:
   - slotName: slot2
     defaultIsUse: 1
@@ -967,7 +966,7 @@ MonoBehaviour:
     - type: 3
       ctype: 4
       value: 10
-    skill: {fileID: 11400000, guid: ca460add9b2054c4ebbe691e818b2cee, type: 2}
+    skill: {fileID: 11400000, guid: b8626d04137768a489f6ca93738912d3, type: 2}
   - slotName: slot1
     defaultIsUse: 1
     conditions:

@@ -217,6 +217,8 @@ public class SkillSlotUI : MonoBehaviour
         OnIsCooldown(
             mySlot,
             activeSkill.IsOnCooldown);
+        // Restore the fill/text immediately when the HUD opens during a cooldown.
+        OnSkillCoolDown(mySlot, activeSkill.CurrentCooldown, activeSkill.MaxCooldown);
     }
 
     private void SetSkillIcon(Sprite sprite)

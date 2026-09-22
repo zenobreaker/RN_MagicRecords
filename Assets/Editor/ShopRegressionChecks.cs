@@ -219,6 +219,79 @@ public static class ShopRegressionChecks
         }
     }
 
+    [MenuItem("Tools/Shop/5 Check Chapter Transition (Play Mode)")]
+    public static void Chapters()
+    {
+        Playing();
+        var app = AppManager.Instance; var explore = app.GetExploreManager();
+        var ui = UIManager.Instance;
+        ui.CloseAllOpenedUI();
+        int oldMax = Field<int>(explore, "maxChapter");
+        typeof(ExploreManager).GetField("maxChapter", Hidden).SetValue(explore, 2);
+        var healthObject = new GameObject("Chapter transition HP fixture");
+        try
+        {
+            Check(explore.Chapter == 1 && explore.CurrentSetupData.SelectedCharacterId == 1 &&
+                explore.CurrentSetupData.SelectedClassId == 1, "chapter transition fixture starts with valid setup");
+            var health = healthObject.AddComponent<HealthPointComponent>(); health.SetHealthPoint(100);
+            explore.RegisterRunHealth(1, health); health.RestoreCurrentHealth(37);
+            CurrencyManager.Instance.AddCurrency(CurrencyType.EXPOLORE_COIN, 1000);
+            int balance = CurrencyManager.Instance.GetCurrency(CurrencyType.EXPOLORE_COIN);
+            var equipped = app.GetEquippedActiveSkillListByCharID(1).ToArray();
+            void SetNode(int id) => typeof(ExploreManager).GetField("<MapNodeID>k__BackingField", Hidden).SetValue(explore, id);
+            SetNode(explore.StageReplacer.GetLevels().Last()[0].id);
+            explore.SaveExploreMap();
+            var checkpoint = SaveManager.LoadExploreRun(); checkpoint.runStatus = RunStatus.ChapterCleared;
+            explore.ChangeState(ExploreState.IN_STAGE);
+            explore.ClearStage(true); // Real boss-clear path, no direct chapter assignment.
+            Check(explore.Chapter == 2 && explore.CurrentSetupData.SelectedCharacterId == 1 &&
+                explore.CurrentSetupData.SelectedClassId == 1 && explore.RunStatus == RunStatus.MidRun,
+                "boss clear preserves character/class when generating chapter 2");
+            Check(app.GetEquippedActiveSkillListByCharID(1).SequenceEqual(equipped) &&
+                CurrencyManager.Instance.GetCurrency(CurrencyType.EXPOLORE_COIN) == balance &&
+                SaveManager.LoadExploreRun().partyHealth.Single(h => h.characterId == 1).current == 37 &&
+                !explore.InitialRecordRewardPending, "chapter transition preserves equipped skills, currency and HP without another starting reward");
+
+            void OpenShopAndSwap(string phase)
+            {
+                var levels = explore.StageReplacer.GetLevels();
+                SetNode(levels[levels.Count - 3][0].id); explore.GetReplacedNodeInfo().isCleared = true;
+                explore.EnterStageByNode(levels[levels.Count - 2][0]);
+                var shop = Object.FindFirstObjectByType<ShopUI>();
+                var stock = explore.GetReplacedNodeInfo().shopStock;
+                int index = stock.offers.FindIndex(o => o.kind == ExploreShopKind.SkillSwap);
+                shop.GetComponentsInChildren<UIShopSlot>()[index].GetComponent<Button>().onClick.Invoke();
+                var popup = Object.FindFirstObjectByType<UIRecordSkillUpPopUp>();
+                Check(popup != null && Field<SkillEventSession>(popup, "session") != null,
+                    phase + ": actual shop skill slot opens initialized popup");
+                popup.CloseUI(); shop.CloseUI();
+            }
+            OpenShopAndSwap("chapter 2");
+            explore.SaveExploreMap(); explore.ResetData(); explore.Init(false);
+            Check(explore.Chapter == 2 && explore.CurrentSetupData.SelectedCharacterId == 1 &&
+                explore.CurrentSetupData.SelectedClassId == 1, "chapter 2 save/reload retains setup");
+            OpenShopAndSwap("chapter 2 after reload");
+
+            // Resume the checkpoint saved immediately after a boss clear.
+            SaveManager.SaveExploreRun(checkpoint);
+            explore.ResetData(); explore.Init(false);
+            Check(explore.Chapter == 2 && explore.CurrentSetupData.SelectedCharacterId == 1 &&
+                explore.CurrentSetupData.SelectedClassId == 1 && explore.StageReplacer.GetLevels().Count == 6 &&
+                !explore.InitialRecordRewardPending, "boss-checkpoint resume advances chapter without resetting setup");
+            OpenShopAndSwap("chapter 2 boss-checkpoint resume");
+            explore.StartExplore();
+            Check(explore.Chapter == 1 && explore.RunStatus == RunStatus.SetupIncomplete &&
+                !explore.CurrentSetupData.HasCharacter && !explore.CurrentSetupData.HasClass,
+                "explicit new run still clears old setup");
+            Debug.Log("SHOP_CHAPTER_CHECKS_PASS");
+        }
+        finally
+        {
+            typeof(ExploreManager).GetField("maxChapter", Hidden).SetValue(explore, oldMax);
+            Object.DestroyImmediate(healthObject);
+        }
+    }
+
     static void Swap(ShopUI shop, MapNodeInfo node, ExploreShopOffer offer, UIShopSlot slot)
     {
         var app = AppManager.Instance; var currency = CurrencyManager.Instance;

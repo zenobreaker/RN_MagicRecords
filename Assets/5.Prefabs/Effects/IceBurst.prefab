@@ -9812,10 +9812,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RadialAoEProjectile
   shardCount: 10
-  shardAngle: 17.2
+  shardAngle: 15
   innerRadius: 0
-  maxRadius: 17
-  rotationOffset: -15
+  maxRadius: 14
+  rotationOffset: 15
   expandDuration: 0.5
   expandCurve:
     serializedVersion: 2
@@ -54176,7 +54176,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 6.95e-43, y: 8e-44, z: 0, w: 4.3e-44}
+  m_BoundingSphereOverride: {x: 7.97e-43, y: 8e-44, z: 0, w: 4.3e-44}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0

@@ -69,14 +69,6 @@ public class Exploration_Main_UI : UiBase
     // 새 탐사 세팅을 시작할 때 부르는 헬퍼 함수
     private void StartNewExplorationSetup()
     {
-        ExploreManager exploreManager = AppManager.Instance.SafeInvoke(v => v.GetExploreManager());
-        if (exploreManager == null) return;
-
-        exploreManager.Init(true); // 매니저 초기화 (껍데기 준비)
-
-        UIManager.Instance.SafeInvoke(v =>
-        {
-            v.OpenExplorationSetupPopUp();
-        });
+        AppManager.Instance?.EnterTheExplorationProcess();
     }
 }

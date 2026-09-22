@@ -43,7 +43,8 @@ public partial class NavigateWithMovementAction : Action
 
     protected override Status OnUpdate()
     {
-        if (Agent.Value == null || Target.Value == null || Movement.Value == null)
+        if (Agent.Value == null || Target.Value == null || Movement.Value == null ||
+            m_NavMeshAgent.enabled == false)
             return Status.Failure;
 
         Vector3 currentAgentPos = Agent.Value.transform.position;

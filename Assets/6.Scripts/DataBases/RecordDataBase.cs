@@ -2,8 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 // JSON 매핑용 DTO 클래스들
 [System.Serializable]
@@ -64,9 +66,11 @@ public class RecordDataJsonAllData
 
 public class RecordDataBase : DataBase
 {
+    public const int EmptyRecordId = -1;
     [Header("Addressables Settings")]
     [Tooltip("어드레서블에서 긁어올 라벨 이름")]
     [SerializeField] private string recordLabel = "RecordData";
+    [SerializeField] private string spriteLabel = "SpriteData"; 
 
     [SerializeField] private TextAsset recordDataJsonAsset;
     [SerializeField] private Dictionary<int, RecordData> recordDatas = new();
@@ -75,7 +79,7 @@ public class RecordDataBase : DataBase
 
     // 미완성이었던 딕셔너리 선언 완료 및 초기화
     private Dictionary<RecordRarity, List<RecordData>> recordDataByRarity = new();
-    private Dictionary<RecordType, List<int>> recordIDByType = new(); 
+    private Dictionary<RecordType, List<int>> recordIDByType = new();
 
     public override void Initialize()
     {
@@ -86,10 +90,30 @@ public class RecordDataBase : DataBase
 
         Debug.Log("Record Database Init - Addressables Start");
 
-        CreateEmptyRecordTemplate();
-
         // 비동기 로드 시작
         LoadRecordsFromAddressablesAsync().Forget();
+
+        CreateEmptyRecordTemplate();
+    }
+
+    private async UniTask<Sprite> LoadSpriteAsync()
+    {
+        var locationsHandle = Addressables.LoadResourceLocationsAsync(spriteLabel, typeof(Sprite));
+        try
+        {
+            var locations = await locationsHandle.ToUniTask();
+            if (locations.Count == 0) return null; // Optional legacy sprite label.
+            AsyncOperationHandle<Sprite> handle = Addressables.LoadAssetAsync<Sprite>(locations[0]);
+            return await handle.ToUniTask();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError(
+                $"Sprite 로드 실패: {spriteLabel}\n{e}");
+
+            return null;
+        }
+        finally { Addressables.Release(locationsHandle); }
     }
 
     private async UniTaskVoid LoadRecordsFromAddressablesAsync()
@@ -124,7 +148,7 @@ public class RecordDataBase : DataBase
 
                 if (!recordIDByType.ContainsKey(recordData.type))
                     recordIDByType[recordData.type] = new List<int>();
-                recordIDByType[recordData.type].Add(recordData.id); 
+                recordIDByType[recordData.type].Add(recordData.id);
             }
 
             Debug.Log($"[RecordDataBase] {loadedRecords.Count}개의 레코드 데이터 로드 완료!");
@@ -133,6 +157,71 @@ public class RecordDataBase : DataBase
         {
             Debug.LogError($"[RecordDataBase] 어드레서블 로드 실패: {e.Message}");
         }
+    }
+    private async void CreateEmptyRecordTemplate()
+    {
+        if (recordDatas.TryGetValue(EmptyRecordId, out RecordData recordData))
+        {
+            emptyRecordTemplate = recordData;
+            return; 
+        }
+
+        emptyRecordTemplate = new RecordData
+        {
+            id = EmptyRecordId,
+            recordName = "name_emptymemory",
+            description = "desc_emptyememory",
+
+            rarity = RecordRarity.NORMAL,
+            targetFilter = TargetFilterType.ALL,
+            type = RecordType.EMPTY,
+        };
+        // Save restoration can request an empty before asynchronous assets finish.
+        var fallback = emptyRecordTemplate;
+        fallback.icon = await LoadSpriteAsync();
+    }
+
+    public RecordData GetEmptyRecord()
+    {
+        if (emptyRecordTemplate == null) CreateEmptyRecordTemplate();
+        // Prefer the authored empty-record SO once the database has loaded it.
+        var template = recordDatas.TryGetValue(EmptyRecordId, out var authored) ? authored : emptyRecordTemplate;
+        var record = template.GetData();
+        // GetData preserves identity for UI copies; each empty reward is a new item.
+        record.uniqueID = Guid.NewGuid().ToString();
+        return record;
+    }
+    public RecordData GetRecordData(int recordID) => recordDatas.TryGetValue(recordID, out RecordData recordData) ? recordData.GetData() : null;
+    public List<RecordData> GetAllRecordData() => recordDataList.ToList();
+
+    public List<RecordData> GetRecordDatas(RecordRarity rarity)
+    {
+        if (recordDataByRarity.TryGetValue(rarity, out List<RecordData> list))
+            return list.ToList();
+        return new List<RecordData>();
+    }
+
+    private TargetFilterType GetTargetFilterType(string targetFilter)
+    {
+        if (string.IsNullOrEmpty(targetFilter) || targetFilter.Equals("ALL")) return TargetFilterType.ALL;
+        else if (targetFilter.Equals("Shooter")) return TargetFilterType.Shooter;
+        return TargetFilterType.ALL;
+    }
+
+    public StatusType GetStatusType(string statusType)
+    {
+        switch (statusType)
+        {
+            case "ATK": return StatusType.ATTACK;
+            case "DEF": return StatusType.DEFENSE;
+            case "CRIT_RATIO": return StatusType.CRIT_RATIO;
+            case "CRIT_DMG": return StatusType.CRIT_DMG;
+            case "SPD": return StatusType.MOVESPEED;
+            case "ASPD": return StatusType.ATTACKSPEED;
+            case "HP": return StatusType.HEALTH;
+            case "HP_REGEN": return StatusType.HEALTH_REGEN;
+        }
+        return StatusType.NONE;
     }
     private void OldJson()
     {
@@ -202,50 +291,4 @@ public class RecordDataBase : DataBase
 
     }
 
-    private void CreateEmptyRecordTemplate()
-    {
-        emptyRecordTemplate = new RecordData
-        {
-            id = -1,
-            recordName = "name_emptymemory",
-            description = "desc_emptyememory",
-            rarity = RecordRarity.NORMAL,
-            targetFilter = TargetFilterType.ALL,
-            type = RecordType.EMPTY,
-        };
-    }
-
-    public RecordData GetEmptyRecord() => emptyRecordTemplate.GetData();
-    public RecordData GetRecordData(int recordID) => recordDatas.TryGetValue(recordID, out RecordData recordData) ? recordData.GetData() : null;
-    public List<RecordData> GetAllRecordData() => recordDataList.ToList();
-
-    public List<RecordData> GetRecordDatas(RecordRarity rarity)
-    {
-        if (recordDataByRarity.TryGetValue(rarity, out List<RecordData> list))
-            return list.ToList();
-        return new List<RecordData>();
-    }
-
-    private TargetFilterType GetTargetFilterType(string targetFilter)
-    {
-        if (string.IsNullOrEmpty(targetFilter) || targetFilter.Equals("ALL")) return TargetFilterType.ALL;
-        else if (targetFilter.Equals("Shooter")) return TargetFilterType.Shooter;
-        return TargetFilterType.ALL;
-    }
-
-    public StatusType GetStatusType(string statusType)
-    {
-        switch (statusType)
-        {
-            case "ATK": return StatusType.ATTACK;
-            case "DEF": return StatusType.DEFENSE;
-            case "CRIT_RATIO": return StatusType.CRIT_RATIO;
-            case "CRIT_DMG": return StatusType.CRIT_DMG;
-            case "SPD": return StatusType.MOVESPEED;
-            case "ASPD": return StatusType.ATTACKSPEED;
-            case "HP": return StatusType.HEALTH;
-            case "HP_REGEN": return StatusType.HEALTH_REGEN;
-        }
-        return StatusType.NONE;
-    }
 }

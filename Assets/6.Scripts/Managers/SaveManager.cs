@@ -162,8 +162,8 @@ public static class SaveManager
 
     public static void DeleteExploreRun()
     {
-        if (System.IO.File.Exists(recordPath))
-            System.IO.File.Delete(recordPath);
+        if (System.IO.File.Exists(runSaveDataPath))
+            System.IO.File.Delete(runSaveDataPath);
     }
 
     #region MapData

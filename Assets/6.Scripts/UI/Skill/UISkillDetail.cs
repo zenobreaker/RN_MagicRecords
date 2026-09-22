@@ -104,10 +104,17 @@ public class UISkillDetail : UiBase
 
     public void OnEquipSkill()
     {
-        if (selectedSkillData == null) return;
+        if (selectedSkillData == null)
+        {
+            UIManager.Instance.SafeInvoke(v => v.ShowToast($"장착할 스킬을 선택해주세요."));
+            return;
+        }
 
         if (selectedSkillData.currentLevel == 0 && selectedSkillData.isUnlocked == false)
-            return; 
+        {
+            UIManager.Instance.SafeInvoke(v => v.ShowToast($"스킬 레벨이 1이상이어야 장착할 수 있습니다."));
+            return;
+        }
 
         OnDrawEquipUI?.Invoke();
     }
