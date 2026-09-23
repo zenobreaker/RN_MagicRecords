@@ -204,9 +204,11 @@ Object Management	Object Pooling
 
 ### 📂 Project Structure
 <img width="296" height="639" alt="Image" src="https://github.com/user-attachments/assets/8eaf8f09-637f-4f00-9d71-f50c7070065d" />
+
+
 👤 Developer
 
-Choi Je-seong
+최제성  Choi Je-seong
 
 Unity Client Programmer
 
