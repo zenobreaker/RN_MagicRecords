@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46b10d0a553238744b0cd87f519edeba, type: 3}
+  m_Name: assistweapon-pierce
+  m_EditorClassIdentifier: 
+  id: 100102
+  skillName: name_chaser
+  skillDescription: desc_chaser
+  learnableLevel: 0
+  maxLevel: 1
+  skillUpgradeCost: 
+  skillImage: {fileID: 0}
+  leadingSkillList: 
+  levelDatas: []
+  jobID: 1
+  Modules:
+  - rid: 7840629999140864089
+  references:
+    version: 2
+    RefIds:
+    - rid: 7840629999140864089
+      type: {class: Module_Passive_AssistDronePierce, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        bonusPierceCount: 1

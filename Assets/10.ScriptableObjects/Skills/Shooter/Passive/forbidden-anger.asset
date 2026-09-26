@@ -13,12 +13,17 @@ MonoBehaviour:
   m_Name: forbidden-anger
   m_EditorClassIdentifier: 
   id: 17
-  skillName: name_forbidden-anger
-  skillDescription: desc_forbidden-anger
+  skillName: skill_name_forbidden-anger
+  skillDescription: skill_desc_forbidden-anger
   learnableLevel: 0
   maxLevel: 3
   skillUpgradeCost: 
   skillImage: {fileID: 0}
   leadingSkillList: 
+  levelDatas: []
+  implementation: 0
   jobID: 1
-  enhanceSkillTargets: 
+  Modules: []
+  references:
+    version: 2
+    RefIds: []

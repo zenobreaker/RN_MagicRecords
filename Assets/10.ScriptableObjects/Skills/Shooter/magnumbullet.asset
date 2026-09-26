@@ -178,6 +178,7 @@ MonoBehaviour:
   - phaseName: "\uC0AC\uACA9"
     isInstant: 0
     modules:
+    - rid: 9167119102629380212
     - rid: 7840629605693390968
     - rid: 7840629605693390969
     - rid: 7840629605693390967
@@ -186,6 +187,16 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 9167119102629380212
+      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 1
+        useFireIntervalMultiplier: 0
+        maxConsumeCount: 1
+        applyMode: 0
     - rid: 7840629605693390966
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:

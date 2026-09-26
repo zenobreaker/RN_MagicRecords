@@ -2318,6 +2318,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   records:
+  - {fileID: 11400000, guid: 8bc11b6b310f4a4fa2f4810cc801196d, type: 2}
+  - {fileID: 11400000, guid: e81c9ece3d7c44d7845c2b4478e332fa, type: 2}
   - {fileID: 11400000, guid: b43e4c1e976b6c740a8271de1f08cdc9, type: 2}
   - {fileID: 11400000, guid: ddff9e450425b094499c33018d2dda20, type: 2}
   - {fileID: 11400000, guid: d146ca87e838027499ca3d9e611d0f84, type: 2}
@@ -2354,6 +2356,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxChapter: 2
+  startingPassiveSettings: {fileID: 11400000, guid: 824d846f8656435687353b7d2bbfc60d, type: 2}
 --- !u!114 &7870455255664782143
 MonoBehaviour:
   m_ObjectHideFlags: 0

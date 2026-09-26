@@ -1,9 +1,5 @@
 {
   "stringData": [
-    {"key":"record_name_empty_record","kr":"빈 레코드","en":"Empty Record"},
-    {"key":"record_desc_empty_record","kr":"효과가 없는 빈 레코드입니다.","en":"An empty record with no effect."},
-    {"key":"name_emptymemory","kr":"빈 레코드","en":"Empty Record"},
-    {"key":"desc_emptyememory","kr":"효과가 없는 빈 레코드입니다.","en":"An empty record with no effect."},
     {
       "key": "currency_run_scrap",
       "kr": "고철 조각",
@@ -75,6 +71,31 @@
       "en": "Next"
     },
     {
+      "key": "ui_btn_start",
+      "kr": "탐사 시작",
+      "en": "Start"
+    },
+    {
+      "key": "ui_btn_prev",
+      "kr": "뒤로",
+      "en": "Previous"
+    },
+    {
+      "key": "ui_btn_enhance",
+      "kr": "강화",
+      "en": "Enhance"
+    },
+    {
+      "key": "ui_text_learn",
+      "kr": "배우기",
+      "en": "Learn"
+    },
+    {
+      "key": "ui_text_learned",
+      "kr": "습득 완료",
+      "en": "Learned"
+    },
+    {
       "key": "ui_text_equip",
       "kr": "장비",
       "en": "Equipment"
@@ -88,11 +109,6 @@
       "key": "ui_text_ingredient",
       "kr": "재료",
       "en": "Ingredient"
-    },
-    {
-      "key": "ui_btn_enhance",
-      "kr": "강화",
-      "en": "Enhance"
     },
     {
       "key": "ui_setting_sound",
@@ -330,76 +346,6 @@
       "en": "Move Speed"
     },
     {
-      "key": "record_name_stat_atk_inc",
-      "kr": "강화 회로: 출력 강화",
-      "en": "Output Amplifier Module"
-    },
-    {
-      "key": "record_name_stat_def_inc",
-      "kr": "내구 회로 안정화",
-      "en": "Armor Reinforcement Protocol"
-    },
-    {
-      "key": "record_name_stat_spd_inc",
-      "kr": "추진력 강화",
-      "en": "Mobility Booster"
-    },
-    {
-      "key": "record_name_stat_atkspeed_inc",
-      "kr": "연산 가속 모듈",
-      "en": "Reaction Acceleration Module"
-    },
-    {
-      "key": "record_name_stat_crit_inc",
-      "kr": "약점 분석",
-      "en": "Weakness Analysis"
-    },
-    {
-      "key": "record_name_skill_auto_reload",
-      "kr": "마법탄 장전 - 오토 리로드",
-      "en": "Auto Reload"
-    },
-    {
-      "key": "record_name_stat_final_effort",
-      "kr": "최후의 저력",
-      "en": "Final Effort"
-    },
-    {
-      "key": "record_desc_stat_atk_inc",
-      "kr": "공격력이 5% 증가합니다.",
-      "en": "Increases Attack Power by 5%."
-    },
-    {
-      "key": "record_desc_stat_def_inc",
-      "kr": "방어력 증가 5%",
-      "en": "Hardens the user's defense by 5%."
-    },
-    {
-      "key": "record_desc_stat_spd_inc",
-      "kr": "이동속도 증가 1%",
-      "en": "Slightly enhances mobility by 1%."
-    },
-    {
-      "key": "record_desc_stat_atkspeed_inc",
-      "kr": "공격속도 증가 5%",
-      "en": "Increases the rate of fire by 5%."
-    },
-    {
-      "key": "record_desc_stat_crit_inc",
-      "kr": "크리티컬 확률 증가 5%",
-      "en": "Improves the probability of critical hits by 5%."
-    },
-    {
-      "key": "record_desc_skill_auto_reload",
-      "kr": "일정 시간 마다 마법탄환 장전",
-      "en": "Automatically reloads magic bullets at set intervals."
-    },
-    {
-      "key": "record_desc_stat_final_effort",
-      "kr": "체력이 30% 이하일 때, 공격 속도 30% 증가",
-      "en": "Increases Attack Speed by 30% when HP is 30% or lower."
-    },
-    {
       "key": "skill_name_magnumbullet",
       "kr": "매그넘탄",
       "en": "Magnum Bullet"
@@ -420,9 +366,9 @@
       "en": "Spread Burst"
     },
     {
-      "key": "skill_name_consecutiveshot",
+      "key": "skill_name_rapidfire",
       "kr": "연속 발사",
-      "en": "Rapid Chain"
+      "en": "Rapid Fire"
     },
     {
       "key": "skill_name_spiralshot",
@@ -515,7 +461,7 @@
       "en": null
     },
     {
-      "key": "skill_desc_consecutiveshot",
+      "key": "skill_desc_rapidfire",
       "kr": "마력탄을 연속으로 발사합니다.",
       "en": null
     },
@@ -1160,6 +1106,216 @@
       "en": "As expected, it's best to avoid anything suspicious."
     },
     {
+      "key": "evt_name_1012",
+      "kr": "기억의 환승역",
+      "en": null
+    },
+    {
+      "key": "evt_desc_1012",
+      "kr": "오래된 환승 시설에 도착했습니다. 수많은 메모리 드론들이 멈춰 선 채, 주인을 잃은 기록을 품고 있습니다. 아직 작동하는 단말기 하나가 당신의 접속을 기다립니다.",
+      "en": null
+    },
+    {
+      "key": "evt_1012_c1",
+      "kr": "다른 기억으로 접속한다. (탐사 코인 50 소모)",
+      "en": null
+    },
+    {
+      "key": "evt_1012_c2",
+      "kr": "남겨진 기록을 회수한다.",
+      "en": null
+    },
+    {
+      "key": "evt_1012_c3",
+      "kr": "접속을 해제하고 떠난다.",
+      "en": null
+    },
+    {
+      "key": "evt_1012_r1",
+      "kr": "낯선 기억이 당신의 회로를 타고 흐릅니다. 방금 전까지 익숙했던 동작이 어쩐지 생소하군요. 그래도 곧 익숙해질 겁니다.",
+      "en": null
+    },
+    {
+      "key": "evt_1012_r2",
+      "kr": "주인을 기다리던 기록들은 끝내 전달되지 못했습니다. 쓸 만한 부품만이라도 챙겨두죠. 어쩌면 누군가에게 도움이 될지도 모릅니다.",
+      "en": null
+    },
+    {
+      "key": "evt_1012_r3",
+      "kr": "모든 기억을 들여다볼 필요는 없겠죠. 당신은 낯선 목소리들을 뒤로하고 발걸음을 옮깁니다.",
+      "en": null
+    },
+    {
+      "key": "evt_name_1013",
+      "kr": "돌아오지 못한 메모리 드론",
+      "en": null
+    },
+    {
+      "key": "evt_desc_1013",
+      "kr": "부서진 메모리 드론 한 기가 나무뿌리 사이에 끼어 있습니다. 수백 년은 지났을 법한 기체에서 희미한 신호가 반복됩니다. 중앙 아카이브로 향하던 기록이 아직 남아 있는 모양입니다.",
+      "en": null
+    },
+    {
+      "key": "evt_1013_c1",
+      "kr": "미전송 기록을 재생한다.",
+      "en": null
+    },
+    {
+      "key": "evt_1013_c2",
+      "kr": "봉인된 기록을 복구한다. (탐사 코인 60 소모)",
+      "en": null
+    },
+    {
+      "key": "evt_1013_c3",
+      "kr": "드론을 그대로 둔다.",
+      "en": null
+    },
+    {
+      "key": "evt_1013_r1",
+      "kr": "드론의 마지막 임무가 당신에게 전달됩니다. 누군가 끝내 전하지 못한 이야기가 이제야 목적지를 찾았군요.",
+      "en": null
+    },
+    {
+      "key": "evt_1013_r2",
+      "kr": "손상된 기록을 복구하자 오래된 기술이 모습을 드러냅니다. 아카이브에 도착하지 못한 것이 오히려 다행이었을지도 모르겠군요.",
+      "en": null
+    },
+    {
+      "key": "evt_1013_r3",
+      "kr": "드론은 여전히 같은 신호를 반복합니다. 언젠가 이 기록을 기다리는 누군가가 찾아올지도 모르죠.",
+      "en": null
+    },
+    {
+      "key": "evt_name_1014",
+      "kr": "미정산 복구 보수",
+      "en": null
+    },
+    {
+      "key": "evt_desc_1014",
+      "kr": "버려진 복구 작업소에서 아직 작동하는 정산 단말기를 발견했습니다. 화면에는 오래전에 완료된 작업들의 보수가 수령되지 않은 채 남아 있습니다. 단말기는 당신을 새로운 작업자로 인식한 모양입니다.",
+      "en": null
+    },
+    {
+      "key": "evt_1014_c1",
+      "kr": "확인된 보수를 수령한다.",
+      "en": null
+    },
+    {
+      "key": "evt_1014_c2",
+      "kr": "미확인 보수까지 청구한다. (성공 확률 55%)",
+      "en": null
+    },
+    {
+      "key": "evt_1014_c3",
+      "kr": "정산 기록을 무시한다.",
+      "en": null
+    },
+    {
+      "key": "evt_1014_r1",
+      "kr": "정산이 완료되었습니다. 수백 년 묵은 보수치고는 적은 편이지만, 없는 것보다는 낫겠죠.",
+      "en": null
+    },
+    {
+      "key": "evt_1014_r2",
+      "kr": "단말기가 잠시 멈추더니 승인 표시를 띄웁니다. 예상보다 많은 보수가 지급되었습니다. 오래된 시스템도 가끔은 너그러워지는군요.",
+      "en": null
+    },
+    {
+      "key": "evt_1014_f2",
+      "kr": "정산 오류. 미확인 작업 내역이 모두 삭제되었습니다. 단말기는 아무 일도 없었다는 듯 대기 화면으로 돌아갑니다.",
+      "en": null
+    },
+    {
+      "key": "evt_1014_r3",
+      "kr": "남의 보수를 함부로 가져갈 필요는 없겠죠. 단말기는 여전히 오래된 작업자의 귀환을 기다립니다.",
+      "en": null
+    },
+    {
+      "key": "record_name_stat_atk_inc",
+      "kr": "강화 회로: 출력 강화",
+      "en": "Output Amplifier Module"
+    },
+    {
+      "key": "record_name_stat_def_inc",
+      "kr": "내구 회로 안정화",
+      "en": "Armor Reinforcement Protocol"
+    },
+    {
+      "key": "record_name_stat_spd_inc",
+      "kr": "추진력 강화",
+      "en": "Mobility Booster"
+    },
+    {
+      "key": "record_name_stat_atkspeed_inc",
+      "kr": "연산 가속 모듈",
+      "en": "Reaction Acceleration Module"
+    },
+    {
+      "key": "record_name_stat_crit_inc",
+      "kr": "약점 분석",
+      "en": "Weakness Analysis"
+    },
+    {
+      "key": "record_name_skill_auto_reload",
+      "kr": "마법탄 장전 - 오토 리로드",
+      "en": "Auto Reload"
+    },
+    {
+      "key": "record_name_stat_final_effort",
+      "kr": "최후의 저력",
+      "en": "Final Effort"
+    },
+    {
+      "key": "record_desc_stat_atk_inc",
+      "kr": "공격력이 5% 증가합니다.",
+      "en": "Increases Attack Power by 5%."
+    },
+    {
+      "key": "record_desc_stat_def_inc",
+      "kr": "방어력 증가 5%",
+      "en": "Hardens the user's defense by 5%."
+    },
+    {
+      "key": "record_desc_stat_spd_inc",
+      "kr": "이동속도 증가 1%",
+      "en": "Slightly enhances mobility by 1%."
+    },
+    {
+      "key": "record_desc_stat_atkspeed_inc",
+      "kr": "공격속도 증가 5%",
+      "en": "Increases the rate of fire by 5%."
+    },
+    {
+      "key": "record_desc_stat_crit_inc",
+      "kr": "크리티컬 확률 증가 5%",
+      "en": "Improves the probability of critical hits by 5%."
+    },
+    {
+      "key": "record_desc_skill_auto_reload",
+      "kr": "일정 시간 마다 마법탄환 장전",
+      "en": "Automatically reloads magic bullets at set intervals."
+    },
+    {
+      "key": "record_desc_stat_final_effort",
+      "kr": "체력이 30% 이하일 때, 공격 속도 30% 증가",
+      "en": "Increases Attack Speed by 30% when HP is 30% or lower."
+    },
+    {
+      "key": "record_name_fobiddencurse",
+      "kr": "금단의 저주",
+      "en": "Forbidden Curse"
+    },
+    {
+      "key": "record_name_magicbulletload",
+      "kr": "마법탄 장전",
+      "en": "Magic Bullet Load"
+    },
+    {
+      "key": "record_name_empty_record",
+      "kr": "빈 레코드",
+      "en": "Empty Record"
+    },
+    {
       "key": "record_name_modify_magnum_hollowpoint",
       "kr": "매그넘샷 - 할로포인트",
       "en": null
@@ -1360,141 +1516,19 @@
       "en": null
     },
     {
-      "key": "evt_name_1012",
-      "kr": "기억의 환승역",
-      "en": null
+      "key": "record_desc_fobiddencurse",
+      "kr": "대상의 디버프 1개당 피해가 10% 증가합니다. 같은 레코드를 획득하면 레벨이 오르고 피해 증가량이 3%p씩 증가합니다. 최대 5레벨: 10/13/16/19/22%.",
+      "en": "Damage increases by 10% per debuff on the target. Each duplicate record adds a level and 3 percentage points, up to level 5: 10/13/16/19/22%."
     },
     {
-      "key": "evt_desc_1012",
-      "kr": "오래된 환승 시설에 도착했습니다. 수많은 메모리 드론들이 멈춰 선 채, 주인을 잃은 기록을 품고 있습니다. 아직 작동하는 단말기 하나가 당신의 접속을 기다립니다.",
-      "en": null
+      "key": "record_desc_magicbulletload",
+      "kr": "마법탄을 장전하고 마지막 기본 공격 시 1발을 보충합니다. 같은 레코드를 획득하면 레벨이 오릅니다. 최대 3레벨, 장전 수: 4/6/7발.",
+      "en": "Loads magic bullets and reloads one on the final basic attack. Duplicate records level up this passive, up to level 3. Bullet capacity: 4/6/7."
     },
     {
-      "key": "evt_1012_c1",
-      "kr": "다른 기억으로 접속한다. (탐사 코인 50 소모)",
-      "en": null
-    },
-    {
-      "key": "evt_1012_c2",
-      "kr": "남겨진 기록을 회수한다.",
-      "en": null
-    },
-    {
-      "key": "evt_1012_c3",
-      "kr": "접속을 해제하고 떠난다.",
-      "en": null
-    },
-    {
-      "key": "evt_1012_r1",
-      "kr": "낯선 기억이 당신의 회로를 타고 흐릅니다. 방금 전까지 익숙했던 동작이 어쩐지 생소하군요. 그래도 곧 익숙해질 겁니다.",
-      "en": null
-    },
-    {
-      "key": "evt_1012_r2",
-      "kr": "주인을 기다리던 기록들은 끝내 전달되지 못했습니다. 쓸 만한 부품만이라도 챙겨두죠. 어쩌면 누군가에게 도움이 될지도 모릅니다.",
-      "en": null
-    },
-    {
-      "key": "evt_1012_r3",
-      "kr": "모든 기억을 들여다볼 필요는 없겠죠. 당신은 낯선 목소리들을 뒤로하고 발걸음을 옮깁니다.",
-      "en": null
-    },
-    {
-      "key": "evt_name_1013",
-      "kr": "돌아오지 못한 메모리 드론",
-      "en": null
-    },
-    {
-      "key": "evt_desc_1013",
-      "kr": "부서진 메모리 드론 한 기가 나무뿌리 사이에 끼어 있습니다. 수백 년은 지났을 법한 기체에서 희미한 신호가 반복됩니다. 중앙 아카이브로 향하던 기록이 아직 남아 있는 모양입니다.",
-      "en": null
-    },
-    {
-      "key": "evt_1013_c1",
-      "kr": "미전송 기록을 재생한다.",
-      "en": null
-    },
-    {
-      "key": "evt_1013_c2",
-      "kr": "봉인된 기록을 복구한다. (탐사 코인 60 소모)",
-      "en": null
-    },
-    {
-      "key": "evt_1013_c3",
-      "kr": "드론을 그대로 둔다.",
-      "en": null
-    },
-    {
-      "key": "evt_1013_r1",
-      "kr": "드론의 마지막 임무가 당신에게 전달됩니다. 누군가 끝내 전하지 못한 이야기가 이제야 목적지를 찾았군요.",
-      "en": null
-    },
-    {
-      "key": "evt_1013_r2",
-      "kr": "손상된 기록을 복구하자 오래된 기술이 모습을 드러냅니다. 아카이브에 도착하지 못한 것이 오히려 다행이었을지도 모르겠군요.",
-      "en": null
-    },
-    {
-      "key": "evt_1013_r3",
-      "kr": "드론은 여전히 같은 신호를 반복합니다. 언젠가 이 기록을 기다리는 누군가가 찾아올지도 모르죠.",
-      "en": null
-    },
-    {
-      "key": "evt_name_1014",
-      "kr": "미정산 복구 보수",
-      "en": null
-    },
-    {
-      "key": "evt_desc_1014",
-      "kr": "버려진 복구 작업소에서 아직 작동하는 정산 단말기를 발견했습니다. 화면에는 오래전에 완료된 작업들의 보수가 수령되지 않은 채 남아 있습니다. 단말기는 당신을 새로운 작업자로 인식한 모양입니다.",
-      "en": null
-    },
-    {
-      "key": "evt_1014_c1",
-      "kr": "확인된 보수를 수령한다.",
-      "en": null
-    },
-    {
-      "key": "evt_1014_c2",
-      "kr": "미확인 보수까지 청구한다. (성공 확률 55%)",
-      "en": null
-    },
-    {
-      "key": "evt_1014_c3",
-      "kr": "정산 기록을 무시한다.",
-      "en": null
-    },
-    {
-      "key": "evt_1014_r1",
-      "kr": "정산이 완료되었습니다. 수백 년 묵은 보수치고는 적은 편이지만, 없는 것보다는 낫겠죠.",
-      "en": null
-    },
-    {
-      "key": "evt_1014_r2",
-      "kr": "단말기가 잠시 멈추더니 승인 표시를 띄웁니다. 예상보다 많은 보수가 지급되었습니다. 오래된 시스템도 가끔은 너그러워지는군요.",
-      "en": null
-    },
-    {
-      "key": "evt_1014_f2",
-      "kr": "정산 오류. 미확인 작업 내역이 모두 삭제되었습니다. 단말기는 아무 일도 없었다는 듯 대기 화면으로 돌아갑니다.",
-      "en": null
-    },
-    {
-      "key": "evt_1014_r3",
-      "kr": "남의 보수를 함부로 가져갈 필요는 없겠죠. 단말기는 여전히 오래된 작업자의 귀환을 기다립니다.",
-      "en": null
-    },
-    {"key":"ui_skill_event_currency","kr":"탐사 재화","en":"Exploration currency"},
-    {"key":"ui_skill_event_upgrade","kr":"레벨 업","en":"Level up"},
-    {"key":"ui_skill_event_select","kr":"스킬을 선택하세요.","en":"Select a skill."},
-    {"key":"ui_skill_event_pending","kr":"변경사항은 적용 후 닫기를 눌러 확정합니다.","en":"Confirm your changes with Apply and close."},
-    {"key":"ui_skill_event_hint","kr":"교체할 슬롯과 스킬을 선택하세요. 재화로 스킬을 성장시킬 수 있습니다.","en":"Choose a slot and replacement skill, or spend currency to level up."},
-    {"key":"ui_skill_event_upgrade_confirm","kr":"탐사 재화 {0}을 사용해 레벨을 올리시겠습니까?","en":"Spend {0} exploration currency to level up?"},
-    {"key":"ui_skill_event_apply","kr":"적용 후 닫기","en":"Apply and close"},
-    {"key":"ui_skill_event_close_confirm","kr":"변경된 스킬과 재화 사용 내역을 적용하고 닫으시겠습니까?","en":"Apply the skill changes and currency cost, then close?"},
-    {"key":"ui_skill_event_commit_failed","kr":"재화 또는 스킬 정보가 변경됐습니다. 다시 확인해주세요.","en":"Currency or skill data changed. Please check again."},
-    {"key":"ui_skill_event_unavailable","kr":"현재 탐사 스킬 정보를 불러올 수 없습니다.","en":"The current exploration skill data is unavailable."},
-    {"key":"ui_skill_event_skip","kr":"이번 실행 동안 다시 묻지 않기","en":"Do not ask again during this session"},
-    {"key":"evt_1010_r2","kr":"코로니움 반응에서 새로운 기술의 흔적을 발견했습니다. 기억을 정비할 시간입니다.","en":"The Coronium reveals traces of new techniques. It is time to refine your skills."}
+      "key": "record_desc_empty_record",
+      "kr": "효과가 없는 빈 레코드입니다.",
+      "en": "An empty record with no effect."
+    }
   ]
 }

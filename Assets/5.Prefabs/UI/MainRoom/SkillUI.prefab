@@ -739,7 +739,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1139719178228628390
 RectTransform:
   m_ObjectHideFlags: 0
@@ -841,19 +841,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3043079964499617456}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4234599342238206071}
-        m_TargetAssemblyTypeName: UISkillDetail, Assembly-CSharp
-        m_MethodName: OnDownSkillLevel
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &1732190238180766287
 GameObject:
   m_ObjectHideFlags: 0
@@ -1292,7 +1280,7 @@ GameObject:
   - component: {fileID: 7032644581032841404}
   - component: {fileID: 8001351351622302343}
   m_Layer: 5
-  m_Name: UpButton
+  m_Name: LearnButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1315,8 +1303,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 74.64722, y: -15}
-  m_SizeDelta: {x: 126.9347, y: 60}
+  m_AnchoredPosition: {x: 95, y: -15}
+  m_SizeDelta: {x: 320, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8736498127852799258
 CanvasRenderer:
@@ -1399,19 +1387,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7032644581032841404}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4234599342238206071}
-        m_TargetAssemblyTypeName: UISkillDetail, Assembly-CSharp
-        m_MethodName: OnUpSkillLevel
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &2124154116756330617
 GameObject:
   m_ObjectHideFlags: 0
@@ -1776,7 +1752,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2453369273872301714
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1878,19 +1854,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6587242429749121863}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4234599342238206071}
-        m_TargetAssemblyTypeName: UISkillDetail, Assembly-CSharp
-        m_MethodName: OnMaximizeSkill
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &2736892868315858632
 GameObject:
   m_ObjectHideFlags: 0
@@ -3666,7 +3630,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 7632054533436719290}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4506,8 +4470,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e83ee2e2e31dba149a5d56d3aa365bfe, type: 2}
+  m_sharedMaterial: {fileID: -4592664541189517498, guid: e83ee2e2e31dba149a5d56d3aa365bfe, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4587,6 +4551,7 @@ GameObject:
   - component: {fileID: 8931438823245371506}
   - component: {fileID: 1663152838586092790}
   - component: {fileID: 740543947993204286}
+  - component: {fileID: 1590538089099039269}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -4641,10 +4606,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: +
+  m_text: "\uBC30\uC6B0\uAE30"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e83ee2e2e31dba149a5d56d3aa365bfe, type: 2}
+  m_sharedMaterial: {fileID: -4592664541189517498, guid: e83ee2e2e31dba149a5d56d3aa365bfe, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4713,6 +4678,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1590538089099039269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7669829120122295600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b156cf6708d89242a76e4f30d3cdaec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizeText
+  textKey: 
 --- !u!1 &7898421417315660170
 GameObject:
   m_ObjectHideFlags: 0
@@ -5341,7 +5319,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 43.986374}
+  m_AnchoredPosition: {x: 0, y: 0.0009885976}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &9084116264118199882
@@ -5490,10 +5468,7 @@ MonoBehaviour:
   skillNameText: {fileID: 5955117613631223529}
   skillLevelText: {fileID: 3761164735483951527}
   skillDescText: {fileID: 2448513619765266478}
-  minimumButton: {fileID: 0}
-  maximumButton: {fileID: 3679790351809689010}
-  downButton: {fileID: 868567220128167498}
-  upButton: {fileID: 8001351351622302343}
+  learnButton: {fileID: 8001351351622302343}
   equipButton: {fileID: 307796375599826779}
 --- !u!114 &571399415062581158
 MonoBehaviour:
