@@ -117,13 +117,68 @@ public static class SkillEventRegression
             var strings = JsonUtility.FromJson<StringDataAllData>(File.ReadAllText("Assets/98.Datas/stringData.json"));
             Check(strings.stringData.Count(x => x.key == "ui_skill_event_upgrade_confirm" && !string.IsNullOrEmpty(x.kr) && !string.IsNullOrEmpty(x.en)) == 1,
                 "confirmation localization exists exactly once");
-            Debug.Log($"SKILL_EVENT_REGRESSION_PASS: {checks} checks (draft, commit, cost, cancellation, record eligibility, real JSON)");
+            checks += RunShopIsolation();
+            Debug.Log($"SKILL_EVENT_REGRESSION_PASS: {checks} checks (draft, commit, cost, cancellation, record eligibility, real JSON, run isolation)");
         }
         finally
         {
             if (root != null) Object.DestroyImmediate(root);
             foreach (var asset in assets) Object.DestroyImmediate(asset);
         }
+    }
+
+    private static int RunShopIsolation()
+    {
+        var a = ScriptableObject.CreateInstance<SO_ActiveSkillData>();
+        var b = ScriptableObject.CreateInstance<SO_ActiveSkillData>();
+        int checks = 0;
+        void Check(bool value, string message)
+        {
+            if (!value) throw new Exception("Shop run regression: " + message);
+            checks++;
+        }
+        try
+        {
+            a.id = 701; b.id = 702; a.maxLevel = b.maxLevel = 5;
+            int permanentChanges = 0;
+            var learned = new SkillRuntimeData { template = a, currentLevel = 1, isUnlocked = true,
+                OnDataChanged = _ => permanentChanges++ };
+            var locked = new SkillRuntimeData { template = b, currentLevel = 0 };
+            var slots = new List<SkillRuntimeData> { learned, null, null, null };
+            var state = new ExploreSkillState(1, new[] { learned, locked }, slots);
+            int balance = 1000;
+            SkillEventSession Session() => new(state.Skills, slots, 50, 25, () => balance,
+                cost => { balance -= cost; return true; }, (slot, data) => slots[slot] = data);
+            var edit = Session(); edit.PrepareCandidate(b.id); edit.SetReplacementCost(50);
+            Check(edit.TryUpgrade(a.id) && edit.TryUpgrade(b.id), "upgrade equipped and unequipped runtime skills");
+            for (int i = 0; i < 100; i++)
+                Check(edit.TryReplace(0, i % 2 == 0 ? b.id : a.id, true), "unlimited replacement " + i);
+            Check(edit.Commit() && balance == 850, "one aggregate payment, no replacement quota");
+            Check(learned.currentLevel == 1 && locked.currentLevel == 0 && !locked.isUnlocked && permanentChanges == 0,
+                "shop commit never mutates or notifies permanent skill tree");
+            Check(Session().GetSkill(a.id).currentLevel == 2 && Session().GetSkill(b.id).currentLevel == 2,
+                "reopening retains levels including unequipped skills");
+            var saved = JsonUtility.FromJson<ExploreActiveSkillSaveData>(JsonUtility.ToJson(state.Capture(8)));
+            var restoredSlots = new List<SkillRuntimeData> { learned, null, null, null };
+            var restored = new ExploreSkillState(1, new[] { learned, locked }, restoredSlots);
+            restored.Restore(saved);
+            Check(saved.characterID == 8 && restoredSlots[0].currentLevel == 2 &&
+                restored.Skills.First(s => s.GetSkillID() == b.id).currentLevel == 2, "run snapshot restores character, levels and slots");
+            var nextRun = new ExploreSkillState(1, new[] { learned, locked }, new List<SkillRuntimeData> { learned, null, null, null });
+            Check(nextRun.Skills.First(s => s.GetSkillID() == a.id).currentLevel == 1 &&
+                nextRun.Skills.First(s => s.GetSkillID() == b.id).currentLevel == 0, "next run starts from permanent values");
+            var stock = new ExploreShopStock { offers = new()
+            {
+                new() { kind = ExploreShopKind.Heal15, price = -1 },
+                new() { kind = ExploreShopKind.Heal60, price = -1 },
+                new() { kind = ExploreShopKind.SkillSwap, sold = true, purchases = 999 }
+            }};
+            typeof(ExploreManager).GetMethod("UpdateShopOffers", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[] { stock });
+            Check(stock.offers[0].price == 15 && stock.offers[1].price == 50 && !stock.offers[2].sold,
+                "existing shop stock receives new heal prices and unlimited swap availability");
+            return checks;
+        }
+        finally { Object.DestroyImmediate(a); Object.DestroyImmediate(b); }
     }
 }
 #endif

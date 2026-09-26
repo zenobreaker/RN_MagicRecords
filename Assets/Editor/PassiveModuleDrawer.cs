@@ -1,5 +1,3 @@
-﻿using System;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -39,50 +37,26 @@ public class PassiveModuleDrawer : PropertyDrawer
 
     private void ShowCategoryMenu(SerializedProperty property)
     {
-        GenericMenu menu = new GenericMenu();
+        var menu = new GenericMenu();
+        var target = property.serializedObject.targetObject;
+        string path = property.propertyPath;
 
-        menu.AddItem(new GUIContent("None / Clear"), false, () => {
-            property.serializedObject.Update();
-            property.managedReferenceValue = null;
-            property.serializedObject.ApplyModifiedProperties();
-        });
-
-        menu.AddSeparator("");
-
-        // 💡 PassiveModule을 상속받은 클래스들만 긁어옵니다.
-        var types = TypeCache.GetTypesDerivedFrom<PassiveModule>()
-            .Where(t => !t.IsAbstract && !t.IsInterface);
-
-        foreach (var type in types)
+        void SetModule(PassiveModule module)
         {
-            string menuPath = type.Name; // 기본값
-
-            // [ModuleCategory] 어트리뷰트를 이용한 폴더링 (무결점 리플렉션 버전)
-            object[] attributes = type.GetCustomAttributes(true);
-            foreach (var attr in attributes)
+            if (target == null) return;
+            using (var data = new SerializedObject(target))
             {
-                if (attr.GetType().Name == "ModuleCategoryAttribute")
-                {
-                    var pathProperty = attr.GetType().GetProperty("Path");
-                    if (pathProperty != null)
-                    {
-                        string pathValue = pathProperty.GetValue(attr) as string;
-                        if (!string.IsNullOrEmpty(pathValue))
-                        {
-                            menuPath = pathValue;
-                        }
-                    }
-                    break;
-                }
+                data.Update();
+                var current = data.FindProperty(path);
+                if (current == null) return;
+                current.managedReferenceValue = module;
+                data.ApplyModifiedProperties();
             }
-
-            menu.AddItem(new GUIContent(menuPath), false, () => {
-                property.serializedObject.Update();
-                property.managedReferenceValue = Activator.CreateInstance(type);
-                property.serializedObject.ApplyModifiedProperties();
-            });
         }
 
+        menu.AddItem(new GUIContent("None / Clear"), false, () => SetModule(null));
+        menu.AddSeparator("");
+        PassiveModuleMenu.AddItems(menu, SetModule);
         menu.ShowAsContext();
     }
 }
