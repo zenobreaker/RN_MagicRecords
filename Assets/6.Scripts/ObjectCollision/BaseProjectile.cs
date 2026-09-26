@@ -21,6 +21,31 @@ public abstract class BaseProjectile
     public Character Owner => owner;
     public DamageData DamageData => cachedDamageData;
 
+    // 이 투사체에 배정된 탄환. Hit/Destroy runner에서도 읽을 수 있습니다.
+    public IReadOnlyList<BulletData> ConsumedBullets { get; private set; } = Array.Empty<BulletData>();
+    public BulletEffectApplyMode BulletApplyMode { get; private set; }
+
+    public void SetMagicBullets(IReadOnlyList<BulletData> bullets, BulletEffectApplyMode mode)
+    {
+        BulletApplyMode = mode;
+        if (bullets == null || bullets.Count == 0)
+        {
+            ConsumedBullets = Array.Empty<BulletData>();
+            return;
+        }
+
+        var snapshot = new BulletData[bullets.Count];
+        for (int i = 0; i < snapshot.Length; i++) snapshot[i] = bullets[i];
+        ConsumedBullets = Array.AsReadOnly(snapshot);
+    }
+
+    // 자탄 생성 경로에서 선택적으로 호출합니다. 큐를 다시 소비하지 않습니다.
+    public void CopyMagicBulletsTo(BaseProjectile child)
+    {
+        if (child != null && BulletApplyMode == BulletEffectApplyMode.InheritToChildren)
+            child.SetMagicBullets(ConsumedBullets, BulletApplyMode);
+    }
+
     // 피아식별용 공통 변수
     protected GenenricTeamId myTeamId = GenenricTeamId.NoTeamId;
     protected HashSet<GameObject> ignores = new HashSet<GameObject>();
@@ -100,6 +125,7 @@ public abstract class BaseProjectile
         spawnRunners.Clear();
         hitRunners.Clear();
         updateRunners.Clear();
+        SetMagicBullets(null, BulletEffectApplyMode.FirstAttackOnly);
     }
 
     public virtual void NotifyHit(GameObject target, Vector3 hitPos)

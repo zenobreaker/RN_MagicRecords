@@ -101,7 +101,8 @@ public class RecordReward : IReward
         switch (mode)
         {
             case RecordRewardMode.FixedRecord:
-                record = AppManager.Instance.SafeInvoke(v => v.GetRecordData(recordId));
+                record = AppManager.Instance.GetRecordManager()?.GetShopRecord(recordId)
+                    ?? AppManager.Instance.GetRecordData(recordId);
                 break;
 
             case RecordRewardMode.RandomByRarity:
@@ -116,7 +117,7 @@ public class RecordReward : IReward
             case RecordRewardMode.RandomAll:
                 {
                     var list = AppManager.Instance
-                        .GetAllRecordData();
+                        .GetRecordManager().GetRewardCandidates();
 
                     record = list.Random();
                 }

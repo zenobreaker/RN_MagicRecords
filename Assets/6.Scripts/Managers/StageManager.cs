@@ -92,7 +92,13 @@ public sealed class StageManager : MonoBehaviour
             await UniTask.NextFrame(cancellationToken: token);
 
             // 플레이어 스폰 대기
-            await spawnManager.SpawnCharacterAsync(1, roomData.MainSpawnPoints, token);
+            var explore = AppManager.Instance?.GetExploreManager();
+            if (explore == null) throw new InvalidOperationException("Exploration manager is missing.");
+            explore.Init(false);
+            if (!explore.EnsureStartingPassives(out var passiveError))
+                throw new InvalidOperationException(passiveError);
+            await spawnManager.SpawnCharacterAsync(explore.CurrentSetupData.SelectedCharacterId,
+                roomData.MainSpawnPoints, token);
             if (spawnManager.ActivePlayerCount == 0)
                 throw new InvalidOperationException("Stage player could not be spawned.");
 

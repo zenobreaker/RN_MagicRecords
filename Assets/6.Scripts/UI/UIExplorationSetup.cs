@@ -217,7 +217,7 @@ public class UIExplorationSetup : UIPopUp
 
         cachedManager = cachedManager == null ? AppManager.Instance.SafeInvoke(v => v.GetExploreManager()) : cachedManager;
         if (cachedManager == null) return;
-        cachedManager.FinallizeSetupAndGenerateMap(setupData);
+        if (!cachedManager.FinallizeSetupAndGenerateMap(setupData)) return;
         CloseUI();
 
         SceneLoadingController.LoadScene("StageSelectScene");

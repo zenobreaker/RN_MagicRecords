@@ -1,24 +1,32 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-// SkillTree : 스킬 설명 및 강화 등 UI 
+// 로비에서는 스킬을 1레벨로 배우기만 하며, 강화는 탐사 상점에서 처리합니다.
 public class UISkillDetail : UiBase
 {
     [SerializeField] private TextMeshProUGUI skillNameText;
     [SerializeField] private TextMeshProUGUI skillLevelText;
     [SerializeField] private TextMeshProUGUI skillDescText;
-    [SerializeField] private Button minimumButton;
-    [SerializeField] private Button maximumButton;
-    [SerializeField] private Button downButton;
-    [SerializeField] private Button upButton;
+    [FormerlySerializedAs("upButton")]
+    [SerializeField] private Button learnButton;
     [SerializeField] private Button equipButton; 
 
     private SkillRuntimeData selectedSkillData;
 
     public event Action<SkillRuntimeData> OnSelectedSkillRunTimeData;
     public event Action OnDrawEquipUI;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        learnButton?.onClick.AddListener(OnLearnSkill);
+        RefreshLearnButton();
+    }
+
+    private void OnDestroy() => learnButton?.onClick.RemoveListener(OnLearnSkill);
 
     public void HideDetail()
     {
@@ -33,11 +41,12 @@ public class UISkillDetail : UiBase
         
         gameObject.SetActive(true);
 
-        DrawSkillLevel(data);
+        DrawSkillAcquisition(data);
 
         DrawSkillName(data);
 
         DrawSkillDesc(data);
+        RefreshLearnButton();
 
         if (data.template is SO_PassiveSkillData)
             equipButton?.gameObject.SetActive(false);
@@ -46,11 +55,11 @@ public class UISkillDetail : UiBase
 
     }
 
-    private void DrawSkillLevel(SkillRuntimeData data)
+    private void DrawSkillAcquisition(SkillRuntimeData data)
     {
         if (data == null || skillLevelText == null) return;
 
-        skillLevelText.text = $"Lv." + data?.currentLevel.ToString();
+        skillLevelText.text = data.currentLevel > 0 ? "습득됨" : "습득 안됨";
     }
 
     private void DrawSkillDesc(SkillRuntimeData data)
@@ -69,37 +78,29 @@ public class UISkillDetail : UiBase
         skillNameText.text = LocalizationManager.Instance.GetText(data?.GetSkillName());
     }
 
-    public void OnMinimizeSkill()
+    public void OnLearnSkill()
     {
-        if (selectedSkillData == null) return;
-
-        selectedSkillData.currentLevel = 0;
-
-        DrawSkillLevel(selectedSkillData);
+        var data = selectedSkillData;
+        if (data?.template == null || data.template.maxLevel < 1 || data.currentLevel > 0) return;
+        data.currentLevel = 1;
+        data.isUnlocked = true;
+        data.OnDataChanged?.Invoke(data);
+        SkillTreeManager.Instance?.SaveIfDirty();
+        OnDrawSkillDetail(data);
     }
 
-    public void OnMaximizeSkill()
+    private void RefreshLearnButton()
     {
-        if (selectedSkillData == null) return;
-
-        selectedSkillData.SetMaxSkillLevel();
-        DrawSkillLevel(selectedSkillData);
-    }
-
-    public void OnDownSkillLevel()
-    {
-        if (selectedSkillData == null) return;
-
-        selectedSkillData.DecreaseSKillLevel();
-        DrawSkillLevel(selectedSkillData);
-    }
-
-    public void OnUpSkillLevel()
-    {
-        if (selectedSkillData == null) return;
-
-        selectedSkillData.IncreaseSkillLevel();
-        DrawSkillLevel(selectedSkillData);
+        if (learnButton == null) return;
+        bool learned = selectedSkillData != null && selectedSkillData.currentLevel > 0;
+        learnButton.interactable = selectedSkillData?.template != null &&
+            selectedSkillData.template.maxLevel >= 1 && !learned;
+        var label = learnButton.GetComponentInChildren<TMP_Text>(true);
+        if (label != null)
+        {
+            string text = learned ? $"ui_text_learn" : $"ui_text_learned";
+            label.text  = LocalizationManager.Instance.SafeInvoke(v => v.GetText(text));
+        }
     }
 
     public void OnEquipSkill()
@@ -110,7 +111,7 @@ public class UISkillDetail : UiBase
             return;
         }
 
-        if (selectedSkillData.currentLevel == 0 && selectedSkillData.isUnlocked == false)
+        if (selectedSkillData.currentLevel < 1)
         {
             UIManager.Instance.SafeInvoke(v => v.ShowToast($"스킬 레벨이 1이상이어야 장착할 수 있습니다."));
             return;

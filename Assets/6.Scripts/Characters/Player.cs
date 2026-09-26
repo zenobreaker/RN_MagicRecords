@@ -321,14 +321,14 @@ public class Player
 
     public void SetActiveSkills()
     {
-        AppManager.Instance.SetActiveSkills(1, skill);
+        AppManager.Instance.SetActiveSkills(CharID, skill);
     }
 
     public override void SetStatus()
     {
         if (PlayerManager.Instance != null)
         {
-            CharStatusData data = PlayerManager.Instance.GetCharacterStatus(1);
+            CharStatusData data = PlayerManager.Instance.GetCharacterStatus(CharID);
             status.SafeInvoke(v => v.SetStatusData(data));
         }
     }
@@ -337,7 +337,7 @@ public class Player
     {
         if (PlayerManager.Instance != null)
         {
-            CharEquipmentData data = PlayerManager.Instance.GetCharEquipmentData(1);
+            CharEquipmentData data = PlayerManager.Instance.GetCharEquipmentData(CharID);
             equipment.SafeInvoke(v => v.SertEquipmentData(data));
         }
     }

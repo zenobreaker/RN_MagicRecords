@@ -606,7 +606,8 @@ public class AppManager
 
     public void EquipSavedClassActiveSkill(
         int classID,
-        List<int> skillIDs)
+        List<int> skillIDs,
+        int characterID = 1)
     {
         if (skillManager == null ||
             skillTree == null)
@@ -622,7 +623,7 @@ public class AppManager
                     skillID);
 
             EquipActiveSkill(
-                classID,
+                characterID,
                 slot,
                 runtimeData);
 

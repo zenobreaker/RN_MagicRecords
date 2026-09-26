@@ -19,7 +19,11 @@ public sealed partial class ExploreManager
     public ExploreShopStock GetShopStock(MapNodeInfo node)
     {
         if (node == null || node.type != StageType.Shop || node != GetReplacedNodeInfo()) return null;
-        if (node.shopStock != null) return node.shopStock;
+        if (node.shopStock != null)
+        {
+            UpdateShopOffers(node.shopStock);
+            return node.shopStock;
+        }
         var policy = DataBaseManager.Instance?.ExploreShopPolicy;
         var records = AppManager.Instance?.GetRecordManager();
         var stock = new ExploreShopStock();
@@ -34,14 +38,26 @@ public sealed partial class ExploreManager
         stock.offers.Add(new ExploreShopOffer { kind = ExploreShopKind.Heal15, price = policy?.exploreHeal15Price ?? -1 });
         stock.offers.Add(new ExploreShopOffer { kind = ExploreShopKind.Heal60, price = policy?.exploreHeal60Price ?? -1 });
         node.shopStock = stock;
+        UpdateShopOffers(stock);
         SaveExploreMap();
         return stock;
+    }
+
+    private static void UpdateShopOffers(ExploreShopStock stock)
+    {
+        foreach (var offer in stock.offers)
+        {
+            if (offer.kind == ExploreShopKind.Heal15) offer.price = 15;
+            else if (offer.kind == ExploreShopKind.Heal60) offer.price = 50;
+            else if (offer.kind == ExploreShopKind.SkillSwap) offer.sold = false;
+        }
     }
 
     public bool CanBuyShopOffer(MapNodeInfo node, ExploreShopOffer offer, bool notify = true)
     {
         if (purchasing || node == null || node != GetReplacedNodeInfo() || node.type != StageType.Shop ||
-            offer == null || node.shopStock == null || !node.shopStock.offers.Contains(offer) || offer.sold) return false;
+            offer == null || node.shopStock == null || !node.shopStock.offers.Contains(offer) ||
+            (offer.sold && offer.kind != ExploreShopKind.SkillSwap)) return false;
         string error = null;
         if (offer.price < 0) error = "가격이 아직 정해지지 않은 상품입니다.";
         else if (CurrencyManager.Instance == null || CurrencyManager.Instance.GetCurrency(CurrencyType.EXPOLORE_COIN) < offer.price)

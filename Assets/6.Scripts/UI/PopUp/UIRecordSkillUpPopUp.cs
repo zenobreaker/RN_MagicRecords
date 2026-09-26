@@ -91,7 +91,10 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
         currencyManager = currency;
         currencyManager.OnUpdatedCurrency += RefreshUI;
 
-        session = new SkillEventSession(manager.GetAvailableSkills(setup.SelectedClassId), slots,
+        var skills = shopMode
+            ? SkillManager.Instance.GetRunSkills(character, setup.SelectedClassId)
+            : manager.GetAvailableSkills(setup.SelectedClassId);
+        session = new SkillEventSession(skills, slots,
             baseUpgradeCost, costPerLevel,
             () => currency.GetCurrency(CurrencyType.EXPOLORE_COIN),
             amount => pay != null ? pay(amount) : currency.SpendCurrency(CurrencyType.EXPOLORE_COIN, amount),
@@ -249,18 +252,13 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
         {
             if (session != null && slotChosen && skillChosen && selectedSlot >= 0 && selectedSlot < session.Slots.Length)
             {
-                bool equipped = session.CanRearrangeSkill(selectedSkill)
-                    ? session.TryEquipOwned(selectedSlot, selectedSkill)
-                    : candidates.Contains(selectedSkill) && session.ReplacementCount < replacementLimit &&
-                        session.TryReplace(selectedSlot, selectedSkill, true);
+                bool equipped = TryEquipShopSkill();
                 if (equipped || session.Slots[selectedSlot] == selectedSkill)
                 {
                     slotChosen = skillChosen = false;
                     shopFeedback = $"{selectedSlot + 1}번 슬롯에 장착됨 · 이동·해제 후 ‘적용 후 닫기’로 확정하세요.";
                 }
-                else shopFeedback = session.ReplacementCount >= replacementLimit
-                    ? "새 후보 구매는 한 번에 1개입니다. 기존 스킬 이동·해제는 계속 가능합니다."
-                    : "장착에 필요한 탐사 재화가 부족합니다.";
+                else shopFeedback = "장착에 필요한 탐사 재화가 부족합니다.";
             }
             RefreshUI();
             return;
@@ -273,6 +271,10 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
         session.TryReplace(selectedSlot, selectedSkill, draftMode);
         RefreshUI();
     }
+
+    private bool TryEquipShopSkill() => session.CanRearrangeSkill(selectedSkill)
+        ? session.TryEquipOwned(selectedSlot, selectedSkill)
+        : candidates.Contains(selectedSkill) && session.TryReplace(selectedSlot, selectedSkill, true);
 
     private void Unequip()
     {

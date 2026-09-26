@@ -18,6 +18,8 @@ public class PiercingDrillProjectile
     private float tickTimer = 0f;
     private Vector3 normalVelocity;
     private bool isVelocityCaptured = false;
+    private bool isAttached;
+    private GameObject attachedTarget;
 
 
     protected override void OnProjectileSpawned()
@@ -26,16 +28,38 @@ public class PiercingDrillProjectile
         currentTargets.Clear();
         tickTimer = 0f;
         isVelocityCaptured = false;
+        isAttached = false;
+        attachedTarget = null;
     }
 
     protected override void OnProjectileDespawned()
     {
         // 풀로 돌아갈 때 리스트 청소
         currentTargets.Clear();
+        isAttached = false;
+        attachedTarget = null;
     }
 
     protected override void OnProjectileUpdate()
     {
+        if (isAttached)
+        {
+            if (attachedTarget == null || !attachedTarget.activeInHierarchy)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
+            // 부착 후에는 접촉 콜라이더 목록과 무관하게 해당 적에게만 지속 피해.
+            tickTimer += Time.deltaTime;
+            if (tickTimer >= tickInterval)
+            {
+                tickTimer = 0f;
+                DealDamage(attachedTarget, attachedTarget.transform.InverseTransformPoint(transform.position));
+            }
+            return;
+        }
+
         // 1. 다단 히트 (Tick) 로직 (수명 깎는 건 부모가 해줌)
         if (currentTargets.Count > 0)
         {
@@ -54,6 +78,7 @@ public class PiercingDrillProjectile
 
     protected override void ProcessHit(Collider other)
     {
+        if (isAttached) return;
         // 2. 관통 시작: 목록에 추가하고 즉시 1타 데미지
         if (currentTargets.Add(other))
         {
@@ -68,6 +93,14 @@ public class PiercingDrillProjectile
     private void FixedUpdate()
     {
         if (rigid == null) return;
+
+        // 부착 중에는 관통 속도 복원 로직이 다시 탄두를 밀어내지 않도록 합니다.
+        if (isAttached)
+        {
+            rigid.linearVelocity = Vector3.zero;
+            rigid.angularVelocity = Vector3.zero;
+            return;
+        }
 
         // AddForce 이후의 정상 속도 캡처
         if (!isVelocityCaptured && rigid.linearVelocity.sqrMagnitude > 0)
@@ -90,6 +123,7 @@ public class PiercingDrillProjectile
     
     private void OnTriggerExit(Collider other)
     {
+        if (isAttached) return;
         if (IsFriendlyFire(other.gameObject))
             return;
 
@@ -103,5 +137,18 @@ public class PiercingDrillProjectile
     public void SetDrilingSpeedRatio(float ratio)
     {
         drillingSpeedRatio = ratio; 
+    }
+
+    public void AttachToTarget(GameObject target)
+    {
+        if (isAttached || target == null) return;
+        isAttached = true;
+        attachedTarget = target;
+        tickTimer = 0f;
+        if (rigid != null)
+        {
+            rigid.linearVelocity = Vector3.zero;
+            rigid.angularVelocity = Vector3.zero;
+        }
     }
 }

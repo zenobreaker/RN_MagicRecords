@@ -12,6 +12,9 @@ public sealed class ExploreRunSaveData
     public MapData mapData;
     public StageNodeData stageNodeData; 
     public List<ExploreHealthState> partyHealth = new();
+    public int startingPassiveVersion;
+    public List<ExplorePassiveSaveData> startingPassives = new();
+    public List<ExploreActiveSkillSaveData> activeSkills = new();
 }
 
 

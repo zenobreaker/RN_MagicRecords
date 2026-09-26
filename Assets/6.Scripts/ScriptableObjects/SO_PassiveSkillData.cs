@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SO_SkillData", menuName = "Scriptable Objects/SO_PassiveSkillData")]
 public class SO_PassiveSkillData : SO_SkillData
 {
+    public enum RuntimeImplementation { Modules, MagicBulletLoad }
+    public RuntimeImplementation implementation;
     public int jobID; // 대상 직업군 
 
     [Header("Passive Modules (패시브 스킬 부품 조립)")]
@@ -22,6 +24,8 @@ public class SO_PassiveSkillData : SO_SkillData
     /// </summary>
     public override Skill CreateSkill()
     {
+        if (implementation == RuntimeImplementation.MagicBulletLoad)
+            return new RuntimeMagicBulletLoad(this);
         // 조립된 모듈 데이터를 통째로 넘기며 제네릭 패시브 스킬 객체 생성
         return new GenericPassiveSkill(this);
     }

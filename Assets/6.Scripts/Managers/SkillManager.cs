@@ -18,6 +18,7 @@ public class SkillManager : Singleton<SkillManager>
     // Key   : Character ID
     // Value : Runtime Data
     private readonly Dictionary<int, List<SkillRuntimeData>> equippedActiveSkills = new();
+    private readonly Dictionary<int, ExploreSkillState> runSkills = new();
 
     public event Action OnDataChanged;
 
@@ -43,14 +44,7 @@ public class SkillManager : Singleton<SkillManager>
         int slot,
         SkillRuntimeData skill)
     {
-        if (!equippedActiveSkills.TryGetValue(
-                charId,
-                out var equippedSkills))
-        {
-            Debug.LogWarning(
-                $"[SkillManager] 존재하지 않는 Character ID입니다. ID : {charId}");
-            return;
-        }
+        var equippedSkills = EnsureSlots(charId);
 
         if (slot < 0 || slot >= SKILL_SLOT_MAX_COUNT)
         {
@@ -77,14 +71,7 @@ public class SkillManager : Singleton<SkillManager>
     /// </summary>
     public List<SkillRuntimeData> GetActiveSkillList(int charId)
     {
-        if (!equippedActiveSkills.TryGetValue(
-                charId,
-                out var equippedSkills))
-        {
-            return null;
-        }
-
-        return equippedSkills;
+        return charId > 0 ? EnsureSlots(charId) : null;
     }
 
     /// <summary>
@@ -92,15 +79,7 @@ public class SkillManager : Singleton<SkillManager>
     /// </summary>
     public List<int> GetActiveSkillIDList(int charId)
     {
-        if (!equippedActiveSkills.TryGetValue(
-                charId,
-                out var equippedSkills))
-        {
-            return null;
-        }
-
-        return equippedSkills
-            .Select(skill =>
+        return GetActiveSkillList(charId)?.Select(skill =>
                 skill != null
                     ? skill.GetSkillID()
                     : 0)
@@ -139,12 +118,7 @@ public class SkillManager : Singleton<SkillManager>
         if (skillComp == null)
             return;
 
-        if (!equippedActiveSkills.TryGetValue(
-                charId,
-                out var equippedSkills))
-        {
-            return;
-        }
+        var equippedSkills = EnsureSlots(charId);
 
         for (int i = 0; i < SKILL_SLOT_MAX_COUNT; i++)
         {
@@ -159,6 +133,7 @@ public class SkillManager : Singleton<SkillManager>
             {
                 Skill skill = skillDataAsset.CreateSkill();
                 activeSkill = skill as ActiveSkill;
+                activeSkill?.SetLevel(Mathf.Max(1, skillData.currentLevel));
             }
 
             SkillSlot skillSlot =
@@ -175,22 +150,46 @@ public class SkillManager : Singleton<SkillManager>
     /// </summary>
     public void ResetRunTimeData()
     {
+        runSkills.Clear();
         equippedActiveSkills.Clear();
         skillEventHandler?.ClearCache();
         skillEventHandler?.OnUnequipment();
 
-        var slots =
-            new List<SkillRuntimeData>(SKILL_SLOT_MAX_COUNT);
-
-        for (int i = 0; i < SKILL_SLOT_MAX_COUNT; i++)
-        {
-            slots.Add(null);
-        }
-
-        // 현재 1번 캐릭터의 스킬 슬롯 처리
-        equippedActiveSkills.Add(1, slots);
-
         OnDataChanged?.Invoke();
+    }
+
+    public IEnumerable<SkillRuntimeData> GetRunSkills(int characterID, int jobID)
+    {
+        if (!runSkills.TryGetValue(characterID, out var state))
+        {
+            state = new ExploreSkillState(jobID, SkillTreeManager.Instance.GetAvailableSkills(jobID), EnsureSlots(characterID));
+            runSkills.Add(characterID, state);
+        }
+        return state.Skills;
+    }
+
+    public List<ExploreActiveSkillSaveData> CaptureRunSkills() =>
+        runSkills.Select(pair => pair.Value.Capture(pair.Key)).ToList();
+
+    public void RestoreRunSkills(List<ExploreActiveSkillSaveData> saved)
+    {
+        runSkills.Clear();
+        foreach (var data in saved ?? new())
+        {
+            if (data == null || data.characterID <= 0 || data.jobID <= 0) continue;
+            GetRunSkills(data.characterID, data.jobID);
+            runSkills[data.characterID].Restore(data);
+        }
+    }
+
+    private List<SkillRuntimeData> EnsureSlots(int charId)
+    {
+        if (!equippedActiveSkills.TryGetValue(charId, out var slots))
+        {
+            slots = Enumerable.Repeat<SkillRuntimeData>(null, SKILL_SLOT_MAX_COUNT).ToList();
+            equippedActiveSkills.Add(charId, slots);
+        }
+        return slots;
     }
 
     #endregion

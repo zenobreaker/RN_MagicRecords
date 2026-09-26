@@ -82,12 +82,10 @@ public sealed class SpawnManager : MonoBehaviour
                 player.CharID = id;
                 PlayerManager.Instance.SafeInvoke(v => v.SetCurrentPlayer(player));
 
-                //TODO : class(=job) 기능이 생기면 그 아이디로 지정해야 한다.
-                int jobID = 1;
+                var setup = AppManager.Instance.GetExploreManager().CurrentSetupData;
+                int jobID = setup.SelectedClassId;
                 player.JobID = jobID;
-
-                // Passive 등록한 이력 처리
-                AppManager.Instance.SafeInvoke(v => v.OnAcquire(jobID, player));
+                playerGO.AddComponent<ExplorePassiveOwner>().JobID = jobID;
 
                 // Setting Skills
                 player.SetActiveSkills();
@@ -95,12 +93,14 @@ public sealed class SpawnManager : MonoBehaviour
                 // Setting Status
                 player.SetStatus();
 
+                // 장전 패시브가 현재 무기의 공격 이벤트에 연결될 수 있도록 먼저 장착합니다.
+                player.SetEquipments();
+                AppManager.Instance.SafeInvoke(v => v.OnAcquire(jobID, player));
+                AppManager.Instance.SafeInvoke(v => v.OnAcquire(Constants.GLOBAL_RECORD_JOB_ID, player));
+
                 // Setting Passive Status
                 AppManager.Instance.SafeInvoke(v=> v.OnApplyStaticEffct(jobID, player));
                 AppManager.Instance.SafeInvoke(v => v.OnApplyStaticEffct(Constants.GLOBAL_RECORD_JOB_ID, player));
-
-                // Setting Equipment
-                player.SetEquipments();
 
                 // Recalculate Status
                 if(player.TryGetComponent<StatusComponent>(out var status))

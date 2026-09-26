@@ -16,8 +16,8 @@ public class ShopJsonAllData
 {
     public List<ShopJsonData> shopItemJsonData;
     public List<ExploreRecordPrice> exploreRecordPrices = new();
-    public int exploreHeal15Price = -1;
-    public int exploreHeal60Price = -1;
+    public int exploreHeal15Price = 15;
+    public int exploreHeal60Price = 50;
 }
 
 public class ShopDataBase : DataBase

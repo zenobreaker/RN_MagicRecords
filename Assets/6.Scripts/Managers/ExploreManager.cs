@@ -148,6 +148,8 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public void ResetData()
     {
+        ResetStartingPassiveState();
+        SkillManager.Instance?.ResetRunTimeData();
         CurrentState = ExploreState.NONE;
         RunStatus = RunStatus.NoSave;
         CurrentSetupData = new ExplorationSetupData();
@@ -222,8 +224,10 @@ public sealed partial class ExploreManager : MonoBehaviour
         if (loadData != null)
         {
             RunStatus = loadData.runStatus;
-            CurrentSetupData = loadData.setupData;
+            CurrentSetupData = loadData.setupData ?? new ExplorationSetupData();
             runHealth = loadData.partyHealth ?? new();
+            if (!RestoreStartingPassives(loadData)) { bCreate = false; return; }
+            SkillManager.Instance?.RestoreRunSkills(loadData.activeSkills);
 
             // 세팅 중이었다면 맵/스테이지는 없으므로 로드 중단
             if (RunStatus == RunStatus.SetupIncomplete)
@@ -316,14 +320,21 @@ public sealed partial class ExploreManager : MonoBehaviour
 
 
     // 유저가 세팅창에서 최종 시작 버튼을 눌렀을 때 호출
-    public void FinallizeSetupAndGenerateMap(ExplorationSetupData finalSetup)
+    public bool FinallizeSetupAndGenerateMap(ExplorationSetupData finalSetup)
     {
-        if (finalSetup == null) return;
+        if (finalSetup == null || !finalSetup.HasCharacter || !finalSetup.HasClass) return false;
         // A resumed setup can enter here without StartExplore/Init(true).
         // Initialize before committing so SaveExploreMap cannot reject this run.
         Init(false);
         bool startingNewRun = Chapter == 1 &&
             (RunStatus == RunStatus.SetupIncomplete || RunStatus == RunStatus.NoSave);
+        if (!startingNewRun) return false;
+        if (!TryGrantStartingPassives(finalSetup.SelectedClassId, out var passiveError))
+        {
+            Debug.LogError(passiveError);
+            UIManager.Instance?.ShowToast("기본 패시브 설정을 확인해주세요.");
+            return false;
+        }
         if (startingNewRun) { runHealth.Clear(); liveHealth.Clear(); }
         CurrentSetupData = new ExplorationSetupData
         {
@@ -345,6 +356,7 @@ public sealed partial class ExploreManager : MonoBehaviour
 
         SaveExploreMap();
         ChangeState(ExploreState.READY);
+        return true;
     }
 
     //private RunStatus GetRunStatus()
@@ -622,7 +634,10 @@ public sealed partial class ExploreManager : MonoBehaviour
         {
             runStatus = RunStatus,
             setupData = CurrentSetupData,
-            partyHealth = runHealth
+            partyHealth = runHealth,
+            startingPassiveVersion = startingPassivesInitialized ? 1 : 0,
+            startingPassives = CaptureStartingPassiveState(),
+            activeSkills = SkillManager.Instance?.CaptureRunSkills() ?? new()
         };
 
         if (RunStatus != RunStatus.SetupIncomplete)

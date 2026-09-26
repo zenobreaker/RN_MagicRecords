@@ -40,9 +40,11 @@ public class PlayerManager :
     //TODO : 가장 ID가 적은 녀석부터 처리
     public Player GetCurrentPlayer(int charID = 0)
     {
+        if (charID > 0)
+            return currentPlayerDicts.TryGetValue(charID, out var selected) ? selected : null;
         foreach (KeyValuePair<int, Player> p in currentPlayerDicts)
         {
-            return p.Value;
+            if (p.Value != null) return p.Value;
         }
 
         return null;
@@ -93,7 +95,7 @@ public class PlayerManager :
 
                 ManagerWaiter.WaitForManager<AppManager>((app) =>
                 {
-                    app.EquipSavedClassActiveSkill(info.classID, info.equippedSkillIds);
+                    app.EquipSavedClassActiveSkill(info.classID, info.equippedSkillIds, info.charId);
                 });
 
             }
