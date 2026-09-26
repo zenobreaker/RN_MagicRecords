@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.UIElements;
 
@@ -85,6 +86,8 @@ public class Module_SpawnObject : SkillModule
         if (owner == null || skill == null)
             return;
 
+        var attackBullets = skill.Runtime.Combat.TakeBulletsForAttack();
+
 
         // ============================================================
         // 1. 최종 Spawn Count
@@ -124,6 +127,7 @@ public class Module_SpawnObject : SkillModule
 
         bool isCrit =
             skill.Runtime.Combat.IsCritical;
+        foreach (var bullet in attackBullets) isCrit |= bullet.isCrit;
 
         DamageData finalDamageData =
             GetEffectiveDamageData(
@@ -144,7 +148,8 @@ public class Module_SpawnObject : SkillModule
                 finalSpawnCount,
                 finalAngleBetween,
                 finalDamageData,
-                isCrit);
+                isCrit,
+                attackBullets);
         }
         else
         {
@@ -156,7 +161,8 @@ public class Module_SpawnObject : SkillModule
                 finalSpawnCount,
                 finalAngleBetween,
                 finalDamageData,
-                isCrit);
+                isCrit,
+                attackBullets);
         }
     }
 
@@ -171,7 +177,8 @@ public class Module_SpawnObject : SkillModule
         int spawnCount,
         float angleBetween,
         DamageData damageData,
-        bool isCrit)
+        bool isCrit,
+        IReadOnlyList<BulletData> attackBullets)
     {
         var spawnContext = skill.Runtime.Spawn;
 
@@ -215,7 +222,8 @@ public class Module_SpawnObject : SkillModule
                 spawnCount,
                 angleBetween,
                 damageData,
-                isCrit);
+                isCrit,
+                attackBullets);
         }
     }
 
@@ -230,7 +238,8 @@ public class Module_SpawnObject : SkillModule
         int spawnCount,
         float angleBetween,
         DamageData damageData,
-        bool isCrit)
+        bool isCrit,
+        IReadOnlyList<BulletData> attackBullets)
     {
         Vector3 basePosition =
             owner.transform.TransformPoint(spawnPosition);
@@ -248,7 +257,8 @@ public class Module_SpawnObject : SkillModule
             spawnCount,
             angleBetween,
             damageData,
-            isCrit);
+            isCrit,
+            attackBullets);
     }
 
 
@@ -264,7 +274,8 @@ public class Module_SpawnObject : SkillModule
         int spawnCount,
         float angleBetween,
         DamageData damageData,
-        bool isCrit)
+        bool isCrit,
+        IReadOnlyList<BulletData> attackBullets)
     {
         if (spawnCount <= 0)
             return;
@@ -356,6 +367,9 @@ public class Module_SpawnObject : SkillModule
             // --------------------------------------------------------
             // 3. ISkillEffect 초기화
             // --------------------------------------------------------
+
+            if (obj.TryGetComponent<BaseProjectile>(out var bulletProjectile))
+                bulletProjectile.SetMagicBullets(attackBullets, skill.Runtime.Combat.BulletApplyMode);
 
             if (obj.TryGetComponent<ISkillEffect>(
                     out var skillEffect))

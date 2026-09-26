@@ -2,24 +2,27 @@
 using UnityEngine;
 
 [ModuleCategory("Special/MagicBulletConsum")]
-// 3. 마탄 전용 로직 모듈 (특수 로직도 모듈화 가능!)
 [Serializable]
 public class Module_MagicBulletConsum : SkillModule
 {
-    private IMagicBulletProvider provider; 
+    [Min(0), Tooltip("시전당 최대 소비량. 부족하면 보유한 만큼만 소비하며 스킬 사용을 막지 않습니다.")]
+    public int maxConsumeCount = 1;
 
-    public override void Init(Character owner)
+    [Tooltip("동시 발사 패턴은 한 공격으로 취급합니다. PerAttack은 연사 순서대로 배정합니다.")]
+    public BulletEffectApplyMode applyMode = BulletEffectApplyMode.FirstAttackOnly;
+
+    public Module_MagicBulletConsum()
     {
-        provider = owner.GetComponent<SkillComponent>().SafeInvoke(v => v.GetCapability<IMagicBulletProvider>());
+        triggerTime = SkillTriggerTime.OnCastingStart;
     }
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (skill == null) return;
-     
-        bool isCrit = false; 
-        provider?.TryConsumBullet(out isCrit);
-        skill.Runtime.Combat.IsCritical = isCrit;
+        if (owner == null || skill?.Runtime?.Combat == null) return;
+
+        // 장착 후 패시브를 얻거나 잃을 수 있으므로 공급자는 실행 시 조회합니다.
+        var provider = owner.GetComponent<SkillComponent>()?.GetCapability<IMagicBulletProvider>();
+        skill.Runtime.Combat.ConsumeMagicBullets(provider, maxConsumeCount, applyMode);
     }
 }
 

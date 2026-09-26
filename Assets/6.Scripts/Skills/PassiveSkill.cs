@@ -59,6 +59,12 @@ public interface IMagicBulletProvider
     int CurrentBulletCount { get; }
 }
 
+// 기존 bool 반환 API를 유지하면서 탄환 원본 데이터를 전달하는 공급자.
+public interface IMagicBulletDataProvider : IMagicBulletProvider
+{
+    bool TryConsumeBullet(out BulletData bullet);
+}
+
 // TODO : 속성 마법을 사용하면 탄환에 속성 부여하는 기능의 연결 인터페이스
 public interface IElementaryResponder
 {

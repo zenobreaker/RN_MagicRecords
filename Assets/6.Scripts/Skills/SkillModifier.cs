@@ -132,6 +132,14 @@ public sealed class SpawnContext
     }
 }
 
+public enum BulletEffectApplyMode
+{
+    FirstAttackOnly = 0,
+    PerAttack = 1,
+    AllAttack = 2,
+    InheritToChildren = 3,
+}
+
 [Serializable]
 public sealed class CombatContext
 {
@@ -145,6 +153,61 @@ public sealed class CombatContext
     public float CriticalDamageMultiplier;
 
     public bool IsCritical;
+
+    public IReadOnlyList<BulletData> ConsumedBullets { get; private set; } = Array.Empty<BulletData>();
+    public BulletEffectApplyMode BulletApplyMode { get; private set; }
+    private bool magicBulletsConsumed;
+    private int nextBulletAttack;
+
+    public void ConsumeMagicBullets(IMagicBulletProvider provider, int maxCount, BulletEffectApplyMode mode)
+    {
+        // One consumption per cast, even with repeated phases/events.
+        // ActiveSkill creates a fresh CombatContext for every cast.
+        if (magicBulletsConsumed) return;
+        magicBulletsConsumed = true;
+        BulletApplyMode = mode;
+        int count = Math.Min(Math.Max(0, provider?.CurrentBulletCount ?? 0), Math.Max(0, maxCount));
+        if (count == 0) return;
+
+        var consumed = new List<BulletData>(count);
+        for (int i = 0; i < count; i++)
+        {
+            BulletData bullet;
+            if (provider is IMagicBulletDataProvider dataProvider)
+            {
+                if (!dataProvider.TryConsumeBullet(out bullet)) break;
+            }
+            else
+            {
+                // Compatibility with existing bool-only providers.
+                if (!provider.TryConsumBullet(out bool isCrit)) break;
+                bullet = new BulletData(isCrit);
+            }
+            consumed.Add(bullet);
+        }
+        ConsumedBullets = consumed.AsReadOnly();
+    }
+
+    // Each simultaneous volley (including multiple muzzles/pellets) is one attack.
+    public IReadOnlyList<BulletData> TakeBulletsForAttack()
+    {
+        if (ConsumedBullets.Count == 0) return Array.Empty<BulletData>();
+        int attackIndex = nextBulletAttack++;
+        switch (BulletApplyMode)
+        {
+            case BulletEffectApplyMode.PerAttack:
+                return attackIndex < ConsumedBullets.Count
+                    ? Array.AsReadOnly(new[] { ConsumedBullets[attackIndex] })
+                    : Array.Empty<BulletData>();
+            case BulletEffectApplyMode.AllAttack:
+                return ConsumedBullets;
+            case BulletEffectApplyMode.FirstAttackOnly:
+            case BulletEffectApplyMode.InheritToChildren:
+                return attackIndex == 0 ? ConsumedBullets : Array.Empty<BulletData>();
+            default:
+                return Array.Empty<BulletData>();
+        }
+    }
 }
 
 [Serializable]

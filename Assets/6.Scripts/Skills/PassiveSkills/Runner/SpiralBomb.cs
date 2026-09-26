@@ -30,19 +30,18 @@ public sealed class SpiralBomb
 
     public void OnSpawn(BaseProjectile projectile)
     {
-        if (projectile != null)
-        {
-            owner = projectile.Owner;
-            hasTriggered = false;
-        }
-
-        if (projectile is PiercingDrillProjectile pdp)
-            pdp.SetDrilingSpeedRatio(1.0f);
+        hasTriggered = false;
+        attachedTarget = null;
+        localOffset = Vector3.zero;
+        if (projectile != null) owner = projectile.Owner;
+        // Keep the projectile's normal launch velocity until a valid enemy hit.
     }
 
     public void OnHit(BaseProjectile projectile, GameObject target)
     {
-        if (hasTriggered || projectile == null || target == null) return;
+        if (hasTriggered || projectile == null || target == null || !target.activeInHierarchy) return;
+        if (!enemyLayer.Contains(target) || !target.TryGetComponent<IDamagable>(out _) ||
+            CombatHelper.IsFriendly(owner, target, projectile.Ignores)) return;
         hasTriggered = true;
 
 
@@ -50,7 +49,9 @@ public sealed class SpiralBomb
         localOffset = attachedTarget.SafeInvoke(
             v => v.InverseTransformPoint(projectile.transform.position));
 
-        if (projectile.TryGetComponent<Rigidbody>(out var rigid))
+        if (projectile is PiercingDrillProjectile drill)
+            drill.AttachToTarget(target);
+        else if (projectile.TryGetComponent<Rigidbody>(out var rigid))
             rigid.linearVelocity = Vector3.zero;
     }
 

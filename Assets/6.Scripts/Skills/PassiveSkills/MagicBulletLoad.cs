@@ -17,7 +17,7 @@ public struct BulletData
 
 public class Passive_MagicBulletLoad
     : PassiveSkill
-    , IMagicBulletProvider
+    , IMagicBulletDataProvider
 {
     private int maxBullets;
     private int currentBullet;
@@ -43,12 +43,18 @@ public class Passive_MagicBulletLoad
 
     public bool TryConsumBullet(out bool isCrit)
     {
-        isCrit = false;
-        if (bullets.Count == 0) return false; // 탄환 없음
+        bool consumed = TryConsumeBullet(out BulletData bullet);
+        isCrit = consumed && bullet.isCrit;
+        return consumed;
+    }
 
-        BulletData bullet = bullets.Dequeue();
-        isCrit = bullet.isCrit;
-        Debug.Log($"탄환 소모 ! crit = {isCrit}");
+    public bool TryConsumeBullet(out BulletData bullet)
+    {
+        bullet = default;
+        if (bullets.Count == 0) return false;
+
+        bullet = bullets.Dequeue();
+        Debug.Log($"탄환 소모 ! crit = {bullet.isCrit}");
 
         NotifyBulletChanged();
         return true; 

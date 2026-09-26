@@ -27,23 +27,88 @@ public abstract class PassiveModule
     public virtual void OnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill) { }
     public virtual void OnAssistDroneNormalProjectile(ISkillEffect spawnedObject, Character owner) { }
     public virtual void OnHit(GameObject target, DamageData damageData) { }
+
+    // SO의 설정만 복사하고 소유자/쿨타임/적용된 버프 등 런타임 상태는 공유하지 않습니다.
+    public virtual PassiveModule Clone()
+    {
+        var clone = (PassiveModule)System.Activator.CreateInstance(GetType());
+        JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(this), clone);
+        return clone;
+    }
 }
 
 public class GenericPassiveSkill : PassiveSkill
 {
     // [TriggerTime] -> List<PassiveModule>
-    private Dictionary<PassiveTriggerTime, List<PassiveModule>> moduleCache = new();
+    private readonly Dictionary<PassiveTriggerTime, List<PassiveModule>> moduleCache = new();
+    private readonly List<PassiveModule> runtimeModules = new();
+    private BattleManager subscribedBattleManager;
 
     public GenericPassiveSkill(SO_PassiveSkillData data) : base(data)
     {
         // 💡 SO에서 조립된 모듈들을 트리거 타이밍별로 분류해서 캐싱!
-        foreach (var module in data.Modules)
+        if (data.Modules == null) return;
+        foreach (var template in data.Modules)
         {
+            if (template == null) continue;
+            var module = template.Clone();
+            runtimeModules.Add(module);
             if (!moduleCache.ContainsKey(module.triggerTime))
                 moduleCache[module.triggerTime] = new List<PassiveModule>();
 
             moduleCache[module.triggerTime].Add(module);
         }
+    }
+
+    public override void SetLevel(int level)
+    {
+        base.SetLevel(level);
+        foreach (var module in runtimeModules)
+            if (module is PassiveContextModule contextModule) contextModule.OnChangedLevel(level);
+    }
+
+    public override void OnChangedLevel(int newLevel) => SetLevel(newLevel);
+
+    public override void OnAcquire(GameObject skillOwner)
+    {
+        UnsubscribeBattle();
+        if (skillOwner == null) { OnLose(); return; }
+        owner = skillOwner;
+        foreach (var module in runtimeModules)
+            if (module is PassiveContextModule contextModule) contextModule.OnAcquire(owner, skillLevel);
+
+        if (moduleCache.ContainsKey(PassiveTriggerTime.OnHit))
+        {
+            subscribedBattleManager = BattleManager.Instance;
+            if (subscribedBattleManager != null) subscribedBattleManager.OnAnyAttackHit += OnAttackHit;
+        }
+    }
+
+    public override void OnApplyStaticEffect(StatusComponent status)
+    {
+        if (moduleCache.TryGetValue(PassiveTriggerTime.OnApplyStaticEffect, out var modules))
+            foreach (var module in modules) module.OnApplyStaticEffect(status);
+    }
+
+    private void OnAttackHit(GameObject attacker, GameObject target, DamageEvent damageEvent)
+    {
+        if (moduleCache.TryGetValue(PassiveTriggerTime.OnHit, out var modules))
+            foreach (var module in modules)
+                if (module is PassiveContextModule contextModule)
+                    contextModule.OnAttackHit(attacker, target, damageEvent);
+    }
+
+    public override void OnLose()
+    {
+        UnsubscribeBattle();
+        foreach (var module in runtimeModules) module.OnLose();
+        owner = null;
+    }
+
+    private void UnsubscribeBattle()
+    {
+        if (subscribedBattleManager != null) subscribedBattleManager.OnAnyAttackHit -= OnAttackHit;
+        subscribedBattleManager = null;
     }
 
     // 💡 특정 이벤트가 들어오면, 캐싱된 모듈들만 골라서 실행!
@@ -73,26 +138,4 @@ public class GenericPassiveSkill : PassiveSkill
         }
     }
 
-    //public override void OnApplyStaticEffect(StatusComponent status)
-    //{
-    //    if (!status.IsSameJob(recordData.targetFilter))
-    //        return;
-
-    //    if (status != null)
-    //    {
-    //        foreach (var modifier in recordData.Stats)
-    //        {
-    //            var statMod = ModifierFactory.CreateStatModifier(
-    //                modifier.Status, modifier.Value, modifier.ValueType);
-    //            status.ApplyBuff(statMod);
-    //            statModifiers.Add(statMod);
-    //        }
-    //    }
-    //}
-
-    //public override void OnLose()
-    //{
-    //    foreach (var modifier in statModifiers)
-    //        status.SafeInvoke(v => v.RemoveBuff(modifier));
-    //}
 }

@@ -80,6 +80,7 @@ public abstract class ActiveSkill
     protected float maxCooldown;
     protected float castingTime;
     protected float currentCastingTime;
+    private float castAttackSpeed = 1f;
     protected bool isCasting = false;
     protected int expectedAnimEventPhaseIndex = 0;
     public bool isWaitingForRelease = false;
@@ -269,14 +270,22 @@ public abstract class ActiveSkill
 
     private void SetCooldown()
     {
-        //TODO : Runtime에 있는 cooldown 감소량 반영
-        currentCooldown = Mathf.Max(limitCooldown, MaxCooldown);
+        maxCooldown = Mathf.Max(0f, limitCooldown, Runtime.Base.Cooldown / castAttackSpeed);
+        currentCooldown = maxCooldown;
+    }
+
+    private void ApplyAttackSpeedTiming()
+    {
+        float speed = status != null ? status.GetStatusValue(StatusType.ATTACKSPEED) : 1f;
+        castAttackSpeed = float.IsNaN(speed) || float.IsInfinity(speed) ? 1f : Mathf.Max(0.01f, speed);
+        if (Runtime.Cast.CastingTime > 0f)
+            Runtime.Cast.CastingTime /= castAttackSpeed;
+        Runtime.Cast.MaxCastingTime = Runtime.Cast.CastingTime;
     }
 
     public void Update_Cooldown(float deltaTime)
     {
-        if (currentCooldown > 0)
-            currentCooldown -= deltaTime;
+        currentCooldown = Mathf.Max(0f, currentCooldown - Mathf.Max(0f, deltaTime));
     }
 
     public void Cast(int startPhaseIndex = 0)
@@ -322,6 +331,7 @@ public abstract class ActiveSkill
 
         PrepareCasting();
         if (!IsActive || IsEnding) return;
+        ApplyAttackSpeedTiming();
 
         if (Runtime.Cast.CastingTime > 0f)
         {

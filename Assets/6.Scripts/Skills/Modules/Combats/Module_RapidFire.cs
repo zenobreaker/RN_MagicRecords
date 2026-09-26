@@ -68,6 +68,7 @@ public class Module_RapidFire : SkillModule
     private async UniTaskVoid RapidFireAsync(Character owner, ActiveSkill skill, PhaseSkill phaseSkill, CancellationToken token)
     {
         int phaseVersion = skill.PhaseVersion;
+        var combat = skill.Runtime.Combat;
         float finalFireInterval = Mathf.Max(
             0.01f,
             fireInterval * (skill != null ? skill.Runtime.FireIntervalMultiplier : 1.0f));
@@ -113,6 +114,9 @@ public class Module_RapidFire : SkillModule
                 }
 
                 // 1. 탄환 발사 처리
+                var attackBullets = combat.TakeBulletsForAttack();
+                bool attackIsCrit = isCrit;
+                foreach (var bullet in attackBullets) attackIsCrit |= bullet.isCrit;
                 Vector3 basePosition = owner.transform.TransformPoint(spawnPosition);
                 for (int projectileIndex = 0; projectileIndex < finalProjectileCount; projectileIndex++)
                 {
@@ -124,9 +128,12 @@ public class Module_RapidFire : SkillModule
                         0f);
 
                     GameObject obj = ObjectPooler.DeferredSpawnFromPool(finalObjectName, basePosition, finalRotation);
+                    if (obj != null && obj.TryGetComponent<BaseProjectile>(out var bulletProjectile))
+                        bulletProjectile.SetMagicBullets(attackBullets, combat.BulletApplyMode);
+
                     if (obj != null && obj.TryGetComponent<ISkillEffect>(out var projectile))
                     {
-                        projectile.SetDamageInfo(owner, finalDamageData, isCrit);
+                        projectile.SetDamageInfo(owner, finalDamageData, attackIsCrit);
                         projectile.AddIgnore(owner);
                     }
 
