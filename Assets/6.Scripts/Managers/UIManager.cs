@@ -430,7 +430,7 @@ public class UIManager : Singleton<UIManager>
         var ui = OpenUI<UIRecordInventory>(true); // 팝업
         if (ui != null && ui.TryGetComponent<UIRecordInventory>(out var target))
         {
-            target.SetRecordManager(AppManager.Instance?.GetRecordManager());
+            target.SetRecordManager(AppManager.Instance.SafeInvoke(app => app.GetRecordManager()));
             target.RefreshUI();
         }
     }
@@ -443,6 +443,20 @@ public class UIManager : Singleton<UIManager>
             target.SetData(data);
             target.RefreshUI();
         }
+    }
+
+    public void OpenBuildEntryInfoPopUp(BuildEntryViewData entry)
+    {
+        var ui = OpenUI<UIRecordInfo>(true);
+        if (ui == null) return;
+        ui.SetBuildEntry(entry);
+        ui.RefreshUI();
+    }
+
+    public void OpenCharacterStatusPopUp()
+    {
+        var ui = OpenUI<UICharacterStatusPopup>(true);
+        ui.SafeInvoke(value => value.RefreshUI());
     }
 
     public void OpenRecordSelectPopUp(List<RecordData> records, bool canReroll, RecordUIMode mode)

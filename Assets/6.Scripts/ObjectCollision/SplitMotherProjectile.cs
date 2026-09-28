@@ -58,21 +58,26 @@ public class SplitMotherProjectile
         cachedMultiplier = mulitplier;
     }
 
-    protected override void OnDisable()
+    protected override void OnProjectileDespawned()
     {
-        base.OnDisable();
+        base.OnProjectileDespawned();
 
         fireTimer = 0f;
         currentSpreadRotation = 0f;
         motherSpeedMultiplier = 1f;
         childHomingEnabled = false;
         childHomingTargetOrigin = null;
+        cachedChildDamageData = null;
+        cachedMultiplier = 1f;
+        isCrit = false;
     }
 
     public void SetMotherSpeedMultiplier(float multiplier)
     {
         motherSpeedMultiplier = Mathf.Max(0.01f, multiplier);
-        force *= motherSpeedMultiplier;                                                                 
+        force = DefaultForce * motherSpeedMultiplier;
+        if (isActiveAndEnabled && rigid != null)
+            rigid.linearVelocity = transform.forward * force;
     }
 
     public void EnableChildHoming(float searchRadius, float turnSpeed, LayerMask enemyLayer,

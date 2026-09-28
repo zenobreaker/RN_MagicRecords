@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Scripting.APIUpdating;
@@ -74,6 +74,8 @@ public class Module_SpawnObject : SkillModule
 
     [Tooltip("0 이하이면 프리팹 기본 수명을 사용")]
     public float baseLifeTime = -1.0f;
+    [Tooltip("고정 수명 대신 현재 스킬 레벨의 Duration을 사용합니다.")]
+    public bool useLevelDuration;
 
     #endregion
 
@@ -119,20 +121,15 @@ public class Module_SpawnObject : SkillModule
 
 
         // ============================================================
-        // 3. 최종 Damage
+        // 3. Damage 데이터 (Runtime 배율은 SetDamageInfo에서 별도로 전달)
         // ============================================================
-
-        float finalDamageMultiplier =
-            skill.Runtime.DamageMultiplier;
-
         bool isCrit =
             skill.Runtime.Combat.IsCritical;
         foreach (var bullet in attackBullets) isCrit |= bullet.isCrit;
 
         DamageData finalDamageData =
             GetEffectiveDamageData(
-                skill,
-                finalDamageMultiplier);
+                skill);
 
 
         // ============================================================
@@ -400,11 +397,17 @@ public class Module_SpawnObject : SkillModule
             // 5. Lifetime
             // --------------------------------------------------------
 
-            if (baseLifeTime > 0f &&
+            if (obj.TryGetComponent<AssistDrone>(out var assistDrone))
+            {
+                assistDrone.SetPoolSpawn(isPoolerSpawn);
+                assistDrone.SetLifetimeBuffIcon(skill.Icon);
+            }
+
+            if ((useLevelDuration || baseLifeTime > 0f) &&
                 obj.TryGetComponent<ILifetimeSetup>(
                     out var lifetime))
             {
-                lifetime.SetLifeTime(baseLifeTime);
+                lifetime.SetLifeTime(useLevelDuration ? skill.Runtime.Spawn.Lifetime : baseLifeTime);
             }
 
 
@@ -501,80 +504,22 @@ public class Module_SpawnObject : SkillModule
     // Damage
     // ====================================================================
 
-    private DamageData GetEffectiveDamageData(
-        ActiveSkill skill,
-        float combinedMultiplier)
+    private DamageData GetEffectiveDamageData(ActiveSkill skill)
     {
-        switch (damageApplyType)
+        var source = damageApplyType == DamageApplyType.Override ? damageData : skill?.damageData;
+        if (source == null) return new DamageData();
+        float ignoreBonus = skill?.Runtime?.Combat?.IgnoreDefenseBonus ?? 0f;
+        if (damageApplyType != DamageApplyType.Multiply && ignoreBonus <= 0f) return source;
+        var result = source.Clone();
+        if (damageApplyType == DamageApplyType.Multiply)
         {
-            case DamageApplyType.Override:
-
-                return damageData;
-
-
-            case DamageApplyType.Multiply:
-
-                if (skill != null &&
-                    skill.damageData != null)
-                {
-                    DamageData source =
-                        skill.damageData;
-
-                    DamageData result =
-                        new DamageData
-                        {
-                            damageType =
-                                source.damageType,
-
-                            baseDamage =
-                                source.baseDamage *
-                                combinedMultiplier,
-
-                            statCoefficient =
-                                source.statCoefficient *
-                                combinedMultiplier,
-
-                            bDownable =
-                                source.bDownable,
-
-                            bLauncher =
-                                source.bLauncher,
-
-                            SoundName =
-                                source.SoundName,
-
-                            impulseDirection =
-                                source.impulseDirection,
-
-                            csp =
-                                source.csp,
-
-                            hitData =
-                                source.hitData
-                        };
-
-                    return result;
-                }
-
-                break;
-
-
-            case DamageApplyType.Inherit:
-            default:
-
-                if (skill != null &&
-                    skill.damageData != null)
-                {
-                    return skill.damageData;
-                }
-
-                break;
+            result.baseDamage *= damageMultiplier;
+            result.statCoefficient *= damageMultiplier;
         }
-
-
-        return new DamageData();
+        result.ignoreDefenseRate = Mathf.Clamp01(result.ignoreDefenseRate + ignoreBonus);
+        // Runtime multiplier is passed separately to SetDamageInfo, exactly once.
+        return result;
     }
-
 
     public override SkillModule Clone()
     {

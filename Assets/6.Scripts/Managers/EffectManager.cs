@@ -24,6 +24,7 @@ public class EffectManager : Singleton<EffectManager>
 
     public void RegisterEffect(GameObject target, GameObject appliedBy, BaseEffect effect)
     {
+        if (target == null || effect == null || !target.TryGetComponent<EffectComponent>(out var component)) return;
         if (!activeEffects.ContainsKey(target))
         {
             var buff = target.GetComponent<EffectComponent>();
@@ -35,7 +36,7 @@ public class EffectManager : Singleton<EffectManager>
             }
         }
 
-        activeEffects[target]?.ApplyEffect(effect, target, appliedBy);
+        component.ApplyEffect(effect, target, appliedBy);
     }
 
     public void UnregisterEffect(Character target, BaseEffect effect)
@@ -48,10 +49,10 @@ public class EffectManager : Singleton<EffectManager>
 
     public void UnregisterAllEffects(Character target)
     {
-        if (activeEffects.ContainsKey(target))
-        {
-            activeEffects.Remove(target);
-        }
+        if (target == null) return;
+        activeEffects.Remove(target.gameObject);
+        target.OnDead -= UnregisterAllEffects;
+        target.GetComponent<EffectComponent>().SafeInvoke(component => component.ClearEffects());
     }
 
     public void RegisterEffect_Burn(GameObject target, GameObject appliedBy, float duration, float basePower)

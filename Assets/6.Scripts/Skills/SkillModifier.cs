@@ -77,6 +77,7 @@ public sealed class CastContext
 
     public float CastingTime;
     public float ChargedTime;
+    public float ChargeSpeedMultiplier = 1f;
 
     public float MaxCastingTime; 
     public float MaxChargeTime;        
@@ -148,6 +149,7 @@ public sealed class CombatContext
     public float PatternAngleBonus;
     public int TotalShotsBonus;
     public float FireIntervalMultiplier = 1.0f;
+    public float IgnoreDefenseBonus;
     public float BonusMultipiler = 1.0f;
 
     public float CriticalDamageMultiplier;
@@ -156,6 +158,8 @@ public sealed class CombatContext
 
     public IReadOnlyList<BulletData> ConsumedBullets { get; private set; } = Array.Empty<BulletData>();
     public BulletEffectApplyMode BulletApplyMode { get; private set; }
+    public int ConsumedBulletCount => ConsumedBullets.Count;
+    public bool HasConsumedBullets => ConsumedBulletCount > 0;
     private bool magicBulletsConsumed;
     private int nextBulletAttack;
 
@@ -270,6 +274,9 @@ public sealed class SkillChainContext
 
 public sealed class SkillRuntimeContext
 {
+    private readonly HashSet<SkillModule> executedOnceModules = new();
+    public bool TryExecuteOnce(SkillModule module) => module != null && executedOnceModules.Add(module);
+
     private readonly Dictionary<string, int> phaseLoopCounts = new();
     internal Module_PhaseLoop ActivePhaseLoop;
     internal int PhaseLoopSourceIndex;

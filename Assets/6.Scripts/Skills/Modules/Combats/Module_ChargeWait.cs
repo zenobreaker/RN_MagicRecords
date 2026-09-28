@@ -19,7 +19,8 @@ public class Module_ChargeWait : SkillModule
         if (skill == null) return;
         CancelCharge(); 
 
-        currentMaxChargeTime = skill.Runtime?.Cast?.MaxChargeTime ?? maxChargeTime;
+        currentMaxChargeTime = (skill.Runtime?.Cast?.MaxChargeTime ?? maxChargeTime) /
+            Mathf.Max(0.01f, skill.Runtime?.Cast?.ChargeSpeedMultiplier ?? 1f);
         chargeCts = CancellationTokenSource.CreateLinkedTokenSource(skill.PhaseToken);
 
         skill.isWaitingForRelease = true;
@@ -30,7 +31,7 @@ public class Module_ChargeWait : SkillModule
         if (currentMaxChargeTime > 0f)
         {
             // 최대 시간 대기
-            bool isCancelled = await UniTask.Delay(TimeSpan.FromSeconds(maxChargeTime)
+            bool isCancelled = await UniTask.Delay(TimeSpan.FromSeconds(currentMaxChargeTime)
                 , cancellationToken: token)
                 .SuppressCancellationThrow();
 

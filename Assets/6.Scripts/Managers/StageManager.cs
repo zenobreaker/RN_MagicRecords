@@ -140,6 +140,12 @@ public sealed class StageManager : MonoBehaviour
             if (currentStage.wave <= 0)
                 await SceneLoadingController.CompleteStagePreparationAsync(token);
             stageState = StageState.Result;
+            var player = PlayerManager.Instance.SafeInvoke(manager => manager.GetCurrentPlayer());
+            if (player != null)
+            {
+                player.GetComponent<SkillComponent>().SafeInvoke(skills => skills.CancelCurrentSkill());
+                EffectManager.Instance.SafeInvoke(manager => manager.UnregisterAllEffects(player));
+            }
 
             // 결과 포장해서 던지기
             return new StageResult

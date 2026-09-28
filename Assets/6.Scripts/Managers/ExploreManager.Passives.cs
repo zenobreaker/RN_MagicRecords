@@ -42,7 +42,7 @@ public sealed partial class ExploreManager
     private bool TryInstallStartingPassives(int jobID, List<ExplorePassiveSaveData> state, out string error)
     {
         error = null;
-        var system = AppManager.Instance?.GetPassiveSystem();
+        var system = AppManager.Instance.SafeInvoke(app => app.GetPassiveSystem());
         if (system == null || startingPassiveSettings == null)
         { error = "탐사 패시브 시스템을 준비하지 못했습니다."; return false; }
         if (state == null || state.Count < 2)
@@ -77,14 +77,25 @@ public sealed partial class ExploreManager
             if (startingPassiveSettings.TryResolve(skillID, out var template, out var ambiguous)) return template;
             if (ambiguous) return null;
         }
-        return SkillTreeManager.Instance?.GetSkillRuntimeData(
-            jobID >= 0 ? jobID : CurrentSetupData.SelectedClassId, skillID)?.template as SO_PassiveSkillData;
+        return SkillTreeManager.Instance.SafeInvoke(manager => manager.GetSkillRuntimeData(
+            jobID >= 0 ? jobID : CurrentSetupData.SelectedClassId, skillID))?.template as SO_PassiveSkillData;
+    }
+
+    public bool IsJobStartingPassive(int jobID, int skillID)
+    {
+        var jobs = startingPassiveSettings.SafeInvoke(settings => settings.jobs);
+        if (jobs == null) return false;
+        foreach (var entry in jobs)
+            if (entry != null && entry.jobID == jobID &&
+                (entry.firstPassive.SafeInvoke(passive => passive.id, -1) == skillID ||
+                 entry.secondPassive.SafeInvoke(passive => passive.id, -1) == skillID)) return true;
+        return false;
     }
 
     public bool CanUpgradePassive(SO_PassiveSkillData template)
     {
         if (template == null || RunStatus != RunStatus.MidRun) return false;
-        var skill = AppManager.Instance?.GetPassiveSystem()?.GetRunPassive(CurrentSetupData.SelectedClassId, template.id);
+        var skill = AppManager.Instance.SafeInvoke(app => app.GetPassiveSystem())?.GetRunPassive(CurrentSetupData.SelectedClassId, template.id);
         return (skill?.SkillLevel ?? 0) < Mathf.Max(1, template.maxLevel);
     }
 
@@ -108,7 +119,7 @@ public sealed partial class ExploreManager
 
     private void ResetStartingPassiveState()
     {
-        AppManager.Instance?.GetPassiveSystem()?.ResetStartingPassives();
+        AppManager.Instance.SafeInvoke(app => app.GetPassiveSystem())?.ResetStartingPassives();
         startingPassiveState.Clear();
         startingPassivesInitialized = false;
         startingPassivesRestored = false;

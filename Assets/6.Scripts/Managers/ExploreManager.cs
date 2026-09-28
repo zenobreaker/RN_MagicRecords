@@ -59,6 +59,7 @@ public sealed partial class ExploreManager : MonoBehaviour
         set { chapterBiomeName = value; }
     }
     public bool AllStageClear => bAllCleared;
+    public bool IsFinalChapter => Chapter >= maxChapter;
 
     private bool bCreate = false;
     private bool bAllCleared = false;
@@ -90,6 +91,15 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public void EnsureInitialized()
     {
+        if (bCreate)
+        {
+            // Returning from the lobby in the same process must also reopen pending rewards.
+            if (RunStatus == RunStatus.ChapterCleared)
+                AppManager.Instance.SafeInvoke(app => app.ShowPendingChapterReward());
+            else if (RunStatus == RunStatus.FinalRunCleared)
+                UIManager.Instance.SafeInvoke(ui => ui.OpenExploreResultPopUp());
+            return;
+        }
         if (bCreate == false)
         {
             Debug.Log("씬에서 직접 시작됨: 자동 Init 실행");
@@ -128,11 +138,7 @@ public sealed partial class ExploreManager : MonoBehaviour
                     break;
 
                 case RunStatus.ChapterCleared:
-
-                    Debug.Log(
-                        "[ExploreManager] ChapterCleared 런 복구 완료"
-                    );
-
+                    AppManager.Instance.SafeInvoke(app => app.ShowPendingChapterReward());
                     break;
 
                 case RunStatus.MidRun:
@@ -149,6 +155,7 @@ public sealed partial class ExploreManager : MonoBehaviour
     public void ResetData()
     {
         ResetStartingPassiveState();
+        PlayerManager.Instance.SafeInvoke(players => players.ResetRunCharacterLevels());
         SkillManager.Instance?.ResetRunTimeData();
         CurrentState = ExploreState.NONE;
         RunStatus = RunStatus.NoSave;
@@ -224,8 +231,10 @@ public sealed partial class ExploreManager : MonoBehaviour
         if (loadData != null)
         {
             RunStatus = loadData.runStatus;
+            bAllCleared = RunStatus == RunStatus.FinalRunCleared;
             CurrentSetupData = loadData.setupData ?? new ExplorationSetupData();
             runHealth = loadData.partyHealth ?? new();
+            PlayerManager.Instance.SafeInvoke(players => players.RestoreRunCharacterLevels(loadData.characterLevels));
             if (!RestoreStartingPassives(loadData)) { bCreate = false; return; }
             SkillManager.Instance?.RestoreRunSkills(loadData.activeSkills);
 
@@ -233,33 +242,7 @@ public sealed partial class ExploreManager : MonoBehaviour
             if (RunStatus == RunStatus.SetupIncomplete)
                 return;
 
-            // 챕터 보스 클리어 직후 저장된 상태
-            if (RunStatus == RunStatus.ChapterCleared)
-            {
-                Debug.Log(" " +
-                    $"[ExploreManager] Chapter {Chapter} 클리어 상태로 저장된 런"
-                    + $"다음 챕터로 진행");
-
-                // 맵과 스테이지 정상 복구 
-                MapData saveMap = loadData.mapData;
-                if (saveMap != null)
-                {
-                    Chapter = saveMap.chapter <= 0 ? 1 : saveMap.chapter;
-                    BiomeName = saveMap.biomeName;
-                }
-
-                // 다음 챕터로 이동
-                if (TryAdvanceChapter())
-                {
-                    SaveExploreMap();
-
-                    return;
-                }
-
-                // 혹시 마지막 챕터라면 
-                RunStatus = RunStatus.FinalRunCleared;
-                return;
-            }
+            // ChapterCleared restores the cleared map until its reward is accepted.
 
             // 일반적인 이어하기
             MapData mapData = loadData.mapData;
@@ -387,6 +370,7 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public void ClearStage(bool isWin)
     {
+        if (RunStatus == RunStatus.ChapterCleared || RunStatus == RunStatus.FinalRunCleared) return;
         if (isWin == false)
         {
             ChangeState(ExploreState.ON_EXPLORE);
@@ -405,33 +389,9 @@ public sealed partial class ExploreManager : MonoBehaviour
         // 챕터 마지막 보스 
         if (bIsFianl)
         {
-            // 아직 챕터가 남음
-            if (Chapter < maxChapter)
-            {
-                RunStatus = RunStatus.ChapterCleared;
-
-                SaveExploreMap();
-
-                // 실제 다음 챕터 생성
-                if (TryAdvanceChapter())
-                {
-                    RunStatus = RunStatus.MidRun;
-
-                    SaveExploreMap();
-
-                    ChangeState(ExploreState.STAGE_CLEAR);
-                }
-
-                return;
-            }
-
-            // 최종 챕터 보스
-            bAllCleared = true;
-            RunStatus = RunStatus.FinalRunCleared;
-
-            ChangeState(ExploreState.EXPLORE_FINISH);
+            RunStatus = RunStatus.ChapterCleared;
+            ChangeState(ExploreState.STAGE_CLEAR);
             SaveExploreMap();
-
             return;
         }
 
@@ -439,6 +399,20 @@ public sealed partial class ExploreManager : MonoBehaviour
         ChangeState(ExploreState.STAGE_CLEAR);
 
         SaveExploreMap(); 
+    }
+
+    public void CompleteChapterReward(int clearedChapter)
+    {
+        if (RunStatus != RunStatus.ChapterCleared || Chapter != clearedChapter) return;
+        if (TryAdvanceChapter())
+            ChangeState(ExploreState.ON_EXPLORE);
+        else
+        {
+            bAllCleared = true;
+            RunStatus = RunStatus.FinalRunCleared;
+            ChangeState(ExploreState.EXPLORE_FINISH);
+        }
+        SaveExploreMap();
     }
 
 
@@ -454,6 +428,7 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public bool CanEnableNode(int targetNodeId, bool bCheat = false)
     {
+        if (RunStatus == RunStatus.ChapterCleared || RunStatus == RunStatus.FinalRunCleared) return false;
         if (bCheat) return true;
         if (targetNodeId == MapNodeID && GetReplacedNodeInfo()?.type == StageType.Shop) return true;
 
@@ -589,6 +564,7 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public void OnReturnedStageSelectScene()
     {
+        if (RunStatus == RunStatus.ChapterCleared || RunStatus == RunStatus.FinalRunCleared) return;
         ChangeState(ExploreState.ON_EXPLORE);
     }
 
@@ -635,6 +611,7 @@ public sealed partial class ExploreManager : MonoBehaviour
             runStatus = RunStatus,
             setupData = CurrentSetupData,
             partyHealth = runHealth,
+            characterLevels = PlayerManager.Instance.SafeInvoke(players => players.CaptureRunCharacterLevels()) ?? new(),
             startingPassiveVersion = startingPassivesInitialized ? 1 : 0,
             startingPassives = CaptureStartingPassiveState(),
             activeSkills = SkillManager.Instance?.CaptureRunSkills() ?? new()

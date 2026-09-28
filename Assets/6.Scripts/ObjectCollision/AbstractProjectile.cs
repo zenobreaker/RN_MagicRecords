@@ -6,6 +6,7 @@ using UnityEngine;
 public abstract class AbstractProjectile 
     : BaseProjectile
     , ISkillEffect
+    , ILifetimeSetup
 {
     [Header("Base Projectile Settings")]
     [SerializeField] protected float force = 20.0f;
@@ -17,21 +18,44 @@ public abstract class AbstractProjectile
     protected float curLife = 0f;
     protected Rigidbody rigid;
     protected new Collider collider;
+    private bool defaultsCached;
+    private float defaultForce;
+    private float defaultLife;
+
+    protected float DefaultForce
+    {
+        get { CacheDefaults(); return defaultForce; }
+    }
 
     // 타격 이벤트
     public event Action<Collider, Collider, Vector3> OnProjectileHit;
 
     protected virtual void Awake()
     {
+        CacheDefaults();
         rigid = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
+    }
+
+    private void CacheDefaults()
+    {
+        if (defaultsCached) return;
+        defaultsCached = true;
+        defaultForce = force;
+        defaultLife = life;
+    }
+
+    public void SetLifeTime(float time)
+    {
+        CacheDefaults();
+        life = time < 0f ? -1f : time;
+        curLife = life;
     }
 
     // 💡 [핵심] 공통 생명주기 처리는 부모가 알아서 다 합니다.
     protected override void OnEnable()
     {
         if (rigid == null) return;
-        base.OnEnable();
         
         // 1. 공통 물리 / 수명 초기화
         rigid.linearVelocity = transform.forward * force;
@@ -39,12 +63,12 @@ public abstract class AbstractProjectile
 
         // 2. 자식 클래스 전용 초기화 호출 (빈 칸)
         OnProjectileSpawned();
+        base.OnEnable();
     }
 
     protected override void OnDisable()
     {
         base.OnDisable();
-        ObjectPooler.ReturnToPool(this.gameObject);
 
         if (rigid != null)
         {
@@ -54,11 +78,17 @@ public abstract class AbstractProjectile
 
         // 자식 클래스 전용 해제 로직 호출 (빈 칸)
         OnProjectileDespawned();
+        force = defaultForce;
+        life = defaultLife;
+        curLife = 0f;
+        OnProjectileHit = null;
+        ObjectPooler.ReturnToPool(gameObject);
     }
 
     protected override void Update()
     {
         base.Update(); 
+        if (!isActiveAndEnabled) return;
 
         if (life != -1)
         {

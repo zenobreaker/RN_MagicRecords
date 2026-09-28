@@ -9,6 +9,7 @@ public class RuntimeHomingBehaviour : MonoBehaviour
     private HashSet<GameObject> ignores;
 
     private Rigidbody rb;
+    private PiercingDrillProjectile drillProjectile;
     private Transform targetEnemy;
     private Transform targetSearchOrigin;
     private float currentSpeed;
@@ -27,6 +28,7 @@ public class RuntimeHomingBehaviour : MonoBehaviour
         this.prioritizeHighestGrade = prioritizeHighestGrade;
 
         if (rb == null) rb = GetComponent<Rigidbody>();
+        drillProjectile = GetComponent<PiercingDrillProjectile>();
 
         currentSpeed = 0f; // 속도는 FixedUpdate에서 지연 캐싱
         targetEnemy = null;
@@ -39,8 +41,15 @@ public class RuntimeHomingBehaviour : MonoBehaviour
     {
         if (!isInitialized || rb == null) return;
 
+        // 드릴의 감속/부착 상태를 무시하고 캐시된 속도를 복원하지 않습니다.
+        if (drillProjectile != null)
+        {
+            if (drillProjectile.IsAttached) return;
+            currentSpeed = drillProjectile.MovementSpeed;
+        }
+
         // 🎯 1. 속도 지연 캐싱 (물리 프레임이 돌아 linearVelocity가 적용된 직후에 캐싱)
-        if (currentSpeed <= 0.1f)
+        if (drillProjectile == null && currentSpeed <= 0.1f)
         {
             currentSpeed = rb.linearVelocity.magnitude;
             if (currentSpeed <= 0.1f) return;

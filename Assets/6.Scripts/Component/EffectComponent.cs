@@ -10,6 +10,7 @@ public class EffectComponent : MonoBehaviour
 
     private Dictionary<string, BaseEffect> activeEffects = new Dictionary<string, BaseEffect>();
     private List<BaseEffect> expiredEffects = new();
+    private readonly List<BaseEffect> updatingEffects = new();
 
     private SO_HUDHandler handler;
     private StatusEffectComponent statusEffect;
@@ -30,9 +31,12 @@ public class EffectComponent : MonoBehaviour
         if (activeEffects.Count == 0) return;
 
         expiredEffects.Clear();
+        updatingEffects.Clear();
+        updatingEffects.AddRange(activeEffects.Values);
 
-        foreach (BaseEffect effect in activeEffects.Values)
+        foreach (BaseEffect effect in updatingEffects)
         {
+            if (HasEffect(effect.ID) != effect) continue;
             if (effect.IsExpired == false)
                 effect.Update(Time.deltaTime);
 
@@ -75,17 +79,30 @@ public class EffectComponent : MonoBehaviour
             newEffect.OnApply(target, appliedBy);
         }
 
+        NotifyEffectUI(newEffect);
+    }
+
+    public bool TryConsumeStacks(string effectID, int amount)
+    {
+        var effect = HasEffect(effectID);
+        if (effect == null || !effect.TryConsumeStacks(amount)) return false;
+
+        if (effect.StackCount == 0) RemoveEffect(effect);
+        else NotifyEffectUI(effect);
+        return true;
+    }
+
+    private void NotifyEffectUI(BaseEffect newEffect)
+    {
         if (owner is Player)
-            handler?.OnApplyEffect(newEffect);
+            handler.SafeInvoke(ui => ui.OnApplyEffect(newEffect));
         else if (owner is Enemy enemy && enemy.Boss)
-            handler?.OnChangedBossEffect(owner, newEffect);
+            handler.SafeInvoke(ui => ui.OnChangedBossEffect(owner, newEffect));
     }
 
     public void RemoveEffect(BaseEffect effect)
     {
-        if (effect == null) return;
-        if (effect.Type == EffectType.DEBUFF)
-            DebuffCount--;
+        if (effect == null || HasEffect(effect.ID) != effect) return;
 
         RemoveEffect(effect.ID);
     }
@@ -96,6 +113,8 @@ public class EffectComponent : MonoBehaviour
 
         if (activeEffects.TryGetValue(buffID, out BaseEffect baseEffect))
         {
+            activeEffects.Remove(buffID);
+            if (baseEffect.Type == EffectType.DEBUFF) DebuffCount--;
             baseEffect.OnRemove();
 
             // 상태 플래그 동기화 처리
@@ -105,8 +124,19 @@ public class EffectComponent : MonoBehaviour
             }
 
 
-            activeEffects.Remove(buffID);
         }
+    }
+
+    public void ClearEffects()
+    {
+        foreach (var effect in new List<BaseEffect>(activeEffects.Values))
+            RemoveEffect(effect);
+    }
+
+    private void OnDisable()
+    {
+        ClearEffects();
+        EffectManager.Instance.SafeInvoke(manager => manager.UnregisterAllEffects(owner));
     }
 
     public BaseEffect HasEffect(string effectName)

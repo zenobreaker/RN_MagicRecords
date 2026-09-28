@@ -46,41 +46,35 @@ public static class UIListDrawer
         Action<TSlot, TData, int> onSetupSlot) where TSlot : Component
     {
         if (items == null || targetParent == null || prefab == null) return;
+        if (!prefab.TryGetComponent<TSlot>(out _)) return;
 
-        int requiredCount = items.Count;
-        int childCount = targetParent.childCount;
-
-        // 필요한 개수와 이미 있는 자식 개수 중 더 큰 값만큼 반복
-        for (int i = 0; i < Mathf.Max(requiredCount, childCount); i++)
+        // 부모 아래의 원본 템플릿은 숨기고, 실제 슬롯만 재사용 목록에 포함합니다.
+        var slots = new List<TSlot>();
+        for (int i = 0; i < targetParent.childCount; i++)
         {
-            if (i < requiredCount)
+            var child = targetParent.GetChild(i).gameObject;
+            if (child == prefab)
             {
-                GameObject slotObj;
-                // 1. 기존에 생성된 UI가 있으면 재사용 (SetActive(true))
-                if (i < childCount)
-                {
-                    slotObj = targetParent.GetChild(i).gameObject;
-                }
-                // 2. 모자라면 새로 Instantiate
-                else
-                {
-                    slotObj = UnityEngine.Object.Instantiate(prefab, targetParent);
-                }
-
-                slotObj.SetActive(true);
-
-                // 3. 콜백을 통해 데이터 세팅
-                if (slotObj.TryGetComponent<TSlot>(out var slot))
-                {
-                    onSetupSlot?.Invoke(slot, items[i], i);
-                }
+                child.SetActive(false);
+                continue;
             }
-            else
-            {
-                // 4. 데이터보다 초과해서 남는 UI 객체들은 꺼둠 (오류 방지 및 풀링)
-                targetParent.GetChild(i).gameObject.SetActive(false);
-            }
+            if (child.TryGetComponent<TSlot>(out var slot)) slots.Add(slot);
         }
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (i >= slots.Count)
+            {
+                var clone = UnityEngine.Object.Instantiate(prefab, targetParent);
+                slots.Add(clone.GetComponent<TSlot>());
+            }
+            slots[i].gameObject.SetActive(true);
+            onSetupSlot?.Invoke(slots[i], items[i], i);
+        }
+
+        // 생성된 슬롯만 풀링하며, 템플릿이나 다른 장식 오브젝트는 슬롯으로 세지 않습니다.
+        for (int i = items.Count; i < slots.Count; i++)
+            slots[i].gameObject.SetActive(false);
     }
 
 }

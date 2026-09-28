@@ -16,10 +16,28 @@ public class PiercingDrillProjectile
     // 드릴 상태 추적
     private HashSet<Collider> currentTargets = new HashSet<Collider>();
     private float tickTimer = 0f;
-    private Vector3 normalVelocity;
-    private bool isVelocityCaptured = false;
     private bool isAttached;
     private GameObject attachedTarget;
+    private bool drillDefaultsCached;
+    private float defaultDrillingSpeedRatio;
+    private readonly List<Collider> tickTargets = new List<Collider>();
+
+    public bool IsAttached => isAttached;
+    public float MovementSpeed => isAttached ? 0f :
+        force * (currentTargets.Count > 0 ? drillingSpeedRatio : 1f);
+
+    protected override void Awake()
+    {
+        base.Awake();
+        CacheDrillDefaults();
+    }
+
+    private void CacheDrillDefaults()
+    {
+        if (drillDefaultsCached) return;
+        drillDefaultsCached = true;
+        defaultDrillingSpeedRatio = drillingSpeedRatio;
+    }
 
 
     protected override void OnProjectileSpawned()
@@ -27,7 +45,6 @@ public class PiercingDrillProjectile
         // 총알이 깨어날 때 드릴 전용 변수만 초기화 (리지드바디 속도 등은 부모가 해줌)
         currentTargets.Clear();
         tickTimer = 0f;
-        isVelocityCaptured = false;
         isAttached = false;
         attachedTarget = null;
     }
@@ -36,6 +53,9 @@ public class PiercingDrillProjectile
     {
         // 풀로 돌아갈 때 리스트 청소
         currentTargets.Clear();
+        tickTargets.Clear();
+        tickTimer = 0f;
+        drillingSpeedRatio = defaultDrillingSpeedRatio;
         isAttached = false;
         attachedTarget = null;
     }
@@ -67,10 +87,14 @@ public class PiercingDrillProjectile
             if (tickTimer >= tickInterval)
             {
                 tickTimer = 0f;
-                foreach (Collider target in currentTargets)
+                tickTargets.Clear();
+                tickTargets.AddRange(currentTargets);
+                for (int i = 0; i < tickTargets.Count && isActiveAndEnabled; i++)
                 {
+                    Collider target = tickTargets[i];
                     if (target == null || !target.gameObject.activeInHierarchy) continue;
                     DealDamage(target.gameObject, target.transform.position);
+                    if (isAttached) break;
                 }
             }
         }
@@ -102,22 +126,11 @@ public class PiercingDrillProjectile
             return;
         }
 
-        // AddForce 이후의 정상 속도 캡처
-        if (!isVelocityCaptured && rigid.linearVelocity.sqrMagnitude > 0)
-        {
-            normalVelocity = rigid.linearVelocity;
-            isVelocityCaptured = true;
-        }
-
-        // 드릴 마찰(감속) 처리
-        if (isVelocityCaptured)
-        {
-            // 방어 코드: 죽은 적 리스트에서 청소
-            currentTargets.RemoveWhere(c => c == null || !c.gameObject.activeInHierarchy);
-
-            bool isDrilling = currentTargets.Count > 0;
-            rigid.linearVelocity = isDrilling ? normalVelocity * drillingSpeedRatio : normalVelocity;
-        }
+        currentTargets.RemoveWhere(c => c == null || !c.gameObject.activeInHierarchy);
+        // 유도 방향은 유지하고, 이번 발사의 속도를 기준으로 감속합니다.
+        Vector3 direction = rigid.linearVelocity.sqrMagnitude > 0f
+            ? rigid.linearVelocity.normalized : transform.forward;
+        rigid.linearVelocity = direction * MovementSpeed;
     }
 
     
@@ -136,7 +149,8 @@ public class PiercingDrillProjectile
 
     public void SetDrilingSpeedRatio(float ratio)
     {
-        drillingSpeedRatio = ratio; 
+        CacheDrillDefaults();
+        drillingSpeedRatio = Mathf.Clamp01(ratio);
     }
 
     public void AttachToTarget(GameObject target)

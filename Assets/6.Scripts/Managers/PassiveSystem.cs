@@ -17,6 +17,10 @@ public class PassiveSystem
     public PassiveSkill GetRunPassive(int jobID, int skillID) =>
         runJobID == jobID ? runPassives.Find(s => s.SkillID == skillID) : null;
 
+    // UI용 목록 스냅샷. 실제 효과 적용과 동일한 중복 제거 규칙을 사용합니다.
+    public IReadOnlyList<PassiveSkill> GetPassives(int jobID) =>
+        EffectivePassives(jobID).Where(skill => skill != null).ToList().AsReadOnly();
+
     public void SetStartingPassives(int jobID, List<PassiveSkill> skills)
     {
         if (skills == null || skills.Any(s => s == null || s.SkillID <= 0) ||

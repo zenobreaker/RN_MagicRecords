@@ -421,7 +421,7 @@ public abstract class ActiveSkill
             SearchRadius = 0f,
             ChainCount = 0,
             ExplosionRadius = 0f,
-            Lifetime = 0f,
+            Lifetime = LevelDatas.Count > 0 ? LevelDatas[index].duration : 0f,
             TargetPositions = new List<Vector3>(),
         };
 
@@ -447,7 +447,7 @@ public abstract class ActiveSkill
         if (isWaitingForRelease)
         {
             // 현재까지 누르고 있는 시간 계산
-            Runtime.Cast.ChargedTime += deltaTime;
+            Runtime.Cast.ChargedTime += deltaTime * Runtime.Cast.ChargeSpeedMultiplier;
 
             if (Runtime.Cast.IsInstantCast ||
                (Runtime.Cast.AutoFireOnMaxCharge &&

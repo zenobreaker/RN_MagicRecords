@@ -16,21 +16,26 @@ public sealed class SpiralBomb
 
     private Transform attachedTarget;
     private Vector3 localOffset;
+    private readonly float attachedLifetime;
+    private float remainingAttachedLife;
 
     public SpiralBomb(LayerMask enemyLayer
         , Character owner
         , float explosionRadius
-        , DamageEvent explosionEvent)
+        , DamageEvent explosionEvent
+        , float attachedLifetime = 3f)
     {
         this.enemyLayer = enemyLayer;
         this.owner = owner;
         this.explosionRadius = explosionRadius;
         this.explosionEvent = explosionEvent;
+        this.attachedLifetime = Mathf.Max(0.01f, attachedLifetime);
     }
 
     public void OnSpawn(BaseProjectile projectile)
     {
         hasTriggered = false;
+        remainingAttachedLife = attachedLifetime;
         attachedTarget = null;
         localOffset = Vector3.zero;
         if (projectile != null) owner = projectile.Owner;
@@ -43,6 +48,7 @@ public sealed class SpiralBomb
         if (!enemyLayer.Contains(target) || !target.TryGetComponent<IDamagable>(out _) ||
             CombatHelper.IsFriendly(owner, target, projectile.Ignores)) return;
         hasTriggered = true;
+        remainingAttachedLife = attachedLifetime;
 
 
         attachedTarget = target.transform;
@@ -82,9 +88,18 @@ public sealed class SpiralBomb
 
     public void OnUpdate(BaseProjectile projectile, float dt)
     {
-        if (!hasTriggered) return;
+        if (!hasTriggered || projectile == null) return;
+        if (attachedTarget == null || !attachedTarget.gameObject.activeInHierarchy)
+        {
+            projectile.gameObject.SetActive(false);
+            return;
+        }
 
         if (attachedTarget != null && attachedTarget.gameObject.activeInHierarchy)
             projectile.transform.position = attachedTarget.TransformPoint(localOffset);
+
+        remainingAttachedLife -= dt;
+        if (remainingAttachedLife <= 0f)
+            projectile.gameObject.SetActive(false);
     }
 }

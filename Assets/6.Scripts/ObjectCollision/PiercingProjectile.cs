@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public sealed class PiercingProjectile : AbstractProjectile
+public sealed class PiercingProjectile : AbstractProjectile, IProjectile
 {
     [Header("Piercing Settings")]
     [Tooltip("-1 = 무한 관통 / 0 = 첫 대상 피격 후 소멸 / 1 = 1회 관통")]
@@ -10,6 +10,8 @@ public sealed class PiercingProjectile : AbstractProjectile
 
     // 런타임에서 실제로 남아있는 관통 횟수
     private int currentPierceCount;
+    private bool pierceInitialized;
+    private int defaultPierceCount;
 
     // 한 번 맞은 대상을 다시 피격하지 않도록 관리
     private readonly HashSet<GameObject> hitTargets = new();
@@ -20,8 +22,8 @@ public sealed class PiercingProjectile : AbstractProjectile
     /// </summary>
     public int PierceCount
     {
-        get => currentPierceCount;
-        set => currentPierceCount = value;
+        get { InitializePierce(); return currentPierceCount; }
+        set { InitializePierce(); currentPierceCount = value; }
     }
 
     /// <summary>
@@ -32,22 +34,34 @@ public sealed class PiercingProjectile : AbstractProjectile
         get => basePierceCount;
         set
         {
+            InitializePierce();
             basePierceCount = value;
             currentPierceCount = value;
         }
     }
 
+    protected override void Awake()
+    {
+        base.Awake();
+        InitializePierce();
+    }
+
+    private void InitializePierce()
+    {
+        if (pierceInitialized) return;
+        pierceInitialized = true;
+        defaultPierceCount = basePierceCount;
+        currentPierceCount = basePierceCount;
+    }
+
     protected override void OnProjectileSpawned()
     {
-        base.OnProjectileSpawned();
-
-        // 풀링 재사용 시 반드시 초기화
-        currentPierceCount = basePierceCount;
         hitTargets.Clear();
     }
 
     protected override void OnProjectileDespawned()
     {
+        basePierceCount = defaultPierceCount;
         hitTargets.Clear();
 
         // 다음 스폰을 위해 기본값으로 복구
@@ -136,7 +150,7 @@ public sealed class PiercingProjectile : AbstractProjectile
     /// </summary>
     public void SetPierceCount(int count)
     {
-        currentPierceCount = count;
+        PierceCount = count;
     }
 
     /// <summary>
@@ -144,6 +158,6 @@ public sealed class PiercingProjectile : AbstractProjectile
     /// </summary>
     public void SetInfinitePierce()
     {
-        currentPierceCount = -1;
+        PierceCount = -1;
     }
 }

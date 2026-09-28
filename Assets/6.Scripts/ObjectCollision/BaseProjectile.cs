@@ -18,6 +18,8 @@ public abstract class BaseProjectile
     protected DamageEvent damageEvent;
 
     protected DamageData cachedDamageData;
+    private float shotDamageMultiplier = 1f;
+    private bool shotExtraCrit;
     public Character Owner => owner;
     public DamageData DamageData => cachedDamageData;
 
@@ -63,6 +65,8 @@ public abstract class BaseProjectile
         ownerObject = attacker;
         owner = attacker;
         cachedDamageData = damageData;
+        shotDamageMultiplier = multiplier;
+        shotExtraCrit = bExtraCrit;
         damageEvent = damageData.GetMyDamageEvent(attacker.Status, false, bExtraCrit, multiplier);
 
         // 부모가 알아서 쏜 사람의 팀 ID를 캐싱해 둡니다.
@@ -76,7 +80,9 @@ public abstract class BaseProjectile
 
     public void SetIgnores(HashSet<GameObject> ignores)
     {
-        this.ignores = ignores;
+        if (ReferenceEquals(this.ignores, ignores)) return;
+        this.ignores.Clear();
+        if (ignores != null) this.ignores.UnionWith(ignores);
     }
 
     // ==========================================
@@ -97,26 +103,20 @@ public abstract class BaseProjectile
     protected virtual void Update()
     {
         float dt = Time.deltaTime;
-        foreach (var update in updateRunners)
+        for (int i = 0; i < updateRunners.Count && isActiveAndEnabled; i++)
         {
-            update.OnUpdate(this, dt);
+            updateRunners[i].OnUpdate(this, dt);
         }
     }
 
     protected virtual void OnEnable()
     {
-        foreach (var spawn in spawnRunners)
-            spawn.OnSpawn(this);
+        for (int i = 0; i < spawnRunners.Count && isActiveAndEnabled; i++)
+            spawnRunners[i].OnSpawn(this);
     }
 
     protected virtual void OnDisable()
     {
-        ignores.Clear();
-        myTeamId = GenenricTeamId.NoTeamId; // 풀(Pool)에 들어갈 때 소속 초기화
-        ownerObject = null;
-
-        OnTargetHitEvent = null; // 메모리 누수 방지
-
         foreach (var destroy in destroyRunners)
         {
             destroy.OnDestroy(this);
@@ -125,14 +125,23 @@ public abstract class BaseProjectile
         spawnRunners.Clear();
         hitRunners.Clear();
         updateRunners.Clear();
+        ignores.Clear();
+        myTeamId = GenenricTeamId.NoTeamId;
+        ownerObject = null;
+        owner = null;
+        cachedDamageData = null;
+        shotDamageMultiplier = 1f;
+        shotExtraCrit = false;
+        damageEvent = default;
+        OnTargetHitEvent = null;
         SetMagicBullets(null, BulletEffectApplyMode.FirstAttackOnly);
     }
 
     public virtual void NotifyHit(GameObject target, Vector3 hitPos)
     {
-        foreach (var hit in hitRunners)
+        for (int i = 0; i < hitRunners.Count && isActiveAndEnabled; i++)
         {
-            hit.OnHit(this, target);
+            hitRunners[i].OnHit(this, target);
         }
     }
 
@@ -150,9 +159,10 @@ public abstract class BaseProjectile
 
     protected void DealDamage(GameObject target, Vector3 hitPoint)
     {
+        if (owner == null || cachedDamageData == null) return;
         CombatHelper.ApplyDamage(
             owner,
-            cachedDamageData,
+            cachedDamageData.GetMyDamageEvent(owner.Status, false, shotExtraCrit, shotDamageMultiplier),
             target,
             hitPoint
         );

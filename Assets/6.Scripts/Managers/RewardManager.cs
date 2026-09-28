@@ -15,6 +15,8 @@ public class ItemReward : IReward
 {
     private readonly ItemData itemData;
     private int amount;
+    public bool IsExploreCoin => itemData is CurrencyItem currency &&
+        currency.Type == CurrencyType.EXPOLORE_COIN;
 
     public string Title =>
           IsStackable()
@@ -53,6 +55,7 @@ public class ItemReward : IReward
 
 public class RecordReward : IReward
 {
+    public RecordData GrantedRecord { get; private set; }
     private readonly RecordRewardMode mode;
 
     private readonly int recordId;
@@ -94,8 +97,11 @@ public class RecordReward : IReward
         this.rarity = rarity;
     }
 
-    public void Receive()
+    public void Receive() => Receive(true);
+
+    public void Receive(bool showResult)
     {
+        GrantedRecord = null;
         RecordData record = null;
 
         switch (mode)
@@ -126,8 +132,10 @@ public class RecordReward : IReward
 
         if (record != null)
         {
-            var granted = AppManager.Instance?.GetRecordManager()?.GrantRecord(record);
-            if (granted != null && mode != RecordRewardMode.FixedRecord)
+            var manager = AppManager.Instance.SafeInvoke(app => app.GetRecordManager());
+            var granted = manager.SafeInvoke(records => records.GrantRecord(record));
+            GrantedRecord = granted;
+            if (showResult && granted != null && mode != RecordRewardMode.FixedRecord)
                 OpenRecordRewardUI(granted);
         }
     }
@@ -175,6 +183,48 @@ public class RewardManager
     private readonly List<IReward> rewards = new();
 
     private bool bIsRewardPending = false;
+    private int pendingChapter;
+    private bool receivingChapter;
+
+    public List<IReward> PrepareChapterRewards(int clearedChapter)
+    {
+        if (pendingChapter != clearedChapter)
+        {
+            ClearPendingRewards();
+            pendingChapter = clearedChapter;
+            GiveChapterReward(clearedChapter);
+        }
+        return new List<IReward>(rewards);
+    }
+
+    public bool ReceiveChapterRewards(int clearedChapter)
+        => ReceiveChapterRewards(clearedChapter, out _);
+
+    public bool ReceiveChapterRewards(int clearedChapter, out List<RecordData> grantedRecords)
+    {
+        grantedRecords = new List<RecordData>();
+        if (receivingChapter || pendingChapter != clearedChapter || clearedChapter <= 0) return false;
+        var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
+        bool isFinalChapter = explore != null && explore.Chapter == clearedChapter && explore.IsFinalChapter;
+        receivingChapter = true;
+        try
+        {
+            foreach (var reward in rewards.ToArray())
+            {
+                if (isFinalChapter && (reward is RecordReward ||
+                    reward is ItemReward item && item.IsExploreCoin)) continue;
+                if (reward is RecordReward record)
+                {
+                    record.Receive(false);
+                    if (record.GrantedRecord != null) grantedRecords.Add(record.GrantedRecord);
+                }
+                else reward.Receive();
+            }
+            ClearPendingRewards();
+            return true;
+        }
+        finally { receivingChapter = false; }
+    }
 
     protected override void Awake()
     {
@@ -323,6 +373,7 @@ public class RewardManager
 
     public void OnReturnedStageSelectScene()
     {
+        if (pendingChapter > 0) return;
         if (bIsRewardPending == false) return;
 
         if (rewards.Count == 0) return;
@@ -334,6 +385,7 @@ public class RewardManager
 
     public void ClearPendingRewards()
     {
+        pendingChapter = 0;
         rewards.Clear();
         rewardMap.Clear();
 

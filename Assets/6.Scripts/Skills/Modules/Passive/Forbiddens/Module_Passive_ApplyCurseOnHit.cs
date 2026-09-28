@@ -12,8 +12,9 @@ public sealed class Module_Passive_ApplyCurseOnHit : PassiveContextModule
 
     public override void OnAttackHit(GameObject attacker, GameObject target, DamageEvent damageEvent)
     {
+        // 전역 적중 이벤트 중 이 패시브 소유자가 다른 대상에게 가한 공격만 처리합니다.
+        if (owner == null || attacker != owner || target == owner) return;
         if (target == null || UnityEngine.Random.value > chance) return;
-        // 원본과 동일하게 공격자 필터 없이, 패시브 소유자를 저주 시전자로 전달합니다.
-        EffectManager.Instance?.RegisterEffect_Curse(target, owner, duration);
+        EffectManager.Instance.SafeInvoke(manager => manager.RegisterEffect_Curse(target, owner, duration));
     }
 }

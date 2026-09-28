@@ -18,6 +18,8 @@ public class ShopJsonAllData
     public List<ExploreRecordPrice> exploreRecordPrices = new();
     public int exploreHeal15Price = 15;
     public int exploreHeal60Price = 50;
+    public int exploreCharacterLevelUpPrice = 10;
+    public int exploreCharacterLevelUpLimit = 1;
 }
 
 public class ShopDataBase : DataBase

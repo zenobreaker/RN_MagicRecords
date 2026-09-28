@@ -15,6 +15,7 @@ public sealed class ExploreRunSaveData
     public int startingPassiveVersion;
     public List<ExplorePassiveSaveData> startingPassives = new();
     public List<ExploreActiveSkillSaveData> activeSkills = new();
+    public List<CharacterSaveData> characterLevels = new();
 }
 
 

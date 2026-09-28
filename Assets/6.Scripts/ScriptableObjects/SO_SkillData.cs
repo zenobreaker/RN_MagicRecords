@@ -15,6 +15,8 @@ public class SkillLevelData
     public float cooldown;
     public float castingTime = -1.0f;
     public float chargeTime = 0.0f; 
+    [Min(0f), Tooltip("소환물/설치물의 레벨별 유지시간(초). 레벨 지속시간을 사용하는 스폰 모듈에 전달됩니다.")]
+    public float duration;
     public DamageData  damageData;
     public List<int> bonusOptionList;
 

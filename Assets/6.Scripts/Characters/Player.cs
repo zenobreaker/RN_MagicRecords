@@ -328,7 +328,9 @@ public class Player
     {
         if (PlayerManager.Instance != null)
         {
-            CharStatusData data = PlayerManager.Instance.GetCharacterStatus(CharID);
+            CharStatusData data = gameObject.scene.name == "Stage"
+                ? PlayerManager.Instance.GetRunCharacterStatus(CharID)
+                : PlayerManager.Instance.GetCharacterStatus(CharID);
             status.SafeInvoke(v => v.SetStatusData(data));
         }
     }

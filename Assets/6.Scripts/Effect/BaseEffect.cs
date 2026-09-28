@@ -28,6 +28,7 @@ public abstract class BaseEffect
     public int StackCount { get; private set; } = 1;
     public virtual int MaxStack => 1;
     public virtual BuffStackPolicy StackPolicy => BuffStackPolicy.REFRESH_ONLY;
+    public virtual bool ShowSingleStack => false;
 
     public List<IEffectTrigger> Triggers { get; private set; } = new();
     public List<IEffectAction> Actions { get; private set; } = new();
@@ -81,6 +82,13 @@ public abstract class BaseEffect
     }
 
     public bool IsExpired => Duration > 0 && RemainingTime <= 0;
+
+    public bool TryConsumeStacks(int amount)
+    {
+        if (amount <= 0 || StackCount < amount) return false;
+        StackCount -= amount;
+        return true;
+    }
 
     public virtual void Update(float deltaTime)
     {

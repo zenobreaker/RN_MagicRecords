@@ -326,21 +326,26 @@ public sealed class RecordManager : MonoBehaviour
     public void AddRecord(RecordData recordData)
         => GrantRecord(recordData);
 
-    private bool IsRuntimePassiveRecord(RecordData record) => record != null &&
+    // AUGMENT/MODIFY도 PassiveSkill로 구현되므로 연결 데이터만으로 강화형을 판정하지 않습니다.
+    private bool IsRuntimePassiveRecord(RecordData record) => record != null && record.type == RecordType.PASSIVE &&
         recordsDict.TryGetValue(record.id, out var template) && template != null && template.type == RecordType.PASSIVE &&
         template.linkedPassiveSkillID > 0;
 
     private SO_PassiveSkillData ResolveRecordPassiveTemplate(RecordData record)
     {
         if (!IsRuntimePassiveRecord(record)) return null;
-        return AppManager.Instance?.GetExploreManager()?.ResolvePassiveTemplate(recordsDict[record.id].linkedPassiveSkillID);
+        var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
+        return explore.SafeInvoke(manager => manager.ResolvePassiveTemplate(recordsDict[record.id].linkedPassiveSkillID));
     }
 
     public bool IsRewardCandidate(RecordData record)
     {
         if (record == null || HasConflictingRecord(record)) return false;
         if (IsRuntimePassiveRecord(record))
-            return AppManager.Instance?.GetExploreManager()?.CanUpgradePassive(ResolveRecordPassiveTemplate(record)) == true;
+        {
+            var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
+            return explore.SafeInvoke(manager => manager.CanUpgradePassive(ResolveRecordPassiveTemplate(record)));
+        }
         return !recordInventory.Records.Any(owned => owned.id == record.id);
     }
 
@@ -381,7 +386,7 @@ public sealed class RecordManager : MonoBehaviour
         if (recordData == null || HasConflictingRecord(recordData)) return null;
         if (IsRuntimePassiveRecord(recordData))
         {
-            var explore = AppManager.Instance?.GetExploreManager();
+            var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
             var template = ResolveRecordPassiveTemplate(recordData);
             if (explore == null || !explore.GrantPassiveRecord(template)) return null;
             // 강화 레코드는 한 장만 보관하며 중복 획득은 빈 레코드 대신 레벨로 반영합니다.

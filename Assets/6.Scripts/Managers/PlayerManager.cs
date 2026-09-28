@@ -16,6 +16,7 @@ public class PlayerManager :
     }
     // key : char id
     private Dictionary<int, CharStatusData> charStatusDatas = new();
+    private readonly Dictionary<int, CharStatusData> runCharacterStatus = new();
     private Dictionary<int, int> charClass = new();
     private Dictionary<int, CharEquipmentData> charEquipments = new();
     private Dictionary<int, int> charEquippedSkills = new();
@@ -145,6 +146,65 @@ public class PlayerManager :
     {
         charStatusDatas.TryGetValue(charId, out CharStatusData ce);
         return ce;
+    }
+
+    public CharStatusData GetRunCharacterStatus(int charId)
+    {
+        return runCharacterStatus.TryGetValue(charId, out var data) && data != null
+            ? data : GetCharacterStatus(charId);
+    }
+
+    public bool CanLevelUpRunCharacter(int charId)
+    {
+        var data = GetRunCharacterStatus(charId);
+        return data != null && data.level < int.MaxValue;
+    }
+
+    public bool TryLevelUpRunCharacter(int charId)
+    {
+        if (!CanLevelUpRunCharacter(charId)) return false;
+        if (!runCharacterStatus.TryGetValue(charId, out var data) || data == null)
+        {
+            data = Instantiate(GetCharacterStatus(charId));
+            runCharacterStatus[charId] = data;
+        }
+        data.level++;
+        // SetStatusData reuses StatGrowth and preserves the existing stat modifiers.
+        var player = GetCurrentPlayer(charId);
+        if (player != null && player.gameObject.scene.name == "Stage")
+            player.SetStatus();
+        return true;
+    }
+
+    public List<CharacterSaveData> CaptureRunCharacterLevels()
+    {
+        var result = new List<CharacterSaveData>();
+        foreach (var pair in runCharacterStatus)
+            if (pair.Value != null)
+                result.Add(new CharacterSaveData { charId = pair.Key, charLevel = pair.Value.level });
+        return result;
+    }
+
+    public void RestoreRunCharacterLevels(List<CharacterSaveData> levels)
+    {
+        ResetRunCharacterLevels();
+        if (levels == null) return;
+        foreach (var saved in levels)
+        {
+            if (saved == null || runCharacterStatus.ContainsKey(saved.charId)) continue;
+            var template = GetCharacterStatus(saved.charId);
+            if (template == null) continue;
+            var data = Instantiate(template);
+            data.level = Mathf.Max(template.level, saved.charLevel);
+            runCharacterStatus[saved.charId] = data;
+        }
+    }
+
+    public void ResetRunCharacterLevels()
+    {
+        foreach (var data in runCharacterStatus.Values)
+            if (data != null) Destroy(data);
+        runCharacterStatus.Clear();
     }
 
     public bool CanCharacterUseJob(int charId, int jobId)

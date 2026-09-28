@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -86,7 +86,8 @@ public class Module_RapidFire : SkillModule
             ? skill.Runtime.Spawn.OverridePrefabName
             : objectName;
 
-        DamageData finalDamageData = GetEffectiveDamageData(phaseSkill);
+        DamageData finalDamageData = GetEffectiveDamageData(skill);
+        float shotDamageMultiplier = skill.Runtime.DamageMultiplier;
         bool isCrit = (skill != null && skill.Runtime.Combat.IsCritical);
 
         UnityEngine.AI.NavMeshAgent agent = owner.GetComponent<UnityEngine.AI.NavMeshAgent>();
@@ -133,7 +134,7 @@ public class Module_RapidFire : SkillModule
 
                     if (obj != null && obj.TryGetComponent<ISkillEffect>(out var projectile))
                     {
-                        projectile.SetDamageInfo(owner, finalDamageData, attackIsCrit);
+                        projectile.SetDamageInfo(owner, finalDamageData, attackIsCrit, shotDamageMultiplier);
                         projectile.AddIgnore(owner);
                     }
 
@@ -231,9 +232,17 @@ public class Module_RapidFire : SkillModule
             anim.speed = originalAnimSpeed;
     }
 
-    private DamageData GetEffectiveDamageData(PhaseSkill parentPhase)
+    private DamageData GetEffectiveDamageData(ActiveSkill skill)
     {
-        return damageData;
+        if (damageApplyType == DamageApplyType.Override) return damageData;
+        var source = skill?.damageData;
+        if (source == null) return new DamageData();
+        if (damageApplyType != DamageApplyType.Multiply) return source;
+        var result = source.Clone();
+        result.baseDamage *= damageMultiplier;
+        result.statCoefficient *= damageMultiplier;
+        // Runtime multiplier is passed separately to SetDamageInfo, exactly once.
+        return result;
     }
 
     public override void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase)

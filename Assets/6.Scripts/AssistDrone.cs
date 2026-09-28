@@ -22,6 +22,7 @@ public class AssistDrone
     : MonoBehaviour
     , ILifetimeSetup
     , IOwnerSetup
+    , ISpawnActivationHandler
 {
     [Header("Muzzles")]
     [SerializeField] private Transform[] muzzles;
@@ -33,6 +34,24 @@ public class AssistDrone
     private Animator[] anims;
     private CancellationTokenSource cts;
     private CancellationTokenSource lifetimeCts;
+    private float lifetime;
+    private bool spawnActivated;
+    private bool isPoolSpawn;
+    private Transform poolParent;
+    private Sprite lifetimeBuffIcon;
+    private BaseEffect lifetimeBuff;
+    private EffectComponent lifetimeBuffOwner;
+
+    // 소환물별 ID를 사용해 먼저 사라진 드론이 다른 드론의 표시를 지우지 않게 합니다.
+    private sealed class LifetimeBuff : BaseEffect
+    {
+        public LifetimeBuff(int instanceID, float duration, Sprite icon)
+            : base($"AssistGuns:{instanceID}", "어시스트 건즈 유지 중", duration)
+        {
+            Type = EffectType.BUFF;
+            FxIcon = icon;
+        }
+    }
 
     private void Awake() => anims = GetComponentsInChildren<Animator>();
 
@@ -43,9 +62,9 @@ public class AssistDrone
 
     public void HandlePlayerAttack(ActionData actionData, Character attacker)
     {
-        if (actionData == null) return;
+        if (actionData == null || !spawnActivated || !isActiveAndEnabled || attacker != ownerCharacter) return;
 
-        cts?.Cancel();
+        CancelToken(ref cts);
         cts = new CancellationTokenSource();
 
         // 넘어온 식별자(skillID)에 따라 드론의 행동을 완벽하게 분기!
@@ -170,41 +189,114 @@ public class AssistDrone
         ObjectPooler.FinishSpawn(obj); 
     }
 
-    // 메모리 릭 방지
-    private void OnDestroy()
+    private static void CancelToken(ref CancellationTokenSource source)
     {
+        var previous = source;
+        source = null;
+        if (previous == null) return;
+        previous.Cancel();
+        previous.Dispose();
+    }
+
+    private void ReleaseRuntime()
+    {
+        RemoveLifetimeBuff();
+        lifetimeBuffIcon = null;
         if (ownerCharacter != null)
             ownerCharacter.OnAttackExecuted -= HandlePlayerAttack;
+        ownerCharacter = null;
+        spawnActivated = false;
+        lifetime = 0f;
+        CancelToken(ref cts);
+        CancelToken(ref lifetimeCts);
+    }
 
-        cts?.Cancel();
-        cts?.Dispose();
+    private void OnDestroy() => ReleaseRuntime();
 
-        // 오브젝트가 꺼질 때(풀로 돌아갈 때) 안전하게 캔슬
-        lifetimeCts?.Cancel();
-        lifetimeCts?.Dispose();
-        lifetimeCts = null;
+    private void OnDisable()
+    {
+        ReleaseRuntime();
+        if (isPoolSpawn)
+        {
+            gameObject.SetActive(false);
+            transform.SetParent(poolParent, true);
+            ObjectPooler.ReturnToPool(gameObject);
+        }
+    }
+
+    public void SetPoolSpawn(bool pooled)
+    {
+        isPoolSpawn = pooled;
+        poolParent = pooled ? transform.parent : null;
     }
 
     public void SetLifeTime(float time)
     {
-        lifetimeCts?.Cancel();
-        lifetimeCts = new CancellationTokenSource();
+        CancelToken(ref lifetimeCts);
+        lifetime = time;
+        if (spawnActivated) StartLifetime();
+    }
 
-        StartLifetimeTimerAsync(time, lifetimeCts.Token).Forget();
+    public void SetLifetimeBuffIcon(Sprite icon) => lifetimeBuffIcon = icon;
+
+    private void RegisterLifetimeBuff()
+    {
+        RemoveLifetimeBuff();
+        if (ownerCharacter == null || lifetimeBuffIcon == null ||
+            !ownerCharacter.TryGetComponent<EffectComponent>(out var effects)) return;
+
+        lifetimeBuffOwner = effects;
+        lifetimeBuff = new LifetimeBuff(GetInstanceID(), lifetime, lifetimeBuffIcon);
+        EffectManager.Instance.SafeInvoke(manager =>
+            manager.RegisterEffect(ownerCharacter.gameObject, ownerCharacter.gameObject, lifetimeBuff));
+    }
+
+    private void RemoveLifetimeBuff()
+    {
+        lifetimeBuffOwner.SafeInvoke(effects => effects.RemoveEffect(lifetimeBuff));
+        lifetimeBuff = null;
+        lifetimeBuffOwner = null;
+    }
+
+    public void OnSpawnActivated()
+    {
+        if (spawnActivated || !isActiveAndEnabled) return;
+        spawnActivated = true;
+        StartLifetime();
+    }
+
+    private void StartLifetime()
+    {
+        if (float.IsNaN(lifetime) || float.IsInfinity(lifetime) || lifetime <= 0f)
+        {
+            Debug.LogWarning("[AssistDrone] 유효한 스킬 Duration이 없습니다. 소환물을 제거합니다.", this);
+            Despawn();
+            return;
+        }
+        RegisterLifetimeBuff();
+        lifetimeCts = new CancellationTokenSource();
+        StartLifetimeTimerAsync(lifetime, lifetimeCts.Token).Forget();
     }
 
     private async UniTaskVoid StartLifetimeTimerAsync(float duration, CancellationToken token)
     {
-        await UniTask.Delay(TimeSpan.FromSeconds(duration), cancellationToken: token);
+        bool cancelled = await UniTask.Delay(TimeSpan.FromSeconds(duration),
+            ignoreTimeScale: false, cancellationToken: token).SuppressCancellationThrow();
+        if (!cancelled && !token.IsCancellationRequested) Despawn();
+    }
 
-        if (token.IsCancellationRequested) return;
-
-        //ObjectPooler.ReturnToPool(this.gameObject); 
+    private void Despawn()
+    {
+        bool pooled = isPoolSpawn;
+        gameObject.SetActive(false);
+        if (!pooled) Destroy(gameObject);
     }
 
     public void SetupOwner(GameObject owner)
     {
-        ownerCharacter = owner.GetComponent<Character>();
+        if (ownerCharacter != null)
+            ownerCharacter.OnAttackExecuted -= HandlePlayerAttack;
+        ownerCharacter = owner.SafeInvoke(value => value.GetComponent<Character>());
         if(ownerCharacter == null) return;
 
         ownerCharacter.OnAttackExecuted += HandlePlayerAttack;

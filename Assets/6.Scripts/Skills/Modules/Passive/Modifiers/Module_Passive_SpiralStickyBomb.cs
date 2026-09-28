@@ -11,6 +11,8 @@ public sealed class Module_Passive_SpiralStickyBomb : PassiveModule
     public override int TargetSkillID => targetSkillID;
 
     [Header("끈적이 폭탄 설정")]
+    [Tooltip("부착 후 소멸까지의 시간(초). 투사체의 남은 수명이 더 짧으면 먼저 소멸합니다.")]
+    [Min(0.01f)] public float attachedLifetime = 3f;
     //public float tickInterval = 0.2f;    // 다단 히트 간격
     //public float tickDamage = 10f;       // 틱당 데미지
     public float explosionRadius = 3.0f; // 막타 폭발 반경
@@ -40,7 +42,8 @@ public sealed class Module_Passive_SpiralStickyBomb : PassiveModule
             enemyLayer,
             casterSkill.Owner,
             explosionRadius,
-            damageEvent
+            damageEvent,
+            attachedLifetime
         );
 
         // 3. 투사체 본체에 러너 주입! 

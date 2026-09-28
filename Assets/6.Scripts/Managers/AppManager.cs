@@ -258,11 +258,22 @@ public class AppManager
     {
         if (exploreManager == null)
             return;
-
-
+        if (exploreManager.RunStatus == RunStatus.ChapterCleared)
+        {
+            ShowPendingChapterReward();
+            return;
+        }
+        if (exploreManager.RunStatus == RunStatus.FinalRunCleared || exploreManager.IsCurrentNodeCleared) return;
         // 1. ExploreManager에게 결과 전달
         exploreManager.ClearStage(
             result.IsSuccess);
+
+        if (exploreManager.RunStatus == RunStatus.ChapterCleared)
+        {
+            ShowPendingChapterReward();
+            SaveIfDirty();
+            return;
+        }
 
 
         // 2. 결과 UI
@@ -273,7 +284,7 @@ public class AppManager
 
         if (isRunCompletelyFinished)
         {
-            UIManager.Instance?.OpenExploreResultPopUp();
+            UIManager.Instance.SafeInvoke(ui => ui.OpenExploreResultPopUp());
         }
         else
         {
@@ -301,7 +312,8 @@ public class AppManager
 
     private void AcceptReward()
     {
-        if (isProcessingReward)
+        if (isProcessingReward || exploreManager == null || exploreManager.RunStatus == RunStatus.ChapterCleared ||
+            exploreManager.RunStatus == RunStatus.FinalRunCleared)
             return;
 
         isProcessingReward = true;
@@ -311,22 +323,6 @@ public class AppManager
             exploreManager.CurrentState !=
             ExploreState.STAGE_CLEAR)
         {
-            isProcessingReward = false;
-            return;
-        }
-
-
-        // --------------------------------------------------
-        // 전체 탐사 클리어
-        // --------------------------------------------------
-
-        if (exploreManager.AllStageClear)
-        {
-            int chapter =
-                exploreManager.Chapter;
-
-            SetChapterClearReward(chapter);
-
             isProcessingReward = false;
             return;
         }
@@ -570,7 +566,7 @@ public class AppManager
 
     private void HandleStageClear()
     {
-        if (exploreManager.AllStageClear == false)
+        if (exploreManager.AllStageClear == false && exploreManager.RunStatus != RunStatus.ChapterCleared)
         {
             recordManager.SetReceiveRecordFlag();
         }
@@ -1022,8 +1018,61 @@ public class AppManager
 
     public void MoveToNextNodeScene()
     {
+        if (exploreManager != null && exploreManager.RunStatus == RunStatus.ChapterCleared)
+        {
+            ShowPendingChapterReward();
+            return;
+        }
         SceneManager.LoadScene(
             "StageSelectScene");
+    }
+
+    public void ShowPendingChapterReward()
+    {
+        if (exploreManager == null || exploreManager.RunStatus != RunStatus.ChapterCleared ||
+            rewardManager == null || UIManager.Instance == null) return;
+        int clearedChapter = exploreManager.Chapter;
+        var rewards = rewardManager.PrepareChapterRewards(clearedChapter);
+        if (exploreManager.IsFinalChapter)
+        {
+            ReceiveChapterRewardAndContinue(clearedChapter);
+            return;
+        }
+        var popup = UIManager.Instance.OpenUI<UIRewardCardPopUp>(true);
+        popup.SafeInvoke(ui => ui.SetChapterData(clearedChapter, rewards,
+            () => ReceiveChapterRewardAndContinue(clearedChapter)));
+    }
+
+    private void ReceiveChapterRewardAndContinue(int clearedChapter)
+    {
+        if (exploreManager.RunStatus != RunStatus.ChapterCleared || exploreManager.Chapter != clearedChapter) return;
+        if (!rewardManager.ReceiveChapterRewards(clearedChapter, out var grantedRecords)) return;
+        // 지급 상태를 먼저 저장해 확인창에서 종료해도 같은 보상이 중복 지급되지 않게 합니다.
+        exploreManager.CompleteChapterReward(clearedChapter);
+        SaveIfDirty();
+        if (exploreManager.AllStageClear)
+        {
+            UIManager.Instance.SafeInvoke(manager => manager.OpenExploreResultPopUp());
+            return;
+        }
+
+        if (grantedRecords.Count > 0)
+        {
+            var result = UIManager.Instance.SafeInvoke(manager => manager.OpenUI<RecordUI>(true));
+            if (result != null)
+            {
+                System.Action onClosed = null;
+                onClosed = () =>
+                {
+                    result.SafeInvoke(ui => ui.UIClosed -= onClosed);
+                    MoveToNextNodeScene();
+                };
+                result.UIClosed += onClosed;
+                result.SetData(grantedRecords, false, RecordUIMode.VIEW);
+                return;
+            }
+        }
+        MoveToNextNodeScene();
     }
 
 
