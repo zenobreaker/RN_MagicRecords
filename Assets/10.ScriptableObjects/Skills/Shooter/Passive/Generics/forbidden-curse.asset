@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46b10d0a553238744b0cd87f519edeba, type: 3}
   m_Name: forbidden-curse
   m_EditorClassIdentifier: Assembly-CSharp::SO_PassiveSkillData
-  id: 2000
-  skillName: skill_name_fobiddencurse
-  skillDescription: skill_desc_fobiddencurse
+  id: 1200
+  skillName: skill_name_forbidden-curse
+  skillDescription: skill_desc_forbidden-curse
   learnableLevel: 0
   maxLevel: 5
   skillUpgradeCost: 
@@ -52,13 +52,13 @@ MonoBehaviour:
   implementation: 0
   jobID: 0
   Modules:
-  - rid: 9167119419310342252
+  - rid: 9167119434737516625
   references:
     version: 2
     RefIds:
-    - rid: 9167119419310342252
-      type: {class: Module_Passive_DamagePerDebuff, ns: , asm: Assembly-CSharp}
+    - rid: 9167119434737516625
+      type: {class: Module_Passive_ApplyCurseOnHit, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 4
-        damageAmpPerEffect: 0.1
-        damageAmpPerLevel: 0.03
+        chance: 1
+        duration: 5

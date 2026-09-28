@@ -178,6 +178,9 @@ MonoBehaviour:
   - phaseName: "\uC0AC\uACA9"
     isInstant: 0
     modules:
+    - rid: 7012345678900000003
+    - rid: 7012345678900000001
+    - rid: 7012345678900000002
     - rid: 9058063302450741332
     - rid: 25348276825882823
     - rid: 9058063302450741331
@@ -250,3 +253,23 @@ MonoBehaviour:
         triggerTime: 6
         impulseDirection: {x: 0, y: 0, z: 0}
         settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
+    - rid: 7012345678900000001
+      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        maxConsumeCount: 3
+        applyMode: 2
+    - rid: 7012345678900000002
+      type: {class: Module_GainLaserEnergy, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        baseGain: 1
+        gainPerConsumedBullet: 1
+        energyIcon: {fileID: 21300000, guid: c638799056f5eb942a1fe83383f54d01, type: 3}
+    - rid: 7012345678900000003
+      type: {class: Module_ConsumeLaserEnergy, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        energyCost: 10
+        ignoreDefenseBonus: 0.3
+        chargeTimeMultiplier: 1

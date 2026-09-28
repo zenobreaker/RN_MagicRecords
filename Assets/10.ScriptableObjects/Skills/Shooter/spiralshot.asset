@@ -181,6 +181,7 @@ MonoBehaviour:
     - rid: 8682830537020145741
     - rid: 8682830537020145742
     - rid: 25348276825882838
+    - rid: 9167119434737516817
   references:
     version: 2
     RefIds:
@@ -254,3 +255,13 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: SpiralBullet
         baseLifeTime: -1
+    - rid: 9167119434737516817
+      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        maxConsumeCount: 1
+        applyMode: 0

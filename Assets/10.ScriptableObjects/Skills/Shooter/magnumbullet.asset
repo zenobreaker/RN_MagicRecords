@@ -26,6 +26,7 @@ MonoBehaviour:
     cooldown: 12
     castingTime: -1
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 12
@@ -54,6 +55,7 @@ MonoBehaviour:
     cooldown: 10
     castingTime: -1
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 15
@@ -82,6 +84,7 @@ MonoBehaviour:
     cooldown: 8.5
     castingTime: -1
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 17
@@ -110,6 +113,7 @@ MonoBehaviour:
     cooldown: 7
     castingTime: -1
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 19
@@ -138,6 +142,7 @@ MonoBehaviour:
     cooldown: 5
     castingTime: -1
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 21
@@ -179,6 +184,7 @@ MonoBehaviour:
     isInstant: 0
     modules:
     - rid: 9167119102629380212
+    - rid: 9167119455931072512
     - rid: 7840629605693390968
     - rid: 7840629605693390969
     - rid: 7840629605693390967
@@ -187,16 +193,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 9167119102629380212
-      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 1
-        triggerDelay: 0
-        movementRepeatInterval: 0.1
-        executeOncePerPhase: 1
-        useFireIntervalMultiplier: 0
-        maxConsumeCount: 1
-        applyMode: 0
     - rid: 7840629605693390966
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
@@ -235,6 +231,7 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: PurpleBullet
         baseLifeTime: -1
+        useLevelDuration: 0
     - rid: 7840629605693390967
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
@@ -289,3 +286,22 @@ MonoBehaviour:
         spawnAtOwner: 0
         useAllEffectSpawnPoints: 1
         specificEffectSpawnIndices: 
+    - rid: 9167119102629380212
+      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 1
+        useFireIntervalMultiplier: 0
+        maxConsumeCount: 1
+        applyMode: 0
+    - rid: 9167119455931072512
+      type: {class: Module_BulletConsumeDamageBonus, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        bonusPerBullet: 0.1

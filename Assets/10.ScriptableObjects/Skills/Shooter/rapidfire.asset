@@ -21,7 +21,7 @@ MonoBehaviour:
   skillImage: {fileID: 21300000, guid: 38c23e410f444a94ebd02c4b43beb1fe, type: 3}
   leadingSkillList: 
   levelDatas:
-  - range: 0
+  - range: 20
     limitMinCooldown: 2
     cooldown: 15
     castingTime: -1
@@ -49,7 +49,7 @@ MonoBehaviour:
     bonusOptionList: 
     spawnCount: 1
     angle: 0
-  - range: 0
+  - range: 20
     limitMinCooldown: 2
     cooldown: 15
     castingTime: -1
@@ -77,7 +77,7 @@ MonoBehaviour:
     bonusOptionList: 
     spawnCount: 1
     angle: 0
-  - range: 0
+  - range: 20
     limitMinCooldown: 2
     cooldown: 15
     castingTime: -1
@@ -105,7 +105,7 @@ MonoBehaviour:
     bonusOptionList: 
     spawnCount: 1
     angle: 0
-  - range: 0
+  - range: 20
     limitMinCooldown: 2
     cooldown: 15
     castingTime: -1
@@ -175,22 +175,32 @@ MonoBehaviour:
     csp: {fileID: 11400000, guid: ac75165bfa711bd468435c407c1bf2f7, type: 2}
     bCanMove: 0
   phaseList:
-  - phaseName: "\uBC1C\uC0AC"
+  - phaseName: Shot
     isInstant: 0
     modules:
-    - rid: 8682830572024496210
+    - rid: 91001
+    - rid: 91006
+    - rid: 91002
+    - rid: 91003
+    - rid: 91004
+    - rid: 91007
+    - rid: 91005
+    - rid: 9167119434737516818
+  - phaseName: End
+    isInstant: 0
+    modules:
+    - rid: 91008
   references:
     version: 2
     RefIds:
-    - rid: 8682830572024496210
-      type: {class: Module_RapidFire, ns: , asm: Assembly-CSharp}
+    - rid: 91001
+      type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
-        objectName: SharpOrangeBullet
-        spawnPosition: {x: 0, y: 1, z: 1}
-        totalShots: 5
-        fireInterval: 0.25
-        angleBetween: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 1
+        useFireIntervalMultiplier: 0
         actionData:
           subStateName: Skill01
           stateName: Skill
@@ -202,8 +212,19 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           bCanMove: 0
-        syncAnimSpeed: 1
-        damageApplyType: 0
+        restartFromBeginning: 1
+        useMovementAnimation: 0
+        syncFireInterval: 1
+        fireInterval: 0.1
+    - rid: 91002
+      type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 1
+        useFireIntervalMultiplier: 0
+        damageApplyType: 2
         damageMultiplier: 1
         damageData:
           damageType: 0
@@ -225,3 +246,96 @@ MonoBehaviour:
             HitParticlePositionOffset: {x: 0, y: 0, z: 0}
             HitParticleScaleOffset: {x: 1, y: 1, z: 1}
           ignoreDefenseRate: 0
+        spawnPosition: {x: 0, y: 1, z: 1}
+        spawnRotation: {x: 0, y: 0, z: 0}
+        patternType: 0
+        baseSpawnCount: 1
+        baseAngleBetween: 0
+        spawnObj: {fileID: 0}
+        objectName: SharpOrangeBullet
+        baseLifeTime: -1
+    - rid: 91003
+      type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 1
+        useFireIntervalMultiplier: 0
+        effectPrefab: {fileID: 2019486499795581864, guid: 2248359051ce1f943bc5c0e82352b590, type: 3}
+        spawnAtOwner: 0
+        useAllEffectSpawnPoints: 1
+        specificEffectSpawnIndices: 
+    - rid: 91004
+      type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 1
+        useFireIntervalMultiplier: 0
+        soundName: Gun_02
+    - rid: 91005
+      type: {class: Module_PhaseLoop, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 8
+        triggerDelay: 0.1
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 1
+        useFireIntervalMultiplier: 1
+        loopTarget: 0
+        repeatCount: 10
+        targetPhaseIndex: 0
+        completeAction: 0
+        completePhaseIndex: 1
+        useRuntimeTotalShots: 1
+        debugLog: 0
+    - rid: 91006
+      type: {class: Module_DelayEvent, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 1
+        useFireIntervalMultiplier: 0
+        eventType: 0
+        delay: 0
+        floatValue: 0
+        intValue: 0
+        stringValue: 
+        objectValue: {fileID: 0}
+    - rid: 91007
+      type: {class: Module_DelayEvent, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 1
+        useFireIntervalMultiplier: 0
+        eventType: 1
+        delay: 0
+        floatValue: 0
+        intValue: 0
+        stringValue: 
+        objectValue: {fileID: 0}
+    - rid: 91008
+      type: {class: Module_PhaseTransition, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 8
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 1
+        useFireIntervalMultiplier: 0
+        transitionType: 2
+        targetPhaseIndex: 0
+        delayTime: 0
+    - rid: 9167119434737516818
+      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 1
+        useFireIntervalMultiplier: 0
+        maxConsumeCount: 1
+        applyMode: 0

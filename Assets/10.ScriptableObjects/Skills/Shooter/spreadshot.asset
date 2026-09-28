@@ -178,6 +178,8 @@ MonoBehaviour:
   - phaseName: 
     isInstant: 0
     modules:
+    - rid: 7012345678900000001
+    - rid: 7012345678900000002
     - rid: 8682830518195847350
     - rid: 8682830518195847364
     - rid: 25348276825882839
@@ -254,3 +256,14 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: SharpOrangeBullet
         baseLifeTime: -1
+    - rid: 7012345678900000001
+      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        maxConsumeCount: 3
+        applyMode: 2
+    - rid: 7012345678900000002
+      type: {class: Module_BulletConsumeDamageBonus, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        bonusPerBullet: 0.1

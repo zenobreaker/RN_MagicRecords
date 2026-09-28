@@ -178,6 +178,7 @@ MonoBehaviour:
   - phaseName: 
     isInstant: 0
     modules:
+    - rid: 9167119434737516816
     - rid: 8682830549225308248
     - rid: 8682830549225308249
     - rid: 25348276825882837
@@ -254,3 +255,13 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: SplitMotherBullet
         baseLifeTime: -1
+    - rid: 9167119434737516816
+      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        maxConsumeCount: 3
+        applyMode: 0

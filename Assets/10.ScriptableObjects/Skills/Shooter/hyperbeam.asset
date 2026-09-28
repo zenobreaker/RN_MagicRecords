@@ -178,6 +178,7 @@ MonoBehaviour:
   - phaseName: "\uCDA9\uC804"
     isInstant: 0
     modules:
+    - rid: 7012345678900000004
     - rid: 8682830698810441813
     - rid: 9167119120672227468
     - rid: 8682830680103845989
@@ -204,6 +205,13 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 7012345678900000004
+      type: {class: Module_ConsumeLaserEnergy, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        energyCost: 5
+        ignoreDefenseBonus: 0
+        chargeTimeMultiplier: 0.5
     - rid: 25348276825882832
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:

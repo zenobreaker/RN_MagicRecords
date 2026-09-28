@@ -26,6 +26,7 @@ MonoBehaviour:
     cooldown: 40
     castingTime: 0.25
     chargeTime: 0
+    duration: 15
     damageData:
       damageType: 0
       baseDamage: 15
@@ -54,6 +55,7 @@ MonoBehaviour:
     cooldown: 40
     castingTime: 0.25
     chargeTime: 0
+    duration: 20
     damageData:
       damageType: 0
       baseDamage: 17
@@ -82,6 +84,7 @@ MonoBehaviour:
     cooldown: 40
     castingTime: 0.25
     chargeTime: 0
+    duration: 25
     damageData:
       damageType: 0
       baseDamage: 19
@@ -110,6 +113,7 @@ MonoBehaviour:
     cooldown: 40
     castingTime: 0.25
     chargeTime: 0
+    duration: 30
     damageData:
       damageType: 0
       baseDamage: 21
@@ -138,6 +142,7 @@ MonoBehaviour:
     cooldown: 40
     castingTime: 0.25
     chargeTime: 0
+    duration: 35
     damageData:
       damageType: 0
       baseDamage: 23
@@ -263,3 +268,4 @@ MonoBehaviour:
         spawnObj: {fileID: 3606507098463213375, guid: a154784cad37b0545beb0c94f0df3e87, type: 3}
         objectName: 
         baseLifeTime: -1
+        useLevelDuration: 1
