@@ -26,7 +26,7 @@ public sealed class UIRewardCard : UIItemSlot
             receiveButton.onClick.RemoveAllListeners();
     }
 
-    public void Setup(IReward reward)
+    public void Setup(IReward reward, bool canReceive = true)
     {
         this.reward = reward;
 
@@ -39,7 +39,8 @@ public sealed class UIRewardCard : UIItemSlot
         if (itemImage != null)
             itemImage.sprite = reward.Icon;
 
-        received = false; 
+        received = !canReceive;
+        receiveButton.SafeInvoke(button => button.gameObject.SetActive(canReceive));
     }
 
     public override void Refresh()

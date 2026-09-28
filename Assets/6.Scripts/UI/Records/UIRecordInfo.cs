@@ -10,8 +10,12 @@ public class UIRecordInfo : UiBase
     [SerializeField] private TextMeshProUGUI descText;
 
     private RecordData recordData;
+    private BuildEntryViewData buildEntry;
     public void SetData(RecordData recordData)
-    { this.recordData = recordData; }
+    { this.recordData = recordData; buildEntry = null; }
+
+    public void SetBuildEntry(BuildEntryViewData entry)
+    { buildEntry = entry; recordData = null; }
 
     protected override void OnEnable()
     {
@@ -28,6 +32,13 @@ public class UIRecordInfo : UiBase
 
     private void DrawUI()
     {
+        if (buildEntry != null)
+        {
+            if (recordIcon != null) { recordIcon.sprite = buildEntry.Icon; recordIcon.enabled = buildEntry.Icon != null; }
+            if (nameText != null) nameText.text = buildEntry.Name;
+            if (descText != null) descText.text = $"[{buildEntry.Label}]\n{buildEntry.Description}";
+            return;
+        }
         if (recordData == null) return;
 
         Debug.Assert(LocalizationManager.Instance != null);
@@ -35,6 +46,7 @@ public class UIRecordInfo : UiBase
         if (recordIcon != null)
         {
             recordIcon.sprite = recordData.icon;
+            recordIcon.enabled = recordData.icon != null;
         }
 
         if (nameText != null)

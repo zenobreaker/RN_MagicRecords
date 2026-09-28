@@ -119,7 +119,7 @@ public class RecordUI : UIPopUp
 
     private void OnCardClicked(RecordData selectedData)
     {
-        if (rm == null) return;
+        if (rm == null || currentMode == RecordUIMode.VIEW) return;
 
         rm.SelectedRecord(selectedData);
     }

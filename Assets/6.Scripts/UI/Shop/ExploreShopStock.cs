@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public enum ExploreShopKind { Record, SkillSwap, Heal15, Heal60 }
+public enum ExploreShopKind { Record, SkillSwap, Heal15, Heal60, CharacterLevelUp }
 
 [Serializable]
 public sealed class ExploreShopOffer

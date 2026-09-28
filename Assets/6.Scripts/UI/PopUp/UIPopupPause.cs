@@ -8,12 +8,16 @@ using UnityEngine.UI;
 public class UIPopUpPause : UIPopUp
 {
     [SerializeField] protected Button exitButton;
-    [SerializeField] protected Button stageContinueButton; 
+    [SerializeField] protected Button stageContinueButton;
     [SerializeField]  protected UIRecordInventory inventory;
+    [SerializeField] private Button statusButton;
 
     protected override void Awake()
     {
         base.Awake();
+
+        if (statusButton != null)
+            statusButton.onClick.AddListener(() => UIManager.Instance.SafeInvoke(ui => ui.OpenCharacterStatusPopUp()));
 
         if (exitButton != null)
         {
@@ -39,8 +43,8 @@ public class UIPopUpPause : UIPopUp
         PauseManager.RequestPause();
         if (AppManager.Instance != null)
         {
-            inventory?.SetRecordManager(AppManager.Instance.GetRecordManager());
-            inventory?.RefreshUI();
+            inventory.SafeInvoke(ui => ui.SetRecordManager(AppManager.Instance.GetRecordManager()));
+            inventory.SafeInvoke(ui => ui.RefreshUI());
         }
 
         ShowPopUp();

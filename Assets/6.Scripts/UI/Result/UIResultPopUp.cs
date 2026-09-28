@@ -269,6 +269,8 @@ public class UITotalResultPopUp : UIPopUp
         List<RecordData> records = AppManager.Instance?.GetRecordManager()?.GetPossesRecord();
         if(records == null || recordParent == null || recordCard == null) return;
 
+        records.RemoveAll(x =>x == null || x.id <= 0);
+
         UIListDrawer.DrawListToTarget<RecordCard, RecordData>(
             recordParent.transform,
             recordCard,

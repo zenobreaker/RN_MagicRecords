@@ -44,13 +44,14 @@ public class ShopUI : UiBase
 
     private void DrawExploreShop()
     {
-        var explore = app?.GetExploreManager();
-        var stock = explore?.GetShopStock(shopNode);
+        var explore = app.SafeInvoke(value => value.GetExploreManager());
+        var stock = explore.SafeInvoke(value => value.GetShopStock(shopNode));
         if (stock == null) return;
         UIListDrawer.DrawList<UIShopSlot, ExploreShopOffer>(stock.offers, (slot, offer, index) =>
         {
             var record = offer.kind == ExploreShopKind.Record ? app.GetRecordManager().GetShopRecord(offer.recordId) : null;
             string title = record?.recordName ?? (offer.kind == ExploreShopKind.SkillSwap ? "스킬 교체" :
+                offer.kind == ExploreShopKind.CharacterLevelUp ? "캐릭터 레벨업" :
                 offer.kind == ExploreShopKind.Heal15 ? "체력 15% 회복" : "체력 60% 회복");
             slot.gameObject.SetActive(true);
             slot.SetOffer(record?.icon ?? app.GetStageIcon(StageType.Shop), title, offer.price, offer.sold, () => OpenOffer(offer, record, title));
@@ -76,7 +77,9 @@ public class ShopUI : UiBase
                 var popup = UIManager.Instance.OpenUI<UIPopUpShop>(true);
                 offerPopup = popup;
                 if (popup != null) popup.SetOffer(record?.icon ?? app.GetStageIcon(StageType.Shop), title, record?.description ??
-                    "현재 탐사에서 살아 있는 캐릭터들의 최대 체력을 기준으로 회복합니다.", offer.price, () =>
+                    (offer.kind == ExploreShopKind.CharacterLevelUp
+                        ? "탐사 캐릭터의 레벨이 1 증가하고 성장 스탯이 적용됩니다. 이번 탐사에서만 유지됩니다."
+                        : "현재 탐사에서 살아 있는 캐릭터들의 최대 체력을 기준으로 회복합니다."), offer.price, () =>
                     {
                         if (!explore.BuyShopOffer(shopNode, offer)) return false;
                         DrawExploreShop();
@@ -91,11 +94,11 @@ public class ShopUI : UiBase
     {
         var node = shopNode;
         shopNode = null;
-        if (offerPopup != null) UIManager.Instance?.CloseSpecificUI(offerPopup);
+        if (offerPopup != null) UIManager.Instance.SafeInvoke(ui => ui.CloseSpecificUI(offerPopup));
         offerPopup = null;
         // Restore the same prefab for a subsequent lobby use.
         SetCategoryVisible(true);
-        if (node != null) app?.GetExploreManager()?.LeaveShop(node);
+        if (node != null) app.SafeInvoke(value => value.GetExploreManager()).SafeInvoke(explore => explore.LeaveShop(node));
         base.OnDisable();
     }
 

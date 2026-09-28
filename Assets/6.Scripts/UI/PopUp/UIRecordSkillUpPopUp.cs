@@ -73,12 +73,14 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
         shopCommitted = onCommitted;
 
         var app = AppManager.Instance;
-        var setup = app?.GetExploreManager()?.CurrentSetupData;
-        var manager = SkillTreeManager.Instance;
+        var setup = app.SafeInvoke(value => value.GetExploreManager())
+            .SafeInvoke(explore => explore.CurrentSetupData);
+        var manager = SkillManager.Instance;
         var currency = CurrencyManager.Instance;
         var slots = setup == null ? null : app.GetEquippedActiveSkillListByCharID(setup.SelectedCharacterId);
 
-        if (setup == null || manager == null || currency == null || slots == null)
+        if (setup == null || !setup.HasCharacter || !setup.HasClass || manager == null ||
+            SkillTreeManager.Instance == null || currency == null || slots == null)
         {
             UIManager.Instance.SafeInvoke(v => v.ShowToast(Text("ui_skill_event_unavailable", "현재 탐사 스킬 정보를 불러올 수 없습니다.")));
             base.CloseUI(); return;
@@ -91,9 +93,8 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
         currencyManager = currency;
         currencyManager.OnUpdatedCurrency += RefreshUI;
 
-        var skills = shopMode
-            ? SkillManager.Instance.GetRunSkills(character, setup.SelectedClassId)
-            : manager.GetAvailableSkills(setup.SelectedClassId);
+        // Both shops and exploration events edit run-owned copies, never the learned skill tree.
+        var skills = manager.GetRunSkills(character, setup.SelectedClassId);
         session = new SkillEventSession(skills, slots,
             baseUpgradeCost, costPerLevel,
             () => currency.GetCurrency(CurrencyType.EXPOLORE_COIN),
@@ -313,7 +314,7 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
                 if (!isActiveAndEnabled || session != current) return;
                 if (!session.Commit()) { statusText.text = Text("ui_skill_event_commit_failed", "재화 또는 스킬 정보가 변경됐습니다. 다시 확인해주세요."); return; }
                 if (session.PendingCost > 0 || session.ReplacementCount > 0) shopCommitted?.Invoke();
-                AppManager.Instance?.SaveIfDirty();
+                AppManager.Instance.SafeInvoke(value => value.SaveIfDirty());
                 session = null; base.CloseUI();
             }));
     }

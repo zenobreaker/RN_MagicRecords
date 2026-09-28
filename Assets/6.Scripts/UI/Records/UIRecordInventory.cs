@@ -24,34 +24,38 @@ public class UIRecordInventory : UiBase
 
     private void DrawInventory()
     {
-        List<RecordData> list = recordManager?.GetPossesRecord();
+        var list = ExploreBuildViewData.ReadInventory(recordManager);
 
-        UIListDrawer.DrawList<RecordCard, RecordData>(list, (slot, item, index) =>
+        UIListDrawer.DrawList<RecordCard, BuildEntryViewData>(list, (slot, item, index) =>
         {
-            slot.Setup(item, OnRecordClick);
+            slot.SetupBuildEntry(item, () => UIManager.Instance.SafeInvoke(ui => ui.OpenBuildEntryInfoPopUp(item)));
             if (slot.gameObject.activeSelf == false)
                 slot.gameObject.SetActive(true);
-            slot.OnRecordData += OnRecordData;
         },
         slot =>
         {
-            slot.OnRecordData -= OnRecordData;
             slot.gameObject.SetActive(false);
             slot.ClearEvent();
         },
             InitReplaceContentObject,
             SetContentChildObjectsCallback<RecordCard>
         );
-    }
-
-    private void OnRecordClick()
-    {
-   
-    }
-
-    private void OnRecordData(RecordData data)
-    {
-        UIManager.Instance.OpenRecordInfoPopUp(data);
+        // 패시브 추가로 여러 행이 생겨도 기존 ScrollRect에서 모두 볼 수 있게 합니다.
+        if (content != null && content.TryGetComponent<UnityEngine.UI.GridLayoutGroup>(out var grid))
+        {
+            Canvas.ForceUpdateCanvases();
+            var rect = (RectTransform)content.transform;
+            if (rect.rect.width > 0f)
+            {
+                grid.constraint = UnityEngine.UI.GridLayoutGroup.Constraint.FixedColumnCount;
+                grid.constraintCount = Mathf.Max(1, Mathf.FloorToInt(
+                    (rect.rect.width - grid.padding.horizontal + grid.spacing.x) / (grid.cellSize.x + grid.spacing.x)));
+            }
+            int columns = Mathf.Max(1, grid.constraintCount);
+            int rows = Mathf.CeilToInt(list.Count / (float)columns);
+            float height = grid.padding.vertical + rows * grid.cellSize.y + Mathf.Max(0, rows - 1) * grid.spacing.y;
+            rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+        }
     }
 
 }

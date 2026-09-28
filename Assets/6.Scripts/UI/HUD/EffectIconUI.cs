@@ -19,22 +19,22 @@ public class EffectIconUI : MonoBehaviour
             effectImage.sprite = baseEffect.FxIcon;
         }
 
-        if (cooldownImage != null && baseEffect.IsExpired == false)
-        {
-            cooldownImage.fillAmount = baseEffect.RemainingTime / baseEffect.Duration;
-        }
-
-        if (stackCount != null)
-        {
-            stackCount.text = baseEffect.StackCount == 1 ? "" : baseEffect.StackCount.ToString();
-        }
+        RefreshDisplay();
     }
 
     private void Update()
     {
-        if (baseEffect == null) return;
+        RefreshDisplay();
+    }
 
-        if(baseEffect.IsExpired == false)
-         cooldownImage.fillAmount = baseEffect.RemainingTime / baseEffect.Duration;
+    private void RefreshDisplay()
+    {
+        if (baseEffect == null) return;
+        if (cooldownImage != null)
+            cooldownImage.fillAmount = baseEffect.Duration > 0f
+                ? Mathf.Clamp01(baseEffect.RemainingTime / baseEffect.Duration) : 0f;
+        if (stackCount != null)
+            stackCount.text = baseEffect.StackCount > 1 || baseEffect.ShowSingleStack
+                ? baseEffect.StackCount.ToString() : string.Empty;
     }
 }

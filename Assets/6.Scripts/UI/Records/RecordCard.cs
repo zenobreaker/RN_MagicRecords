@@ -31,6 +31,7 @@ public class RecordCard : MonoBehaviour
         nameText.text = data.recordName;
         descText.text = data.description;
         iconImage.sprite = data.icon;
+        iconImage.enabled = data.icon != null;
 
         // 2. 버튼 리스너 초기화 및 재할당
         selectButton.onClick.RemoveAllListeners();
@@ -58,10 +59,22 @@ public class RecordCard : MonoBehaviour
         }
     }
 
+    public void SetupBuildEntry(BuildEntryViewData entry, Action onClick)
+    {
+        myData = null;
+        ClearEvent();
+        if (nameText != null) nameText.text = entry.Name;
+        if (descText != null) descText.text = $"[{entry.Label}]\n{entry.Description}";
+        if (iconImage != null) { iconImage.sprite = entry.Icon; iconImage.enabled = entry.Icon != null; }
+        if (selectFrame != null) selectFrame.gameObject.SetActive(false);
+        if (lockButton != null) lockButton.gameObject.SetActive(false);
+        if (selectButton != null) selectButton.onClick.AddListener(() => onClick?.Invoke());
+    }
+
     public void ClearEvent()
     {
-        selectButton?.onClick.RemoveAllListeners();
-        lockButton?.onClick.RemoveAllListeners();
+        selectButton.SafeInvoke(button => button.onClick.RemoveAllListeners());
+        lockButton.SafeInvoke(button => button.onClick.RemoveAllListeners());
     }
 
     public void Refresh(bool isSelected)

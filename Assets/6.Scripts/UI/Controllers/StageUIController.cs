@@ -54,7 +54,7 @@ public class StageUIController
 
         InitUIMapReplace();
 
-        if (exploreManager.CurrentState != ExploreState.ON_EXPLORE)
+        if (exploreManager.RunStatus == RunStatus.MidRun && exploreManager.CurrentState != ExploreState.ON_EXPLORE)
             exploreManager.ChangeState(ExploreState.ON_EXPLORE);
     }
 
@@ -134,6 +134,11 @@ public class StageUIController
     public void OnRecordInvenButton()
     {
         UIManager.Instance.SafeInvoke(v => v.OpenRecordInvenPopUp());
+    }
+
+    public void OnCharacterStatusButton()
+    {
+        UIManager.Instance.SafeInvoke(v => v.OpenCharacterStatusPopUp());
     }
     #endregion
 }
