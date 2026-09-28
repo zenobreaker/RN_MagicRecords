@@ -2245,7 +2245,7 @@ MonoBehaviour:
     allSkills:
     - {fileID: 11400000, guid: 670a805b3eebd3c46b42647f9365105e, type: 2}
     - {fileID: 11400000, guid: f6b7f2b99ce90da40a0073b767e980f6, type: 2}
-    - {fileID: 11400000, guid: 37d8b70de5477a44d92ce428f8d6ce42, type: 2}
+    - {fileID: 11400000, guid: b46688accadd4cde996e20a197016468, type: 2}
     - {fileID: 11400000, guid: 3c7e39de5436bbd4a9264131f8ae6425, type: 2}
     - {fileID: 11400000, guid: 1af5de8cd065be747b8bfa3e531d0ae7, type: 2}
     - {fileID: 11400000, guid: 9a41ec88b392b394795c4d65036c7ab4, type: 2}
@@ -2320,6 +2320,9 @@ MonoBehaviour:
   records:
   - {fileID: 11400000, guid: 8bc11b6b310f4a4fa2f4810cc801196d, type: 2}
   - {fileID: 11400000, guid: e81c9ece3d7c44d7845c2b4478e332fa, type: 2}
+  - {fileID: 11400000, guid: dc5318ef14f04aa4ca93024134a14c58, type: 2}
+  - {fileID: 11400000, guid: 181545b8bcceb1845af77f036028604b, type: 2}
+  - {fileID: 11400000, guid: d6558a9b7f2e15744903070c9b6a98c6, type: 2}
   - {fileID: 11400000, guid: b43e4c1e976b6c740a8271de1f08cdc9, type: 2}
   - {fileID: 11400000, guid: ddff9e450425b094499c33018d2dda20, type: 2}
   - {fileID: 11400000, guid: d146ca87e838027499ca3d9e611d0f84, type: 2}
@@ -2355,8 +2358,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cc73c9c91a273542a2c97b56f611e2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxChapter: 2
   startingPassiveSettings: {fileID: 11400000, guid: 824d846f8656435687353b7d2bbfc60d, type: 2}
+  maxChapter: 2
 --- !u!114 &7870455255664782143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2619,6 +2622,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56334fd98be0acf49a5c4f30f80b0f83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7860000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6372159647807091890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d96aa24d6a3462dbc0288782c0ab1f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinnerSprite: {fileID: 21300000, guid: b0506978b23a83942822532e46b9c340, type: 3}
+  fadeDuration: 0.25
+  rotationSpeed: 240
+  spinnerSize: {x: 96, y: 96}
 --- !u!1 &6533745263237390980
 GameObject:
   m_ObjectHideFlags: 0
@@ -3536,6 +3555,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jsonAsset: {fileID: 4900000, guid: 0a32fec89b88a694ea6f33cf1eaa3a55, type: 3}
   recordLabel: RecordData
+  spriteLabel: SpriteData
   recordDataJsonAsset: {fileID: 4900000, guid: 0ddfaef4a7c0c2142a4269e0f29ae4ad, type: 3}
 --- !u!114 &2228637529235428537
 MonoBehaviour:
@@ -3550,19 +3570,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jsonAsset: {fileID: 4900000, guid: 9cc0852bf4f7a6e4190edb84ed7a4d72, type: 3}
---- !u!114 &7860000000000000001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6372159647807091890}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d96aa24d6a3462dbc0288782c0ab1f7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  spinnerSprite: {fileID: 21300000, guid: b0506978b23a83942822532e46b9c340, type: 3}
-  fadeDuration: 0.25
-  rotationSpeed: 240
-  spinnerSize: {x: 96, y: 96}

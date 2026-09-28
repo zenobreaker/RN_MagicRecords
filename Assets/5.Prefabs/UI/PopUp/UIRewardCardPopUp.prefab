@@ -432,8 +432,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content: {fileID: 5112141678773866613}
   childObject: {fileID: 3690742409689962297, guid: 0d823e9fac89eb44c8ad8f9ab541f05c, type: 3}
-  popupArea: {fileID: 0}
-  titleText: {fileID: 0}
+  popupArea: {fileID: 1566935047135457420}
+  titleText: {fileID: 7066175631588489254}
+  continueText: {fileID: 6050463006648104796}
 --- !u!1 &4692670412530496873
 GameObject:
   m_ObjectHideFlags: 0
@@ -665,7 +666,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: -6539206676036171529}
         m_TargetAssemblyTypeName: UIRewardCardPopUp, Assembly-CSharp
-        m_MethodName: CloseUI
+        m_MethodName: OnContinueButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -841,7 +842,6 @@ GameObject:
   - component: {fileID: 8202155279613096508}
   - component: {fileID: 2475814053915447992}
   - component: {fileID: 6050463006648104796}
-  - component: {fileID: 3987714126614692860}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -967,19 +967,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &3987714126614692860
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8334215564040338917}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b156cf6708d89242a76e4f30d3cdaec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textKey: ui_reward_popup_exit
 --- !u!1 &8556829328007264592
 GameObject:
   m_ObjectHideFlags: 0
@@ -991,7 +978,6 @@ GameObject:
   - component: {fileID: 8017650629217459220}
   - component: {fileID: 2175502933084226571}
   - component: {fileID: 7066175631588489254}
-  - component: {fileID: 8521355341279427758}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1117,19 +1103,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &8521355341279427758
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8556829328007264592}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b156cf6708d89242a76e4f30d3cdaec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textKey: ui_reward_popup_title
 --- !u!1 &8853904411407939285
 GameObject:
   m_ObjectHideFlags: 0
