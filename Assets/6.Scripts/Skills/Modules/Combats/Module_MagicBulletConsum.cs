@@ -10,6 +10,8 @@ public class Module_MagicBulletConsum : SkillModule
 
     [Tooltip("동시 발사 패턴은 한 공격으로 취급합니다. PerAttack은 연사 순서대로 배정합니다.")]
     public BulletEffectApplyMode applyMode = BulletEffectApplyMode.FirstAttackOnly;
+    [Tooltip("마지막 평타 마탄 사용 패시브를 보유했을 때만 소비합니다.")]
+    public bool requireLastAttackPassive;
 
     public Module_MagicBulletConsum()
     {
@@ -19,6 +21,8 @@ public class Module_MagicBulletConsum : SkillModule
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         if (owner == null || skill?.Runtime?.Combat == null) return;
+        if (requireLastAttackPassive && owner.GetComponent<SkillComponent>()
+            .SafeInvoke(component => component.GetCapability<Module_Passive_LastAttackMagicBullet>()) == null) return;
 
         // 장착 후 패시브를 얻거나 잃을 수 있으므로 공급자는 실행 시 조회합니다.
         var provider = owner.GetComponent<SkillComponent>().SafeInvoke(component => component.GetCapability<IMagicBulletProvider>());

@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
-  m_Name: 6_name_crime
+  m_Name: 1102_magicbullet_finisher
   m_EditorClassIdentifier: 
-  id: 6
-  recordName: record_name_skill_auto_reload
-  description: record_desc_skill_auto_reload
-  icon: {fileID: 21300000, guid: f15ae4c1facb85245ac36f28c93f0d4e, type: 3}
+  id: 1102
+  recordName: record_name_magicbullet_finisher
+  description: record_desc_magicbullet_finisher
+  icon: {fileID: 21300000, guid: b5476360ee3ad6745962f2f58a6176ae, type: 3}
   targetFilter: 1
-  type: 3
+  type: 2
   rarity: 0
   Stats: []
-  linkedPassiveSkillID: 1101
-  mutualExclusionGroup:
+  linkedPassiveSkillID: 1102
+  mutualExclusionGroup: 

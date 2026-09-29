@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46b10d0a553238744b0cd87f519edeba, type: 3}
+  m_Name: magicbulletload-finisher
+  m_EditorClassIdentifier: 
+  id: 1102
+  skillName: record_name_magicbullet_finisher
+  skillDescription: record_desc_magicbullet_finisher
+  learnableLevel: 0
+  maxLevel: 1
+  skillUpgradeCost: 
+  skillImage: {fileID: 21300000, guid: b5476360ee3ad6745962f2f58a6176ae, type: 3}
+  leadingSkillList: 
+  levelDatas: []
+  jobID: 1
+  Modules:
+  - rid: 7840629669724160000
+  references:
+    version: 2
+    RefIds:
+    - rid: 7840629669724160000
+      type: {class: Module_Passive_LastAttackMagicBullet, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1

@@ -99,6 +99,7 @@ MonoBehaviour:
   - phaseName: Default 4
     isInstant: 0
     modules:
+    - rid: 7012345678900000102
     - rid: 1371895004803629164
     - rid: 1371895025776984070
     - rid: 1371895004803629239
@@ -111,6 +112,13 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 7012345678900000102
+      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        maxConsumeCount: 1
+        applyMode: 2
+        requireLastAttackPassive: 1
     - rid: 1371894983370473472
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:

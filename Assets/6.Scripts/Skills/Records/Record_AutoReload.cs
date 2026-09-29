@@ -1,32 +1,20 @@
 using UnityEngine;
 
+// êµ¬í˜• ìƒì„± ê²½ë¡œë„ ê°™ì€ ì‹œê°„ ê°ì†Œ íš¨ê³¼ë¥¼ ì‚¬ìš©í•©ë‹ˆë‹¤.
 public class Record_AutoReload : RecordPassive
 {
-    private float timer = 0;
-    private float reloadInterval = 3f;
-    private IMagicBulletProvider bulletProvider;
-    public Record_AutoReload(SO_RecordData data) : base(data)
-    {
-    }
+    private readonly Module_Passive_AutoReload reloadModifier = new Module_Passive_AutoReload();
+    public Record_AutoReload(SO_RecordData data) : base(data) { }
 
     public override void OnAcquire(GameObject owner)
     {
-        base.OnAcquire(owner); // <- Áß¿ä! ºÎ¸ğÀÇ ·ÎÁ÷À» ¸ÕÀú ½ÇÇà
-        if (owner.TryGetComponent<SkillComponent>(out var skillComp))
-        {
-            bulletProvider = skillComp.GetCapability<IMagicBulletProvider>();
-        }
+        base.OnAcquire(owner);
+        reloadModifier.OnAcquire(owner, 1);
     }
 
-    public override void OnUpdate(float dt)
+    public override void OnLose()
     {
-        if (bulletProvider == null) return;
-
-        timer += dt;
-        if (timer >= reloadInterval)
-        {
-            timer = 0;
-            bulletProvider.Reload(1); 
-        }
+        reloadModifier.OnLose();
+        base.OnLose();
     }
 }

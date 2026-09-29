@@ -24,6 +24,26 @@ public class Passive_MagicBulletLoad
     private Queue<BulletData> bullets;
     private SkillComponent skillComponent;
     private WeaponComponent weaponComponent;
+    private float reloadProgress;
+    public const float BaseReloadInterval = 4f;
+
+    public float ReloadInterval => BaseReloadInterval * (1f -
+        (skillComponent.SafeInvoke(component => component.GetCapability<Module_Passive_AutoReload>())?.Reduction ?? 0f));
+
+    public override void OnUpdate(float dt)
+    {
+        if (owner == null || !owner.activeInHierarchy || dt <= 0f) return;
+        if (bullets.Count >= maxBullets) { reloadProgress = 0f; return; }
+
+        // 비율로 진행도를 보관해 레코드 획득/제거 시 이미 진행한 장전을 유지합니다.
+        reloadProgress += dt / ReloadInterval;
+        while (reloadProgress >= 1f && bullets.Count < maxBullets)
+        {
+            reloadProgress -= 1f;
+            Reload(1);
+        }
+        if (bullets.Count >= maxBullets) reloadProgress = 0f;
+    }
 
 
     public Passive_MagicBulletLoad(int skillID, string skillName, string skillDesc, Sprite skillIcon) 
@@ -79,6 +99,7 @@ public class Passive_MagicBulletLoad
 
     public override void OnAcquire(GameObject owner)
     {
+        reloadProgress = 0f;
         if (owner != null)
             this.owner = owner;
 
@@ -103,14 +124,18 @@ public class Passive_MagicBulletLoad
 
     public override void OnLose()
     {
+        reloadProgress = 0f;
         bullets.Clear();
         NotifyBulletChanged();
      
-        Weapon weapon = weaponComponent?.GetCurrentWeapon();
+        Weapon weapon = weaponComponent.SafeInvoke(component => component.GetCurrentWeapon());
         if (weapon != null)
         {
             weapon.OnLastAttackExecuted -= ExecuteReload;
         }
+        owner = null;
+        skillComponent = null;
+        weaponComponent = null;
     }
 
     public override void OnChangedLevel(int newLevel)
@@ -135,6 +160,7 @@ public class Passive_MagicBulletLoad
     // 탄환 생성 
     private void GenerateBullets() 
     {
+        reloadProgress = 0f;
         bullets.Clear();
 
         for (int i = 1; i <= maxBullets; i++)
@@ -147,7 +173,7 @@ public class Passive_MagicBulletLoad
 
     private void BindLastAttackEvent()
     {
-        Weapon weapon = weaponComponent?.GetCurrentWeapon();
+        Weapon weapon = weaponComponent.SafeInvoke(component => component.GetCurrentWeapon());
         if (weapon != null)
         {
             weapon.OnLastAttackExecuted -= ExecuteReload;
@@ -171,12 +197,12 @@ public class Passive_MagicBulletLoad
 
     private void NotifyBulletInit()
     {
-        skillComponent?.NotifyBulletInit(this.maxBullets);
+        skillComponent.SafeInvoke(component => component.NotifyBulletInit(this.maxBullets));
     }
 
     private void NotifyBulletChanged()
     {
-        skillComponent?.NotifyMagicBulletChanged(this.bullets);
+        skillComponent.SafeInvoke(component => component.NotifyMagicBulletChanged(this.bullets));
     }
 
   

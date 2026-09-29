@@ -1,5 +1,8 @@
 {
   "stringData": [
+    {"key":"record_name_magicbullet_finisher","kr":"마법탄 장전 - 피니시 불릿","en":"Magic Bullet Load - Finishing Bullet"},
+    {"key":"record_desc_magicbullet_finisher","kr":"평타의 마지막 공격에서 마법탄 1발을 소비해 해당 탄환의 효과를 적용합니다. 탄환이 없어도 공격합니다.","en":"The final basic attack consumes one magic bullet and applies its effect. Attacks normally when no bullets remain."},
+    {"key":"skill_desc_magicbulletload","kr":"마법탄을 최대 4/6/7발 장전합니다. 4초마다 마법탄을 1발 자동 장전합니다.","en":"Loads up to 4/6/7 magic bullets. Automatically reloads one bullet every 4 seconds."},
     {
       "key": "currency_run_scrap",
       "kr": "고철 조각",
@@ -1297,8 +1300,8 @@
     },
     {
       "key": "record_desc_skill_auto_reload",
-      "kr": "일정 시간 마다 마법탄환 장전",
-      "en": "Automatically reloads magic bullets at set intervals."
+      "kr": "마법탄 자동 장전 시간이 30% 감소합니다. (4초 → 2.8초)",
+      "en": "Reduces magic bullet auto-reload time by 30% (4s to 2.8s)."
     },
     {
       "key": "record_desc_stat_final_effort",
