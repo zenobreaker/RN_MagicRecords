@@ -17,10 +17,10 @@ MonoBehaviour:
   description: record_desc_stat_crit_inc
   icon: {fileID: 21300000, guid: f21a01589ac3dfb4e80de33fa270194b, type: 3}
   targetFilter: 0
-  type: 1
+  type: 3
   rarity: 0
-  status: 5
-  valueType: 0
-  effectValue: 5
-  triggerEvent: 
-  className: 
+  Stats:
+  - Status: 5
+    ValueType: 0
+    Value: 0.05
+  linkedPassiveSkillID: 0

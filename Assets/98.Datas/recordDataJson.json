@@ -26,9 +26,12 @@
     },
     {
       "id": "5",
-      "recordType": "1",
+      "recordType": "3",
       "targetFilter": "ALL",
-      "rarity": "1"
+      "rarity": "1",
+      "stats": [
+        { "stat": "CRIT_RATIO", "calcType": 0, "value": 0.05 }
+      ]
     },
     {
       "id": "6",

@@ -106,6 +106,14 @@ public class PassiveSystem
         // Legacy stat records have no skill ID (0); keep their reference-based behavior.
         if (skills.Any(s => ReferenceEquals(s, skill) || (skill.SkillID > 0 && s.SkillID == skill.SkillID))) return;
         skills.Add(skill);
+        // 전투 중 획득한 레코드도 다음 스폰까지 기다리지 않고 현재 소유자에게 적용합니다.
+        if (GetRunPassive(jobID, skill.SkillID) == null &&
+            activeOwners.TryGetValue(jobID, out var owner) && owner != null)
+        {
+            skill.OnAcquire(owner);
+            if (IsOverriden(skill.GetType(), "OnUpdate")) updatablePassive.Unique(skill);
+            if (owner.TryGetComponent<StatusComponent>(out var status)) skill.OnApplyStaticEffect(status);
+        }
     }
 
     public void Remove(int jobID, PassiveSkill skill)

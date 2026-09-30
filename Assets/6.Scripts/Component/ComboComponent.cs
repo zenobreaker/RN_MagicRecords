@@ -28,7 +28,6 @@ public class ComboComponent : MonoBehaviour
 
     private WeaponComponent weapon;
     private SkillComponent skill;
-    private MovementComponent movement;
     private Character ownerCharacter;
 
 
@@ -47,7 +46,6 @@ public class ComboComponent : MonoBehaviour
                 weapon.OnWeaponTypeChanged_Combo += OnWeaponTypeChanged_Combo;
 
             skill = ownerCharacter.GetComponent<SkillComponent>();
-            movement = ownerCharacter.GetComponent<MovementComponent>();
         }
 
         inputQueue = new Queue<InputCommand>();
@@ -55,11 +53,14 @@ public class ComboComponent : MonoBehaviour
 
     private void OnDisable()
     {
-        CancelComboTimer();
+        ResetCombo();
     }
 
     public void BreakCombo()
     {
+        // 이동은 선입력만 취소합니다. 진행 중인 타수와 마지막 타격의 입력 제한은 유지합니다.
+        inputQueue?.Clear();
+        if (!bCanComboInput || !CanExecuteNextAction()) return;
         ResetCombo();
     }
 
@@ -96,8 +97,8 @@ public class ComboComponent : MonoBehaviour
     {
         if (newInput == null) return;
 
-        // 평타가 아닌 다른 조작이 들어오면 즉시 콤보 초기화 (1타로 되돌림)
-        if (newInput.InputType != InputCommandType.ACTION)
+        // 이동 입력은 공격 중인 콤보나 마지막 타격의 대기시간을 초기화하지 않습니다.
+        if (newInput.InputType == InputCommandType.SKILL || newInput.InputType == InputCommandType.DASH)
         {
             ResetCombo();
         }
@@ -111,7 +112,7 @@ public class ComboComponent : MonoBehaviour
         }
     }
 
-    private void TryProcess_Move(InputCommand newInput) { }
+    private void TryProcess_Move(InputCommand newInput) => BreakCombo();
     private void TryProcess_Skill(InputCommand newInput)
     {
         skill.SafeInvoke(v => v.UseSkill($"SLOT{newInput.SkillSlotIndex + 1}"));
@@ -123,19 +124,8 @@ public class ComboComponent : MonoBehaviour
 
     private void TryProcess_Action(InputCommand newInput)
     {
-        if (bCanComboInput == false) return;
-
-        // ================================================================
-        // 💡 [핵심 버그 픽스]: 공격 버튼을 누른 순간, 조이스틱이나 방향키를 밀고 있다면 
-        // 즉시 콤보를 끊고 1타부터 나가게 만듭니다!
-        if (movement != null && movement.TargetDirection.magnitude > 0.05f)
-        {
-#if UNITY_EDITOR
-            if (bDebug) Debug.Log("이동 중 공격 입력! 콤보를 1타로 초기화합니다.");
-#endif
-            ResetCombo();
-        }
-        // ================================================================
+        if (!bCanComboInput || currComboObj == null || currComboObj.MaxComboIndex() == 0 ||
+            comboIndex >= currComboObj.MaxComboIndex()) return;
 
         ComboData comboData = currComboObj.GetComboData(comboIndex);
         float currentTime = newInput.TimeStamp;
@@ -146,17 +136,17 @@ public class ComboComponent : MonoBehaviour
 
         lastInputTime = Time.time;
 
-        if (inputQueue.Count > 0 && isResetTimeExceeded && (isWithinLastInputTime || isBuffered) == false)
+        if (CanExecuteNextAction() && isResetTimeExceeded && (isWithinLastInputTime || isBuffered) == false)
         {
             ResetCombo();
         }
 
         bool isFirstInput = lastInputTime < 0 || comboIndex == 0;
 
-        comboInputHandler?.HandleInputEnabled(isFirstInput | isWithinLastInputTime);
-        comboInputHandler?.HandleInputBuffered(isBuffered);
-        comboInputHandler?.HandleInputEnableTime(comboData.LastInputCheckTime);
-        comboInputHandler?.HandleInputBufferTime(comboData.InputBufferTime);
+        comboInputHandler.SafeInvoke(v => v.HandleInputEnabled(isFirstInput || isWithinLastInputTime));
+        comboInputHandler.SafeInvoke(v => v.HandleInputBuffered(isBuffered));
+        comboInputHandler.SafeInvoke(v => v.HandleInputEnableTime(comboData.LastInputCheckTime));
+        comboInputHandler.SafeInvoke(v => v.HandleInputBufferTime(comboData.InputBufferTime));
 
         if (isFirstInput || isWithinLastInputTime || isBuffered)
         {
@@ -229,7 +219,7 @@ public class ComboComponent : MonoBehaviour
             while (currentResetTime > 0)
             {
                 currentResetTime -= Time.deltaTime;
-                comboInputHandler?.HandleInputResetTime(currentResetTime, comboResetTime);
+                comboInputHandler.SafeInvoke(v => v.HandleInputResetTime(currentResetTime, comboResetTime));
                 await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
             }
 
@@ -243,14 +233,14 @@ public class ComboComponent : MonoBehaviour
         CancelComboTimer();
         comboIndex = 0;
 
-        var data = currComboObj?.GetComboData(0);
+        var data = currComboObj != null && currComboObj.MaxComboIndex() > 0 ? currComboObj.GetComboData(0) : null;
         if (data != null) comboResetTime = data.ComboResetTime;
 
         lastInputTime = Time.time;
         bCanComboInput = true;
 
-        inputQueue.Clear();
-        comboInputHandler?.HadleInputReset();
+        inputQueue?.Clear();
+        comboInputHandler.SafeInvoke(v => v.HadleInputReset());
     }
 
     private void CancelComboTimer()
