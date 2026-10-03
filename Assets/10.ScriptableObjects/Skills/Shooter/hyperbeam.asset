@@ -179,6 +179,8 @@ MonoBehaviour:
     isInstant: 0
     modules:
     - rid: 7012345678900000004
+    - rid: 7012345678900000005
+    - rid: 7012345678900000006
     - rid: 8682830698810441813
     - rid: 9167119120672227468
     - rid: 8682830680103845989
@@ -209,9 +211,23 @@ MonoBehaviour:
       type: {class: Module_ConsumeLaserEnergy, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 1
-        energyCost: 5
+        energyCost: 7
         ignoreDefenseBonus: 0
         chargeTimeMultiplier: 0.5
+    - rid: 7012345678900000005
+      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        maxConsumeCount: 3
+        applyMode: 2
+    - rid: 7012345678900000006
+      type: {class: Module_GainLaserEnergy, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        baseGain: 5
+        gainPerConsumedBullet: 1
+        skipIfEnergyConsumed: 1
+        energyIcon: {fileID: 21300000, guid: c638799056f5eb942a1fe83383f54d01, type: 3}
     - rid: 25348276825882832
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:

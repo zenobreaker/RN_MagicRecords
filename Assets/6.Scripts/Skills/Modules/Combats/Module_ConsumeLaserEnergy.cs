@@ -21,11 +21,9 @@ public sealed class Module_ConsumeLaserEnergy : SkillModule
             energyCost <= 0 || !runtime.TryExecuteOnce(this) ||
             !owner.TryGetComponent<EffectComponent>(out var effects)) return;
 
-        // 무충전 모디파이어가 적용되었다면 충전 단축용 에너지는 소비하지 않습니다.
-        if (ignoreDefenseBonus <= 0f && (chargeTimeMultiplier >= 1f ||
-            runtime.Cast.IsInstantCast || runtime.Cast.MaxChargeTime <= 0f)) return;
         if (!effects.TryConsumeStacks(LaserEnergyEffect.EffectID, energyCost)) return;
 
+        runtime.Combat.ConsumedLaserEnergyCount += energyCost;
         runtime.Combat.IgnoreDefenseBonus += Mathf.Clamp01(ignoreDefenseBonus);
         runtime.Cast.ChargeSpeedMultiplier /= Mathf.Clamp(chargeTimeMultiplier, 0.01f, 1f);
     }
