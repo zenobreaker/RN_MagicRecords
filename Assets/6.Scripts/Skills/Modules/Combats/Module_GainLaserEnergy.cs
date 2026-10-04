@@ -21,7 +21,7 @@ public sealed class Module_GainLaserEnergy : SkillModule
         var runtime = skill?.Runtime;
         if (owner == null || runtime?.Combat == null || !runtime.TryExecuteOnce(this)) return;
         if (skipIfEnergyConsumed && runtime.Combat.ConsumedLaserEnergyCount > 0) return;
-        long gain = Math.Max(0, baseGain) +
+        long gain = (long)Math.Max(0, baseGain) + Math.Max(0, runtime.Combat.LaserEnergyGainBonus) +
             (long)runtime.Combat.ConsumedBulletCount * Math.Max(0, gainPerConsumedBullet);
         // Stack은 캐릭터의 EffectComponent가 소유합니다. 모듈에는 누적 상태를 두지 않습니다.
         var effects = EffectManager.Instance;

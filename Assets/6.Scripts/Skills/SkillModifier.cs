@@ -151,6 +151,7 @@ public sealed class CombatContext
     public float FireIntervalMultiplier = 1.0f;
     public float IgnoreDefenseBonus;
     public int ConsumedLaserEnergyCount;
+    public int LaserEnergyGainBonus;
     public float BonusMultipiler = 1.0f;
 
     public float CriticalDamageMultiplier;
