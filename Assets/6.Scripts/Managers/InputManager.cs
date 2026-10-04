@@ -17,6 +17,7 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
+        if (CheatConsoleUI.CapturesInput) return;
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if(UIManager.Instance != null)

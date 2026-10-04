@@ -7,6 +7,21 @@ public class StageReplacer
     private NodeReplacer nodeReplacer;
     private Dictionary<int, MapNodeInfo> nodeInfoDict = new(); // key : node id value : stage
     private float eventChance;
+    private MapNodeInfo cheatUnlockedBoss;
+
+    public bool UnlockFinalBossForCheat()
+    {
+        foreach (var info in nodeInfoDict.Values)
+        {
+            if (info.type != StageType.Boss_Combat || info.isCleared || !IsFinalNode(info.nodeId)) continue;
+            cheatUnlockedBoss = info;
+            return true;
+        }
+        return false;
+    }
+
+    public bool IsBossUnlockedForCheat(int nodeId)
+        => cheatUnlockedBoss != null && !cheatUnlockedBoss.isCleared && cheatUnlockedBoss.nodeId == nodeId;
 
     public StageReplacer()
     {
@@ -20,6 +35,7 @@ public class StageReplacer
     {
         currentChapter = chapter;
         this.eventChance = eventChance;
+        cheatUnlockedBoss = null;
         nodeReplacer ??= new NodeReplacer();
         nodeReplacer.SetMaxNodeLevel(6);
         nodeReplacer?.ClearMap();
@@ -30,6 +46,7 @@ public class StageReplacer
 
     public void ClearStage()
     {
+        cheatUnlockedBoss = null;
         currentChapter = 0;
         nodeReplacer.ClearMap();
     }
@@ -42,6 +59,7 @@ public class StageReplacer
 
     public void RestoreStages(int chapter, MapData mapData, StageNodeData stageNodeData)
     {
+        cheatUnlockedBoss = null;
         currentChapter = chapter;
         if(mapData != null)
         {

@@ -430,6 +430,7 @@ public sealed partial class ExploreManager : MonoBehaviour
     {
         if (RunStatus == RunStatus.ChapterCleared || RunStatus == RunStatus.FinalRunCleared) return false;
         if (bCheat) return true;
+        if (RunStatus == RunStatus.MidRun && stageReplacer.IsBossUnlockedForCheat(targetNodeId)) return true;
         if (targetNodeId == MapNodeID && GetReplacedNodeInfo()?.type == StageType.Shop) return true;
 
         // 1. 현재 노드를 아직 못 깼다면? 

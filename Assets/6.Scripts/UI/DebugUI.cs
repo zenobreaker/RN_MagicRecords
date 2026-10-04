@@ -102,6 +102,7 @@ public class DebugUI : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (CheatConsoleUI.CapturesInput) return;
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             bDebugView = !bDebugView;

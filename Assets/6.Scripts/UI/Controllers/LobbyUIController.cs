@@ -38,7 +38,8 @@ public class LobbyUIController
 
     public void OnOpenShop()
     {
-        UIManager.Instance.OpenUI<ShopUI>();
+        // 로비 상점 임시 잠금.
+        UIManager.Instance?.ShowToast("준비중입니다");
     }
 
     public void OnOpenCharInfo()
@@ -53,7 +54,8 @@ public class LobbyUIController
 
     public void OnOpenEnhanceUI()
     {
-        UIManager.Instance.OpenUI<EnhanceUI>();
+        // 로비 강화 임시 잠금.
+        UIManager.Instance?.ShowToast("준비중입니다");
     }
 
     public void OnOpenInventoryUI()

@@ -73,7 +73,8 @@ public abstract class UiBase : MonoBehaviour
         if (target.transform.childCount >= count)
             return; 
         
-        AddContentObject(target, childObj, count);
+        // 기존 자식은 재사용하고 부족한 수만 추가합니다.
+        AddContentObject(target, childObj, count - target.transform.childCount);
     }
 
     // 부모 오브젝트에 자식 추가하기 

@@ -41,6 +41,11 @@ public sealed class ExploreSkillState
 
     public void Restore(ExploreActiveSkillSaveData saved)
     {
+        // Cheat-granted skills can belong to another tree; resolve their saved IDs as well.
+        foreach (var data in saved.skills ?? new())
+            if (data != null && !skills.ContainsKey(data.skillID) &&
+                SkillTreeManager.Instance?.FindSkillTemplate(data.skillID) is SO_ActiveSkillData template)
+                GetOrAddSkill(template);
         foreach (var data in saved.skills ?? new())
             if (data != null && skills.TryGetValue(data.skillID, out var skill))
             {
@@ -51,5 +56,15 @@ public sealed class ExploreSkillState
         for (int i = 0; i < slots.Count; i++)
             slots[i] = saved.slots != null && i < saved.slots.Count && equipped.Add(saved.slots[i]) &&
                 skills.TryGetValue(saved.slots[i], out var skill) && skill.currentLevel > 0 ? skill : null;
+    }
+
+    public SkillRuntimeData GetOrAddSkill(SO_ActiveSkillData template)
+    {
+        if (!skills.TryGetValue(template.id, out var skill))
+        {
+            skill = new SkillRuntimeData { template = template };
+            skills.Add(template.id, skill);
+        }
+        return skill;
     }
 }

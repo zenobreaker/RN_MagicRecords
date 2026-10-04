@@ -193,4 +193,11 @@ public sealed partial class ExploreManager
             else health.current = HealthPointComponent.HealedValue(health.current, health.maximum, health.maximum * fraction);
         }
     }
+
+    public bool HealPartyForCheat()
+    {
+        if (RunStatus != RunStatus.MidRun || !runHealth.Any(health => health.current > 0)) return false;
+        HealParty(1f);
+        return true;
+    }
 }

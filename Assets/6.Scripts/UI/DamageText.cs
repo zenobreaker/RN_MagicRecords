@@ -46,7 +46,7 @@ public class DamageText : MonoBehaviour
         int finalValue = Mathf.RoundToInt(value);
 
         string colorTag = "FFFFFF"; 
-        if(isCrit)
+        if(isCrit && finalValue > 0)
         {
             colorTag = ColorUtility.ToHtmlStringRGB(critColor);
             Debug.Log("is Critical");
@@ -69,7 +69,7 @@ public class DamageText : MonoBehaviour
         if (text == null) return;
 
         int finalValue = Mathf.RoundToInt(value);
-        bool isCrit = evt.isCrit;
+        bool isCrit = evt.isCrit && finalValue > 0;
 
         string colorTag = "FFFFFF";
         if (isCrit)

@@ -54,7 +54,11 @@ public class RecordUI : UIPopUp
         int index = 0;
         SetContentChildObjectsCallback<RecordCard>(card =>
         {
-            if (index >= options.Count) return;
+            if (index >= options.Count)
+            {
+                card.gameObject.SetActive(false);
+                return;
+            }
             cards.Add(card);
 
             int currentIndex = index;

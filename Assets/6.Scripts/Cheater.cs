@@ -30,6 +30,7 @@ public class Cheater
 
     private void Update()
     {
+        if (CheatConsoleUI.CapturesInput) return;
         // 스턴 테스트 
         if (Input.GetKeyDown(KeyCode.Keypad7))
             Test_Stun();

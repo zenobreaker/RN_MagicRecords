@@ -7,8 +7,13 @@ using UnityEngine;
 [Serializable]
 public class HitData
 {
+    [Tooltip("피해 종류와 독립적인 피격 반응. 미설정 공격은 None입니다.")]
+    public HitReactionType Reaction = HitReactionType.None;
+    [Tooltip("기존 피해 분류 / 피격 모션 테이블 키. 경직 강도를 결정하지 않습니다.")]
     public DamageType DamageType;
+    [Min(0f), Tooltip("Knockback의 수평 속도. 기존 Distance 값을 재사용합니다.")]
     public float Distance;
+    [HideInInspector] // Reserved legacy launch data; airborne is outside this feature.
     public float HeightValue;
     public int StopFrame;
     public int HitImpactIndex;
@@ -31,6 +36,7 @@ public class HitData
     public HitData Clone()
     {
         HitData clone = new HitData();
+        clone.Reaction = Reaction;
         clone.DamageType = DamageType;
         clone.Distance = Distance;
         clone.HeightValue = HeightValue;
@@ -49,7 +55,7 @@ public class HitData
 public class DamageData
 {
     [Header("Power Settings")]
-    public DamageType damageType;
+    [HideInInspector] public DamageType damageType; // Legacy serialized field; use hitData.DamageType.
 
     [Tooltip("스킬 고유의 기본 데미지 (깡뎀)")]
     public float baseDamage = 10.0f;
@@ -58,8 +64,8 @@ public class DamageData
     public float statCoefficient = 0.0f;
 
     [Header("Launch & Down Settings")]
-    public bool bDownable = false;
-    public bool bLauncher = false;
+    [HideInInspector] public bool bDownable = false;
+    [HideInInspector] public bool bLauncher = false;
 
     [Header("Sound")]
     public string SoundName;
@@ -70,7 +76,7 @@ public class DamageData
     public SO_CameraShakePreset csp;
 
     [Header("Hit")]
-    public HitData hitData;
+    public HitData hitData = new HitData();
 
     public float ignoreDefenseRate = 0.0f;
 
@@ -108,7 +114,7 @@ public class DamageData
         clone.SoundName = SoundName;
         clone.impulseDirection = impulseDirection;
         clone.csp = csp;
-        clone.hitData = this.hitData.Clone();
+        clone.hitData = this.hitData?.Clone() ?? new HitData();
         clone.ignoreDefenseRate = this.ignoreDefenseRate;
         return clone;
     }
@@ -223,6 +229,9 @@ public class DamageEvent
 
     public HitData hitData;
 
+    public HitReactionType Reaction => IsDOTEffect() ? HitReactionType.None :
+        hitData?.Reaction ?? HitReactionType.None;
+
     //TODO : 잃은 체력 비례 데미지의 대한 상한 조건이 서로 상이할 경우 사용
     //public List<MissingHPDamageModifier> MissingHPModifiers { get; } = new List<MissingHPDamageModifier>();
     public float MissingHPRatio; // 잃은 체력 비례 데미지
@@ -242,10 +251,8 @@ public class DamageEvent
         MaxHPRatio = 0f;
         DamageAmp = 0f;
 
-        if (hitData != null)
-            this.hitData = hitData;
-        else
-            this.hitData = new();
+        // Each hit owns its snapshot, including when an attack hits several targets.
+        this.hitData = hitData?.Clone() ?? new HitData();
     }
 
     public bool IsDOTEffect()

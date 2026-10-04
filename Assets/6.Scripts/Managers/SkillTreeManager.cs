@@ -178,6 +178,36 @@ public class SkillTreeManager
         data.isUnlocked = true;
     }
 
+    private IEnumerable<SkillTree> GetAllSkillTrees()
+        => (classSkillTreeList ?? new List<SkillTree>())
+            .Concat(onwerSkillTreeList ?? new List<SkillTree>())
+            .Append(commonSkillTree).Where(tree => tree?.allSkills != null).Distinct();
+
+    public SO_SkillData FindSkillTemplate(int skillID)
+        => GetAllSkillTrees().SelectMany(tree => tree.allSkills)
+            .FirstOrDefault(skill => skill != null && skill.id == skillID);
+
+    public int LearnAllSkillsForCheat()
+    {
+        int changed = 0;
+        foreach (var tree in GetAllSkillTrees())
+        {
+            // Common/personal trees may not have been opened in the lobby yet.
+            if (tree.allSkills.Count > 0 && tree.allSkills.All(skill => skill != null && tree.GetSkillRuntimeDataByID(skill.id) == null))
+                tree.Initialize(OnSkillRuntimeDataChanged);
+            foreach (var template in tree.allSkills)
+            {
+                if (template == null || template.maxLevel < 1) continue;
+                var data = tree.GetSkillRuntimeDataByID(template.id);
+                if (data == null || (data.isUnlocked && data.currentLevel > 0)) continue;
+                data.currentLevel = Mathf.Clamp(data.currentLevel, 1, template.maxLevel);
+                data.OpenSkill();
+                changed++;
+            }
+        }
+        return changed;
+    }
+
     public void SetSkillTree(int ownerId, int classId)
     {
         skillTreeByCategoryTable.Clear();

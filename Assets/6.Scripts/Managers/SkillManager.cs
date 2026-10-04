@@ -171,6 +171,27 @@ public class SkillManager : Singleton<SkillManager>
     public List<ExploreActiveSkillSaveData> CaptureRunSkills() =>
         runSkills.Select(pair => pair.Value.Capture(pair.Key)).ToList();
 
+    public bool GainSkillForCheat(Player player, SO_ActiveSkillData template, int slot, int level)
+    {
+        if (player == null || template == null || template.maxLevel < 1 || player.CharID <= 0 || player.JobID <= 0 ||
+            slot < 0 || slot >= SKILL_SLOT_MAX_COUNT || level < 1 || SkillTreeManager.Instance == null ||
+            !player.TryGetComponent<SkillComponent>(out var component)) return false;
+        var activeSkill = template.CreateSkill() as ActiveSkill;
+        if (activeSkill == null) return false;
+        GetRunSkills(player.CharID, player.JobID);
+        var skill = runSkills[player.CharID].GetOrAddSkill(template);
+        var slots = EnsureSlots(player.CharID);
+        int oldSlot = slots.FindIndex(value => value == skill);
+        skill.currentLevel = Mathf.Min(level, template.maxLevel);
+        skill.isUnlocked = true;
+        activeSkill.SetLevel(skill.currentLevel);
+        EquipActiveSkill(player.CharID, slot, skill);
+        if (oldSlot >= 0 && oldSlot != slot)
+            component.SetActiveSkill((SkillSlot)((int)SkillSlot.SLOT1 + oldSlot), null);
+        component.SetActiveSkill((SkillSlot)((int)SkillSlot.SLOT1 + slot), activeSkill);
+        return true;
+    }
+
     public void RestoreRunSkills(List<ExploreActiveSkillSaveData> saved)
     {
         runSkills.Clear();

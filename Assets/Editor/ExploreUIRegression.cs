@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +8,63 @@ using TMPro;
 
 public static class ExploreUIRegression
 {
+    [MenuItem("Tools/Explore UI/Check Archive Record List (Sandbox Play Mode)")]
+    public static void CheckArchiveRecordList()
+    {
+        Require(Application.isPlaying && !string.IsNullOrEmpty(SessionState.GetString("ShopRegression.SaveDirectory", "")),
+            "Requires isolated-save ShopRegression Play Mode.");
+        var manager = AppManager.Instance.GetRecordManager();
+        var choice = AppManager.Instance.GetDataBaseManager().GetEventInfo(1004).eventChoices
+            .Single(value => value.TextKey == "evt_1004_c1");
+        Require(choice.ActionType == EventActionType.RECORD_DRAFT && choice.ActionValue == 10,
+            "Archive recommendation requests ten records");
+        RecordUI popup = null;
+        try
+        {
+            manager.GenerateRewardRecords(3, false);
+            popup = UnityEngine.Object.FindAnyObjectByType<RecordUI>();
+            CheckRecordCards(popup, manager.CurrentOptions);
+            popup.CloseUI();
+
+            EventActionProcessor.Execute(choice);
+            popup = UnityEngine.Object.FindAnyObjectByType<RecordUI>();
+            var archiveOptions = new List<RecordData>(manager.CurrentOptions);
+            CheckRecordCards(popup, archiveOptions);
+            var content = new SerializedObject(popup).FindProperty("content").objectReferenceValue as GameObject;
+            Require(content.transform.childCount == archiveOptions.Count, "Growing the list creates only missing cards");
+
+            popup.SetData(archiveOptions.Take(1).ToList(), false, RecordUIMode.VIEW);
+            CheckRecordCards(popup, archiveOptions.Take(1).ToList());
+            popup.SetData(new List<RecordData>(), false, RecordUIMode.VIEW);
+            CheckRecordCards(popup, new List<RecordData>());
+            popup.SetData(archiveOptions, false, RecordUIMode.DRAFT);
+            CheckRecordCards(popup, archiveOptions);
+            Require(content.transform.childCount == archiveOptions.Count, "Reopening reuses the existing cards");
+            Debug.Log("Archive record list regression passed: 3 -> 10 -> 1 -> 0 -> 10; all visible cards are bound.");
+        }
+        finally
+        {
+            if (popup != null) popup.CloseUI();
+        }
+    }
+
+    private static void CheckRecordCards(RecordUI popup, List<RecordData> expected)
+    {
+        Require(popup != null, "Record popup opened");
+        var visible = popup.GetComponentsInChildren<RecordCard>(true)
+            .Where(card => card.gameObject.activeInHierarchy).ToArray();
+        Require(visible.Length == expected.Count,
+            $"Visible record count matches data: expected {expected.Count}, actual {visible.Length}");
+        for (int index = 0; index < visible.Length; index++)
+        {
+            var fields = new SerializedObject(visible[index]);
+            var name = fields.FindProperty("nameText").objectReferenceValue as TMP_Text;
+            var description = fields.FindProperty("descText").objectReferenceValue as TMP_Text;
+            Require(visible[index].myData == expected[index] && name.text == expected[index].recordName &&
+                description.text == expected[index].description, "Visible card displays its assigned record");
+        }
+    }
+
     [MenuItem("Tools/Explore UI/Validate Popup Assets")]
     public static void ValidateAssets()
     {

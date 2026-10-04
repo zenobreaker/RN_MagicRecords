@@ -159,6 +159,7 @@ public class UIManager : Singleton<UIManager>
     // 💡ESC 처리 로직 통합: 스택 맨 위에 있는 것(팝업이든 UI든)을 하나씩 무조건 닫습니다.
     private void OnCancelPressed(InputAction.CallbackContext context)
     {
+        if (CheatConsoleUI.CapturesInput) return;
         if (SceneLoadingController.IsLoading) return;
         if (openedUIs.Count > 0)
         {
@@ -174,6 +175,7 @@ public class UIManager : Singleton<UIManager>
     // 💡 엔터/스페이스를 눌렀을 때
     private void OnSubmitPressed(InputAction.CallbackContext context)
     {
+        if (CheatConsoleUI.CapturesInput) return;
         if (SceneLoadingController.IsLoading) return;
         // 최상단에 열려있는 팝업이나 UI가 있다면
         if (openedUIs.Count > 0)

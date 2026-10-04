@@ -44,6 +44,7 @@ public sealed class UIStageMapNode : UIMapNode
                 nodeImage.color = new Color(0.3f, 0.3f, 0.3f, 1f); // 어두운 회색 (잠김)
                 break;
             case MapNodeState.Selectable:
+                stageIcon.color = Color.white;
                 nodeImage.color = Color.white; // 원래 색상 (선택 가능!)
                 break;
             case MapNodeState.Current:

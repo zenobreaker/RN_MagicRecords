@@ -70,6 +70,15 @@ public class BattleManager
 
     public void UnreistEnemy(Character character) => enemies.Remove(character);
 
+    public int KillCurrentEnemiesForCheat()
+    {
+        int count = 0;
+        // Death callbacks can unregister enemies while we are iterating.
+        foreach (var character in enemies.ToArray())
+            if (character is Enemy enemy && enemy.KillForCheat()) count++;
+        return count;
+    }
+
     public void RegistPlayer(Character character)
     {
         players.Unique(character);
