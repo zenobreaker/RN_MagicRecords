@@ -26,6 +26,7 @@ MonoBehaviour:
     cooldown: 14
     castingTime: -1
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 10
@@ -36,6 +37,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -54,6 +56,7 @@ MonoBehaviour:
     cooldown: 14
     castingTime: -1
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 14
@@ -64,6 +67,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -82,6 +86,7 @@ MonoBehaviour:
     cooldown: 14
     castingTime: -1
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 17
@@ -92,6 +97,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -110,6 +116,7 @@ MonoBehaviour:
     cooldown: 14
     castingTime: -1
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 19
@@ -120,6 +127,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -138,6 +146,7 @@ MonoBehaviour:
     cooldown: 12
     castingTime: 0
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 20
@@ -148,6 +157,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -195,6 +205,26 @@ MonoBehaviour:
         executeOncePerPhase: 0
         useFireIntervalMultiplier: 0
         soundName: Gun_06
+    - rid: 7012345678900000001
+      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        maxConsumeCount: 3
+        applyMode: 2
+        requireLastAttackPassive: 0
+    - rid: 7012345678900000002
+      type: {class: Module_BulletConsumeDamageBonus, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        bonusPerBullet: 0.1
     - rid: 8682830518195847350
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
@@ -238,8 +268,9 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           hitData:
+            Reaction: 1
             DamageType: 0
-            Distance: 0
+            Distance: 0.25
             HeightValue: 0
             StopFrame: 0
             HitImpactIndex: 0
@@ -256,14 +287,4 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: SharpOrangeBullet
         baseLifeTime: -1
-    - rid: 7012345678900000001
-      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 1
-        maxConsumeCount: 3
-        applyMode: 2
-    - rid: 7012345678900000002
-      type: {class: Module_BulletConsumeDamageBonus, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 1
-        bonusPerBullet: 0.1
+        useLevelDuration: 0

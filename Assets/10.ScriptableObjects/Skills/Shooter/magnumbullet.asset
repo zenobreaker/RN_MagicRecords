@@ -37,6 +37,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 100
         HeightValue: 0
@@ -66,6 +67,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -95,6 +97,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -124,6 +127,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -153,6 +157,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 7
         HeightValue: 0
@@ -213,8 +218,9 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           hitData:
+            Reaction: 2
             DamageType: 0
-            Distance: 0
+            Distance: 1
             HeightValue: 0
             StopFrame: 0
             HitImpactIndex: 0
@@ -296,6 +302,7 @@ MonoBehaviour:
         useFireIntervalMultiplier: 0
         maxConsumeCount: 1
         applyMode: 0
+        requireLastAttackPassive: 0
     - rid: 9167119455931072512
       type: {class: Module_BulletConsumeDamageBonus, ns: , asm: Assembly-CSharp}
       data:

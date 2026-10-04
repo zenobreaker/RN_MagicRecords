@@ -26,6 +26,7 @@ MonoBehaviour:
     cooldown: 20
     castingTime: 0
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 12
@@ -36,6 +37,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -54,6 +56,7 @@ MonoBehaviour:
     cooldown: 20
     castingTime: 0
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 14
@@ -64,6 +67,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -82,6 +86,7 @@ MonoBehaviour:
     cooldown: 20
     castingTime: 0
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 17
@@ -92,6 +97,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -110,6 +116,7 @@ MonoBehaviour:
     cooldown: 20
     castingTime: 0
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 19
@@ -120,6 +127,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -138,6 +146,7 @@ MonoBehaviour:
     cooldown: 20
     castingTime: 0
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 21
@@ -148,6 +157,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -237,6 +247,7 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           hitData:
+            Reaction: 1
             DamageType: 0
             Distance: 0
             HeightValue: 0
@@ -255,6 +266,7 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: SpiralBullet
         baseLifeTime: -1
+        useLevelDuration: 0
     - rid: 9167119434737516817
       type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
       data:
@@ -265,3 +277,4 @@ MonoBehaviour:
         useFireIntervalMultiplier: 0
         maxConsumeCount: 1
         applyMode: 0
+        requireLastAttackPassive: 0

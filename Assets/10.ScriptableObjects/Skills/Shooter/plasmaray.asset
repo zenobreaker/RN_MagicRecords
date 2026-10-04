@@ -26,6 +26,7 @@ MonoBehaviour:
     cooldown: 12
     castingTime: 0
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 17
@@ -36,6 +37,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 10
         HeightValue: 0
@@ -54,6 +56,7 @@ MonoBehaviour:
     cooldown: 12
     castingTime: 0
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 20
@@ -64,6 +67,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -82,6 +86,7 @@ MonoBehaviour:
     cooldown: 11.5
     castingTime: 0
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 23
@@ -92,6 +97,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -110,6 +116,7 @@ MonoBehaviour:
     cooldown: 11
     castingTime: 0
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 26
@@ -120,6 +127,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -138,6 +146,7 @@ MonoBehaviour:
     cooldown: 9
     castingTime: 0
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 29
@@ -148,6 +157,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -185,11 +195,6 @@ MonoBehaviour:
     - rid: 25348276825882823
     - rid: 9058063302450741331
     - rid: 8682830616796856472
-    skillObject: {fileID: 0}
-    objectName: Beam
-    soundName: 
-    spawnPosition: {x: 0, y: 0, z: 0}
-    spwanQuaternion: {x: 0, y: 0, z: 0, w: 1}
   references:
     version: 2
     RefIds:
@@ -197,11 +202,53 @@ MonoBehaviour:
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 5
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         soundName: Laser01
+    - rid: 7012345678900000001
+      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        maxConsumeCount: 3
+        applyMode: 2
+        requireLastAttackPassive: 0
+    - rid: 7012345678900000002
+      type: {class: Module_GainLaserEnergy, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        baseGain: 1
+        gainPerConsumedBullet: 1
+        energyIcon: {fileID: 21300000, guid: c638799056f5eb942a1fe83383f54d01, type: 3}
+        skipIfEnergyConsumed: 1
+    - rid: 7012345678900000003
+      type: {class: Module_ConsumeLaserEnergy, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 1
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        energyCost: 10
+        ignoreDefenseBonus: 0.3
+        chargeTimeMultiplier: 1
     - rid: 8682830616796856472
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -214,8 +261,9 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           hitData:
+            Reaction: 1
             DamageType: 0
-            Distance: 0
+            Distance: 0.2
             HeightValue: 0
             StopFrame: 0
             HitImpactIndex: 0
@@ -232,10 +280,15 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: Beam
         baseLifeTime: -1
+        useLevelDuration: 0
     - rid: 9058063302450741331
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         actionData:
           subStateName: Skill01
           stateName: Skill
@@ -247,30 +300,17 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           bCanMove: 0
+        restartFromBeginning: 0
+        useMovementAnimation: 0
+        syncFireInterval: 0
+        fireInterval: 0.1
     - rid: 9058063302450741332
       type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 6
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         impulseDirection: {x: 0, y: 0, z: 0}
         settings: {fileID: 11400000, guid: 6182419f9dc506445b93807f6fcbde6c, type: 2}
-    - rid: 7012345678900000001
-      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 1
-        maxConsumeCount: 3
-        applyMode: 2
-    - rid: 7012345678900000002
-      type: {class: Module_GainLaserEnergy, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 1
-        baseGain: 1
-        gainPerConsumedBullet: 1
-        skipIfEnergyConsumed: 1
-        energyIcon: {fileID: 21300000, guid: c638799056f5eb942a1fe83383f54d01, type: 3}
-    - rid: 7012345678900000003
-      type: {class: Module_ConsumeLaserEnergy, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 1
-        energyCost: 10
-        ignoreDefenseBonus: 0.3
-        chargeTimeMultiplier: 1

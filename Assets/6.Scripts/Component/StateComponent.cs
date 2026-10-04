@@ -9,7 +9,7 @@ public enum StateType
 /// <summary>
 /// 상태 결정 컴포넌트 
 /// </summary>
-public class StateComponent : MonoBehaviour
+public partial class StateComponent : MonoBehaviour
 {
     private StateType type = StateType.Idle;
     public StateType Type { get => type; }
@@ -28,7 +28,9 @@ public class StateComponent : MonoBehaviour
         statusEffect = GetComponent<StatusEffectComponent>();
         Debug.Assert(statusEffect != null);
 
-        statusEffect.OnStatusEffectChanged += OnStatusEffectChanged;
+        if (statusEffect != null) statusEffect.OnStatusEffectChanged += OnStatusEffectChanged;
+        launch = GetComponent<LaunchComponent>();
+        skills = GetComponent<SkillComponent>();
     }
 
     private void OnDestroy()
@@ -52,11 +54,11 @@ public class StateComponent : MonoBehaviour
     public void SetDeadMode() => ChangeType(StateType.Dead);
     public void SetStopMode() => ChangeType(StateType.Stop);
 
-    // 💡 가장 중요한 부분: 피격 상태 진입 시 외부의 개입 없이 스스로 리액션을 챙깁니다!
-    // DamageHandleComponent에서는 이제 SetDamagedMode(hitData)만 호출하면 됩니다.
+    // Compatibility entry point for existing callers without a DamageEvent.
     public void SetDamagedMode(HitData hitData = null)
     {
-        // 1. 상태를 Damaged로 변경
+        if (DeadMode || StopMode) return;
+        legacyDamageAnimation = true;
         ChangeType(StateType.Damaged);
 
         // 2. 시각적 피격 애니메이션 재생!
@@ -74,17 +76,20 @@ public class StateComponent : MonoBehaviour
         StateType prevType = this.type;
         this.type = type;
 
+        if (type == StateType.Dead || type == StateType.Stop)
+            CancelHitReaction();
+        if (type == StateType.Damaged || type == StateType.Stop || type == StateType.Dead)
+            skills?.CancelCurrentSkill();
+
         OnStateTypeChanged?.Invoke(prevType, type);
     }
 
     private void OnStatusEffectChanged(StatusEffectType oldSE, StatusEffectType newSE)
     {
-        if (statusEffect == null) return;
-
-        bool? movable = statusEffect?.GetMovableCondition();
-        if (movable != null && movable.Value == true)
+        if (statusEffect == null || DeadMode) return;
+        if (!statusEffect.GetMovableCondition())
             SetStopMode();
-        else
+        else if (StopMode)
             SetIdleMode();
     }
 }

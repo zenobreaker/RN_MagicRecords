@@ -36,6 +36,9 @@ public class MovementComponent : MonoBehaviour
     private StatusEffectComponent statusEffect;
     private StateComponent state;
     private Rigidbody rigid;
+    private LaunchComponent launch;
+    private bool IsStateMovementBlocked => state != null &&
+        (state.DamagedMode || state.DeadMode || state.StopMode);
     #endregion
 
 
@@ -61,6 +64,7 @@ public class MovementComponent : MonoBehaviour
         state = GetComponent<StateComponent>();
         visual = GetComponentInChildren<CharacterVisual>();
         rigid = GetComponent<Rigidbody>();
+        launch = GetComponent<LaunchComponent>();
 
         ownerColliders = GetComponentsInChildren<Collider>(); 
 
@@ -103,7 +107,7 @@ public class MovementComponent : MonoBehaviour
     private void Update()
     {
         // 이동 불가거나 대시 중(EvadeMode)일 때는 일반 애니메이션 속도를 0으로!
-        if (!bCanMove || 
+        if (!bCanMove || IsStateMovementBlocked || (launch != null && launch.IsLaunching) ||
             bIsExternalMoving ||
             (state != null && state.EvadeMode))
         {
@@ -137,14 +141,14 @@ public class MovementComponent : MonoBehaviour
     private void FixedUpdate()
     {
         // 외부 이동 중이면 일반 이동 로직을 실행하지 않는다.
-        if (bIsExternalMoving)
+        if (bIsExternalMoving || (launch != null && launch.IsLaunching))
             return;
 
         if (rigid.isKinematic) 
             return;
 
         // 대시 중(EvadeMode)이거나 이동 불가면 일반 걷기 물리 연산을 완벽 차단!
-        if (!bCanMove || (state != null && state.EvadeMode))
+        if (!bCanMove || IsStateMovementBlocked || (state != null && state.EvadeMode))
         {
             // 대시 중이 아닐 때만 멈춤 처리 (대시 중에는 DashRoutine이 물리를 통제함)
             if (state == null || !state.EvadeMode)
@@ -400,7 +404,7 @@ public class MovementComponent : MonoBehaviour
 
     private void OnStatusEffectChanged(StatusEffectType prevType, StatusEffectType newType)
     {
-        bool bNotMovable = (prevType & newType) != 0;
+        bool bNotMovable = statusEffect != null && !statusEffect.GetMovableCondition();
         if (bNotMovable) Stop();
         else Move();
     }

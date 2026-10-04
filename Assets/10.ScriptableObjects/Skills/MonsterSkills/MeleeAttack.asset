@@ -98,7 +98,7 @@ MonoBehaviour:
         triggerTime: 0
         DamageData:
           damageType: 0
-          baseDamage: 10
+          baseDamage: 12
           statCoefficient: 0
           bDownable: 0
           bLauncher: 0
@@ -106,6 +106,7 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           hitData:
+            Reaction: 1
             DamageType: 0
             Distance: 0
             HeightValue: 0

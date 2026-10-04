@@ -23,7 +23,6 @@ public class Enemy
     [SerializeField] private bool isBoss = false;
     public bool Boss { get => isBoss; set { isBoss = value; } }
 
-    private DamageHandleComponent damageHandle;
     private LaunchComponent launch;
 
     protected SkillComponent skill;
@@ -52,13 +51,10 @@ public class Enemy
             index++;
         }
 
-        damageHandle = GetComponent<DamageHandleComponent>();
         launch = GetComponent<LaunchComponent>();
         skill = GetComponent<SkillComponent>();
         weapon = GetComponent<WeaponComponent>();
 
-        Debug.Assert(damageHandle != null);
-        damageHandle.OnDamagedEvent += HandleHitReaction;
     }
 
     protected override void Start()
@@ -123,48 +119,25 @@ public class Enemy
             skill.EndJudgeAttack(e);
     }
 
-    public void OnDamage(GameObject attacker,
-        Weapon causer, Vector3 hitPoint, DamageEvent damageEvent)
+    protected override void OnDamageDeath()
     {
-        if (healthPoint != null && healthPoint.Dead)
-            return;
-
-        damageHandle.SafeInvoke(v => v.OnDamage(attacker, damageEvent));
-
-        // 💡 3. [보스 vs 잡몹 구분] 피격 애니메이션(경직) 처리
-        if (isBoss)
-        {
-            // 보스는 슈퍼아머! 
-            // 체력이 일정 이하로 깎이는 등 특수 조건(그로기)이 아니라면 피격 모션을 생략합니다.
-            // ex) if (IsGroggyConditionMet()) { state?.SetDamagedMode(); visual?.PlayDamagedAnimation(); }
-        }
-        else
-        {
-            // 일반 몬스터는 때릴 때마다 확실한 경직을 줍니다.
-            // 현재 액션을 강제로 끊고 피격 모션으로 전환합니다.
-            // 만약 공격 중이었다면 캔슬!
-            if (bInAction)
-            {
-                End_DoAction();
-            }
-
-            // Look Attacker 
-            LookAttacker(attacker);
-            ApplyLaunch(attacker, causer, damageEvent);
-        }
-
-
-        if (healthPoint.Dead == false)
-            return;
-
-        // Dead..
-        state.SafeInvoke(v => v.SetDeadMode());
         Collider collider = GetComponent<Collider>();
-        collider.isTrigger = true;
+        if (collider != null) collider.isTrigger = true;
         rigidbody.isKinematic = true;
 
         visual.SafeInvoke(v => v.PlayDeadAnimation());
-        HandleDeath().Forget();
+        // OnDisable already cancels invokes, so a pooled reuse cannot inherit this death timer.
+        Invoke(nameof(Dead), 2f);
+    }
+
+    public bool KillForCheat()
+    {
+        if (!isActiveAndEnabled || healthPoint == null || healthPoint.Dead ||
+            state == null || state.DeadMode) return false;
+        healthPoint.Damage(Mathf.Max(1f, healthPoint.GetCurrentHP));
+        state.SetDeadMode();
+        OnDamageDeath();
+        return true;
     }
 
 
@@ -199,24 +172,6 @@ public class Enemy
         }
     }
 
-    public override void End_Damaged()
-    {
-        base.End_Damaged();
-
-        if (state != null)
-            state.SetIdleMode();
-
-
-        if (skill !=null)
-            skill.CancelCurrentSkill();
-    }
-
-    private async UniTaskVoid HandleDeath()
-    {
-        await UniTask.Delay(TimeSpan.FromSeconds(2.0f));
-        Dead();
-    }
-
     protected override void Dead()
     {
         // 이미 파괴 절차에 들어간 객체라면 무시! (Missing 에러 방어)
@@ -228,9 +183,6 @@ public class Enemy
 
     private void ChangeType(StateType prevType, StateType newType)
     {
-        if (newType == StateType.Damaged || newType == StateType.Stop || newType == StateType.Dead)
-            skill?.CancelCurrentSkill();
-
         if (newType == StateType.Dead)
         {
             OnDead?.Invoke(this);
@@ -258,8 +210,7 @@ public class Enemy
     public override void SetGrade(MonsterGrade monsterGrade)
     {
         grade = monsterGrade;
-        if (grade == MonsterGrade.BOSS)
-            isBoss = true;
+        isBoss = grade == MonsterGrade.BOSS;
     }
 
     public override void SetGrade(MonsterData data)
@@ -281,17 +232,4 @@ public class Enemy
             healthPoint.SetMaxHP = statData.hp;
     }
 
-    private void HandleHitReaction(DamageEvent damgeEvent)
-    {
-        if (damgeEvent.IsDOTEffect()) return;
-
-        if (isBoss)
-        {
-
-        }
-        else
-        {
-            state.SafeInvoke(v => v.SetDamagedMode(damgeEvent.hitData));
-        }
-    }
 }

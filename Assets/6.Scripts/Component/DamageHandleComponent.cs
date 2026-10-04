@@ -21,7 +21,16 @@ public class DamageHandleComponent : MonoBehaviour
 
     public void OnDamage(GameObject attacker, DamageEvent damageEvent)
     {
-        if (damageEvent == null) return; 
+        // DOT and legacy callers use the same character death/reaction path.
+        if (character != null)
+            character.OnDamage(attacker, null, transform.position, damageEvent);
+        else
+            ApplyDamage(attacker, damageEvent);
+    }
+
+    internal bool ApplyDamage(GameObject attacker, DamageEvent damageEvent)
+    {
+        if (damageEvent == null || health == null || health.Dead) return false;
 
         OnDamaged?.Invoke();
         BattleManager.Instance.SafeInvoke(v => v.NotifyAttackHit(attacker, this.gameObject, damageEvent));
@@ -38,15 +47,9 @@ public class DamageHandleComponent : MonoBehaviour
         BattleManager.Instance.SafeInvoke(v => v.NotifyAttackHitFinish(attacker, this.gameObject, value));
         ShowDamageText(value, damageEvent);
 
-        // 도트 딜이면 리액션(상태 변경) 없이 종료
-        if(damageEvent.hitData.DamageType == DamageType.DOT_POISON ||
-            damageEvent.hitData.DamageType == DamageType.DOT_BURN ||
-            damageEvent.hitData.DamageType == DamageType.DOT_BLEED)
-        {
-            return; 
-        }
-
-        OnDamagedEvent?.Invoke(damageEvent);
+        // Damage notification only. Character applies the resolved reaction after death checking.
+        if (!damageEvent.IsDOTEffect()) OnDamagedEvent?.Invoke(damageEvent);
+        return true;
     }
 
     private void ShowDamageText(float value, DamageEvent damageEvent)

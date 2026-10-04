@@ -26,6 +26,7 @@ MonoBehaviour:
     cooldown: 0
     castingTime: 0
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 0
@@ -36,6 +37,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -112,13 +114,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 7012345678900000102
-      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 3
-        maxConsumeCount: 1
-        applyMode: 2
-        requireLastAttackPassive: 1
     - rid: 1371894983370473472
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:
@@ -162,8 +157,9 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           hitData:
+            Reaction: 1
             DamageType: 0
-            Distance: 0
+            Distance: 0.5
             HeightValue: 0
             StopFrame: 0
             HitImpactIndex: 0
@@ -180,6 +176,7 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: ThickOrangeBullet
         baseLifeTime: -1
+        useLevelDuration: 0
     - rid: 1371894983370473474
       type: {class: Module_Sound, ns: , asm: Assembly-CSharp}
       data:
@@ -241,8 +238,9 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           hitData:
+            Reaction: 1
             DamageType: 0
-            Distance: 0
+            Distance: 0.5
             HeightValue: 0
             StopFrame: 0
             HitImpactIndex: 0
@@ -259,6 +257,7 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: ThickOrangeBullet
         baseLifeTime: -1
+        useLevelDuration: 0
     - rid: 1371895004803629157
       type: {class: Module_CalcSpawnPosition, ns: , asm: Assembly-CSharp}
       data:
@@ -311,8 +310,9 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           hitData:
+            Reaction: 1
             DamageType: 0
-            Distance: 0
+            Distance: 0.5
             HeightValue: 0
             StopFrame: 0
             HitImpactIndex: 0
@@ -329,6 +329,7 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: ThickOrangeBullet
         baseLifeTime: -1
+        useLevelDuration: 0
     - rid: 1371895004803629160
       type: {class: Module_CalcSpawnPosition, ns: , asm: Assembly-CSharp}
       data:
@@ -408,8 +409,9 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           hitData:
+            Reaction: 1
             DamageType: 0
-            Distance: 0
+            Distance: 1
             HeightValue: 0
             StopFrame: 0
             HitImpactIndex: 0
@@ -426,6 +428,7 @@ MonoBehaviour:
         spawnObj: {fileID: 0}
         objectName: RedBullet
         baseLifeTime: -1
+        useLevelDuration: 0
     - rid: 1371895004803629236
       type: {class: Module_SelectSpawnPoint, ns: , asm: Assembly-CSharp}
       data:
@@ -559,6 +562,17 @@ MonoBehaviour:
         executeOncePerPhase: 0
         useFireIntervalMultiplier: 0
         soundName: Gun_Normal1
+    - rid: 7012345678900000102
+      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 3
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
+        maxConsumeCount: 1
+        applyMode: 2
+        requireLastAttackPassive: 1
     - rid: 9167119102629380179
       type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
       data:

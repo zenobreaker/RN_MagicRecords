@@ -28,8 +28,8 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 7840629657124995211
-      type: {class: Module_Passive_IncreaseBeamRadius, ns: , asm: Assembly-CSharp}
+      type: {class: Module_Passive_LaserEnergyGain, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 3
+        triggerTime: 2
         targetSkillID: 1002
-        bonusRadius: 1
+        bonusGain: 5

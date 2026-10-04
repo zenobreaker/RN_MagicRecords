@@ -16,19 +16,17 @@ public static class DamageCalculator
         bool bFirstHit = false, bool bExtraCrit = false, float multiplier = 1.0f)
     {
         float attack = status.GetStatusValue(StatusType.ATTACK);
-        float critRatio = status.GetStatusValue(StatusType.CRIT_RATIO);
+        float critRatio = Mathf.Clamp01(status.GetStatusValue(StatusType.CRIT_RATIO));
         float critDmg = status.GetStatusValue(StatusType.CRIT_DMG);
         bool crit = false;
 
         float result = data.baseDamage + (attack * data.statCoefficient);
         result *= multiplier;
         
-        crit = bExtraCrit;
-        if (!bExtraCrit)
+        // 배율이 누락된 공격은 일반 피해를 유지하고 치명타로 처리하지 않습니다.
+        if (result > 0f && critDmg > 1f)
         {
-            float v = Random.Range(0.0f, 1.0f);
-            if (v <= critRatio)
-                crit = true;
+            crit = bExtraCrit || (critRatio > 0f && Random.value < critRatio);
         }
 
         if (crit)

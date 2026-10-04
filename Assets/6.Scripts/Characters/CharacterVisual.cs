@@ -26,7 +26,7 @@ public sealed class CharacterVisual : MonoBehaviour
     [SerializeField] private GameObject modelRoot;
 
     [Header("Damage Animation Settings")]
-    [Tooltip("체크 해제 시, 피격 애니메이션을 재생하지 않고 즉시 로직을 종료합니다.")]
+    [Tooltip("체크 해제 시 피격 애니메이션을 생략합니다. 피격 시간은 StateComponent가 관리합니다.")]
     public bool useAnimationEvents = true;
     public string DamageAnimStateName = "Hit";
     public RuntimeAnimatorController baseController;
@@ -160,7 +160,7 @@ public sealed class CharacterVisual : MonoBehaviour
     }
 
     // 💡 2. 피격 애니메이션 재생
-    public void PlayDamageAnimation(HitData data)
+    public void PlayDamageAnimation(HitData data, HitReactionType reaction = HitReactionType.None)
     {
         if (data == null) return;
 
@@ -174,15 +174,28 @@ public sealed class CharacterVisual : MonoBehaviour
 
         if (damageMotionTable == null) return;
 
-        if (overrideController != null && damageMotionTable.TryGetValue(data.DamageType, out List<DamageMotionData> list))
+        // Reuse serialized animation keys without changing the attack snapshot.
+        DamageType motionType = reaction switch
         {
-            if (list.Count > 0 && data.HitImpactIndex < list.Count)
+            HitReactionType.Light => DamageType.NORMAL,
+            HitReactionType.Heavy => DamageType.STRONG,
+            HitReactionType.Knockback => DamageType.KNOCKBACK,
+            _ => data.DamageType,
+        };
+        if (overrideController != null && damageMotionTable.TryGetValue(motionType, out List<DamageMotionData> list))
+        {
+            if (list.Count > 0 && data.HitImpactIndex >= 0 && data.HitImpactIndex < list.Count)
             {
                 overrideController["Hit"] = list[data.HitImpactIndex].damageMotion;
             }
         }
 
-        Animator.SetTrigger(DamageAnimStateName);
+        foreach (var parameter in Animator.parameters)
+        {
+            if (parameter.type != AnimatorControllerParameterType.Trigger || parameter.name != DamageAnimStateName) continue;
+            Animator.SetTrigger(parameter.nameHash);
+            break;
+        }
     }
 
 

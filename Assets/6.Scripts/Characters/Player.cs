@@ -17,7 +17,6 @@ public class Player
     private WeaponComponent weapon;
     private SkillComponent skill;
     [SerializeField] private SO_ActiveSkillData subActionSkill;
-    private DamageHandleComponent damageHandle;
     private LaunchComponent launch;
     private EquipmentComponent equipment;
 
@@ -50,7 +49,6 @@ public class Player
         skill = GetComponent<SkillComponent>();
         Debug.Assert(skill != null);
 
-        damageHandle = GetComponent<DamageHandleComponent>();
         launch = GetComponent<LaunchComponent>();
 
         equipment = GetComponent<EquipmentComponent>();
@@ -134,6 +132,7 @@ public class Player
     protected override void OnDisable()
     {
         base.OnDisable();
+        CancelInvoke(nameof(Dead));
 
         if (state != null)
             state.OnStateTypeChanged -= ChangeType;
@@ -238,45 +237,24 @@ public class Player
 
     public WeaponController GetWeaponController() => weaponController;
 
-    public void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, DamageEvent damageEvent)
+    protected override bool CanReceiveDamage(DamageEvent damageEvent)
     {
-        // 회피 상태일 때의 처리
-        if (state.Type == StateType.Evade)
+        // Existing direct-hit evade rule does not suppress ongoing DOT damage.
+        if (!damageEvent.IsDOTEffect() && state != null && state.EvadeMode)
         {
-            MovableSlower.Instance.Start_Slow(this);
-            return;
+            MovableSlower.Instance.SafeInvoke(v => v.Start_Slow(this));
+            return false;
         }
+        return true;
+    }
 
-        // 1. 에어본/넉백 적용
-        ApplyLaunch(attacker, causer, damageEvent);
-
-        // 2. 데미지 계산 및 적용 
-        // 💡 주의: 이 함수 내부에서 이미 HP를 깎고 state.SetDamagedMode()를 호출합니다!
-        damageHandle.SafeInvoke(v => v.OnDamage(attacker, damageEvent));
-
-        // 3. 살았는지 죽었는지 판단
-        if (healthPoint.Dead == false)
-        {
-            return; // 💡 이미 DamageHandle에서 상태를 Damaged로 바꿨으므로 여기서 또 할 필요 없음!
-        }
-
-        // --- 여기서부터는 죽었을 때의 처리 ---
-        state.SetDeadMode();
-
+    protected override void OnDamageDeath()
+    {
         Collider collider = GetComponent<Collider>();
         if (collider != null) collider.enabled = false;
 
-        // 💡 코루틴 대신 UniTask 호출
-        HandleDeath().Forget();
+        Invoke(nameof(Dead), 1f);
         visual.SafeInvoke(v => v.PlayDeadAnimation());
-    }
-
-    // 💡 IEnumerator -> async UniTaskVoid 로 변경
-    private async UniTaskVoid HandleDeath()
-    {
-        // 1초 대기 (토큰이 없으므로 씬 전환 시 에러 안 나게 주의)
-        await UniTask.Delay(TimeSpan.FromSeconds(1.0f));
-        Dead();
     }
 
     protected override void Dead()
@@ -292,21 +270,6 @@ public class Player
             OnDead?.Invoke(this);
         }
 
-        if (newType == StateType.Damaged || newType == StateType.Stop || newType == StateType.Dead)
-        {
-            // 현재 행동 중(InAction)인 모든 컴포넌트들을 강제로 캔슬시킵니다!
-            if (skill.SafeInvoke(v => v.InAction))
-                skill.CancelCurrentSkill();
-        }
-    }
-
-    public override void End_Damaged()
-    {
-        base.End_Damaged();
-
-        state.SafeInvoke(v => v.SetIdleMode());
-        if (skill.SafeInvoke(v => v.InAction))
-            skill.CancelCurrentSkill();
     }
 
     public void ApplyLaunch(GameObject attacker, Weapon causer, DamageEvent devt)

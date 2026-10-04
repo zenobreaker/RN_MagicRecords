@@ -66,14 +66,15 @@ MonoBehaviour:
         damageMultiplier: 1
         damageData:
           damageType: 0
-          baseDamage: 70
-          statCoefficient: 1
+          baseDamage: 24
+          statCoefficient: 0.15
           bDownable: 0
           bLauncher: 0
           SoundName: 
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           hitData:
+            Reaction: 2
             DamageType: 0
             Distance: 0
             HeightValue: 0

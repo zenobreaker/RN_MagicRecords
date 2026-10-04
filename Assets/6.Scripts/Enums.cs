@@ -119,6 +119,7 @@ public enum StatusType
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Damage 
+// Serialized legacy values are retained for DOT classification and animation tables.
 public enum DamageType
 {
     NORMAL = 0,
@@ -133,6 +134,24 @@ public enum DamageType
     DOT_HATERD,
 
     MAX
+}
+
+public enum HitReactionType
+{
+    None = 0,
+    Light = 1,
+    Heavy = 2,
+    Knockback = 3,
+}
+
+[System.Flags]
+public enum HitReactionResistance
+{
+    None = 0,
+    Light = 1 << 0,
+    Heavy = 1 << 1,
+    Knockback = 1 << 2,
+    All = Light | Heavy | Knockback,
 }
 
 

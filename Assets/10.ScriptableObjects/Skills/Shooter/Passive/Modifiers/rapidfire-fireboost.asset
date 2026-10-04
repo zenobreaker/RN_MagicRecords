@@ -21,6 +21,7 @@ MonoBehaviour:
   skillImage: {fileID: 0}
   leadingSkillList: 
   levelDatas: []
+  implementation: 0
   jobID: 1
   Modules:
   - rid: 7840629927833501776
@@ -33,7 +34,7 @@ MonoBehaviour:
         triggerTime: 2
         targetSkillID: 1005
         bonusCount: 2
-        bonusPrefabName: MagicBullet
+        bonusPrefabName: SharpOrangeBullet
         bonusPrefab: {fileID: 0}
         bonusAngle: 10
         bonusPos: {x: 0, y: 0, z: 0}

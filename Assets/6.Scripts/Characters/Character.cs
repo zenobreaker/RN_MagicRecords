@@ -10,6 +10,7 @@ public class Character
     , IStoppable
     , ISlowable
     , ITeamAgent
+    , IDamagable
 {
 
     protected MonsterGrade grade;
@@ -24,6 +25,7 @@ public class Character
     protected StateComponent state;
     protected HealthPointComponent healthPoint;
     protected StatusComponent status;
+    private DamageHandleComponent damageHandler;
     public StatusComponent Status => status;
 
     protected bool bInAction = false;
@@ -54,6 +56,7 @@ public class Character
 
         state = GetComponent<StateComponent>();
         healthPoint = GetComponent<HealthPointComponent>();
+        damageHandler = GetComponent<DamageHandleComponent>();
         status = GetComponent<StatusComponent>();
         if (status != null && healthPoint != null)
             status.OnSetHealth += healthPoint.SetHealthPoint;
@@ -82,7 +85,30 @@ public class Character
         }
     }
 
-    public virtual void End_Damaged() { bInAction = false; }
+    public virtual void End_Damaged()
+    {
+        // Timed reactions own their completion; late animation events cannot cancel a new skill.
+        if (state != null && state.EndDamageAnimation()) bInAction = false;
+    }
+
+    public virtual void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, DamageEvent damageEvent)
+    {
+        if (damageEvent == null || !isActiveAndEnabled || healthPoint == null || healthPoint.Dead ||
+            (state != null && state.DeadMode) || !CanReceiveDamage(damageEvent)) return;
+        if (damageHandler == null || !damageHandler.ApplyDamage(attacker, damageEvent)) return;
+
+        if (healthPoint.Dead)
+        {
+            if (state != null && state.DeadMode) return;
+            state?.SetDeadMode();
+            OnDamageDeath();
+            return;
+        }
+        state?.ApplyHitReaction(damageEvent, attacker, hitPoint);
+    }
+
+    protected virtual bool CanReceiveDamage(DamageEvent damageEvent) => true;
+    protected virtual void OnDamageDeath() { }
 
 
     #region Team ID 
