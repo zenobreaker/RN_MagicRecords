@@ -1,0 +1,23 @@
+{
+  "name": "com.thewheeler.toolkit",
+  "version": "1.0.0",
+  "displayName": "TheWheeler",
+  "description": "Reusable Unity utilities, animation event editing, environment placement and procedural blend map tools.",
+  "unity": "6000.0",
+  "keywords": ["utilities", "editor", "environment", "animation"],
+  "samples": [
+    {
+      "displayName": "URP Map Blend Shader",
+      "description": "Optional Map Blender shader. Requires Universal RP and Shader Graph 17.x; import only in a URP project.",
+      "path": "Samples~/URPMapBlend"
+    }
+  ],
+  "dependencies": {
+    "com.unity.modules.animation": "1.0.0",
+    "com.unity.modules.imageconversion": "1.0.0",
+    "com.unity.modules.imgui": "1.0.0",
+    "com.unity.modules.jsonserialize": "1.0.0",
+    "com.unity.modules.physics": "1.0.0",
+    "com.unity.modules.ui": "1.0.0"
+  }
+}
