@@ -118,6 +118,7 @@ public static class SkillEventRegression
             Check(strings.stringData.Count(x => x.key == "ui_skill_event_upgrade_confirm" && !string.IsNullOrEmpty(x.kr) && !string.IsNullOrEmpty(x.en)) == 1,
                 "confirmation localization exists exactly once");
             checks += RunShopIsolation();
+            checks += RunDevelopmentLocks();
             Debug.Log($"SKILL_EVENT_REGRESSION_PASS: {checks} checks (draft, commit, cost, cancellation, record eligibility, real JSON, run isolation)");
         }
         finally
@@ -125,6 +126,51 @@ public static class SkillEventRegression
             if (root != null) Object.DestroyImmediate(root);
             foreach (var asset in assets) Object.DestroyImmediate(asset);
         }
+    }
+
+    private static int RunDevelopmentLocks()
+    {
+        var pending = ScriptableObject.CreateInstance<SO_ActiveSkillData>();
+        var ready = ScriptableObject.CreateInstance<SO_ActiveSkillData>();
+        int checks = 0;
+        void Check(bool value, string message)
+        {
+            if (!value) throw new Exception("Development lock regression: " + message);
+            checks++;
+        }
+        try
+        {
+            pending.id = 900001; pending.maxLevel = 5; pending.isDevelopmentLocked = true;
+            ready.id = 900002; ready.maxLevel = 5;
+            var blocked = new SkillRuntimeData { template = pending };
+            blocked.OpenSkill(); blocked.IncreaseSkillLevel(); blocked.SetMaxSkillLevel();
+            Check(!blocked.isUnlocked && blocked.currentLevel == 0, "locked skill cannot unlock or level up");
+            Check(pending.CreateSkill() == null, "locked skill cannot create a combat instance");
+            // Existing saves can contain learned/equipped skills from before the lock.
+            blocked.currentLevel = 4; blocked.isUnlocked = true;
+            var allowed = new SkillRuntimeData { template = ready, currentLevel = 1, isUnlocked = true };
+            var slots = new List<SkillRuntimeData> { blocked, allowed, null, null };
+            var state = new ExploreSkillState(1, new[] { blocked, allowed }, slots);
+            Check(state.Skills.Count == 1 && slots[0] == null && slots[1].GetSkillID() == ready.id,
+                "old locked equipment is removed while implemented skills remain");
+            Check(state.GetOrAddSkill(pending) == null, "saved or cheat lookup cannot reintroduce locked skill");
+            var saved = state.Capture(1); saved.slots[0] = pending.id;
+            state.Restore(saved);
+            Check(slots[0] == null && slots[1] != null, "restoring old slot IDs keeps locked slots empty");
+            var session = new SkillEventSession(new[] { blocked, allowed },
+                new List<SkillRuntimeData> { blocked, allowed, null, null }, 0, 0,
+                () => 1000, _ => true, (_, __) => { });
+            session.PrepareCandidate(pending.id);
+            Check(session.GetSkill(pending.id) == null && !session.CanUpgrade(pending.id) &&
+                !session.TryReplace(2, pending.id, true) && !session.TryEquipOwned(2, pending.id),
+                "draft preview, upgrade, unlock and rearrangement all reject locked skill");
+            Check(session.CanUpgrade(ready.id), "implemented skill can still upgrade");
+            pending.isDevelopmentLocked = false;
+            var unlockedState = new ExploreSkillState(1, new[] { blocked, allowed }, new List<SkillRuntimeData>());
+            Check(unlockedState.Skills.Count == 2, "clearing asset flag restores availability");
+            return checks;
+        }
+        finally { Object.DestroyImmediate(pending); Object.DestroyImmediate(ready); }
     }
 
     private static int RunShopIsolation()
