@@ -30,6 +30,7 @@ public class SO_ActiveSkillDataEditor : Editor
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("id"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("skillName"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("skillDescription"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("isDevelopmentLocked"), new GUIContent("미구현 잠금"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("learnableLevel"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("maxLevel"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("skillUpgradeCost"));
