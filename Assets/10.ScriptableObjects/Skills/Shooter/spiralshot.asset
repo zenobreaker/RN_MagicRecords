@@ -267,6 +267,7 @@ MonoBehaviour:
         objectName: SpiralBullet
         baseLifeTime: -1
         useLevelDuration: 0
+        lifetimeBonusPerBullet: 0.1
     - rid: 9167119434737516817
       type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
       data:
@@ -275,6 +276,6 @@ MonoBehaviour:
         movementRepeatInterval: 0.1
         executeOncePerPhase: 0
         useFireIntervalMultiplier: 0
-        maxConsumeCount: 1
+        maxConsumeCount: 3
         applyMode: 0
         requireLastAttackPassive: 0

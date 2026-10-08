@@ -267,6 +267,7 @@ MonoBehaviour:
         objectName: SplitMotherBullet
         baseLifeTime: -1
         useLevelDuration: 0
+        childRangeBonusPerBullet: 0.1
     - rid: 9167119434737516816
       type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
       data:
