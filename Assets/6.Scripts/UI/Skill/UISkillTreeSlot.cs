@@ -28,6 +28,7 @@ public class UISkillTreeSlot : MonoBehaviour
             return;
 
         skillIcon.sprite = skillData.template.skillImage;
+        skillIcon.color = skillData.IsDevelopmentLocked ? new Color(.4f, .4f, .4f, .65f) : Color.white;
     }
 
     public void OnClick()

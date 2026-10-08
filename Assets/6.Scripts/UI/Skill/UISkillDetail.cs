@@ -53,13 +53,15 @@ public class UISkillDetail : UiBase
         else if(data.template is SO_ActiveSkillData)
             equipButton?.gameObject.SetActive(true);
 
+        if (equipButton != null) equipButton.interactable = !data.IsDevelopmentLocked;
+
     }
 
     private void DrawSkillAcquisition(SkillRuntimeData data)
     {
         if (data == null || skillLevelText == null) return;
 
-        skillLevelText.text = data.currentLevel > 0 ? "습득됨" : "습득 안됨";
+        skillLevelText.text = data.IsDevelopmentLocked ? "미구현 · 잠금" : data.currentLevel > 0 ? "습득됨" : "습득 안됨";
     }
 
     private void DrawSkillDesc(SkillRuntimeData data)
@@ -81,7 +83,7 @@ public class UISkillDetail : UiBase
     public void OnLearnSkill()
     {
         var data = selectedSkillData;
-        if (data?.template == null || data.template.maxLevel < 1 || data.currentLevel > 0) return;
+        if (data?.template == null || data.IsDevelopmentLocked || data.template.maxLevel < 1 || data.currentLevel > 0) return;
         data.currentLevel = 1;
         data.isUnlocked = true;
         data.OnDataChanged?.Invoke(data);
@@ -94,10 +96,15 @@ public class UISkillDetail : UiBase
         if (learnButton == null) return;
         bool learned = selectedSkillData != null && selectedSkillData.currentLevel > 0;
         learnButton.interactable = selectedSkillData?.template != null &&
-            selectedSkillData.template.maxLevel >= 1 && !learned;
+            !selectedSkillData.IsDevelopmentLocked && selectedSkillData.template.maxLevel >= 1 && !learned;
         var label = learnButton.GetComponentInChildren<TMP_Text>(true);
         if (label != null)
         {
+            if (selectedSkillData != null && selectedSkillData.IsDevelopmentLocked)
+            {
+                label.text = "미구현 · 잠금";
+                return;
+            }
             string text = learned ? $"ui_text_learn" : $"ui_text_learned";
             label.text  = LocalizationManager.Instance.SafeInvoke(v => v.GetText(text));
         }
@@ -105,6 +112,11 @@ public class UISkillDetail : UiBase
 
     public void OnEquipSkill()
     {
+        if (selectedSkillData != null && selectedSkillData.IsDevelopmentLocked)
+        {
+            UIManager.Instance.SafeInvoke(v => v.ShowToast("아직 구현되지 않은 스킬입니다."));
+            return;
+        }
         if (selectedSkillData == null)
         {
             UIManager.Instance.SafeInvoke(v => v.ShowToast($"장착할 스킬을 선택해주세요."));

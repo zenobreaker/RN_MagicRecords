@@ -65,6 +65,9 @@ public class Module_SpawnObject : SkillModule
 
     public string objectName;
 
+    [Tooltip("투사체 발사마다 동료 공격을 알립니다. 이 페이즈의 애니메이션 공격 알림은 대체됩니다.")]
+    public bool broadcastAttackOnSpawn;
+
     #endregion
 
 
@@ -76,6 +79,12 @@ public class Module_SpawnObject : SkillModule
     public float baseLifeTime = -1.0f;
     [Tooltip("고정 수명 대신 현재 스킬 레벨의 Duration을 사용합니다.")]
     public bool useLevelDuration;
+
+    [Min(0f), Tooltip("소비한 마탄 1개당 투사체 수명 증가 비율. 0.1 = 10%")]
+    public float lifetimeBonusPerBullet;
+
+    [Min(0f), Tooltip("소비한 마탄 1개당 분열 자탄의 사거리 증가 비율. 속도를 유지하고 자탄 수명을 늘립니다.")]
+    public float childRangeBonusPerBullet;
 
     #endregion
 
@@ -161,6 +170,8 @@ public class Module_SpawnObject : SkillModule
                 isCrit,
                 attackBullets);
         }
+        if (broadcastAttackOnSpawn)
+            owner.BroadcastAttack(skill.actionData, owner);
     }
 
 
@@ -408,6 +419,14 @@ public class Module_SpawnObject : SkillModule
                     out var lifetime))
             {
                 lifetime.SetLifeTime(useLevelDuration ? skill.Runtime.Spawn.Lifetime : baseLifeTime);
+            }
+
+            if (attackBullets.Count > 0)
+            {
+                if (lifetimeBonusPerBullet > 0f && obj.TryGetComponent<AbstractProjectile>(out var projectile))
+                    projectile.ScaleLifeTime(1f + attackBullets.Count * lifetimeBonusPerBullet);
+                if (childRangeBonusPerBullet > 0f && obj.TryGetComponent<SplitMotherProjectile>(out var mother))
+                    mother.SetChildRangeMultiplier(1f + attackBullets.Count * childRangeBonusPerBullet);
             }
 
 

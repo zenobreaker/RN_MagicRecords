@@ -21,6 +21,7 @@ public class SplitMotherProjectile
     private float fireTimer = 0f;
     private float currentSpreadRotation = 0f;
     private float motherSpeedMultiplier = 1f;
+    private float childRangeMultiplier = 1f;
     private bool childHomingEnabled;
     private float childHomingSearchRadius;
     private float childHomingTurnSpeed;
@@ -65,11 +66,18 @@ public class SplitMotherProjectile
         fireTimer = 0f;
         currentSpreadRotation = 0f;
         motherSpeedMultiplier = 1f;
+        childRangeMultiplier = 1f;
         childHomingEnabled = false;
         childHomingTargetOrigin = null;
         cachedChildDamageData = null;
         cachedMultiplier = 1f;
         isCrit = false;
+    }
+
+    public void SetChildRangeMultiplier(float multiplier)
+    {
+        childRangeMultiplier = float.IsNaN(multiplier) || float.IsInfinity(multiplier)
+            ? 1f : Mathf.Max(1f, multiplier);
     }
 
     public void SetMotherSpeedMultiplier(float multiplier)
@@ -115,7 +123,10 @@ public class SplitMotherProjectile
             Quaternion childRotation = Quaternion.Euler(0f, targetAngle, 0f);
 
             // 모탄이 이동 중인 현재 위치에서 사방으로 자탄 생성
-            GameObject childObj = ObjectPooler.SpawnFromPool(childObjectName, transform.position, childRotation);
+            GameObject childObj = ObjectPooler.DeferredSpawnFromPool(childObjectName, transform.position, childRotation);
+
+            if (childObj != null && childObj.TryGetComponent<AbstractProjectile>(out var rangedChild))
+                rangedChild.ScaleLifeTime(childRangeMultiplier);
 
             if (childObj != null && childObj.TryGetComponent<ISkillEffect>(out var childEffect))
             {
@@ -137,6 +148,7 @@ public class SplitMotherProjectile
                         prioritizeHighestGrade: true);
                 }
             }
+            ObjectPooler.FinishSpawn(childObj);
         }
 
         // 다음 분사에서는 이전 전방위 패턴과 겹치지 않는 각도에서 발사합니다.

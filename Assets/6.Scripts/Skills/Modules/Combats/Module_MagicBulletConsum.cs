@@ -5,8 +5,11 @@ using UnityEngine;
 [Serializable]
 public class Module_MagicBulletConsum : SkillModule
 {
-    [Min(0), Tooltip("시전당 최대 소비량. 부족하면 보유한 만큼만 소비하며 스킬 사용을 막지 않습니다.")]
+    [Min(0), Tooltip("1회 최대 소비량. 기본은 시전당, Consume Per Phase를 켜면 페이즈마다 소비합니다. 부족해도 스킬 사용을 막지 않습니다.")]
     public int maxConsumeCount = 1;
+
+    [Tooltip("반복 발사 페이즈마다 소비합니다. 발사 모듈보다 앞에 배치하세요.")]
+    public bool consumePerPhase;
 
     [Tooltip("동시 발사 패턴은 한 공격으로 취급합니다. PerAttack은 연사 순서대로 배정합니다.")]
     public BulletEffectApplyMode applyMode = BulletEffectApplyMode.FirstAttackOnly;
@@ -26,7 +29,13 @@ public class Module_MagicBulletConsum : SkillModule
 
         // 장착 후 패시브를 얻거나 잃을 수 있으므로 공급자는 실행 시 조회합니다.
         var provider = owner.GetComponent<SkillComponent>().SafeInvoke(component => component.GetCapability<IMagicBulletProvider>());
-        skill.Runtime.Combat.ConsumeMagicBullets(provider, maxConsumeCount, applyMode);
+        if (consumePerPhase)
+        {
+            if (!skill.IsActive || !skill.IsPhaseRunning || skill.IsEnding) return;
+            skill.Runtime.Combat.ConsumeMagicBulletsForPhase(provider, maxConsumeCount, applyMode, skill.PhaseVersion);
+        }
+        else
+            skill.Runtime.Combat.ConsumeMagicBullets(provider, maxConsumeCount, applyMode);
     }
 }
 

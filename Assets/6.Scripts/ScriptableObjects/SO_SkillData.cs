@@ -31,6 +31,8 @@ public class SO_SkillData : ScriptableObject
     public int id;
     public string skillName;
     public string skillDescription;
+    [Tooltip("미구현 스킬의 습득, 장착, 탐사 중 획득을 잠급니다. 구현 완료 후 해제하세요.")]
+    public bool isDevelopmentLocked;
     public int learnableLevel; 
     public int maxLevel;
     public int[] skillUpgradeCost;

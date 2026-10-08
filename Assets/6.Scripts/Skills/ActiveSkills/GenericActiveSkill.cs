@@ -150,7 +150,10 @@ public class GenericActiveSkill : ActiveSkill
     public override void Begin_JudgeAttack(AnimationEvent e)
     {
         if (!IsActive || !IsPhaseRunning || IsEnding) return;
-        base.Begin_JudgeAttack(e);
+        // Spawn-driven attacks notify companions at the shot itself, not again from animation/delay events.
+        bool broadcastOnSpawn = phaseModules.TryGetValue(phaseIndex, out var modules) &&
+            modules.Exists(module => module is Module_SpawnObject spawn && spawn.broadcastAttackOnSpawn);
+        if (!broadcastOnSpawn) base.Begin_JudgeAttack(e);
         phaseSkill?.BeginJudgeAttack(ownerCharacter, this);
         NotifyModules(phaseIndex, SkillTriggerTime.OnJudgeAttack);
     }

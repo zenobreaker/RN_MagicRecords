@@ -52,6 +52,14 @@ public abstract class AbstractProjectile
         curLife = life;
     }
 
+    // Spawn-time scaling preserves configured overrides and the prefab default for pool reuse.
+    public void ScaleLifeTime(float multiplier)
+    {
+        if (life < 0f || multiplier <= 0f || float.IsNaN(multiplier) || float.IsInfinity(multiplier)) return;
+        float scaledLife = life * multiplier;
+        if (!float.IsInfinity(scaledLife)) SetLifeTime(scaledLife);
+    }
+
     // 💡 [핵심] 공통 생명주기 처리는 부모가 알아서 다 합니다.
     protected override void OnEnable()
     {

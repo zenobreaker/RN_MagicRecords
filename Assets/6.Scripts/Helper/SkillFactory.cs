@@ -9,7 +9,7 @@ public static class SkillFactory
 
     public static Skill CreateSkill(SO_SkillData data)
     {
-        if(data == null) return null;
+        if(data == null || data.isDevelopmentLocked) return null;
 
         // 1. 패시브 데이터 인 경우 (기존 방식) 
         if( data is SO_PassiveSkillData passiveData)

@@ -70,6 +70,10 @@ public class AssistDrone
         // 넘어온 식별자(skillID)에 따라 드론의 행동을 완벽하게 분기!
         switch (actionData.droneReactionType)
         {
+            case DroneAttackType.RapidFire:
+                // Each owner shot emits one event, so do not start an independent burst or delay it.
+                DroneRapidFire(attacker);
+                break;
             case DroneAttackType.Normal:
                 DroneNormalAttackAsync(actionData, attacker, cts.Token).Forget();
                 break;
@@ -108,31 +112,12 @@ public class AssistDrone
         }
     }
 
-    private async UniTaskVoid DroneRapidFireAsync(ActionData data, Character attacker, CancellationToken token)
+    private void DroneRapidFire(Character attacker)
     {
-        try
-        {
-            // 드론 전용 연사 (예: 5발 다다다닥)
-            for (int i = 0; i < 5; i++)
-            {
-                if (token.IsCancellationRequested) return;
-                
-                foreach (var anim in anims)
-                    anim.SetTrigger("Fire");
-
-                foreach (var muzzle in muzzles)
-                {
-                    SpawnProjectile(droneNormalProj, muzzle, attacker, isNormalProjectile: true);
-                }
-
-                // 0.1초 간격 연사
-                await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: token);
-            }
-        }
-        finally
-        {
-            //anim?.SetBool("IsRapidFiring", false);
-        }
+        foreach (var anim in anims)
+            anim.SetTrigger("Fire");
+        foreach (var muzzle in muzzles)
+            SpawnProjectile(droneNormalProj, muzzle, attacker, isNormalProjectile: true);
     }
 
     private async UniTaskVoid DroneLaserAttackAsync(ActionData data, Character attacker, CancellationToken token)

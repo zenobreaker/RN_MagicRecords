@@ -164,6 +164,19 @@ public sealed class CombatContext
     public bool HasConsumedBullets => ConsumedBulletCount > 0;
     private bool magicBulletsConsumed;
     private int nextBulletAttack;
+    private int magicBulletPhaseVersion = -1;
+
+    public void ConsumeMagicBulletsForPhase(IMagicBulletProvider provider, int maxCount,
+        BulletEffectApplyMode mode, int phaseVersion)
+    {
+        if (magicBulletPhaseVersion == phaseVersion) return;
+        magicBulletPhaseVersion = phaseVersion;
+        // A new shot must not reuse the previous shot's payload, even when the magazine is empty.
+        ConsumedBullets = Array.Empty<BulletData>();
+        nextBulletAttack = 0;
+        magicBulletsConsumed = false;
+        ConsumeMagicBullets(provider, maxCount, mode);
+    }
 
     public void ConsumeMagicBullets(IMagicBulletProvider provider, int maxCount, BulletEffectApplyMode mode)
     {

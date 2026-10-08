@@ -10,6 +10,7 @@ public class SkillRuntimeData
     public SO_SkillData template; // 어떤 스킬의 템플릿인지 참조
     public int currentLevel;    // 플레이어가 배운 현재 레벨
     public bool isUnlocked;     // 해금 여부
+    public bool IsDevelopmentLocked => template != null && template.isDevelopmentLocked;
 
     public Action<SkillRuntimeData> OnDataChanged;
 
@@ -42,6 +43,7 @@ public class SkillRuntimeData
 
     public void OpenSkill()
     {
+        if (IsDevelopmentLocked) return;
         isUnlocked = true;
 
         OnDataChanged?.Invoke(this);
@@ -49,6 +51,7 @@ public class SkillRuntimeData
 
     public void IncreaseSkillLevel()
     {
+        if (IsDevelopmentLocked) return;
         currentLevel = Mathf.Clamp(currentLevel + 1, 0, GetMaxSkillLevel());
 
         OnDataChanged?.Invoke(this);
@@ -63,6 +66,7 @@ public class SkillRuntimeData
 
     public void SetMaxSkillLevel()
     {
+        if (IsDevelopmentLocked) return;
         currentLevel = GetMaxSkillLevel();
 
         OnDataChanged?.Invoke(this);
@@ -170,11 +174,12 @@ public class SkillTreeManager
         if (commonSkillTree != null) trees.Add(commonSkillTree);
         return trees.Where(t => t.allSkills != null).SelectMany(t => t.allSkills
             .Where(s => s != null).Select(s => t.GetSkillRuntimeDataByID(s.id)))
-            .Where(s => s != null).GroupBy(s => s.GetSkillID()).Select(g => g.First());
+            .Where(s => s != null && !s.IsDevelopmentLocked).GroupBy(s => s.GetSkillID()).Select(g => g.First());
     }
 
     public void SkillUnlock(SkillRuntimeData data)
     {
+        if (data == null || data.IsDevelopmentLocked) return;
         data.isUnlocked = true;
     }
 
@@ -197,7 +202,7 @@ public class SkillTreeManager
                 tree.Initialize(OnSkillRuntimeDataChanged);
             foreach (var template in tree.allSkills)
             {
-                if (template == null || template.maxLevel < 1) continue;
+                if (template == null || template.isDevelopmentLocked || template.maxLevel < 1) continue;
                 var data = tree.GetSkillRuntimeDataByID(template.id);
                 if (data == null || (data.isUnlocked && data.currentLevel > 0)) continue;
                 data.currentLevel = Mathf.Clamp(data.currentLevel, 1, template.maxLevel);

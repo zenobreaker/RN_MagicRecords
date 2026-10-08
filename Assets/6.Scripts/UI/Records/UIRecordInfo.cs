@@ -1,4 +1,3 @@
-using System.Net.NetworkInformation;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +7,8 @@ public class UIRecordInfo : UiBase
     [SerializeField] private Image recordIcon;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI descText;
+    [SerializeField] private TextMeshProUGUI categoryText;
+    [SerializeField] private ScrollRect descriptionScroll;
 
     private RecordData recordData;
     private BuildEntryViewData buildEntry;
@@ -28,35 +29,36 @@ public class UIRecordInfo : UiBase
         base.RefreshUI();
 
         DrawUI();
+        if (descriptionScroll != null)
+        {
+            Canvas.ForceUpdateCanvases();
+            descriptionScroll.StopMovement();
+            descriptionScroll.verticalNormalizedPosition = 1f;
+        }
+    }
+
+    public override void CloseUI()
+    {
+        if (UIManager.Instance != null)
+            UIManager.Instance.CloseSpecificUI(this);
+        else
+            base.CloseUI();
     }
 
     private void DrawUI()
     {
-        if (buildEntry != null)
-        {
-            if (recordIcon != null) { recordIcon.sprite = buildEntry.Icon; recordIcon.enabled = buildEntry.Icon != null; }
-            if (nameText != null) nameText.text = buildEntry.Name;
-            if (descText != null) descText.text = $"[{buildEntry.Label}]\n{buildEntry.Description}";
-            return;
-        }
-        if (recordData == null) return;
-
-        Debug.Assert(LocalizationManager.Instance != null);
+        var icon = buildEntry != null ? buildEntry.Icon : recordData?.icon;
+        var title = buildEntry != null ? buildEntry.Name : recordData?.recordName;
+        var description = buildEntry != null ? buildEntry.Description : recordData?.description;
+        var category = buildEntry != null ? buildEntry.Label : "획득 레코드";
 
         if (recordIcon != null)
         {
-            recordIcon.sprite = recordData.icon;
-            recordIcon.enabled = recordData.icon != null;
+            recordIcon.sprite = icon;
+            recordIcon.enabled = icon != null;
         }
-
-        if (nameText != null)
-        {
-            nameText.text = recordData.recordName;
-        }
-
-        if (descText != null)
-        {
-            descText.text = recordData.description;
-        }
+        if (nameText != null) nameText.text = title ?? "";
+        if (categoryText != null) categoryText.text = title != null ? category : "";
+        if (descText != null) descText.text = description ?? "";
     }
 }

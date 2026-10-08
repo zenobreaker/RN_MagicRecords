@@ -24,7 +24,7 @@ public sealed class ExploreSkillState
     {
         JobID = jobID;
         this.slots = slots;
-        foreach (var data in source.Concat(slots).Where(s => s?.template is SO_ActiveSkillData))
+        foreach (var data in source.Concat(slots).Where(s => s?.template is SO_ActiveSkillData && !s.IsDevelopmentLocked))
             skills[data.GetSkillID()] = new SkillRuntimeData
             { template = data.template, currentLevel = data.currentLevel, isUnlocked = data.isUnlocked };
         for (int i = 0; i < slots.Count; i++)
@@ -60,6 +60,7 @@ public sealed class ExploreSkillState
 
     public SkillRuntimeData GetOrAddSkill(SO_ActiveSkillData template)
     {
+        if (template == null || template.isDevelopmentLocked) return null;
         if (!skills.TryGetValue(template.id, out var skill))
         {
             skill = new SkillRuntimeData { template = template };

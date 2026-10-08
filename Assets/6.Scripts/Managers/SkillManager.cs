@@ -44,6 +44,7 @@ public class SkillManager : Singleton<SkillManager>
         int slot,
         SkillRuntimeData skill)
     {
+        if (skill != null && skill.IsDevelopmentLocked) return;
         var equippedSkills = EnsureSlots(charId);
 
         if (slot < 0 || slot >= SKILL_SLOT_MAX_COUNT)
@@ -129,7 +130,7 @@ public class SkillManager : Singleton<SkillManager>
 
             ActiveSkill activeSkill = null;
 
-            if (skillData?.template is SO_ActiveSkillData skillDataAsset)
+            if (skillData?.template is SO_ActiveSkillData skillDataAsset && !skillData.IsDevelopmentLocked)
             {
                 Skill skill = skillDataAsset.CreateSkill();
                 activeSkill = skill as ActiveSkill;
@@ -173,7 +174,7 @@ public class SkillManager : Singleton<SkillManager>
 
     public bool GainSkillForCheat(Player player, SO_ActiveSkillData template, int slot, int level)
     {
-        if (player == null || template == null || template.maxLevel < 1 || player.CharID <= 0 || player.JobID <= 0 ||
+        if (player == null || template == null || template.isDevelopmentLocked || template.maxLevel < 1 || player.CharID <= 0 || player.JobID <= 0 ||
             slot < 0 || slot >= SKILL_SLOT_MAX_COUNT || level < 1 || SkillTreeManager.Instance == null ||
             !player.TryGetComponent<SkillComponent>(out var component)) return false;
         var activeSkill = template.CreateSkill() as ActiveSkill;
@@ -210,6 +211,8 @@ public class SkillManager : Singleton<SkillManager>
             slots = Enumerable.Repeat<SkillRuntimeData>(null, SKILL_SLOT_MAX_COUNT).ToList();
             equippedActiveSkills.Add(charId, slots);
         }
+        for (int i = 0; i < slots.Count; i++)
+            if (slots[i] != null && slots[i].IsDevelopmentLocked) slots[i] = null;
         return slots;
     }
 

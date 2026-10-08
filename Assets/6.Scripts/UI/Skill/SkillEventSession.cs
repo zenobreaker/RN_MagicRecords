@@ -36,7 +36,7 @@ public sealed class SkillEventSession
         this.balance = balance; this.spend = spend; this.equip = equip;
         this.baseCost = Math.Max(0, baseCost); this.costPerLevel = Math.Max(0, costPerLevel);
         originalSlots = slots;
-        foreach (var data in skills.Concat(slots).Where(s => s?.template != null))
+        foreach (var data in skills.Concat(slots).Where(s => s?.template != null && !s.IsDevelopmentLocked))
         {
             int id = data.GetSkillID();
             originals[id] = data;
@@ -95,7 +95,7 @@ public sealed class SkillEventSession
         ReplacementCount++;
         return true;
     }
-    public bool CanRearrangeSkill(int id) => loadoutSkills.Contains(id);
+    public bool CanRearrangeSkill(int id) => loadoutSkills.Contains(id) && GetSkill(id) != null;
     public bool TryEquipOwned(int slot, int id)
     {
         if (committed || slot < 0 || slot >= Slots.Length || !CanRearrangeSkill(id) || Slots[slot] == id)
