@@ -104,10 +104,11 @@ public class PatternEntry
         return activeSkill;
     }
 
-    public void ResetCondition()
+    public void ResetCondition(bool resetCooldown = true)
     {
         foreach ((IPatternCondition instance, float targetValue) in runtimeConditions)
         {
+            if (!resetCooldown && instance is CooldownCondition) continue;
             instance.ResetCondition();
         }
     }
@@ -128,6 +129,9 @@ public class PatternEntry
     {
         foreach (var cond in runtimeConditions)
         {
+            // 패턴 쿨타임은 공격 종료가 아니라 사용 시점부터 계산합니다.
+            if (cond.instance is CooldownCondition cooldown)
+                cooldown.ResetCondition();
             if(cond.instance is IUseableCondition useable)
                 useable.Use();
         }
@@ -152,13 +156,18 @@ public class PatternEntry
     }
 
 
-    // 단순히 쿨타임/마나 등 '자체 준비'가 끝났는지 확인 (거리 무관)
-    // (이전의 AIController에서 GetCurrentReadyAttackRange() 를 구현할 때 쓰기 위함)
+    // 접근할 사거리를 고를 때는 현재 거리를 제외하고 준비 상태만 검사합니다.
     public bool IsReadyToUse(AIContext ctx)
     {
-        // 여기서는 조건 중 '거리(Distance)'나 '타겟(Target)' 관련 조건을 뺀, 
-        // 오직 쿨타임/체력 등 본인의 상태 조건만 체크하도록 커스텀 할 수도 있습니다.
-        return CheckUsePattern(ctx);
+        if (!IsUse) return false;
+
+        foreach (var cond in runtimeConditions)
+        {
+            if (cond.instance is DistanceCondition) continue;
+            if (!cond.instance.Evaluate(cond.targetValue, ctx)) return false;
+        }
+
+        return true;
     }
 
     public float GetAttackRange()

@@ -12,7 +12,8 @@ public sealed class Module_Passive_DamagePerDebuff : PassiveContextModule
 
     public override void OnAttackHit(GameObject attacker, GameObject target, DamageEvent damageEvent)
     {
-        if (attacker == null || target == null || damageEvent == null) return;
+        if (owner == null || attacker != owner || target == null || target == owner ||
+            damageEvent == null || damageEvent.IsDOTEffect()) return;
         if (target.TryGetComponent(out EffectComponent effects))
             damageEvent.DamageAmp = 1f + effects.DebuffCount *
                 (damageAmpPerEffect + Mathf.Max(0, skillLevel - 1) * damageAmpPerLevel);

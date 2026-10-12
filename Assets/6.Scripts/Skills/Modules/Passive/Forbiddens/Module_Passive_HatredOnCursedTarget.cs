@@ -18,10 +18,9 @@ public sealed class Module_Passive_HatredOnCursedTarget : PassiveContextModule
 
     public override void OnAttackHit(GameObject attacker, GameObject target, DamageEvent damageEvent)
     {
-        if (target == null || damageEvent == null) return;
-        // 원본의 조건을 유지: EffectComponent가 있는 대상은 Curse 효과가 있어야 합니다.
-        if (target.TryGetComponent(out EffectComponent effects) &&
-            (effects == null || effects.HasEffect("Curse") == null)) return;
+        if (owner == null || attacker != owner || target == null || target == owner ||
+            damageEvent == null || damageEvent.IsDOTEffect()) return;
+        if (!target.TryGetComponent(out EffectComponent effects) || effects.HasEffect("Curse") == null) return;
 
         float cooldown = GetLevelValue(cooldownByLevel, fallbackCooldown);
         bool ready = Time.time >= lastTriggerTime + cooldown;

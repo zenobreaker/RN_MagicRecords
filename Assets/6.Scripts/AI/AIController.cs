@@ -52,7 +52,8 @@ public class AIController : MonoBehaviour
         {
             skill.OnEndDoAction += () =>
             {
-                currentPattern?.ResetCondition();
+                currentPattern?.ResetCondition(resetCooldown: false);
+                currentPattern = null;
             };
         }
     }
@@ -104,12 +105,14 @@ public class AIController : MonoBehaviour
 
         // 이미 평타를 치고 있거나 스킬을 쓰는 중(InAction)이라면,
         // 새로운 패턴을 찾거나 덮어쓰지 않고 즉시 리턴합니다!
-        if ((skill != null && skill.InAction))
+        if (skill == null || skill.InAction)
             return;
 
+        UpdateContext();
         foreach (var pattern in patternEntries)
         {
-            if (pattern.CheckUsePattern(context))
+            if (pattern.CheckUsePattern(context) &&
+                skill.CanUseSkill(pattern.slotName.ToUpper()))
             {
                 ExecutePattern(pattern);
                 break;
@@ -216,7 +219,8 @@ public class AIController : MonoBehaviour
         foreach (var pattern in patternEntries)
         {
             // 거리 조건(CheckUsePattern)이 아니라, 단순히 쿨타임/마나 등 '준비 상태'만 체크합니다.
-            if (pattern.IsReadyToUse(context))
+            if (pattern.IsReadyToUse(context) && skill != null &&
+                skill.CanUseSkill(pattern.slotName.ToUpper()))
             {
                 return pattern.GetAttackRange(); // ex) 원거리 스킬이 준비되었으면 10 반환
             }

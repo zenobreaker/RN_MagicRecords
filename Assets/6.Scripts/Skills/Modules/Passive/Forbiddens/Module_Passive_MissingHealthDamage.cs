@@ -12,6 +12,8 @@ public sealed class Module_Passive_MissingHealthDamage : PassiveContextModule
     public override void OnAttackHit(GameObject attacker, GameObject target, DamageEvent damageEvent)
     {
         // 직접 피해를 가하지 않고 기존 DamageCalculator가 적용할 비율을 설정합니다.
-        if (damageEvent != null) damageEvent.MissingHPRatio = missingHealthRatio;
+        if (owner == null || attacker != owner || target == null || target == owner ||
+            damageEvent == null || damageEvent.IsDOTEffect()) return;
+        damageEvent.MissingHPRatio = missingHealthRatio;
     }
 }
