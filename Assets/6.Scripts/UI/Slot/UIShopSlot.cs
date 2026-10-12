@@ -25,22 +25,25 @@ public class UIShopSlot : UIItemSlot
     public override void SetItemData(ItemData data)
     {
         CacheReferences(); // Pooled slots are configured while inactive, before Awake.
+        if (itemPrice != null) itemPrice.gameObject.SetActive(true);
         offerClick = null;
         GetComponent<Button>().interactable = true;
         base.SetItemData(data);
     }
 
-    public void SetOffer(Sprite icon, string title, int price, bool sold, System.Action click)
+    public void SetOffer(Sprite icon, string title, int price, bool sold, System.Action click, bool showPrice = true,
+        string unavailableLabel = null)
     {
         CacheReferences();
+        if (itemPrice != null) itemPrice.gameObject.SetActive(showPrice);
         itemData = null;
         OnClickedSlot = null;
-        offerClick = sold ? null : click;
+        offerClick = sold || unavailableLabel != null ? null : click;
         if (itemImage != null) itemImage.sprite = icon;
         if (itemNameTxt != null) itemNameTxt.text = title;
         itemPrice?.SetValue(price, CurrencyType.EXPOLORE_COIN,
-            sold ? "판매 완료" : price < 0 ? "가격 미정" : null, itemNameTxt?.font);
-        GetComponent<Button>().interactable = !sold;
+            unavailableLabel ?? (sold ? "판매 완료" : price < 0 ? "가격 미정" : null), itemNameTxt?.font);
+        GetComponent<Button>().interactable = !sold && unavailableLabel == null;
     }
 
     public override void OnClick()

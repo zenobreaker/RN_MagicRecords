@@ -157,7 +157,7 @@ public class PlayerManager :
     public bool CanLevelUpRunCharacter(int charId)
     {
         var data = GetRunCharacterStatus(charId);
-        return data != null && data.level < int.MaxValue;
+        return data != null && data.level < CharStatusData.MaxLevel;
     }
 
     public bool TryLevelUpRunCharacter(int charId)
@@ -181,7 +181,7 @@ public class PlayerManager :
         var result = new List<CharacterSaveData>();
         foreach (var pair in runCharacterStatus)
             if (pair.Value != null)
-                result.Add(new CharacterSaveData { charId = pair.Key, charLevel = pair.Value.level });
+                result.Add(new CharacterSaveData { charId = pair.Key, charLevel = Mathf.Clamp(pair.Value.level, 1, CharStatusData.MaxLevel) });
         return result;
     }
 
@@ -195,7 +195,7 @@ public class PlayerManager :
             var template = GetCharacterStatus(saved.charId);
             if (template == null) continue;
             var data = Instantiate(template);
-            data.level = Mathf.Max(template.level, saved.charLevel);
+            data.level = Mathf.Clamp(Mathf.Max(template.level, saved.charLevel), 1, CharStatusData.MaxLevel);
             runCharacterStatus[saved.charId] = data;
         }
     }

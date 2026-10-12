@@ -54,7 +54,11 @@ public class ShopUI : UiBase
                 offer.kind == ExploreShopKind.CharacterLevelUp ? "캐릭터 레벨업" :
                 offer.kind == ExploreShopKind.Heal15 ? "체력 15% 회복" : "체력 60% 회복");
             slot.gameObject.SetActive(true);
-            slot.SetOffer(record?.icon ?? app.GetStageIcon(StageType.Shop), title, offer.price, offer.sold, () => OpenOffer(offer, record, title));
+            bool maxLevel = offer.kind == ExploreShopKind.CharacterLevelUp &&
+                PlayerManager.Instance.GetRunCharacterStatus(explore.CurrentSetupData.SelectedCharacterId)?.level >= CharStatusData.MaxLevel;
+            slot.SetOffer(record?.icon ?? app.GetStageIcon(StageType.Shop), title, offer.price, offer.sold,
+                () => OpenOffer(offer, record, title), showPrice: offer.kind != ExploreShopKind.SkillSwap,
+                unavailableLabel: maxLevel ? "최대 레벨" : null);
         }, slot => slot.gameObject.SetActive(false), InitReplaceContentObject, SetContentChildObjectsCallback<UIShopSlot>);
     }
 

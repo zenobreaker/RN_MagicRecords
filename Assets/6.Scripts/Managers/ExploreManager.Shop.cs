@@ -10,11 +10,10 @@ public sealed partial class ExploreManager
     private readonly Dictionary<int, HealthPointComponent> liveHealth = new();
     private bool purchasing;
 
-    // Event 1012 already defines the three-candidate skill swap and its entry price.
-    public EventChoice ShopSwapChoice => DataBaseManager.Instance.SafeInvoke(database => database.GetEventInfo(1012))?.eventChoices
+    // Reuse event 1012's candidates. Shop entry/replacement is free; upgrades retain their own cost.
+    public EventChoice ShopSwapChoice => DataBaseManager.Instance.SafeInvoke(database => database.GetEventInfo(1012, includeInactive: true))?.eventChoices
         .FirstOrDefault(c => c.ChoiceIsActive && c.ActionType == EventActionType.RECORD_SKILL_UP &&
-            c.ActionParam == EventActionParam.DRAFT_3 && c.CostType == EventCostType.CURRENCY &&
-            c.CostParam == EventCostParam.EXPLORE_COIN);
+            c.ActionParam == EventActionParam.DRAFT_3);
 
     public ExploreShopStock GetShopStock(MapNodeInfo node)
     {
@@ -34,7 +33,7 @@ public sealed partial class ExploreManager
                 .OrderBy(_ => UnityEngine.Random.value).Take(3))
                 stock.offers.Add(new ExploreShopOffer { kind = ExploreShopKind.Record, recordId = record.id,
                     price = prices.First(p => p.rarity == record.rarity && p.price >= 0).price });
-        stock.offers.Add(new ExploreShopOffer { kind = ExploreShopKind.SkillSwap, price = ShopSwapChoice?.CostValue ?? -1 });
+        stock.offers.Add(new ExploreShopOffer { kind = ExploreShopKind.SkillSwap, price = 0 });
         stock.offers.Add(new ExploreShopOffer { kind = ExploreShopKind.Heal15, price = policy?.exploreHeal15Price ?? -1 });
         stock.offers.Add(new ExploreShopOffer { kind = ExploreShopKind.Heal60, price = policy?.exploreHeal60Price ?? -1 });
         node.shopStock = stock;
@@ -52,7 +51,11 @@ public sealed partial class ExploreManager
         {
             if (offer.kind == ExploreShopKind.Heal15) offer.price = 15;
             else if (offer.kind == ExploreShopKind.Heal60) offer.price = 50;
-            else if (offer.kind == ExploreShopKind.SkillSwap) offer.sold = false;
+            else if (offer.kind == ExploreShopKind.SkillSwap)
+            {
+                offer.price = 0; // Also migrate offers restored from an older run save.
+                offer.sold = false;
+            }
             else if (offer.kind == ExploreShopKind.CharacterLevelUp)
             {
                 offer.price = policy?.exploreCharacterLevelUpPrice ?? -1;
@@ -78,7 +81,8 @@ public sealed partial class ExploreManager
         else if (offer.kind == ExploreShopKind.CharacterLevelUp &&
             (RunStatus != RunStatus.MidRun || CurrentSetupData == null || !CurrentSetupData.HasCharacter ||
              !PlayerManager.Instance.SafeInvoke(players => players.CanLevelUpRunCharacter(CurrentSetupData.SelectedCharacterId))))
-            error = "레벨을 올릴 탐사 캐릭터가 없습니다.";
+            error = PlayerManager.Instance?.GetRunCharacterStatus(CurrentSetupData?.SelectedCharacterId ?? -1)?.level >= CharStatusData.MaxLevel
+                ? "캐릭터가 최대 레벨(20)에 도달했습니다." : "레벨을 올릴 탐사 캐릭터가 없습니다.";
         else if ((offer.kind == ExploreShopKind.Heal15 || offer.kind == ExploreShopKind.Heal60) &&
             !runHealth.Any(h => h.current > 0 && h.current < h.maximum))
             error = "회복할 탐사 캐릭터가 없습니다.";

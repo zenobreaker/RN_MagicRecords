@@ -256,9 +256,9 @@ public class DataBaseManager : Singleton<DataBaseManager>
         return stageIconDb.SafeInvoke(v => v.GetIcon(type));
     }
 
-    public EventInfo GetEventInfo(int eventID)
+    public EventInfo GetEventInfo(int eventID, bool includeInactive = false)
     {
-        return eventDataBase.SafeInvoke(v => v.GetEventInfo(eventID));
+        return eventDataBase.SafeInvoke(v => v.GetEventInfo(eventID, includeInactive));
     }
 
     public int GetRandomEventID(int chapter)

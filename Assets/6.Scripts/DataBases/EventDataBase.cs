@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using UnityEngine;
 
@@ -123,27 +124,13 @@ public sealed class EventDataBase : DataBase
         }
 
         int currentEventId = -1;
-        // 💡 현재 파싱 중인 이벤트가 '통째로 비활성화' 상태인지 기억하기 위한 변수
-        bool isCurrentEventDisabled = false;
-
         JsonLoader.LoadJsonList<EventInfoJsonRoot, EventInfoJson, EventInfoJson>(
             jsonAsset,
             root => root.eventList,
             json => json,
             row =>
             {
-                // --- 1. 이벤트 전체 활성화 체크 (대표 행인 ChoiceIndex 1에서 결정) ---
-                if (row.choiceIndex == 1)
-                {
-                    // 0이면 비활성이므로 이 이벤트는 이후 줄(선택지들)도 모두 무시하도록 플래그 설정
-                    isCurrentEventDisabled = (row.event_is_active == 0);
-
-                    if (isCurrentEventDisabled) return;
-                }
-
-                // 이벤트 자체가 비활성 상태면 아래 로직 수행 안 함
-                if (isCurrentEventDisabled) return;
-
+                // Keep definitions for reuse by shops, but only active events enter the random pool.
                 // --- 2. 이벤트 기본 정보 조립 (새로운 ID 등장 시) ---
                 if (row.id > 0)
                 {
@@ -155,15 +142,16 @@ public sealed class EventDataBase : DataBase
                     newEvent.nameKey = row.name;
                     newEvent.descriptionKey = row.description;
                     newEvent.imageKey = row.imagekey;
-                    newEvent.isActive = true;
+                    newEvent.isActive = row.event_is_active != 0;
 
                     eventInfos[currentEventId] = newEvent;
 
-                    if (!chapterEventTable.ContainsKey(newEvent.chapter))
+                    if (newEvent.isActive)
                     {
-                        chapterEventTable[newEvent.chapter] = new List<int>();
+                        if (!chapterEventTable.ContainsKey(newEvent.chapter))
+                            chapterEventTable[newEvent.chapter] = new List<int>();
+                        chapterEventTable[newEvent.chapter].Add(currentEventId);
                     }
-                    chapterEventTable[newEvent.chapter].Add(currentEventId);
                 }
 
                 // --- 3. 개별 선택지 데이터 조립 ---
@@ -220,20 +208,20 @@ public sealed class EventDataBase : DataBase
             }
         );
 
-        Debug.Log($"[EventDataBase] 로드 완료. 활성 이벤트 수: {eventInfos.Count}");
+        Debug.Log($"[EventDataBase] 로드 완료. 활성 이벤트 수: {eventInfos.Values.Count(info => info.isActive)}");
     }
 
-    public EventInfo GetEventInfo(int eventId)
+    public EventInfo GetEventInfo(int eventId, bool includeInactive = false)
     {
         if (eventInfos.TryGetValue(eventId, out EventInfo info))
         {
-            return info;
+            return includeInactive || info.isActive ? info : null;
         }
         return null;
     }
 
 #if UNITY_EDITOR
-    public IEnumerable<EventInfo> GetTestEvents() => eventInfos.Values;
+    public IEnumerable<EventInfo> GetTestEvents() => eventInfos.Values.Where(info => info.isActive);
 
     // Editor scenarios replace only the in-memory copy, never the JSON asset.
     public void SetTestEvent(EventInfo info)

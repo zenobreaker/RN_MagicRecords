@@ -23,8 +23,11 @@ public partial class WeaponAction : Action
         // 일단 공격 명령을 내린다. 
         aiController.Value.DoAction();
 
-        // DoAction 안의 조건문에 걸려서 ActionMode로 진입하지 못했다면 실패처리 
+        // Continue to the existing wait/reposition branch when no pattern can start.
         if (state.IdleMode)
+            return Status.Success;
+
+        if (!state.ActionMode)
             return Status.Failure;
 
         // 액션모드로 들어갔다면 성공 

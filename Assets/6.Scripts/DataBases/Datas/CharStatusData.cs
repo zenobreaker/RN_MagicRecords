@@ -42,7 +42,9 @@ public enum CharacterJobMask
 [CreateAssetMenu(fileName = "CharInfoData", menuName = "Scriptable Objects/Character/Char Info Data")]
 public class CharStatusData : ScriptableObject
 {
+    public const int MaxLevel = 20;
     public int id;
+    [Range(1, MaxLevel)]
     public int level = 1;
 
     [Tooltip("Select every job this character can use. Job ID 1 maps to the first flag, job ID 2 to the second, and so on.")]
