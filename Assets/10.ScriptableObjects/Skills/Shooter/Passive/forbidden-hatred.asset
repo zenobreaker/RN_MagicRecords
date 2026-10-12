@@ -13,16 +13,30 @@ MonoBehaviour:
   m_Name: forbidden-hatred
   m_EditorClassIdentifier: 
   id: 16
-  skillName: name_forbidden-hatred
-  skillDescription: desc_forbidden-hatred
+  skillName: skill_name_forbidden-hatred
+  skillDescription: skill_desc_forbidden-hatred
+  isDevelopmentLocked: 0
   learnableLevel: 0
   maxLevel: 3
   skillUpgradeCost: 
-  skillImage: {fileID: 0}
+  skillImage: {fileID: 21300000, guid: e8500b16742dd074cbab17b5f08e9268, type: 3}
   leadingSkillList: 
   levelDatas: []
+  implementation: 0
   jobID: 1
-  Modules: []
+  Modules:
+  - rid: 101
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 101
+      type: {class: Module_Passive_HatredOnCursedTarget, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        cooldownByLevel:
+        - 12
+        - 10
+        - 8
+        fallbackCooldown: 12
+        duration: 4
+        attackRatio: 0.2

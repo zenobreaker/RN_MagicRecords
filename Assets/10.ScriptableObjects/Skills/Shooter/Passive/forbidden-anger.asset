@@ -15,15 +15,35 @@ MonoBehaviour:
   id: 17
   skillName: skill_name_forbidden-anger
   skillDescription: skill_desc_forbidden-anger
+  isDevelopmentLocked: 0
   learnableLevel: 0
   maxLevel: 3
   skillUpgradeCost: 
-  skillImage: {fileID: 0}
+  skillImage: {fileID: 21300000, guid: 38d1e641166116e4185ba65c767a3880, type: 3}
   leadingSkillList: 
   levelDatas: []
   implementation: 0
   jobID: 1
-  Modules: []
+  Modules:
+  - rid: 101
+  - rid: 102
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 101
+      type: {class: Module_Passive_LevelStatBonus, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        targetStat: 6
+        valueType: 0
+        valuesByLevel:
+        - 0.1
+        - 0.15
+        - 0.2
+        fallbackValue: 0.1
+    - rid: 102
+      type: {class: Module_Passive_DamagePerDebuff, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 4
+        damageAmpPerEffect: 0.1
+        damageAmpPerLevel: 0
