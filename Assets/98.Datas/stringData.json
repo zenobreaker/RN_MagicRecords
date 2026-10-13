@@ -1,8 +1,20 @@
 {
   "stringData": [
-    {"key":"record_name_magicbullet_finisher","kr":"마법탄 장전 - 피니시 불릿","en":"Magic Bullet Load - Finishing Bullet"},
-    {"key":"record_desc_magicbullet_finisher","kr":"평타의 마지막 공격에서 마법탄 1발을 소비해 해당 탄환의 효과를 적용합니다. 탄환이 없어도 공격합니다.","en":"The final basic attack consumes one magic bullet and applies its effect. Attacks normally when no bullets remain."},
-    {"key":"skill_desc_magicbulletload","kr":"마법탄을 최대 4/6/7발 장전합니다. 4초마다 마법탄을 1발 자동 장전합니다.","en":"Loads up to 4/6/7 magic bullets. Automatically reloads one bullet every 4 seconds."},
+    {
+      "key": "record_name_magicbullet_finisher",
+      "kr": "마법탄 장전 - 피니시 불릿",
+      "en": "Magic Bullet Load - Finishing Bullet"
+    },
+    {
+      "key": "record_desc_magicbullet_finisher",
+      "kr": "마지막 공격 시, 탄환 장전",
+      "en": ""
+    },
+    {
+      "key": "skill_desc_magicbulletload",
+      "kr": "마법탄을 최대 4/6/7발 장전합니다. 4초마다 마법탄을 1발 자동 장전합니다.",
+      "en": "Loads up to 4/6/7 magic bullets. Automatically reloads one bullet every 4 seconds."
+    },
     {
       "key": "currency_run_scrap",
       "kr": "고철 조각",
@@ -91,7 +103,7 @@
     {
       "key": "ui_btn_info",
       "kr": "정보",
-      "en": null
+      "en": ""
     },
     {
       "key": "ui_text_learn",
@@ -411,7 +423,7 @@
     {
       "key": "skill_name_magicbulletload",
       "kr": "마탄 장전",
-      "en": null
+      "en": ""
     },
     {
       "key": "skill_name_forbidden-curse",
@@ -456,97 +468,97 @@
     {
       "key": "skill_desc_magnumbullet",
       "kr": "강력한 마력이 담긴 탄을 발사합니다.  \\n 탄환이 있으면 1개 소모하여 위력을 10% 증가합니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "skill_desc_plasmaray",
-      "kr": "플라즈마 에너지를 발사합니다.",
-      "en": null
+      "kr": "플라즈마 에너지를 발사합니다. \\n 에너지를 1 획득합니다. \\n에너지가 10이상 있으면 10을 소모해서 방어력 무시 피해 30%를 입힙니다.\\n 탄환을 최대 3개 소모해서 에너지를 추가로 획득합니다.\\n 탄환 한 발당 추가 에너지 +1",
+      "en": ""
     },
     {
       "key": "skill_desc_hyperbeam",
-      "kr": "강력한 에너지를 응축한 뒤 연속으로 피해를 입히는 광선을 발사합니다. ",
-      "en": null
+      "kr": "강력한 에너지를 응축한 뒤 연속으로 피해를 입히는 광선을 발사합니다.  \\n 에너지를 5획득합니다.\\n 7이상 있을 경우 에너지 7을 소비해서 충전 시간을 50% 감소합니다.",
+      "en": ""
     },
     {
       "key": "skill_desc_spreadshot",
       "kr": "여러 갈래 탄환을 발사합니다. \\n 탄환이 있으면 1개 소모합니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "skill_desc_rapidfire",
-      "kr": "마력탄을 연속으로 발사합니다. ",
-      "en": null
+      "kr": "마력탄을 연속으로 발사합니다.  \\n 탄환을 1씩 소모합니다. \\n 탄환 1당 10%추가 피해",
+      "en": ""
     },
     {
       "key": "skill_desc_spiralshot",
-      "kr": "닿으면 지속적으로 피해를 주는 탄환을 발사합니다. \\n 탄환이 있으면 1개 소모합니다. \\n 탄환이 소모되었다면 소멸 시 폭발하여 피해를 추가로 입힙니다.",
-      "en": null
+      "kr": "닿으면 지속적으로 피해를 주는 탄환을 발사합니다. \\n 탄환을 최대 3개 소모합니다. \\n 소모된 탄환 1발당 스킬의 지속 시간 0.25초 증가 ",
+      "en": ""
     },
     {
       "key": "skill_desc_splitbullet",
       "kr": "모탄을 발사합니다. 모탄에서는 주위로 자탄이 주기적으로 사출되어 피해를 입히니다. \\n 탄환을 최대 3개 소모하며, 소모 개수당 범위가 증가합니다. ",
-      "en": null
+      "en": ""
     },
     {
       "key": "skill_desc_bulletrain",
       "kr": "일정 범위에 지속적으로 탄환이 비처럼  쏟아지는 영역을 만들어 냅니다. \\n 탄환을 최대 3개를 소모합니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "skill_desc_extreambullet",
       "kr": "큰 폭발을 일으키는 탄환을 지원 요청합니다. \\n 탄환을 최대 3개 소모합니다. ",
-      "en": null
+      "en": ""
     },
     {
       "key": "skill_desc_assistweapon",
       "kr": "자신 주위에 보조 공격 유닛을 소환합니다. ",
-      "en": null
+      "en": ""
     },
     {
       "key": "skill_desc_burstbullet",
-      "kr": "충돌하거나 일정 거리까지 가면 큰 폭발을 일으키는 탄환을 발사합니다. \\n 탄환을 최대 3개 소모합니다.",
-      "en": null
+      "kr": "",
+      "en": ""
     },
     {
       "key": "skill_desc_forbidden-curse",
-      "kr": "금기 중 하나인 저주를 사용합니다. \\n 1 - 피해를 입은 대상에게 저주 상태이상을 부여합니다. \\n 2 - 치명타 확률이 증가합니다.",
-      "en": null
+      "kr": "피해를 입은 대상에게 저주를 부여합니다. ",
+      "en": ""
     },
     {
       "key": "skill_desc_reactive-elemental",
       "kr": "원소 마법을 사용하면 탄환에 해당 원소를 부여합니다. \\n 탄환을 소지하지 않는다면 원소가 부여된 탄환을 장전합니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "skill_desc_injection-curse",
       "kr": "탄환에 저주를 부여합니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "skill_desc_renovatedbullet",
       "kr": "공격력과 탄환 적중 시 폭발효과를 부여합니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "skill_desc_forbidden-grief",
       "kr": "대상이 잃은 체력만큼 추가 피해를 가합니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "skill_desc_forbidden-hatred",
       "kr": "피해를 입은 대상은 일정 시간 동안 지속적인 피해를 입습니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "skill_desc_forbidden-anger",
-      "kr": "치명타 피해량이 증가합니다. \\n 상태이상에 걸린 대상에게 추가 피해를 가합니다.",
-      "en": null
+      "kr": "상태이상에 걸린 대상에게 추가 피해를 가합니다.",
+      "en": ""
     },
     {
       "key": "skill_desc_beyondthecurse",
-      "kr": null,
-      "en": null
+      "kr": "",
+      "en": ""
     },
     {
       "key": "name_equipment_weapon_gun_0",
@@ -652,11 +664,6 @@
       "key": "desc_equipment_armor_0",
       "kr": "어디서나 볼 수 있는 낡은 보호구입니다.",
       "en": "An old, ubiquitous piece of protective gear."
-    },
-    {
-      "key": "desc_equipment_armor_0",
-      "kr": "두꺼운 철판을 덧대어 치명적인 타격으로부터 몸을 꽤 잘 보호해 줍니다.",
-      "en": "Reinforced with thick iron plates to protect the body from fatal blows."
     },
     {
       "key": "desc_equipment_armor_2",
@@ -1121,127 +1128,127 @@
     {
       "key": "evt_name_1012",
       "kr": "기억의 환승역",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_desc_1012",
       "kr": "오래된 환승 시설에 도착했습니다. 수많은 메모리 드론들이 멈춰 선 채, 주인을 잃은 기록을 품고 있습니다. 아직 작동하는 단말기 하나가 당신의 접속을 기다립니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1012_c1",
       "kr": "다른 기억으로 접속한다. (탐사 코인 50 소모)",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1012_c2",
       "kr": "남겨진 기록을 회수한다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1012_c3",
       "kr": "접속을 해제하고 떠난다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1012_r1",
       "kr": "낯선 기억이 당신의 회로를 타고 흐릅니다. 방금 전까지 익숙했던 동작이 어쩐지 생소하군요. 그래도 곧 익숙해질 겁니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1012_r2",
       "kr": "주인을 기다리던 기록들은 끝내 전달되지 못했습니다. 쓸 만한 부품만이라도 챙겨두죠. 어쩌면 누군가에게 도움이 될지도 모릅니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1012_r3",
       "kr": "모든 기억을 들여다볼 필요는 없겠죠. 당신은 낯선 목소리들을 뒤로하고 발걸음을 옮깁니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_name_1013",
       "kr": "돌아오지 못한 메모리 드론",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_desc_1013",
       "kr": "부서진 메모리 드론 한 기가 나무뿌리 사이에 끼어 있습니다. 수백 년은 지났을 법한 기체에서 희미한 신호가 반복됩니다. 중앙 아카이브로 향하던 기록이 아직 남아 있는 모양입니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1013_c1",
       "kr": "미전송 기록을 재생한다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1013_c2",
       "kr": "봉인된 기록을 복구한다. (탐사 코인 60 소모)",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1013_c3",
       "kr": "드론을 그대로 둔다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1013_r1",
       "kr": "드론의 마지막 임무가 당신에게 전달됩니다. 누군가 끝내 전하지 못한 이야기가 이제야 목적지를 찾았군요.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1013_r2",
       "kr": "손상된 기록을 복구하자 오래된 기술이 모습을 드러냅니다. 아카이브에 도착하지 못한 것이 오히려 다행이었을지도 모르겠군요.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1013_r3",
       "kr": "드론은 여전히 같은 신호를 반복합니다. 언젠가 이 기록을 기다리는 누군가가 찾아올지도 모르죠.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_name_1014",
       "kr": "미정산 복구 보수",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_desc_1014",
       "kr": "버려진 복구 작업소에서 아직 작동하는 정산 단말기를 발견했습니다. 화면에는 오래전에 완료된 작업들의 보수가 수령되지 않은 채 남아 있습니다. 단말기는 당신을 새로운 작업자로 인식한 모양입니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1014_c1",
       "kr": "확인된 보수를 수령한다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1014_c2",
       "kr": "미확인 보수까지 청구한다. (성공 확률 55%)",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1014_c3",
       "kr": "정산 기록을 무시한다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1014_r1",
       "kr": "정산이 완료되었습니다. 수백 년 묵은 보수치고는 적은 편이지만, 없는 것보다는 낫겠죠.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1014_r2",
       "kr": "단말기가 잠시 멈추더니 승인 표시를 띄웁니다. 예상보다 많은 보수가 지급되었습니다. 오래된 시스템도 가끔은 너그러워지는군요.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1014_f2",
       "kr": "정산 오류. 미확인 작업 내역이 모두 삭제되었습니다. 단말기는 아무 일도 없었다는 듯 대기 화면으로 돌아갑니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "evt_1014_r3",
       "kr": "남의 보수를 함부로 가져갈 필요는 없겠죠. 단말기는 여전히 오래된 작업자의 귀환을 기다립니다.",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_name_stat_atk_inc",
@@ -1270,12 +1277,12 @@
     },
     {
       "key": "record_name_skill_auto_reload",
-      "kr": "마법탄 장전 - 오토 리로드 ",
+      "kr": "마법탄 장전 - 오토 리로드",
       "en": "Auto Reload"
     },
     {
       "key": "record_name_stat_final_effort",
-      "kr": "최후의 저력 ",
+      "kr": "최후의 저력",
       "en": "Final Effort"
     },
     {
@@ -1406,22 +1413,22 @@
     {
       "key": "record_name_modify_extreambullet_blackhole",
       "kr": "마탄 - 극악무도 - 블랙홀",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_name_modify_extreambullet_fusion",
       "kr": "마탄 - 극악무도 - 마력 융합",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_name_modify_bulletrain_apbomb",
       "kr": "불릿 레인 - 철갑 폭격",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_name_modify_bulletrain_condensedmana",
       "kr": "불릿 레인 - 응집된 마나",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_name_modify_assistweapon_chaser",
@@ -1446,102 +1453,102 @@
     {
       "key": "record_desc_modify_magnum_hollowpoint",
       "kr": "매그넘탄이 충돌 시 6갈래로 갈라지는 효과 추가",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_magnum_fullpiercing",
       "kr": "매그넘탄에 관통과 유도 기능 추가",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_plasmaray_overcharge",
       "kr": "레이저의 두께 증가",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_plasmaray_cuttingray",
       "kr": "방어력 무시 피해 추가",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_hyperbeam_nocharge",
       "kr": "충전 기능 삭제 후, 즉시 발사",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_hyperbeam_overdrive",
       "kr": "일정 시간 후 파괴광선을 쏘는 구체 생성",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_spreadshot_dragonbreath",
       "kr": "샷건 탄환충돌 시 화상 부여",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_spreadshot_closefire",
       "kr": "탄환의 밀집도가 상승된 채 발사",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_rapidfire_powerboost",
       "kr": "각 탄환에 유도 기능 부여",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_rapidfire_fastest",
       "kr": "연속발사의 공격속도 상승",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_spiralshot_inhalation",
       "kr": "탄환이 충돌 시 주변의 적을 끌어들이는 효과 추가",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_spiralshot_stickybomb",
       "kr": "적중 시 적에게 붙어 지속적으로 피해를 입히는 효과로 변경",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_extreambullet_blackhole",
-      "kr": null,
-      "en": null
+      "kr": "",
+      "en": ""
     },
     {
       "key": "record_desc_modify_extreambullet_fusion",
-      "kr": null,
-      "en": null
+      "kr": "",
+      "en": ""
     },
     {
       "key": "record_desc_modify_bulletrain_apbomb",
-      "kr": null,
-      "en": null
+      "kr": "",
+      "en": ""
     },
     {
       "key": "record_desc_modify_bulletrain_condensedmana",
-      "kr": null,
-      "en": null
+      "kr": "",
+      "en": ""
     },
     {
       "key": "record_desc_modify_assistweapon_chaser",
       "kr": "탄환의 유도 기능 추가",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_assistweapon_appiercing",
       "kr": "탄환의 관통 기능 추가",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_splitshot_homingchildren",
       "kr": "분열탄의 자탄에 유도 기능 추가",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_modify_splitshot_slowmodule",
       "kr": "분열탄의 모탄의 속도 감소 ",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_forbidden-curse",
@@ -1561,17 +1568,482 @@
     {
       "key": "record_desc_forbidden-hatred",
       "kr": "상태이상에 걸린 대상에게 추가 피해",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_forbidden-anger",
       "kr": "대상이 잃은 체력만큼 추가 피해",
-      "en": null
+      "en": ""
     },
     {
       "key": "record_desc_forbidden-grief",
       "kr": "피해 입은 대상은 일정 시간 동안 지속 피해 ",
-      "en": null
+      "en": ""
+    },
+    {
+      "key": "record_name_-1",
+      "kr": "빈 레코드",
+      "en": "Empty Record"
+    },
+    {
+      "key": "record_name_8",
+      "kr": "공격력·공격속도 강화",
+      "en": ""
+    },
+    {
+      "key": "record_desc_stat_atk_atkspeed_inc",
+      "kr": "공격력 +3%, 공격속도 +1%",
+      "en": ""
+    },
+    {
+      "key": "record_name_9",
+      "kr": "방어력·최대 체력 강화",
+      "en": ""
+    },
+    {
+      "key": "record_desc_stat_def_maxhp_inc",
+      "kr": "방어력 +3%, 최대 체력 +10%",
+      "en": ""
+    },
+    {
+      "key": "record_name_10",
+      "kr": "결단의 검",
+      "en": ""
+    },
+    {
+      "key": "record_desc_10",
+      "kr": "공격력 +10% 증가",
+      "en": ""
+    },
+    {
+      "key": "record_name_11",
+      "kr": "마법탄 장전",
+      "en": "Magic Bullet Load"
+    },
+    {
+      "key": "record_name_12",
+      "kr": "첫 여로의 구두",
+      "en": ""
+    },
+    {
+      "key": "record_desc_12",
+      "kr": "이동속도 10% 증가",
+      "en": ""
+    },
+    {
+      "key": "record_name_13",
+      "kr": "과녁과 다트",
+      "en": ""
+    },
+    {
+      "key": "record_desc_13",
+      "kr": "치명타 확률 +5%",
+      "en": ""
+    },
+    {
+      "key": "record_name_14",
+      "kr": "안내 가이드 잡지",
+      "en": ""
+    },
+    {
+      "key": "record_desc_14",
+      "kr": "이동속도 증가 +10%",
+      "en": ""
+    },
+    {
+      "key": "record_name_15",
+      "kr": "자이로스코프",
+      "en": ""
+    },
+    {
+      "key": "record_desc_15",
+      "kr": "공격력 +5% / 방어력 +5% 증가",
+      "en": ""
+    },
+    {
+      "key": "record_name_16",
+      "kr": "행복한 추억의 폴라로이드",
+      "en": ""
+    },
+    {
+      "key": "record_desc_16",
+      "kr": "방어력 +10%",
+      "en": ""
+    },
+    {
+      "key": "record_name_17",
+      "kr": "냉각 팬",
+      "en": ""
+    },
+    {
+      "key": "record_desc_17",
+      "kr": "쿨다운 감소 5%",
+      "en": ""
+    },
+    {
+      "key": "record_name_18",
+      "kr": "망연자실",
+      "en": ""
+    },
+    {
+      "key": "record_desc_18",
+      "kr": "게임 시작 시, 필드의 모든 적에게 10초 동안 출혈 부여",
+      "en": ""
+    },
+    {
+      "key": "record_name_19",
+      "kr": "별빛바다",
+      "en": ""
+    },
+    {
+      "key": "record_desc_19",
+      "kr": "30초 동안 치명타 피해량 +20% 증가",
+      "en": ""
+    },
+    {
+      "key": "record_name_20",
+      "kr": "슬립스트림",
+      "en": ""
+    },
+    {
+      "key": "record_desc_20",
+      "kr": "공격 시, 5% 확률로 이동속도 +12% 증가 (버프 중첩x)",
+      "en": ""
+    },
+    {
+      "key": "record_name_21",
+      "kr": "별이 빛나는 밤에",
+      "en": ""
+    },
+    {
+      "key": "record_desc_21",
+      "kr": "30초 동안 공격력 +10%",
+      "en": ""
+    },
+    {
+      "key": "record_name_1001",
+      "kr": "매그넘샷 강화",
+      "en": ""
+    },
+    {
+      "key": "record_desc_1001",
+      "kr": "해당 스킬 피해량 +19.999999999999996%",
+      "en": ""
+    },
+    {
+      "key": "record_name_1002",
+      "kr": "플라즈마광선 강화",
+      "en": ""
+    },
+    {
+      "key": "record_desc_1002",
+      "kr": "해당 스킬 피해량 +19.999999999999996%",
+      "en": ""
+    },
+    {
+      "key": "record_name_1003",
+      "kr": "파괴광선 강화",
+      "en": ""
+    },
+    {
+      "key": "record_desc_1003",
+      "kr": "해당 스킬 피해량 +19.999999999999996%",
+      "en": ""
+    },
+    {
+      "key": "record_name_1004",
+      "kr": "산탄 사격 강화",
+      "en": ""
+    },
+    {
+      "key": "record_desc_1004",
+      "kr": "해당 스킬 피해량 +19.999999999999996%",
+      "en": ""
+    },
+    {
+      "key": "record_name_1005",
+      "kr": "연속 발사 강화",
+      "en": ""
+    },
+    {
+      "key": "record_desc_1005",
+      "kr": "해당 스킬 피해량 +19.999999999999996%",
+      "en": ""
+    },
+    {
+      "key": "record_name_1006",
+      "kr": "데스 스파이럴 강화",
+      "en": ""
+    },
+    {
+      "key": "record_desc_1006",
+      "kr": "해당 스킬 피해량 +19.999999999999996%",
+      "en": ""
+    },
+    {
+      "key": "record_name_1007",
+      "kr": "분열 마탄 강화",
+      "en": ""
+    },
+    {
+      "key": "record_desc_1007",
+      "kr": "해당 스킬 피해량 +19.999999999999996%",
+      "en": ""
+    },
+    {
+      "key": "record_name_1008",
+      "kr": "마탄 폭격 강화",
+      "en": ""
+    },
+    {
+      "key": "record_desc_1008",
+      "kr": "해당 스킬 피해량 +19.999999999999996%",
+      "en": ""
+    },
+    {
+      "key": "record_name_1009",
+      "kr": "마탄 : 극악무도 강화",
+      "en": ""
+    },
+    {
+      "key": "record_desc_1009",
+      "kr": "해당 스킬 피해량 +19.999999999999996%",
+      "en": ""
+    },
+    {
+      "key": "record_name_1010",
+      "kr": "어시스트 웨폰 강화",
+      "en": ""
+    },
+    {
+      "key": "record_desc_1010",
+      "kr": "해당 스킬 피해량 +19.999999999999996%",
+      "en": ""
+    },
+    {
+      "key": "record_name_2000",
+      "kr": "금지된 마술 - 저주",
+      "en": "Forbidden Curse"
+    },
+    {
+      "key": "record_name_2001",
+      "kr": "모멸하는 비탄",
+      "en": ""
+    },
+    {
+      "key": "record_name_2002",
+      "kr": "가증스러운 증오",
+      "en": ""
+    },
+    {
+      "key": "record_name_2003",
+      "kr": "파멸하는 격노",
+      "en": ""
+    },
+    {
+      "key": "record_name_2004",
+      "kr": "갈망하는 탄식",
+      "en": ""
+    },
+    {
+      "key": "record_desc_2004",
+      "kr": "피해를 입은 대상에게 랜덤한 상태이상",
+      "en": ""
+    },
+    {
+      "key": "record_name_2005",
+      "kr": "흑주갑",
+      "en": ""
+    },
+    {
+      "key": "record_desc_2005",
+      "kr": "자신에게 저주 상태이상 부여, 데미지형 상태이상에게 받는 피해량 감소",
+      "en": ""
+    },
+    {
+      "key": "record_name_2006",
+      "kr": "숙련된 사수",
+      "en": ""
+    },
+    {
+      "key": "record_desc_2006",
+      "kr": "모든 탄환 속도 증가",
+      "en": ""
+    },
+    {
+      "key": "record_name_2007",
+      "kr": "탄두 개조",
+      "en": ""
+    },
+    {
+      "key": "record_desc_2007",
+      "kr": "탄환의 관통 +1",
+      "en": ""
+    },
+    {
+      "key": "record_name_2008",
+      "kr": "모든 탄환의 사수",
+      "en": ""
+    },
+    {
+      "key": "record_desc_2008",
+      "kr": "탄환 계열 스킬 피해량 증가",
+      "en": ""
+    },
+    {
+      "key": "record_name_10011",
+      "kr": "매그넘샷 - 할로 포인트",
+      "en": ""
+    },
+    {
+      "key": "record_name_10012",
+      "kr": "매그넘샷 - 풀 피어싱",
+      "en": ""
+    },
+    {
+      "key": "record_name_10021",
+      "kr": "플라즈마 레이 - 과충전",
+      "en": ""
+    },
+    {
+      "key": "record_name_10022",
+      "kr": "플라즈마 레이 - 절단광선",
+      "en": ""
+    },
+    {
+      "key": "record_name_10031",
+      "kr": "파괴광선 - 무충전",
+      "en": ""
+    },
+    {
+      "key": "record_name_10032",
+      "kr": "파괴광선 - 오버 드라이브",
+      "en": ""
+    },
+    {
+      "key": "record_name_10041",
+      "kr": "산탄 사격 - 드래곤 브레스",
+      "en": ""
+    },
+    {
+      "key": "record_name_10042",
+      "kr": "산탄 사격 - 초근접 화력",
+      "en": ""
+    },
+    {
+      "key": "record_name_10051",
+      "kr": "연속발사 - 화력 강화",
+      "en": ""
+    },
+    {
+      "key": "record_name_10052",
+      "kr": "연속발사 - 패스티스트",
+      "en": ""
+    },
+    {
+      "key": "record_name_10061",
+      "kr": "스파이럴탄 - 응집",
+      "en": ""
+    },
+    {
+      "key": "record_name_10062",
+      "kr": "스파이럴탄 - 스티키",
+      "en": ""
+    },
+    {
+      "key": "record_name_10063",
+      "kr": "스파이럴 탄 - 라스트 퍼니셔",
+      "en": ""
+    },
+    {
+      "key": "record_desc_10063",
+      "kr": "타격 종료 시 폭발",
+      "en": ""
+    },
+    {
+      "key": "record_name_10071",
+      "kr": "분열탄 - 유도 자탄",
+      "en": ""
+    },
+    {
+      "key": "record_name_10072",
+      "kr": "분열탄 - 저속 모듈",
+      "en": ""
+    },
+    {
+      "key": "record_name_10081",
+      "kr": "불릿 레인 - 철갑 폭격",
+      "en": ""
+    },
+    {
+      "key": "record_desc_10081",
+      "kr": "방어력 무시",
+      "en": ""
+    },
+    {
+      "key": "record_name_10082",
+      "kr": "불릿 레인 - 응집된 마나",
+      "en": ""
+    },
+    {
+      "key": "record_desc_10082",
+      "kr": "하나의 거대한 마력탄을 떨어트려 큰 피해로 변경",
+      "en": ""
+    },
+    {
+      "key": "record_name_10091",
+      "kr": "마탄 - 극악무도  - 블랙홀",
+      "en": ""
+    },
+    {
+      "key": "record_desc_10091",
+      "kr": "폭발 시, 적을 끌어들이는 블랙홀 생성",
+      "en": ""
+    },
+    {
+      "key": "record_name_10092",
+      "kr": "마탄 - 극악무도 - 마력 융합",
+      "en": ""
+    },
+    {
+      "key": "record_desc_10092",
+      "kr": "폭발 범위 증가",
+      "en": ""
+    },
+    {
+      "key": "record_name_10111",
+      "kr": "패스트 로더",
+      "en": ""
+    },
+    {
+      "key": "record_desc_10111",
+      "kr": "마법탄 장전 패시브의 장전 속도 증가",
+      "en": ""
+    },
+    {
+      "key": "record_name_10112",
+      "kr": "피니시 드라이브",
+      "en": ""
+    },
+    {
+      "key": "record_name_100101",
+      "kr": "어시스트 웨폰 - 체이서",
+      "en": ""
+    },
+    {
+      "key": "record_name_100102",
+      "kr": "어시스트 웨폰 - 철갑 관통 마력탄",
+      "en": ""
+    },
+    {
+      "key": "record_name_22",
+      "kr": "공격력·치명타 강화",
+      "en": ""
+    },
+    {
+      "key": "record_desc_22",
+      "kr": "공격력 +2%, 치명타 확률 +5%",
+      "en": ""
     }
   ]
 }

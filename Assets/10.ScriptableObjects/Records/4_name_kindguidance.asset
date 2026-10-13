@@ -13,14 +13,18 @@ MonoBehaviour:
   m_Name: 4_name_kindguidance
   m_EditorClassIdentifier: 
   id: 4
+  isImplemented: 1
+  importNote: 
   recordName: record_name_stat_atkspeed_inc
   description: record_desc_stat_atkspeed_inc
   icon: {fileID: 21300000, guid: ebe5dd8c50695a34dbd256e73a120687, type: 3}
   targetFilter: 0
   type: 1
   rarity: 0
-  status: 3
-  valueType: 1
-  effectValue: 0.05
-  triggerEvent: 
-  className: 
+  Stats:
+  - Status: 3
+    ValueType: 1
+    Value: 0.05
+  Skills: []
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 

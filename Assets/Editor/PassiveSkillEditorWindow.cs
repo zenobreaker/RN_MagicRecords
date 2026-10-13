@@ -116,13 +116,13 @@ public class PassiveSkillEditorWindow : EditorWindow
             foreach (var skill in skills)
             {
                 if (skill == null) continue;
-                string title = $"[{skill.id}] {(string.IsNullOrEmpty(skill.skillName) ? skill.name : skill.skillName)}";
-                if (!string.IsNullOrEmpty(search) && title.IndexOf(search, StringComparison.OrdinalIgnoreCase) < 0)
+                string title = $"[{skill.id}] {TheWheeler.Editor.EditorLocalization.Resolve(string.IsNullOrEmpty(skill.skillName) ? skill.name : skill.skillName)}";
+                if (!TheWheeler.Editor.EditorLocalization.Matches(search, skill.id, skill.skillName, skill.name))
                     continue;
                 Color previous = GUI.backgroundColor;
                 if (skill == selectedSkill) GUI.backgroundColor = new Color(0.3f, 0.6f, 0.9f);
                 var icon = skill.skillImage != null ? AssetPreview.GetAssetPreview(skill.skillImage) : null;
-                if (GUILayout.Button(new GUIContent(title, icon, AssetDatabase.GetAssetPath(skill)), style))
+                if (GUILayout.Button(new GUIContent(title, icon, skill.skillName + "\n" + AssetDatabase.GetAssetPath(skill)), style))
                     SelectSkill(skill);
                 GUI.backgroundColor = previous;
             }
@@ -151,7 +151,8 @@ public class PassiveSkillEditorWindow : EditorWindow
                 }
             }
             centerScroll = EditorGUILayout.BeginScrollView(centerScroll);
-            var modules = serializedSkill.FindProperty("Modules");
+                TheWheeler.Editor.EditorLocalization.DrawPreview(serializedSkill);
+                var modules = serializedSkill.FindProperty("Modules");
             if (selectedModuleIndex < 0)
             {
                 EditorGUILayout.LabelField("Base Properties", EditorStyles.boldLabel);

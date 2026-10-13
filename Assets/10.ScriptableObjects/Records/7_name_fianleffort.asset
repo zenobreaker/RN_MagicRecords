@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 7_name_fianleffort
   m_EditorClassIdentifier: 
   id: 7
+  isImplemented: 1
+  importNote: 
   recordName: record_name_stat_final_effort
   description: record_desc_stat_final_effort
   icon: {fileID: 21300000, guid: 7a7e22c0561e4014a8463c4e6423a2c3, type: 3}
@@ -21,4 +23,5 @@ MonoBehaviour:
   rarity: 0
   Stats: []
   Skills: []
-  Triggers: []
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 

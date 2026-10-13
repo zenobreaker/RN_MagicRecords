@@ -144,7 +144,7 @@ public sealed class RecordManager : MonoBehaviour
         }
         // 에셋으로 추가한 기본 패시브 강화 레코드도 JSON 재생성 없이 추첨에 포함합니다.
         foreach (var template in recordsDict.Values)
-            if (template != null && template.type == RecordType.PASSIVE && !enrichedRecords.Any(r => r.id == template.id))
+            if (template != null && template.isImplemented && template.type == RecordType.PASSIVE && !enrichedRecords.Any(r => r.id == template.id))
                 enrichedRecords.Add(template.GetRecordData());
         return enrichedRecords;
     }
@@ -341,6 +341,7 @@ public sealed class RecordManager : MonoBehaviour
     public bool IsRewardCandidate(RecordData record)
     {
         if (record == null || HasConflictingRecord(record)) return false;
+        if (recordsDict.TryGetValue(record.id, out var definition) && !definition.isImplemented) return false;
         if (IsRuntimePassiveRecord(record))
         {
             var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());

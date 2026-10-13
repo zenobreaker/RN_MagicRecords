@@ -86,7 +86,7 @@ public class SkillTestWindow : EditorWindow
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label(icon, GUILayout.Width(64f), GUILayout.Height(64f));
             EditorGUILayout.BeginVertical();
-            EditorGUILayout.LabelField(selectedSkill.skillName, EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(TheWheeler.Editor.EditorLocalization.Resolve(selectedSkill.skillName), EditorStyles.boldLabel);
             EditorGUILayout.LabelField($"ID : {selectedSkill.id}", EditorStyles.miniLabel);
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
@@ -170,7 +170,7 @@ public class SkillTestWindow : EditorWindow
                 testSkillLevel = Mathf.Clamp(testSkillLevel, 1, Mathf.Max(1, skill.maxLevel));
             }
             GUI.backgroundColor = previousColor;
-            EditorGUILayout.LabelField(skill.skillName, EditorStyles.miniLabel, GUILayout.Width(GridItemWidth - 4f));
+            EditorGUILayout.LabelField(new GUIContent(TheWheeler.Editor.EditorLocalization.Resolve(skill.skillName), skill.skillName), EditorStyles.miniLabel, GUILayout.Width(GridItemWidth - 4f));
             EditorGUILayout.EndVertical();
             index++;
             if (index % columns == 0)

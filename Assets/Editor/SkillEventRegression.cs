@@ -108,11 +108,12 @@ public static class SkillEventRegression
             var json = new TextAsset(File.ReadAllText("Assets/98.Datas/eventList.json")); assets.Add(json);
             typeof(DataBase).GetField("jsonAsset", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(db, json);
             db.Initialize();
-            var draft = db.GetEventInfo(1012)?.eventChoices.FirstOrDefault(x => x.ChoiceIndex == 1);
+            var draft = db.GetEventInfo(1012, includeInactive: true)?.eventChoices.FirstOrDefault(x => x.ChoiceIndex == 1);
             Check(draft != null && draft.ChoiceIsActive && draft.ActionType == EventActionType.RECORD_SKILL_UP &&
                 draft.ActionParam == EventActionParam.DRAFT_3 && draft.ActionValue == 3, "actual draft event JSON parsing");
-            Check(db.GetEventInfo(1010)?.eventChoices.Any(x => x.ChoiceIsActive && x.ActionType == EventActionType.RECORD_SKILL_UP) == true,
-                "upgrade event is reachable");
+            Check(db.GetEventInfo(1012) == null, "disabled draft event remains excluded outside shop definition lookup");
+            Check(db.GetEventInfo(1010)?.eventChoices.Any(x => !x.ChoiceIsActive && x.ActionType == EventActionType.RECORD_SKILL_UP) == true,
+                "authored disabled upgrade choice remains disabled");
             Check(draft.ResultButtonTextKey == "ui_btn_leave", "missing result button text defaults to leave");
             var strings = JsonUtility.FromJson<StringDataAllData>(File.ReadAllText("Assets/98.Datas/stringData.json"));
             Check(strings.stringData.Count(x => x.key == "ui_skill_event_upgrade_confirm" && !string.IsNullOrEmpty(x.kr) && !string.IsNullOrEmpty(x.en)) == 1,
@@ -217,11 +218,11 @@ public static class SkillEventRegression
             {
                 new() { kind = ExploreShopKind.Heal15, price = -1 },
                 new() { kind = ExploreShopKind.Heal60, price = -1 },
-                new() { kind = ExploreShopKind.SkillSwap, sold = true, purchases = 999 }
+                new() { kind = ExploreShopKind.SkillSwap, price = 50, sold = true, purchases = 999 }
             }};
             typeof(ExploreManager).GetMethod("UpdateShopOffers", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[] { stock });
-            Check(stock.offers[0].price == 15 && stock.offers[1].price == 50 && !stock.offers[2].sold,
-                "existing shop stock receives new heal prices and unlimited swap availability");
+            Check(stock.offers[0].price == 15 && stock.offers[1].price == 50 && !stock.offers[2].sold && stock.offers[2].price == 0,
+                "existing shop stock receives heal prices and free unlimited swap availability");
             return checks;
         }
         finally { Object.DestroyImmediate(a); Object.DestroyImmediate(b); }

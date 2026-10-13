@@ -92,6 +92,7 @@ public class ActiveSkillEditorWindow : EditorWindow
             SerializedProperty nameProp = so.FindProperty("skillName") ?? so.FindProperty("SkillName");
             string sName = nameProp != null ? nameProp.stringValue : "";
             if (string.IsNullOrEmpty(sName)) sName = skill.name;
+            sName = TheWheeler.Editor.EditorLocalization.Resolve(sName);
 
             Texture2D icon = null;
             SerializedProperty imageProp = so.FindProperty("skillImage") ?? so.FindProperty("icon");
@@ -102,7 +103,7 @@ public class ActiveSkillEditorWindow : EditorWindow
             }
 
             int sId = so.FindProperty("skillID")?.intValue ?? so.FindProperty("id")?.intValue ?? 0;
-            GUIContent content = new GUIContent($" [{sId}] {sName}", icon);
+            GUIContent content = new GUIContent($" [{sId}] {sName}", icon, nameProp?.stringValue ?? skill.name);
 
             Color oldBg = GUI.backgroundColor;
             if (selectedSkill == skill) GUI.backgroundColor = new Color(0.3f, 0.6f, 0.9f);
@@ -146,6 +147,8 @@ public class ActiveSkillEditorWindow : EditorWindow
 
         SerializedObject so = serializedSelectedSkill;
         so.Update();
+
+        TheWheeler.Editor.EditorLocalization.DrawPreview(so);
 
         SerializedProperty phaseListProp = so.FindProperty("phaseList");
 

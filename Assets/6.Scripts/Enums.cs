@@ -273,7 +273,7 @@ public enum RecordType
 {
     NONE,
     EMPTY,
-    PASSIVE,
+    PASSIVE,    // 일반적인 status 형식 
     AUGMENT, // 증강 (수치 강화) 
     MODIFY,  // 변형 (기믹 변형 : 관통 제거 등등) 
 }

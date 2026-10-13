@@ -16,6 +16,7 @@ public class SO_ActiveSkillDataEditor : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
+        TheWheeler.Editor.EditorLocalization.DrawPreview(serializedObject);
 
         // ---------------------------------------------------------
         // 1. Skill Info Section

@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 6_name_crime
   m_EditorClassIdentifier: 
   id: 6
+  isImplemented: 1
+  importNote: 
   recordName: record_name_skill_auto_reload
   description: record_desc_skill_auto_reload
   icon: {fileID: 21300000, guid: f15ae4c1facb85245ac36f28c93f0d4e, type: 3}
@@ -20,5 +22,6 @@ MonoBehaviour:
   type: 3
   rarity: 0
   Stats: []
-  linkedPassiveSkillID: 1101
-  mutualExclusionGroup:
+  Skills: []
+  linkedPassiveSkillID: 10111
+  mutualExclusionGroup: 

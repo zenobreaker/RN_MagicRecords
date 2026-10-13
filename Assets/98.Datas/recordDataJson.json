@@ -1,205 +1,852 @@
 {
   "recordDataJson": [
     {
-      "id": "1",
-      "recordType": "1",
+      "id": 1,
+      "recordType": 1,
       "targetFilter": "ALL",
-      "rarity": "1"
-    },
-    {
-      "id": "2",
-      "recordType": "1",
-      "targetFilter": "ALL",
-      "rarity": "1"
-    },
-    {
-      "id": "3",
-      "recordType": "1",
-      "targetFilter": "ALL",
-      "rarity": "1"
-    },
-    {
-      "id": "4",
-      "recordType": "1",
-      "targetFilter": "ALL",
-      "rarity": "1"
-    },
-    {
-      "id": "5",
-      "recordType": "1",
-      "targetFilter": "ALL",
-      "rarity": "1",
+      "rarity": 0,
       "stats": [
-        { "stat": "CRIT_RATIO", "calcType": 0, "value": 0.05 }
-      ]
+        {
+          "stat": "ATTACK",
+          "calcType": 1,
+          "value": 0.05
+        }
+      ],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "6",
-      "recordType": "2",
+      "id": 2,
+      "recordType": 1,
       "targetFilter": "ALL",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [
+        {
+          "stat": "DEFENSE",
+          "calcType": 1,
+          "value": 0.05
+        }
+      ],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "7",
-      "recordType": "1",
+      "id": 3,
+      "recordType": 1,
       "targetFilter": "ALL",
-      "rarity": "2"
+      "rarity": 0,
+      "stats": [
+        {
+          "stat": "MOVESPEED",
+          "calcType": 1,
+          "value": 0.01
+        }
+      ],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1001",
-      "recordType": "2",
-      "targetFilter": "Shooter",
-      "rarity": "1"
+      "id": 4,
+      "recordType": 1,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [
+        {
+          "stat": "ATTACKSPEED",
+          "calcType": 1,
+          "value": 0.05
+        }
+      ],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1002",
-      "recordType": "2",
-      "targetFilter": "Shooter",
-      "rarity": "1"
+      "id": 5,
+      "recordType": 3,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [
+        {
+          "stat": "CRIT_RATIO",
+          "calcType": 1,
+          "value": 0.05
+        }
+      ],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1003",
-      "recordType": "2",
+      "id": 6,
+      "recordType": 3,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10111,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1004",
-      "recordType": "2",
-      "targetFilter": "Shooter",
-      "rarity": "1"
+      "id": 7,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1005",
-      "recordType": "2",
+      "id": 1001,
+      "recordType": 3,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [
+        {
+          "skillID": 1001,
+          "modifier": "Damage",
+          "operation": "Multiply",
+          "value": 1.2
+        }
+      ],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
     },
     {
-      "id": "1006",
-      "recordType": "2",
+      "id": 1002,
+      "recordType": 3,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [
+        {
+          "skillID": 1002,
+          "modifier": "Damage",
+          "operation": "Multiply",
+          "value": 1.2
+        }
+      ],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
     },
     {
-      "id": "1007",
-      "recordType": "2",
+      "id": 1003,
+      "recordType": 3,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [
+        {
+          "skillID": 1003,
+          "modifier": "Damage",
+          "operation": "Multiply",
+          "value": 1.2
+        }
+      ],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
     },
     {
-      "id": "1008",
-      "recordType": "2",
+      "id": 1004,
+      "recordType": 3,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [
+        {
+          "skillID": 1004,
+          "modifier": "Damage",
+          "operation": "Multiply",
+          "value": 1.2
+        }
+      ],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
     },
     {
-      "id": "1009",
-      "recordType": "2",
+      "id": 1005,
+      "recordType": 3,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [
+        {
+          "skillID": 1005,
+          "modifier": "Damage",
+          "operation": "Multiply",
+          "value": 1.2
+        }
+      ],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
     },
     {
-      "id": "1010",
-      "recordType": "2",
+      "id": 1006,
+      "recordType": 3,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [
+        {
+          "skillID": 1006,
+          "modifier": "Damage",
+          "operation": "Multiply",
+          "value": 1.2
+        }
+      ],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
     },
     {
-      "id": "1011",
-      "recordType": "3",
+      "id": 1007,
+      "recordType": 3,
       "targetFilter": "Shooter",
-      "rarity": "3"
+      "rarity": 0,
+      "stats": [],
+      "skills": [
+        {
+          "skillID": 1007,
+          "modifier": "Damage",
+          "operation": "Multiply",
+          "value": 1.2
+        }
+      ],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
     },
     {
-      "id": "1012",
-      "recordType": "3",
+      "id": 1008,
+      "recordType": 3,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [
+        {
+          "skillID": 1008,
+          "modifier": "Damage",
+          "operation": "Multiply",
+          "value": 1.2
+        }
+      ],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
     },
     {
-      "id": "1013",
-      "recordType": "3",
+      "id": 1009,
+      "recordType": 3,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [
+        {
+          "skillID": 1009,
+          "modifier": "Damage",
+          "operation": "Multiply",
+          "value": 1.2
+        }
+      ],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
     },
     {
-      "id": "1014",
-      "recordType": "3",
+      "id": 1010,
+      "recordType": 3,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [
+        {
+          "skillID": 1010,
+          "modifier": "Damage",
+          "operation": "Multiply",
+          "value": 1.2
+        }
+      ],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
     },
     {
-      "id": "1015",
-      "recordType": "3",
+      "id": 10011,
+      "recordType": 4,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10011,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1016",
-      "recordType": "3",
+      "id": 10012,
+      "recordType": 4,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10012,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1017",
-      "recordType": "3",
+      "id": 10021,
+      "recordType": 4,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10021,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1018",
-      "recordType": "3",
+      "id": 10022,
+      "recordType": 4,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10022,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1019",
-      "recordType": "3",
+      "id": 10031,
+      "recordType": 4,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10031,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1020",
-      "recordType": "3",
+      "id": 10032,
+      "recordType": 4,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10032,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1021",
-      "recordType": "3",
+      "id": 10041,
+      "recordType": 4,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10041,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1022",
-      "recordType": "3",
+      "id": 10042,
+      "recordType": 4,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10042,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1023",
-      "recordType": "3",
+      "id": 10061,
+      "recordType": 4,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10061,
+      "isImplemented": true,
+      "importNote": ""
     },
     {
-      "id": "1024",
-      "recordType": "3",
+      "id": 10063,
+      "recordType": 4,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
     },
     {
-      "id": "1025",
-      "recordType": "3",
+      "id": 10091,
+      "recordType": 4,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
     },
     {
-      "id": "1026",
-      "recordType": "3",
+      "id": 10092,
+      "recordType": 3,
       "targetFilter": "Shooter",
-      "rarity": "1"
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 10081,
+      "recordType": 3,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 10082,
+      "recordType": 4,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 100101,
+      "recordType": 4,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 100101,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 100102,
+      "recordType": 4,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 100102,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": -1,
+      "recordType": 1,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 8,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [
+        {
+          "stat": "ATTACK",
+          "calcType": 1,
+          "value": 0.03
+        },
+        {
+          "stat": "ATTACKSPEED",
+          "calcType": 1,
+          "value": 0.01
+        }
+      ],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 9,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [
+        {
+          "stat": "DEFENSE",
+          "calcType": 1,
+          "value": 0.03
+        },
+        {
+          "stat": "HEALTH",
+          "calcType": 1,
+          "value": 0.1
+        }
+      ],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 10,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 11,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 11,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 12,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 13,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 14,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 15,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 16,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 17,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 18,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 19,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 20,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 21,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 22,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [
+        {
+          "stat": "ATTACK",
+          "calcType": 1,
+          "value": 0.02
+        },
+        {
+          "stat": "CRIT_RATIO",
+          "calcType": 1,
+          "value": 0.05
+        }
+      ],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 2000,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 1200,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 2001,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 1201,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 2002,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 1202,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 2003,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 1203,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 2004,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 2005,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 2006,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 2007,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 2008,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": false,
+      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+    },
+    {
+      "id": 10051,
+      "recordType": 4,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10051,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 10052,
+      "recordType": 4,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10052,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 10062,
+      "recordType": 4,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10062,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 10071,
+      "recordType": 4,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10071,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 10072,
+      "recordType": 4,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10072,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 10111,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10111,
+      "isImplemented": true,
+      "importNote": ""
+    },
+    {
+      "id": 10112,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 10112,
+      "isImplemented": true,
+      "importNote": ""
     }
   ]
 }

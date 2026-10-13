@@ -51,6 +51,8 @@ public class RecordTriggerJson
 public class RecordDataJson
 {
     public int id;
+    public bool isImplemented = true;
+    public int linkedPassiveSkillID;
     public List<RecordStatJson> stats = new();
     public int rarity;
     public int recordType;
@@ -131,7 +133,7 @@ public class RecordDataBase : DataBase
             // 2. 로드된 에셋들을 순회하며 딕셔너리에 세팅
             foreach (var recordSO in loadedRecords)
             {
-                if (recordSO == null) continue;
+                if (recordSO == null || !recordSO.isImplemented) continue;
 
                 // SO 내부의 실제 데이터 추출
                 RecordData recordData = recordSO.GetRecordData();

@@ -72,7 +72,7 @@ public class RecordTestWindow : EditorWindow
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label(icon, GUILayout.Width(64f), GUILayout.Height(64f));
             EditorGUILayout.BeginVertical();
-            EditorGUILayout.LabelField(selectedRecord.recordName, EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(TheWheeler.Editor.EditorLocalization.Resolve(selectedRecord.recordName), EditorStyles.boldLabel);
             EditorGUILayout.LabelField($"ID : {selectedRecord.id}", EditorStyles.miniLabel);
             EditorGUILayout.LabelField($"대상 : {selectedRecord.targetFilter}", EditorStyles.miniLabel);
             EditorGUILayout.EndVertical();
@@ -103,8 +103,7 @@ public class RecordTestWindow : EditorWindow
     {
         IEnumerable<SO_RecordData> filteredRecords = records.Where(record =>
         {
-            bool nameMatch = string.IsNullOrEmpty(searchFilter)
-                || record.recordName.IndexOf(searchFilter, StringComparison.OrdinalIgnoreCase) >= 0;
+            bool nameMatch = TheWheeler.Editor.EditorLocalization.Matches(searchFilter, record.id, record.recordName, record.name);
             bool targetMatch = selectedTarget == TargetFilterType.ALL || record.targetFilter == selectedTarget;
             return nameMatch && targetMatch;
         });
@@ -130,7 +129,7 @@ public class RecordTestWindow : EditorWindow
             if (GUILayout.Button(icon, GUILayout.Width(64f), GUILayout.Height(64f)))
                 selectedRecord = record;
             GUI.backgroundColor = previousColor;
-            EditorGUILayout.LabelField(record.recordName, EditorStyles.miniLabel, GUILayout.Width(GridItemWidth - 4f));
+            EditorGUILayout.LabelField(new GUIContent(TheWheeler.Editor.EditorLocalization.Resolve(record.recordName), record.recordName), EditorStyles.miniLabel, GUILayout.Width(GridItemWidth - 4f));
             EditorGUILayout.LabelField($"[{record.id}] {record.targetFilter}", EditorStyles.miniLabel, GUILayout.Width(GridItemWidth - 4f));
             EditorGUILayout.EndVertical();
             index++;
