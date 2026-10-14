@@ -120,12 +120,6 @@ public static class SaveManager
         get
         {
 #if UNITY_EDITOR
-            string shopTestDirectory = UnityEditor.SessionState.GetString("ShopRegression.SaveDirectory", "");
-            if (!string.IsNullOrEmpty(shopTestDirectory))
-            {
-                Directory.CreateDirectory(shopTestDirectory);
-                return shopTestDirectory;
-            }
             if (UnityEditor.SessionState.GetBool("EventScenario.UseSandbox", false))
             {
                 string directory = Path.Combine(Application.persistentDataPath, "EventScenario");

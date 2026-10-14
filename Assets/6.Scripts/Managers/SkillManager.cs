@@ -54,8 +54,20 @@ public class SkillManager : Singleton<SkillManager>
             return;
         }
 
+        // Once a run owns this character's skills, never put a permanent skill-tree object back in its slots.
+        if (skill?.template is SO_ActiveSkillData template && runSkills.TryGetValue(charId, out var state))
+        {
+            var runSkill = state.GetOrAddSkill(template);
+            if (runSkill.currentLevel <= 0)
+            {
+                runSkill.currentLevel = skill.currentLevel;
+                runSkill.isUnlocked = skill.isUnlocked;
+            }
+            skill = runSkill;
+        }
+
         // 이미 장착된 스킬이라면 기존 슬롯에서 제거
-        int prevSlot = equippedSkills.FindIndex(x => x == skill);
+        int prevSlot = equippedSkills.FindIndex(x => skill != null && x?.GetSkillID() == skill.GetSkillID());
 
         if (prevSlot != -1)
         {
@@ -171,6 +183,16 @@ public class SkillManager : Singleton<SkillManager>
 
     public List<ExploreActiveSkillSaveData> CaptureRunSkills() =>
         runSkills.Select(pair => pair.Value.Capture(pair.Key)).ToList();
+
+    public bool HasRunSkills(int characterID) => runSkills.ContainsKey(characterID);
+
+    public List<ExploreActiveSkillSaveData> CaptureRunSkills(int characterID, int jobID)
+    {
+        if (characterID <= 0 || jobID <= 0) return new();
+        // Preparation equips slots before the shop ever creates an ExploreSkillState.
+        GetRunSkills(characterID, jobID);
+        return new List<ExploreActiveSkillSaveData> { runSkills[characterID].Capture(characterID) };
+    }
 
     public bool GainSkillForCheat(Player player, SO_ActiveSkillData template, int slot, int level)
     {

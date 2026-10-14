@@ -130,6 +130,21 @@ public class Status
 
 public class StatusComponent : MonoBehaviour
 {
+    private readonly Dictionary<object, float> cooldownReductions = new();
+    public void SetCooldownReduction(object source, float amount)
+    {
+        if (source != null && !float.IsNaN(amount) && !float.IsInfinity(amount)) cooldownReductions[source] = Mathf.Clamp01(amount);
+    }
+    public void RemoveCooldownReduction(object source)
+    {
+        if (source != null) cooldownReductions.Remove(source);
+    }
+    public float GetCooldownMultiplier()
+    {
+        float reduction = 0;
+        foreach (float value in cooldownReductions.Values) reduction += value;
+        return 1f - Mathf.Clamp(reduction, 0, .95f);
+    }
     [SerializeField] private Status status;
     
     

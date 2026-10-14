@@ -8,6 +8,9 @@ public class BattleManager
 {
     public event Action<GameObject, GameObject, DamageEvent> OnAnyAttackHit;
     public event Action<GameObject, GameObject, float> OnAnyAttackHitFinish;
+    public event Action OnBattleStarted;
+    public bool IsInBattle => bInBattle;
+    public IReadOnlyList<Character> CurrentEnemies => enemies.AsReadOnly();
 
     private event Action OnFinishBeginBattle;
 
@@ -38,6 +41,7 @@ public class BattleManager
         enemies = Instance.enemies;
         OnAnyAttackHit = Instance.OnAnyAttackHit;
         OnAnyAttackHitFinish = Instance.OnAnyAttackHitFinish;
+        OnBattleStarted = Instance.OnBattleStarted;
         OnFinishBeginBattle = Instance.OnFinishBeginBattle;
 
         bInBattle = Instance.bInBattle;
@@ -125,6 +129,7 @@ public class BattleManager
 
     public void OnBattle()
     {
+        bool starting = !bInBattle;
         foreach (var p in players)
         {
             Debug.Log($"Player = {p}");
@@ -134,6 +139,7 @@ public class BattleManager
 
         foreach (var enemy in enemies)
             TryAiToJoinBattle(enemy);
+        if (starting) OnBattleStarted?.Invoke();
     }
 
 

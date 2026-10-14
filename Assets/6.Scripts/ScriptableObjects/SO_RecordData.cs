@@ -52,6 +52,7 @@ public class RecordData
 
     public List<RecordSkillData> Skills = new();
 
+
     public List<RecordTriggerData> Triggers = new();
 
     public RecordData()
@@ -105,6 +106,8 @@ public class SO_RecordData : ScriptableObject
     public List<RecordSkillData> Skills = new();
 
     // 💡 [변경점] 더 이상 Triggers(문자열)로 클래스를 찾지 않습니다.
+    [SerializeReference] public List<CommonRecordModule> Modules = new();
+
     // 대신 이 레코드가 발동시킬 SO_PassiveSkillData의 ID를 직접 가리키거나,
     // ID가 동일하다면 바로 SkillTreeManager에서 가져옵니다.
     public int linkedPassiveSkillID; // (JSON에서 받아올 매그넘샷-할로포인트의 ID: 1011 등)
@@ -115,6 +118,7 @@ public class SO_RecordData : ScriptableObject
 
     public PassiveSkill CreatePassiveSkill()
     {
+        if (Modules != null && Modules.Count > 0) return new RecordPassive(this);
         int currentClassID = 0;
         if (targetFilter == TargetFilterType.ALL)
             currentClassID = 0;

@@ -270,7 +270,8 @@ public abstract class ActiveSkill
 
     private void SetCooldown()
     {
-        maxCooldown = Mathf.Max(0f, limitCooldown, Runtime.Base.Cooldown / castAttackSpeed);
+        float recordCooldownMultiplier = status != null ? status.GetCooldownMultiplier() : 1f;
+        maxCooldown = Mathf.Max(0f, limitCooldown, Runtime.Base.Cooldown * recordCooldownMultiplier / castAttackSpeed);
         currentCooldown = maxCooldown;
     }
 

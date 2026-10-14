@@ -609,6 +609,9 @@ public class AppManager
             skillTree == null)
             return;
 
+        // A resumed run owns its loadout; a delayed lobby-save callback must not overwrite it.
+        if (skillManager.HasRunSkills(characterID) || skillIDs == null) return;
+
         int slot = 0;
 
         foreach (int skillID in skillIDs)

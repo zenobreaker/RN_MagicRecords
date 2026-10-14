@@ -40,6 +40,7 @@ public class SO_SkillEventHandler : ScriptableObject
     public void ClearCache()
     {
         Array.Clear(CurrentActiveSkills, 0, CurrentActiveSkills.Length);
+        OnChangedBullets(null);
     }
 
     #endregion
@@ -61,6 +62,7 @@ public class SO_SkillEventHandler : ScriptableObject
 
     public void OnChangedBullets(Queue<BulletData> bullets)
     {
+        MagicBulletCount = bullets == null ? 0 : bullets.Count;
         OnChangeBullets?.Invoke(bullets);
     }
 

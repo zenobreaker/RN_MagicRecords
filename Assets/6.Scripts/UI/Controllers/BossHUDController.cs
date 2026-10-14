@@ -39,6 +39,7 @@ public class BossHUDController : MonoBehaviour
     {
         var obj = Instantiate(hpbarPrefab, container);
         var hpBarUI = obj.GetComponent<BossGauageUI>();
+        obj.GetComponentInChildren<BossEffectGroupUI>(true).SafeInvoke(ui => ui.SetBoss(boss));
 
         if (boss is Enemy enemy) hpBarUI.SetName(boss.name);
 

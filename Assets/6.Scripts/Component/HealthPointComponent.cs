@@ -114,6 +114,14 @@ public class HealthPointComponent : MonoBehaviour
         maxHealthPoint = value; 
         InitCurrentHealth();
     }
+    public void UpdateMaxHealthPreservingCurrent(float value)
+    {
+        maxHealthPoint = Mathf.Max(1, value);
+        currentHealthPoint = Mathf.Clamp(currentHealthPoint, 0, maxHealthPoint);
+        OnChangedHP_TwoParam?.Invoke(currentHealthPoint, maxHealthPoint);
+        if (GetComponent<Player>() != null)
+            handler.SafeInvoke(v => v.OnChangeValue_HP(currentHealthPoint, maxHealthPoint));
+    }
 
     public void Damage(float amount)
     {

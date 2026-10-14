@@ -46,8 +46,21 @@ public sealed class RecordManager : MonoBehaviour
     {
         ResetRecordFlowData();
 
+        recordsDict.Clear();
         foreach (var record in records)
+        {
+            if (record == null)
+            {
+                Debug.LogWarning("[RecordManager] 레코드 목록의 비어 있거나 삭제된 에셋을 건너뜁니다.", this);
+                continue;
+            }
+            if (recordsDict.ContainsKey(record.id))
+            {
+                Debug.LogWarning($"[RecordManager] 중복 레코드 ID {record.id}를 건너뜁니다.", this);
+                continue;
+            }
             recordsDict.Add(record.id, record);
+        }
 
         // 인벤토리에 변동이 생길 때마다 자동으로 세이브 플레그 ON 
         recordInventory.OnInventoryChanged += (inv) => { isDirty = true; };

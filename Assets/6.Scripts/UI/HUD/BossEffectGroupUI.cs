@@ -3,6 +3,29 @@ using UnityEngine;
 
 public class BossEffectGroupUI : EffectGroupUI
 {
+    private Character targetBoss;
+
+    public void SetBoss(Character boss)
+    {
+        targetBoss = boss;
+        RefreshEffects();
+    }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        RefreshEffects();
+    }
+
+    private void RefreshEffects()
+    {
+        if (targetBoss == null) return;
+        var effects = targetBoss.GetComponent<EffectComponent>();
+        if (effects == null) return;
+        // Battle-start effects may precede the first HP notification that creates this UI.
+        foreach (var effect in effects.ActiveEffects)
+            UpdateEffectIcon(effect);
+    }
 
     protected override void SetHUDHandler(SO_HUDHandler handler)
     {
@@ -21,9 +44,7 @@ public class BossEffectGroupUI : EffectGroupUI
     // 보스 전용 이벤트 핸들러
     private void OnBossEffect(Character boss, BaseEffect effect)
     {
-        // 여기서 'boss' 파라미터를 통해 현재 UI가 보고 있는 보스가 맞는지 체크 가능
-        // 만약 보스가 여러 명이라면 if(this.targetBoss == boss) 로직 추가 가능
-
+        if (boss != targetBoss) return;
         UpdateEffectIcon(effect);
     }
 }

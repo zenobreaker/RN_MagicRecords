@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +9,7 @@ public class EffectComponent : MonoBehaviour
     private Character owner;
 
     private Dictionary<string, BaseEffect> activeEffects = new Dictionary<string, BaseEffect>();
+    public IReadOnlyCollection<BaseEffect> ActiveEffects => activeEffects.Values;
     private List<BaseEffect> expiredEffects = new();
     private readonly List<BaseEffect> updatingEffects = new();
 
@@ -94,6 +95,10 @@ public class EffectComponent : MonoBehaviour
 
     private void NotifyEffectUI(BaseEffect newEffect)
     {
+        // SpawnManager assigns the boss grade after Awake (also for pooled enemies).
+        if (handler == null && (owner is Player || (owner is Enemy boss && boss.Boss)))
+            handler = Resources.Load<SO_HUDHandler>("SO_HUDHandler");
+
         if (owner is Player)
             handler.SafeInvoke(ui => ui.OnApplyEffect(newEffect));
         else if (owner is Enemy enemy && enemy.Boss)

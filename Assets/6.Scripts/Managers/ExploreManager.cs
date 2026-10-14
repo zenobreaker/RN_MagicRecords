@@ -615,7 +615,8 @@ public sealed partial class ExploreManager : MonoBehaviour
             characterLevels = PlayerManager.Instance.SafeInvoke(players => players.CaptureRunCharacterLevels()) ?? new(),
             startingPassiveVersion = startingPassivesInitialized ? 1 : 0,
             startingPassives = CaptureStartingPassiveState(),
-            activeSkills = SkillManager.Instance?.CaptureRunSkills() ?? new()
+            activeSkills = SkillManager.Instance.SafeInvoke(skills => skills.CaptureRunSkills(
+                CurrentSetupData.SelectedCharacterId, CurrentSetupData.SelectedClassId)) ?? new()
         };
 
         if (RunStatus != RunStatus.SetupIncomplete)

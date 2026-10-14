@@ -36,6 +36,7 @@ public class ResourceCounterUI : MonoBehaviour
             {
                 subscribedHandler.OnUpdateMagicBulletLoad += OnCapacityChanged;
                 subscribedHandler.OnChangeBullets += OnBulletsChanged;
+                currentCount = subscribedHandler.MagicBulletCount;
             }
         }
         SetCount(currentCount);
