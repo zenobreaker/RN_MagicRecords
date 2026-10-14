@@ -56,7 +56,10 @@ public class PassiveModuleDrawer : PropertyDrawer
 
         menu.AddItem(new GUIContent("None / Clear"), false, () => SetModule(null));
         menu.AddSeparator("");
-        PassiveModuleMenu.AddItems(menu, SetModule);
+        if (property.managedReferenceFieldTypename.EndsWith(" CommonRecordModule"))
+            PassiveModuleMenu.AddItems(menu, SetModule, type => typeof(CommonRecordModule).IsAssignableFrom(type));
+        else
+            PassiveModuleMenu.AddItems(menu, SetModule);
         menu.ShowAsContext();
     }
 }

@@ -7,16 +7,18 @@ using UnityEngine;
 // 전용 에디터와 인스펙터가 같은 모듈 목록/프리셋을 사용합니다.
 internal static class PassiveModuleMenu
 {
-    public static void AddItems(GenericMenu menu, Action<PassiveModule> onSelected)
+    public static void AddItems(GenericMenu menu, Action<PassiveModule> onSelected, Func<Type, bool> typeFilter = null)
     {
+        typeFilter ??= type => !typeof(CommonRecordModule).IsAssignableFrom(type);
         var types = TypeCache.GetTypesDerivedFrom<PassiveModule>()
             .Where(type => !type.IsAbstract && !type.IsGenericType && type.IsSerializable &&
-                type.GetConstructor(Type.EmptyTypes) != null)
+                type.GetConstructor(Type.EmptyTypes) != null && (typeFilter == null || typeFilter(type)))
             .OrderBy(GetCategoryPath);
         foreach (var type in types)
             menu.AddItem(new GUIContent(GetCategoryPath(type)), false,
                 () => onSelected((PassiveModule)Activator.CreateInstance(type)));
 
+        if (typeFilter != null && !typeFilter(typeof(Module_Passive_StatBonus))) return;
         // 메뉴 항목만 구분하고, 저장되는 타입은 기존 공용 스탯 모듈입니다.
         menu.AddItem(new GUIContent("Passive/Stat/공격력 증가"), false,
             () => onSelected(CreateStatPreset(StatusType.ATTACK, 10f)));
