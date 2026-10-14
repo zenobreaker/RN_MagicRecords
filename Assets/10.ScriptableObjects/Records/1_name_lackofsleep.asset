@@ -11,20 +11,37 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: 1_name_lackofsleep
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   id: 1
   isImplemented: 1
-  importNote: 
+  importNote:
   recordName: record_name_stat_atk_inc
   description: record_desc_stat_atk_inc
   icon: {fileID: 21300000, guid: ebe5dd8c50695a34dbd256e73a120687, type: 3}
   targetFilter: 0
-  type: 1
+  type: 2
   rarity: 0
-  Stats:
-  - Status: 1
-    ValueType: 1
-    Value: 0.05
+  Stats: []
   Skills: []
+  Modules:
+  - rid: 5568133901561888881
   linkedPassiveSkillID: 0
-  mutualExclusionGroup: 
+  mutualExclusionGroup:
+  references:
+    version: 2
+    RefIds:
+    - rid: 5568133901561888881
+      type: {class: CommonRecordBuffModule, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        activation: 0
+        buffs:
+        - buff: {fileID: 11400000, guid: 8a5a67c9c4f1409c946bd8a4a32e5c6f, type: 2}
+          kind: 0
+          stat: 1
+          valueType: 1
+          displayName: "\uACF5\uACA9\uB825 \uC99D\uAC00"
+          amount: 0.05
+          duration: 0
+        probability: 1
+        healthThreshold: 0.3

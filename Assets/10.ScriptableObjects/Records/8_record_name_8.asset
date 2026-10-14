@@ -14,20 +14,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_RecordData
   id: 8
   isImplemented: 1
-  importNote: 
+  importNote:
   recordName: record_name_8
   description: record_desc_stat_atk_atkspeed_inc
   icon: {fileID: 0}
   targetFilter: 0
   type: 2
   rarity: 0
-  Stats:
-  - Status: 1
-    ValueType: 1
-    Value: 0.03
-  - Status: 3
-    ValueType: 1
-    Value: 0.01
+  Stats: []
   Skills: []
+  Modules:
+  - rid: 5568133901561888872
   linkedPassiveSkillID: 0
-  mutualExclusionGroup: 
+  mutualExclusionGroup:
+  references:
+    version: 2
+    RefIds:
+    - rid: 5568133901561888872
+      type: {class: CommonRecordBuffModule, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        activation: 0
+        buffs:
+        - buff: {fileID: 11400000, guid: 8a5a67c9c4f1409c946bd8a4a32e5c6f, type: 2}
+          kind: 0
+          stat: 1
+          valueType: 1
+          displayName: "\uACF5\uACA9\uB825 \uC99D\uAC00"
+          amount: 0.03
+          duration: 0
+        - buff: {fileID: 11400000, guid: 3173ba64914441f497c54ec9fa429519, type: 2}
+          kind: 0
+          stat: 3
+          valueType: 1
+          displayName: "\uACF5\uACA9\uC18D\uB3C4 \uC99D\uAC00"
+          amount: 0.01
+          duration: 0
+        probability: 1
+        healthThreshold: 0.3

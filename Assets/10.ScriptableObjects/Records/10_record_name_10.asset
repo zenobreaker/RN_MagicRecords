@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: 10_record_name_10
   m_EditorClassIdentifier: Assembly-CSharp::SO_RecordData
   id: 10
-  isImplemented: 0
-  importNote: "\uAE30\uD68D \uB370\uC774\uD130 \uC5D0\uC14B: \uD6A8\uACFC \uB85C\uC9C1
-    \uBBF8\uAD6C\uD604"
+  isImplemented: 1
+  importNote:
   recordName: record_name_10
   description: record_desc_10
   icon: {fileID: 0}
@@ -24,5 +23,25 @@ MonoBehaviour:
   rarity: 0
   Stats: []
   Skills: []
+  Modules:
+  - rid: 5568133901561888874
   linkedPassiveSkillID: 0
-  mutualExclusionGroup: 
+  mutualExclusionGroup:
+  references:
+    version: 2
+    RefIds:
+    - rid: 5568133901561888874
+      type: {class: CommonRecordBuffModule, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        activation: 0
+        buffs:
+        - buff: {fileID: 11400000, guid: 8a5a67c9c4f1409c946bd8a4a32e5c6f, type: 2}
+          kind: 0
+          stat: 1
+          valueType: 1
+          displayName: "\uACF5\uACA9\uB825 \uC99D\uAC00"
+          amount: 0.1
+          duration: 0
+        probability: 1
+        healthThreshold: 0.3

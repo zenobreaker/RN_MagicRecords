@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: 18_record_name_18
   m_EditorClassIdentifier: Assembly-CSharp::SO_RecordData
   id: 18
-  isImplemented: 0
-  importNote: "\uAE30\uD68D \uB370\uC774\uD130 \uC5D0\uC14B: \uD6A8\uACFC \uB85C\uC9C1
-    \uBBF8\uAD6C\uD604"
+  isImplemented: 1
+  importNote:
   recordName: record_name_18
   description: record_desc_18
   icon: {fileID: 0}
@@ -24,5 +23,17 @@ MonoBehaviour:
   rarity: 0
   Stats: []
   Skills: []
+  Modules:
+  - rid: 5568133901561888879
   linkedPassiveSkillID: 0
-  mutualExclusionGroup: 
+  mutualExclusionGroup:
+  references:
+    version: 2
+    RefIds:
+    - rid: 5568133901561888879
+      type: {class: CommonRecordBattleBleedModule, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        bleed: {fileID: 11400000, guid: 50a2bac2a64340c48af2c6d55330f575, type: 2}
+        duration: 10
+        attackRatio: 0.1

@@ -11,20 +11,37 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: 2_name_bumpertobumper
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   id: 2
   isImplemented: 1
-  importNote: 
+  importNote:
   recordName: record_name_stat_def_inc
   description: record_desc_stat_def_inc
   icon: {fileID: 21300000, guid: f2fa9a9d17cca10408c23f451a6b9ccb, type: 3}
   targetFilter: 0
-  type: 1
+  type: 2
   rarity: 0
-  Stats:
-  - Status: 2
-    ValueType: 1
-    Value: 0.05
+  Stats: []
   Skills: []
+  Modules:
+  - rid: 5568133901561888875
   linkedPassiveSkillID: 0
-  mutualExclusionGroup: 
+  mutualExclusionGroup:
+  references:
+    version: 2
+    RefIds:
+    - rid: 5568133901561888875
+      type: {class: CommonRecordBuffModule, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        activation: 0
+        buffs:
+        - buff: {fileID: 11400000, guid: 2815d87dff13416c9537f3ae57f8f78b, type: 2}
+          kind: 0
+          stat: 2
+          valueType: 1
+          displayName: "\uBC29\uC5B4\uB825 \uC99D\uAC00"
+          amount: 0.05
+          duration: 0
+        probability: 1
+        healthThreshold: 0.3
