@@ -188,6 +188,7 @@ MonoBehaviour:
   - phaseName: Shot
     isInstant: 0
     modules:
+    - rid: 91009
     - rid: 91001
     - rid: 9167119434737516818
     - rid: 91006
@@ -354,3 +355,14 @@ MonoBehaviour:
         consumePerPhase: 1
         applyMode: 0
         requireLastAttackPassive: 0
+    - rid: 91009
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 1
+        useFireIntervalMultiplier: 0
+        controlType: 0
+        speedMultiplier: 1
+        unlockOnPhaseExit: 1
