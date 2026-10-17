@@ -240,7 +240,8 @@ public class Player
     protected override bool CanReceiveDamage(DamageEvent damageEvent)
     {
         // Existing direct-hit evade rule does not suppress ongoing DOT damage.
-        if (!damageEvent.IsDOTEffect() && state != null && state.EvadeMode)
+        if (!damageEvent.IsDOTEffect() && state != null && state.EvadeMode &&
+            (skill == null || skill.AllowsDefensiveBenefits))
         {
             MovableSlower.Instance.SafeInvoke(v => v.Start_Slow(this));
             return false;

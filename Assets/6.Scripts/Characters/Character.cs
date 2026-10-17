@@ -26,6 +26,8 @@ public class Character
     protected HealthPointComponent healthPoint;
     protected StatusComponent status;
     private DamageHandleComponent damageHandler;
+    private Collider[] characterColliders;
+    private bool[] initialColliderStates;
     public StatusComponent Status => status;
 
     protected bool bInAction = false;
@@ -53,6 +55,10 @@ public class Character
     {
         rigidbody = GetComponent<Rigidbody>();
         Debug.Assert(rigidbody != null);
+        characterColliders = GetComponentsInChildren<Collider>(true);
+        initialColliderStates = new bool[characterColliders.Length];
+        for (int i = 0; i < characterColliders.Length; i++)
+            initialColliderStates[i] = characterColliders[i].enabled;
 
         state = GetComponent<StateComponent>();
         healthPoint = GetComponent<HealthPointComponent>();
@@ -108,7 +114,21 @@ public class Character
     }
 
     protected virtual bool CanReceiveDamage(DamageEvent damageEvent) => true;
-    protected virtual void OnDamageDeath() { }
+    protected virtual void OnDamageDeath()
+    {
+        SetCharacterCollidersEnabled(false);
+    }
+
+    // Restore prefab states so attack hitboxes that start disabled stay disabled on reuse.
+    protected void SetCharacterCollidersEnabled(bool enabled)
+    {
+        if (characterColliders == null) return;
+        for (int i = 0; i < characterColliders.Length; i++)
+        {
+            if (characterColliders[i] != null)
+                characterColliders[i].enabled = enabled && initialColliderStates[i];
+        }
+    }
 
 
     #region Team ID 

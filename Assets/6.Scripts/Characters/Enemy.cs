@@ -65,6 +65,7 @@ public class Enemy
 
     protected void OnEnable()
     {
+        SetCharacterCollidersEnabled(true);
         if (state != null)
             state.OnStateTypeChanged += ChangeType;
     }
@@ -121,8 +122,7 @@ public class Enemy
 
     protected override void OnDamageDeath()
     {
-        Collider collider = GetComponent<Collider>();
-        if (collider != null) collider.isTrigger = true;
+        base.OnDamageDeath();
         rigidbody.isKinematic = true;
 
         visual.SafeInvoke(v => v.PlayDeadAnimation());
