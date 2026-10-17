@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks;
-using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -240,7 +239,8 @@ public class UITotalResultPopUp : UIPopUp
 
             if (characterNameText != null)
             {
-                characterNameText.text = playerInfo.name;
+                characterNameText.text = LocalizationManager.Instance != null
+                    ? LocalizationManager.Instance.GetText(playerInfo.name) : playerInfo.name;
                 characterNameText.gameObject.SetActive(true); 
             }
         }
@@ -258,7 +258,8 @@ public class UITotalResultPopUp : UIPopUp
 
             if (jobNameText != null)
             {
-                jobNameText.text = jobInfo.jobName;
+                jobNameText.text = LocalizationManager.Instance != null
+                    ? LocalizationManager.Instance.GetText(jobInfo.jobName) : jobInfo.jobName;
                 jobNameText.gameObject.SetActive(true);
             }
         }
