@@ -24,12 +24,13 @@ public class RecordCard : MonoBehaviour
         bool canReroll = true)
     {
         myData = data;
+        DrawLockText();
 
         Debug.Assert(LocalizationManager.Instance != null);
 
         // 1. UI 텍스트 업데이트
-        nameText.text = data.recordName;
-        descText.text = data.description;
+        nameText.text = LocalizationManager.Instance != null ? LocalizationManager.Instance.GetText(data.recordName) : data.recordName;
+        descText.text = LocalizationManager.Instance != null ? LocalizationManager.Instance.GetText(data.description) : data.description;
         iconImage.sprite = data.icon;
         iconImage.enabled = data.icon != null;
 
@@ -91,7 +92,7 @@ public class RecordCard : MonoBehaviour
     {
         if (lockText == null) return;
 
-        lockText.text = myData.isLocked ? "해제" : "잠금";
+        lockText.text = LocalizationManager.Instance != null ? LocalizationManager.Instance.GetText(myData.isLocked ? "ui_record_unlock" : "ui_record_lock") : (myData.isLocked ? "Unlock" : "Lock");
     }
 
     public void SetDisabled(bool disabled)

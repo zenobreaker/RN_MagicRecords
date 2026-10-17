@@ -49,8 +49,8 @@ public sealed class UIRewardCard : UIItemSlot
 
         if (itemData != null)
         {
-            titleText.SafeInvoke(v => v.text = itemData.name);
-            descriptionText.SafeInvoke(v => v.text = itemData.description);
+            titleText.SafeInvoke(v => v.text = itemData.LocalizedName);
+            descriptionText.SafeInvoke(v => v.text = itemData.LocalizedDescription);
         }
     }
 
