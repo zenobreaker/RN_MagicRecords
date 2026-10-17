@@ -6,10 +6,13 @@ public class UIPopUpOption
     [SerializeField] private SoundSliderGroup masterGroup;
     [SerializeField] private SoundSliderGroup bgmGroup;
     [SerializeField] private SoundSliderGroup sfxGroup;
+    private bool pausedBattle;
 
     protected override void OnEnable()
     {
         base.OnEnable();
+        pausedBattle = UIManager.Instance != null && UIManager.Instance.IsInGame();
+        if (pausedBattle) PauseManager.RequestPause();
 
         //slider_BGM.value = PlayerPrefs.GetFloat("BGM_Volume");
         //slider_SFX.value = PlayerPrefs.GetFloat("SFX_Volume");
@@ -42,7 +45,17 @@ public class UIPopUpOption
     protected override void OnDisable()
     {
         base.OnDisable();
+        if (pausedBattle)
+        {
+            pausedBattle = false;
+            PauseManager.RequestResume();
+        }
+        SaveSettings();
+    }
 
+    /// <summary>현재 음량과 음소거 설정을 저장합니다.</summary>
+    private void SaveSettings()
+    {
         // 3. UI가 꺼질 때, SoundSliderGroup이 가지고 있는 '최신 값'을 달라고 해서 저장!
         if (masterGroup != null)
         {
@@ -69,5 +82,17 @@ public class UIPopUpOption
     protected override void DrawPopUp()
     {
 
+    }
+
+    /// <summary>에디터에서는 플레이 모드를 끝내고 빌드에서는 게임을 종료합니다.</summary>
+    public void QuitGame()
+    {
+        SaveSettings();
+        AppManager.Instance.SafeInvoke(app => app.SaveIfDirty());
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }
