@@ -52,7 +52,9 @@ public class AIController : MonoBehaviour
         {
             skill.OnEndDoAction += () =>
             {
-                currentPattern?.ResetCondition(resetCooldown: false);
+                // 몬스터는 시전 시간과 별개로 행동 종료 후 패턴 쿨타임을 보장합니다.
+                // 플레이어/동료의 스킬 쿨타임 정책은 변경하지 않습니다.
+                currentPattern?.ResetCondition(resetCooldown: TryGetComponent<Enemy>(out _));
                 currentPattern = null;
             };
         }
