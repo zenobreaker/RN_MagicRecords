@@ -140,6 +140,8 @@ public class RecordDataBase : DataBase
 
                 // 리스트와 딕셔너리에 쏙쏙 집어넣기
                 recordDatas[recordData.id] = recordData;
+                // Keep the dummy available by ID, outside every random catalogue.
+                if (recordData.id == EmptyRecordId) continue;
                 recordDataList.Add(recordData);
 
                 if (!recordDataByRarity.ContainsKey(recordData.rarity))
