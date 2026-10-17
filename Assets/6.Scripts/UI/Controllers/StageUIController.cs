@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class StageUIController
@@ -126,9 +125,7 @@ public class StageUIController
     #region Button Events
     public void OnBackButton()
     {
-        AppManager.Instance.SaveExploreMap();
-
-        SceneManager.LoadScene("Lobby");
+        UIManager.Instance.SafeInvoke(ui => ui.OpenReturnToLobbyConfirmation());
     }
 
     public void OnRecordInvenButton()

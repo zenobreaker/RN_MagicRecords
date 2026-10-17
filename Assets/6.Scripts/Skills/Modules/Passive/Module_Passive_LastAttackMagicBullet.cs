@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-[ModuleCategory("Passive/Magic Bullet/마지막 평타 마탄 사용 허용")]
+[ModuleCategory("Passive/Magic Bullet/마지막 평타 마탄 장전")]
 public sealed class Module_Passive_LastAttackMagicBullet : PassiveContextModule
 {
     private SkillComponent registeredOwner;

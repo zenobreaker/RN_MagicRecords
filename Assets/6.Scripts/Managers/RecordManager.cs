@@ -204,11 +204,10 @@ public sealed class RecordManager : MonoBehaviour
 
         CurrentOptions = FilterDraftCandidates(allRecord, startingSkillsOnly)
             .OrderBy(_ => Random.value).Take(generateCount).ToList();
-        while (CurrentOptions.Count < generateCount)
+        if (CurrentOptions.Count == 0)
         {
             var empty = db.GetEmptyRecord();
-            if (empty == null) break;
-            CurrentOptions.Add(empty);
+            if (empty != null) CurrentOptions.Add(empty);
         }
 
         // 5. AppManager를 통해 UI 오픈 이벤트 발행
@@ -353,7 +352,8 @@ public sealed class RecordManager : MonoBehaviour
 
     public bool IsRewardCandidate(RecordData record)
     {
-        if (record == null || HasConflictingRecord(record)) return false;
+        if (record == null || record.id == RecordDataBase.EmptyRecordId ||
+            HasConflictingRecord(record)) return false;
         if (recordsDict.TryGetValue(record.id, out var definition) && !definition.isImplemented) return false;
         if (IsRuntimePassiveRecord(record))
         {
@@ -485,13 +485,15 @@ public sealed class RecordManager : MonoBehaviour
             }
             else
             {
-                // [핵심] 진짜로 모든 데이터를 다 소진했을 때만 빈 레코드 등장
-                var emptyRecord = db.GetEmptyRecord();
-                if (emptyRecord != null)
-                {
-                    newOptions.Add(emptyRecord);
-                }
+                // Do not pad a partially available draft with dummy records.
+                continue;
             }
+        }
+
+        if (newOptions.Count == 0)
+        {
+            var emptyRecord = db.GetEmptyRecord();
+            if (emptyRecord != null) newOptions.Add(emptyRecord);
         }
 
         // 성공적으로 리롤이 수행된 경우에만 카운트 차감

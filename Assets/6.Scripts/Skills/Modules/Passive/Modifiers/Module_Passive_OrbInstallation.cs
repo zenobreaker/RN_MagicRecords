@@ -13,6 +13,9 @@ public sealed class Module_Passive_OrbInstallation : PassiveModule
     [Tooltip("기존 광선 대신 소환할 구체의 프리팹 이름")]
     public string orbPrefabName = "Orb_DestructionRay";
 
+    [Tooltip("Recovery time after installing the orb, in seconds.")]
+    public float recoveryDelay = 0.2f;
+
     public Module_Passive_OrbInstallation()
     {
         triggerTime = PassiveTriggerTime.OnSkillCast;
@@ -29,5 +32,6 @@ public sealed class Module_Passive_OrbInstallation : PassiveModule
         context.Cast.ChargedTime = context.Cast.MaxChargeTime;
 
         context.Spawn.OverridePrefabName = orbPrefabName;
+        context.Cast.RecoveryDelayOverride = Mathf.Max(0f, recoveryDelay);
     }
 }

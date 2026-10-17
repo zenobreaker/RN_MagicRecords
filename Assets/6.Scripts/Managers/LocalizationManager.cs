@@ -48,7 +48,9 @@ public class LocalizationManager : Singleton<LocalizationManager>
             string value = currentLanguage == LanguageType.KR ? data.kr : data.en;
 
             // 데이터가 비어있으면 키값을 그대로 노출해서 버그 찾기 쉽게 함
-            if (string.IsNullOrEmpty(value)) value = $"[{data.key}]";
+            if (string.IsNullOrWhiteSpace(value))
+                value = currentLanguage == LanguageType.KR ? data.en : data.kr;
+            if (string.IsNullOrWhiteSpace(value)) value = $"[{data.key}]";
 
             textTable.TryAdd(data.key, value);
         }

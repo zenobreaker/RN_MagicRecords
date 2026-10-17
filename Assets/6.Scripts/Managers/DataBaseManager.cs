@@ -1,7 +1,5 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEditor.Build.Pipeline;
 using UnityEngine;
 
 public class DataBaseManager : Singleton<DataBaseManager>

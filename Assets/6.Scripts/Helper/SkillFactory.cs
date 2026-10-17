@@ -1,5 +1,4 @@
-﻿using NUnit.Framework.Constraints;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 public static class SkillFactory

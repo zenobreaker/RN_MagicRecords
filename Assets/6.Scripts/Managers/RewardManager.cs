@@ -18,12 +18,13 @@ public class ItemReward : IReward
     public bool IsExploreCoin => itemData is CurrencyItem currency &&
         currency.Type == CurrencyType.EXPOLORE_COIN;
 
-    public string Title =>
-          IsStackable()
-              ? $"{itemData.name} x{amount}"
-              : itemData.name;
+    public string Title => itemData is CurrencyItem
+        ? $"{itemData.LocalizedName} +{amount}"
+        : IsStackable()
+            ? $"{itemData.LocalizedName} x{amount}"
+            : itemData.LocalizedName;
 
-    public string Description => itemData.description;
+    public string Description => itemData.LocalizedDescription;
     public Sprite Icon => itemData.Icon;
 
     public int Amount => amount;
@@ -116,7 +117,7 @@ public class RecordReward : IReward
                     var list = AppManager.Instance
                         .GetRecordByRarity(rarity);
 
-                    record = list.Random();
+                    record = list.Count > 0 ? list.Random() : AppManager.Instance.GetRecordManager()?.GetEmptyRecord();
                 }
                 break;
 
@@ -125,7 +126,7 @@ public class RecordReward : IReward
                     var list = AppManager.Instance
                         .GetRecordManager().GetRewardCandidates();
 
-                    record = list.Random();
+                    record = list.Count > 0 ? list.Random() : AppManager.Instance.GetRecordManager()?.GetEmptyRecord();
                 }
                 break;
         }

@@ -21,7 +21,7 @@ public class InputManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if(UIManager.Instance != null)
-                UIManager.Instance.CloseTopUI();
+                UIManager.Instance.HandleCancelInput();
         }
     }
 
