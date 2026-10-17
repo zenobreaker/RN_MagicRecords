@@ -41,6 +41,7 @@ public class UIPopupEventScreen : UIPopUp
     public void SetData(EventInfo eventInfo)
     {
         currentEvent = eventInfo;
+        currentResult = null;
         isProcessingChoice = false; // 팝업이 열릴 때 초기화
         isClosing = false;
 
@@ -334,7 +335,7 @@ public class UIPopupEventScreen : UIPopUp
     {
         CancelTypingTask();
 
-        if (!isStageCleared && AppManager.Instance != null)
+        if (!isStageCleared && currentResult?.NeedCombat != true && AppManager.Instance != null)
         {
             isStageCleared = true; // 중복 실행 방지
 

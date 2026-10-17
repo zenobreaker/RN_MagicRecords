@@ -47,6 +47,7 @@ public class UIManager : Singleton<UIManager>
     // 💡 [수정] 팝업 큐를 삭제하고 오직 하나의 스택(openedUIs)으로 모든 UI와 팝업을 관리합니다.
     private Stack<UiBase> openedUIs = new Stack<UiBase>();
     private GameLocate currLocate;
+    private int lastCancelFrame = -1;
     private GameObject currentUIGroup;
 
     [Header("Toast Settings")]
@@ -159,16 +160,29 @@ public class UIManager : Singleton<UIManager>
     // 💡ESC 처리 로직 통합: 스택 맨 위에 있는 것(팝업이든 UI든)을 하나씩 무조건 닫습니다.
     private void OnCancelPressed(InputAction.CallbackContext context)
     {
+        HandleCancelInput();
+    }
+
+    /// <summary>Esc 입력을 한 프레임에 한 번 처리합니다.</summary>
+    public void HandleCancelInput()
+    {
         if (CheatConsoleUI.CapturesInput) return;
         if (SceneLoadingController.IsLoading) return;
+        if (lastCancelFrame == Time.frameCount) return;
+        lastCancelFrame = Time.frameCount;
+        while (openedUIs.Count > 0 &&
+            (openedUIs.Peek() == null || !openedUIs.Peek().gameObject.activeSelf))
+            openedUIs.Pop();
         if (openedUIs.Count > 0)
         {
             CloseTopUI();
         }
         else
         {
-            // 스택이 비어있고 인게임이라면 일시정지 팝업 오픈
-            if (IsInGame()) OpenPausePopUp();
+            if (currLocate == GameLocate.STAGE_SELCT)
+                OpenReturnToLobbyConfirmation();
+            else if (IsLTitle() || IsLobby() || IsInGame())
+                OpenOptionPopUp();
         }
     }
 
@@ -191,6 +205,8 @@ public class UIManager : Singleton<UIManager>
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         openedUIs.Clear();
+        if (scene.name == "Title" || scene.name == "TitleScene")
+            currLocate = GameLocate.TITLE;
         if (scene.name == "Stage" || scene.name == "UnitTest")
         {
             currLocate = GameLocate.IN_GAME;
@@ -304,10 +320,11 @@ public class UIManager : Singleton<UIManager>
         if (ui != null) ui.SetData(choice);
     }
 
-    public void OpenSkillEventConfirmation(string title, string message, bool showCheckbox, Action<bool> onConfirm)
+    public void OpenSkillEventConfirmation(string title, string message, bool showCheckbox, Action<bool> onConfirm, Action onCancel = null)
     {
         var ui = OpenUI<UISkillEventConfirmation>(true);
-        if (ui != null) ui.SetData(title, message, showCheckbox, onConfirm);
+        if (ui != null) ui.SetData(title, message, showCheckbox, onConfirm, onCancel);
+        else onCancel?.Invoke();
     }
 
     private void SetStageUserInterface()
@@ -510,6 +527,18 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
+
+    /// <summary>스테이지 선택 화면에서 로비로 돌아가기 전에 확인합니다.</summary>
+    public void OpenReturnToLobbyConfirmation()
+    {
+        if (SceneLoadingController.IsLoading) return;
+        OpenTwoButtonPopUp("로비로 돌아가기", "정말 로비로 돌아가겠습니까?", "예", "아니오",
+            () => AppManager.Instance.SafeInvoke(app =>
+            {
+                app.SaveIfDirty();
+                app.ReturnToLobbyScene();
+            }), null);
+    }
 
     public void OpenTwoButtonPopUp(string title, string message, string confirmText, string cancelText,
         UnityAction onConfirm, UnityAction onCancel)
