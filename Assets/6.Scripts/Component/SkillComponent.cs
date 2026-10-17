@@ -9,6 +9,19 @@ public sealed class SkillComponent : ActionComponent
     private string currentSlotName = string.Empty;
     private bool isPlayerOwner;
 
+    [SerializeField, Min(0f)] private float subActionCancelCooldown = 7f;
+
+    private float subActionCancelCooldownRemaining;
+    public float SubActionCancelCooldownRemaining => subActionCancelCooldownRemaining;
+    public float SubActionCancelCooldownDuration => subActionCancelCooldown;
+    public bool IsSubActionCancelOnCooldown => subActionCancelCooldownRemaining > 0f;
+
+    // Guard and other defensive modules can share the same per-cast restriction.
+    public bool AllowsDefensiveBenefits =>
+        string.IsNullOrEmpty(currentSlotName) || skillSlotTable == null ||
+        !skillSlotTable.TryGetValue(currentSlotName, out var active) ||
+        active == null || !active.IsActive || active.Runtime.Cast.AllowsDefensiveBenefits;
+
     // 장착 스킬 정보
     private Dictionary<string, ActiveSkill> skillSlotTable;
 
@@ -50,6 +63,7 @@ public sealed class SkillComponent : ActionComponent
         if (skillSlotTable != null)
             foreach (var skill in skillSlotTable.Values) skill?.EndSkill(false);
         currentSlotName = string.Empty;
+        subActionCancelCooldownRemaining = 0f;
         base.EndDoAction();
         base.OnDisable();
     }
@@ -87,6 +101,7 @@ public sealed class SkillComponent : ActionComponent
 
     private void Update()
     {
+        subActionCancelCooldownRemaining = Mathf.Max(0f, subActionCancelCooldownRemaining - Time.deltaTime);
         if (skillSlotTable == null)
             return;
 
@@ -105,17 +120,10 @@ public sealed class SkillComponent : ActionComponent
             // 스킬 로직 업데이트
             skill.Update(Time.deltaTime);
 
-            bool isCooldown = skill.IsOnCooldown;
-
-            NotifyCooldownState(currentSlot, skill, isCooldown);
-
-            if (!isCooldown)
-                continue;
-
-            // 쿨타임 업데이트
             skill.Update_Cooldown(Time.deltaTime);
-
-            NotifyCooldownProgress(currentSlot, skill);
+            GetDisplayedCooldown(currentSlot, skill, out float remaining, out _);
+            NotifyCooldownState(currentSlot, skill, remaining > 0f);
+            if (remaining > 0f) NotifyCooldownProgress(currentSlot, skill);
         }
     }
 
@@ -128,7 +136,8 @@ public sealed class SkillComponent : ActionComponent
         if (skill == null)
             return;
 
-        bool value = isCooldown ?? skill.IsOnCooldown;
+        GetDisplayedCooldown(slot, skill, out float remaining, out _);
+        bool value = isCooldown ?? remaining > 0f;
 
         // The shared HUD channel has no owner key. AI slots must stay local.
         if (isPlayerOwner)
@@ -152,16 +161,27 @@ public sealed class SkillComponent : ActionComponent
         if (skill == null)
             return;
 
+        GetDisplayedCooldown(slot, skill, out float remaining, out float duration);
         if (isPlayerOwner)
             SkillManager.Instance.SafeInvoke(v =>
-                v.NotifySkillCooldown(slot, skill.CurrentCooldown, skill.MaxCooldown));
+                v.NotifySkillCooldown(slot, remaining, duration));
 
-        OnActiveSkillCooldownUpdated?.Invoke(
-            slot,
-            skill.CurrentCooldown,
-            skill.MaxCooldown);
+        OnActiveSkillCooldownUpdated?.Invoke(slot, remaining, duration);
     }
 
+
+    /// <summary>Show cancel recovery separately from the sub-action's own reuse timer.</summary>
+    public void GetDisplayedCooldown(SkillSlot slot, ActiveSkill skill, out float remaining, out float duration)
+    {
+        if (slot == SkillSlot.SubAction && IsSubActionCancelOnCooldown)
+        {
+            remaining = subActionCancelCooldownRemaining;
+            duration = subActionCancelCooldown;
+            return;
+        }
+        remaining = skill?.CurrentCooldown ?? 0f;
+        duration = skill?.MaxCooldown ?? 0f;
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     #region CAPABILITY
@@ -371,7 +391,9 @@ public sealed class SkillComponent : ActionComponent
         var character = rootObject != null ? rootObject.GetComponent<Character>() : null;
         var state = rootObject != null ? rootObject.GetComponent<StateComponent>() : null;
         return character != null && character.isActiveAndEnabled &&
-               state != null && state.IdleMode && !InAction;
+               state != null && (state.IdleMode || state.ActionMode) &&
+               currentSlotName != nameof(SkillSlot.SubAction) &&
+               !(rootObject.GetComponent<LaunchComponent>()?.IsLaunching ?? false);
     }
 
     public bool CanUseSkill(string skillName)
@@ -382,7 +404,7 @@ public sealed class SkillComponent : ActionComponent
         {
             return skill != null &&
                    skill.IsOnCooldown == false && !skill.IsActive && !skill.IsCasting && !skill.IsEnding &&
-                   InAction == false;
+                   (!InAction || (skillName == nameof(SkillSlot.SubAction) && !IsSubActionCancelOnCooldown));
         }
 
         return false;
@@ -516,13 +538,22 @@ public sealed class SkillComponent : ActionComponent
         }
 
 
-        if (InAction ||
-            CanUseSkill(slotName) == false)
+        if (CanUseSkill(slotName) == false)
         {
             OnSkillUse?.Invoke(false);
             return;
         }
 
+
+        bool isSubAction = slotName == nameof(SkillSlot.SubAction);
+        bool isActionCancel = isSubAction && InAction;
+        if (slotName == nameof(SkillSlot.SubAction))
+        {
+            // Clear buffered attacks before cancellation can publish its end event.
+            rootObject.GetComponent<ComboComponent>()?.CancelForSubAction();
+            if (isActionCancel) CancelCurrentSkill();
+            if (InAction) return;
+        }
 
         currentSlotName = slotName;
 
@@ -530,7 +561,10 @@ public sealed class SkillComponent : ActionComponent
 
         base.DoAction();
 
-        skill.Cast(startPhaseIndex);
+        skill.Cast(startPhaseIndex, isActionCancel);
+        // Movement and defense retain their normal reuse rules; only action cancellation waits seven seconds.
+        if (isActionCancel && skill.IsActive)
+            subActionCancelCooldownRemaining = Mathf.Max(0f, subActionCancelCooldown);
         NotifyCooldownState(slotName, skill);
 
 

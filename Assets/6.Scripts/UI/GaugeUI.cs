@@ -53,7 +53,7 @@ public abstract class GaugeUI : MonoBehaviour
     {
         if (img_ForegroundGauge != null)
         {
-            img_ForegroundGauge.fillAmount = currentValue / maxValue;
+            img_ForegroundGauge.fillAmount = maxValue > 0f ? Mathf.Clamp01(currentValue / maxValue) : 0f;
         }
 
         if (txt_GaugeText != null)

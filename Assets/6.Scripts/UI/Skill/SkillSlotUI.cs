@@ -23,8 +23,9 @@ public class SkillSlotUI : MonoBehaviour
         if (txt_Key == null) return;
         int index = GetSlotIndex();
         txt_Key.text = string.Empty;
-        if (index < 0 || inputActions == null) return;
-        var action = inputActions.FindAction($"Player/SkillAction{index + 1}", false);
+        if ((index < 0 && mySlot != SkillSlot.SubAction) || inputActions == null) return;
+        string actionName = mySlot == SkillSlot.SubAction ? "Player/Dash" : $"Player/SkillAction{index + 1}";
+        var action = inputActions.FindAction(actionName, false);
         if (action == null) return;
         foreach (var player in PlayerInput.all)
         {
@@ -140,6 +141,16 @@ public class SkillSlotUI : MonoBehaviour
     /// </summary>
     private void RefreshSkillUI()
     {
+        if (mySlot == SkillSlot.SubAction)
+        {
+            var skills = skillEventHandler?.CurrentActiveSkills;
+            if (skills != null && (int)mySlot < skills.Length)
+                OnDrawSkill(mySlot, skills[(int)mySlot]);
+            else
+                ClearSkill();
+            return;
+        }
+
         int slotIndex = GetSlotIndex();
 
         if (slotIndex < 0)
@@ -214,11 +225,13 @@ public class SkillSlotUI : MonoBehaviour
 
         SetSkillIcon(activeSkill.Icon);
 
-        OnIsCooldown(
-            mySlot,
-            activeSkill.IsOnCooldown);
-        // Restore the fill/text immediately when the HUD opens during a cooldown.
-        OnSkillCoolDown(mySlot, activeSkill.CurrentCooldown, activeSkill.MaxCooldown);
+        float remaining = activeSkill.CurrentCooldown;
+        float duration = activeSkill.MaxCooldown;
+        if (activeSkill.Owner != null && activeSkill.Owner.TryGetComponent<SkillComponent>(out var skills))
+            skills.GetDisplayedCooldown(mySlot, activeSkill, out remaining, out duration);
+        OnIsCooldown(mySlot, remaining > 0f);
+        // Restore the cancel countdown too when the HUD opens after the dash has finished.
+        OnSkillCoolDown(mySlot, remaining, duration);
     }
 
     private void SetSkillIcon(Sprite sprite)

@@ -289,7 +289,7 @@ public abstract class ActiveSkill
         currentCooldown = Mathf.Max(0f, currentCooldown - Mathf.Max(0f, deltaTime));
     }
 
-    public void Cast(int startPhaseIndex = 0)
+    public void Cast(int startPhaseIndex = 0, bool isActionCancel = false, bool suppressDefensiveBenefits = false)
     {
         if (ownerCharacter == null || ObjectPooler.IsPrewarming || SceneLoadingController.IsLoading) return;
         if (IsOnCooldown || isCasting || IsActive || IsEnding)
@@ -313,6 +313,8 @@ public abstract class ActiveSkill
         IsPhaseRunning = false;
 
         SetRunTimeContext();
+        Runtime.Cast.IsActionCancel = isActionCancel;
+        Runtime.Cast.SuppressDefensiveBenefits = suppressDefensiveBenefits;
 
         if (isCasting == false)
         {
@@ -662,6 +664,10 @@ public abstract class ActiveSkill
                     agent.updateRotation = true;
                     agent.isStopped = false;
                 }
+                // A canceled movement-locking skill must not leave the next action rooted.
+                if (ownerObject.TryGetComponent<MovementComponent>(out var movement) &&
+                    (ownerObject.GetComponent<StatusEffectComponent>()?.GetMovableCondition() ?? true))
+                    movement.Move();
                 if (state != null && !state.DamagedMode && !state.DeadMode && !state.StopMode) state.SetIdleMode();
             }
             if (notifyOwner && !isConcurrentSkill && skillComponent != null)

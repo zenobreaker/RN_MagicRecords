@@ -1,4 +1,3 @@
-using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -68,6 +67,10 @@ public sealed class ModifierContext
 [Serializable]
 public sealed class CastContext
 {
+    public bool IsActionCancel;
+    public bool SuppressDefensiveBenefits;
+    public bool AllowsDefensiveBenefits => !IsActionCancel && !SuppressDefensiveBenefits;
+    public float RecoveryDelayOverride = -1f;
     public Character Caster;
     public Character Target;
 

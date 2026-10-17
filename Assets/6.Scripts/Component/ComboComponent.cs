@@ -98,7 +98,7 @@ public class ComboComponent : MonoBehaviour
         if (newInput == null) return;
 
         // 이동 입력은 공격 중인 콤보나 마지막 타격의 대기시간을 초기화하지 않습니다.
-        if (newInput.InputType == InputCommandType.SKILL || newInput.InputType == InputCommandType.DASH)
+        if (newInput.InputType == InputCommandType.SKILL)
         {
             ResetCombo();
         }
@@ -227,6 +227,9 @@ public class ComboComponent : MonoBehaviour
         }
         catch (OperationCanceledException) { /* 타이머 캔슬 시 정상 종료 */ }
     }
+
+    /// <summary>Clear buffered attacks before a successful sub-action interrupts the current action.</summary>
+    public void CancelForSubAction() => ResetCombo();
 
     private void ResetCombo()
     {
