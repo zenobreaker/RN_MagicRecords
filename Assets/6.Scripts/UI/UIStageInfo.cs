@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using DG.Tweening;
 using TMPro;
-using UnityEditor;
 
 public class UIStageInfo
     : UiBase
