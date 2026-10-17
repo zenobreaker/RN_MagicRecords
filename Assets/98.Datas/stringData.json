@@ -7,8 +7,8 @@
     },
     {
       "key": "record_desc_magicbullet_finisher",
-      "kr": "마지막 공격 시, 탄환 장전",
-      "en": ""
+      "kr": "마지막 기본 공격 시 마법탄을 1발 장전합니다. 최대 장전 수를 초과하지 않습니다.",
+      "en": "Reloads 1 magic bullet on the final basic attack, up to the maximum capacity."
     },
     {
       "key": "skill_desc_magicbulletload",
@@ -1287,33 +1287,33 @@
     },
     {
       "key": "record_desc_stat_atk_inc",
-      "kr": "공격력이 5% 증가합니다.",
-      "en": "Increases Attack Power by 5%."
+      "kr": "공격력이 10% 증가합니다.",
+      "en": "Increases Attack Power by 10%."
     },
     {
       "key": "record_desc_stat_def_inc",
-      "kr": "방어력 증가 5%",
-      "en": "Hardens the user's defense by 5%."
+      "kr": "방어력 증가 10%",
+      "en": "Hardens the user's defense by 10%."
     },
     {
       "key": "record_desc_stat_spd_inc",
-      "kr": "이동속도 증가 1%",
-      "en": "Slightly enhances mobility by 1%."
+      "kr": "이동속도 증가 10%",
+      "en": "Slightly enhances mobility by 10%."
     },
     {
       "key": "record_desc_stat_atkspeed_inc",
-      "kr": "공격속도 증가 5%",
-      "en": "Increases the rate of fire by 5%."
+      "kr": "공격속도 증가 10%",
+      "en": "Increases the rate of fire by 10%."
     },
     {
       "key": "record_desc_stat_crit_inc",
-      "kr": "크리티컬 확률 증가 5%",
-      "en": "Improves the probability of critical hits by 5%."
+      "kr": "크리티컬 확률 증가 10%",
+      "en": "Improves the probability of critical hits by 10%."
     },
     {
       "key": "record_desc_skill_auto_reload",
-      "kr": "치명타 확률이 3%p 증가합니다.",
-      "en": "Increases critical hit chance by 3 percentage points."
+      "kr": "치명타 확률이 10%p 증가합니다.",
+      "en": "Increases critical hit chance by 10 percentage points."
     },
     {
       "key": "record_desc_stat_final_effort",
@@ -1592,7 +1592,7 @@
     },
     {
       "key": "record_desc_stat_atk_atkspeed_inc",
-      "kr": "공격력 +3%, 공격속도 +1%",
+      "kr": "공격력 +10%, 공격속도 +10%",
       "en": ""
     },
     {
@@ -1602,7 +1602,7 @@
     },
     {
       "key": "record_desc_stat_def_maxhp_inc",
-      "kr": "방어력 +3%, 최대 체력 +10%",
+      "kr": "방어력 +10%, 최대 체력 +10%",
       "en": ""
     },
     {
@@ -1637,7 +1637,7 @@
     },
     {
       "key": "record_desc_13",
-      "kr": "치명타 확률 +5%",
+      "kr": "치명타 확률 +10%",
       "en": ""
     },
     {
@@ -1657,7 +1657,7 @@
     },
     {
       "key": "record_desc_15",
-      "kr": "공격력 +5% / 방어력 +5% 증가",
+      "kr": "공격력 +10% / 방어력 +10% 증가",
       "en": ""
     },
     {
@@ -1677,7 +1677,7 @@
     },
     {
       "key": "record_desc_17",
-      "kr": "쿨다운 감소 5%",
+      "kr": "쿨다운 감소 10%",
       "en": ""
     },
     {
@@ -2042,8 +2042,88 @@
     },
     {
       "key": "record_desc_22",
-      "kr": "공격력 +2%, 치명타 확률 +5%",
+      "kr": "공격력 +10%, 치명타 확률 +10%",
       "en": ""
+    },
+    {
+      "key": "name_coin",
+      "kr": "코인",
+      "en": "Coin"
+    },
+    {
+      "key": "name_coin_desc",
+      "kr": "거래와 강화에 사용하는 재화입니다.",
+      "en": "Currency used for trading and upgrades."
+    },
+    {
+      "key": "name_explore_coin",
+      "kr": "탐사 코인",
+      "en": "Exploration Coin"
+    },
+    {
+      "key": "name_explore_coin_desc",
+      "kr": "탐사 중 사용하는 재화입니다.",
+      "en": "Currency used during exploration."
+    },
+    {
+      "key": "name_dia",
+      "kr": "다이아",
+      "en": "Diamond"
+    },
+    {
+      "key": "name_dia_desc",
+      "kr": "다이아 재화입니다.",
+      "en": "Diamond currency."
+    },
+    {
+      "key": "name_adventure_credit",
+      "kr": "탐사 크레딧",
+      "en": "Adventure Credit"
+    },
+    {
+      "key": "name_adventrue_credit_desc",
+      "kr": "탐사 크레딧입니다.",
+      "en": "Adventure credits."
+    },
+    {
+      "key": "name_mystic",
+      "kr": "신비한 가루",
+      "en": "Mystic Powder"
+    },
+    {
+      "key": "name_mystic_desc",
+      "kr": "신비한 힘이 담긴 가루입니다.",
+      "en": "Powder imbued with mysterious power."
+    },
+    {
+      "key": "name_reinstone_lv1",
+      "kr": "하급 강화석",
+      "en": "Lesser Enhancement Stone"
+    },
+    {
+      "key": "name_reinstone_lv2",
+      "kr": "중급 강화석",
+      "en": "Enhancement Stone"
+    },
+    {
+      "key": "name_reinstone_lv3",
+      "kr": "상급 강화석",
+      "en": "Greater Enhancement Stone"
+    },
+    {
+      "key": "name_reginstone_desc",
+      "kr": "장비 강화에 사용하는 재료입니다.",
+      "en": "Material used to enhance equipment."
+    },
+    {
+      "key": "ui_record_lock",
+      "kr": "잠금",
+      "en": "Lock"
+    },
+    {
+      "key": "ui_record_unlock",
+      "kr": "잠금 해제",
+      "en": "Unlock"
     }
   ]
 }
