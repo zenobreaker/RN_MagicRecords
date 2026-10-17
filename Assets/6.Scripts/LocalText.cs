@@ -20,6 +20,7 @@ public class LocalizeText : MonoBehaviour
     {
         if (string.IsNullOrEmpty(textKey) || LocalizationManager.Instance == null) return;
 
+        if (uiText == null) uiText = GetComponent<TextMeshProUGUI>();
         uiText.text = LocalizationManager.Instance.GetText(textKey);
     }
 }
