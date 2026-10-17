@@ -563,15 +563,14 @@ MonoBehaviour:
         useFireIntervalMultiplier: 0
         soundName: Gun_Normal1
     - rid: 7012345678900000102
-      type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
+      type: {class: Module_ReloadMagicBullet, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
         triggerDelay: 0
         movementRepeatInterval: 0.1
-        executeOncePerPhase: 0
+        executeOncePerPhase: 1
         useFireIntervalMultiplier: 0
-        maxConsumeCount: 1
-        applyMode: 2
+        reloadCount: 1
         requireLastAttackPassive: 1
     - rid: 9167119102629380179
       type: {class: Module_CameraShake, ns: , asm: Assembly-CSharp}
