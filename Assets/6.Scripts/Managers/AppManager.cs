@@ -258,6 +258,16 @@ public class AppManager
     {
         if (exploreManager == null)
             return;
+        if (exploreManager.IsEventCombat)
+        {
+            exploreManager.CompleteEventCombat(result.IsSuccess);
+            SaveIfDirty();
+            if (result.IsSuccess)
+                MoveToNextNodeScene();
+            else
+                UIManager.Instance.SafeInvoke(ui => ui.OpenExploreResultPopUp());
+            return;
+        }
         if (exploreManager.RunStatus == RunStatus.ChapterCleared)
         {
             ShowPendingChapterReward();

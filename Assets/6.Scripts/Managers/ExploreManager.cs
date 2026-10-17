@@ -49,6 +49,9 @@ public sealed partial class ExploreManager : MonoBehaviour
     // MidRun is saved as soon as setup finishes. Keep this session-only intent
     // separate so loading a MidRun never grants another starting draft.
     public bool InitialRecordRewardPending { get; private set; }
+    private EventChoice eventCombatChoice;
+    private EventChoice pendingEventCombatReward;
+    public bool IsEventCombat => eventCombatChoice != null;
     public void ConsumeInitialRecordReward() => InitialRecordRewardPending = false;
 
     public int Chapter { get; private set; } = 1;
@@ -164,6 +167,8 @@ public sealed partial class ExploreManager : MonoBehaviour
         liveHealth.Clear();
         InitialRecordRewardPending = false;
         bCreate = false;
+        eventCombatChoice = null;
+        pendingEventCombatReward = null;
         bAllCleared = false;
         Chapter = 1;
         MapNodeID = 0;
@@ -506,7 +511,31 @@ public sealed partial class ExploreManager : MonoBehaviour
         if (choice.ActionType != EventActionType.STAGE_COMBAT)
             return;
 
-        StartEventCombat(choice.ActionType, choice.ActionParam, choice.ActionValue);
+        if (choice.ActionParam != EventActionParam.STAGE || IsEventCombat ||
+            GameManager.Instance == null || SceneLoadingController.IsLoading) return;
+        StageInfo combatData = AppManager.Instance.GetStageInfo(choice.ActionValue);
+        if (combatData == null)
+        {
+            Debug.LogError($"[ExploreManager] 이벤트 전투 스테이지를 찾을 수 없습니다: {choice.ActionValue}");
+            return;
+        }
+
+        eventCombatChoice = choice;
+        GameManager.Instance.EnterStage(combatData);
+    }
+
+    public void CompleteEventCombat(bool isSuccess)
+    {
+        if (eventCombatChoice == null) return;
+        var choice = eventCombatChoice;
+        eventCombatChoice = null;
+        if (isSuccess)
+        {
+            var node = GetReplacedNodeInfo();
+            if (node != null) node.isCleared = true;
+            pendingEventCombatReward = choice;
+        }
+        SaveExploreMap();
     }
 
     public void ChangeState(ExploreState newState, int stageID = -1)
@@ -567,6 +596,13 @@ public sealed partial class ExploreManager : MonoBehaviour
     {
         if (RunStatus == RunStatus.ChapterCleared || RunStatus == RunStatus.FinalRunCleared) return;
         ChangeState(ExploreState.ON_EXPLORE);
+        if (pendingEventCombatReward != null)
+        {
+            var choice = pendingEventCombatReward;
+            pendingEventCombatReward = null;
+            EventRewardProcessor.GiveReward(choice);
+            AppManager.Instance.SaveIfDirty();
+        }
     }
 
     // 유령 재저장을 막기 위해 메모리 데이터까지 폭파하는 함수 
