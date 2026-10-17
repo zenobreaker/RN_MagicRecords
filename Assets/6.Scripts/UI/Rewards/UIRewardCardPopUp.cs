@@ -82,9 +82,32 @@ public sealed class UIRewardCardPopUp : UIPopUp
             CloseUI();
     }
 
+    /// <summary>
+    /// 미수령 보상이 남아 있으면 확인 후 보상창을 닫습니다.
+    /// </summary>
     public override void CloseUI()
     {
         if (chapter > 0) return; // Escape/background cannot skip a chapter reward.
+        if (!gameObject.activeSelf) return;
+
+        if (remainRewardCount > 0)
+        {
+            UIManager.Instance.SafeInvoke(ui => ui.OpenTwoButtonPopUp(
+                "보상 수령 확인",
+                "아직 받지 않은 보상이 있습니다.\n닫으면 남은 보상을 받을 수 없습니다.\n정말 닫으시겠습니까?",
+                "확인", "취소", CloseAndClearRewards, null));
+            return;
+        }
+
+        CloseAndClearRewards();
+    }
+
+    /// <summary>
+    /// 수령 완료 또는 닫기 확인 후 보상창과 대기 보상을 정리합니다.
+    /// </summary>
+    private void CloseAndClearRewards()
+    {
+        if (chapter > 0 || !gameObject.activeSelf) return;
         base.CloseUI();
 
         RewardManager.Instance.SafeInvoke(v => v.ClearPendingRewards());
