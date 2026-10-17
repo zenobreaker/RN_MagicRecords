@@ -17,7 +17,7 @@ MonoBehaviour:
   importNote:
   recordName: record_name_22
   description: record_desc_22
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f21a01589ac3dfb4e80de33fa270194b, type: 3}
   targetFilter: 0
   type: 2
   rarity: 0
@@ -41,14 +41,14 @@ MonoBehaviour:
           stat: 1
           valueType: 1
           displayName: "\uACF5\uACA9\uB825 \uC99D\uAC00"
-          amount: 0.02
+          amount: 0.1
           duration: 0
         - buff: {fileID: 11400000, guid: f7c3597aacc5457f8ade12ca41fa6a90, type: 2}
           kind: 0
           stat: 5
           valueType: 0
           displayName: "\uCE58\uBA85\uD0C0 \uD655\uB960 \uC99D\uAC00"
-          amount: 0.05
+          amount: 0.1
           duration: 0
         probability: 1
         healthThreshold: 0.3
