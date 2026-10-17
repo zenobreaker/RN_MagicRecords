@@ -129,7 +129,7 @@ public class PatternEntry
     {
         foreach (var cond in runtimeConditions)
         {
-            // 패턴 쿨타임은 공격 종료가 아니라 사용 시점부터 계산합니다.
+            // 사용 시 재진입을 막고, 몬스터는 행동 종료 시에도 초기화해 대기 시간을 보장합니다.
             if (cond.instance is CooldownCondition cooldown)
                 cooldown.ResetCondition();
             if(cond.instance is IUseableCondition useable)
