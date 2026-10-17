@@ -23,6 +23,8 @@ public class Module_PhaseTransition : SkillModule
     [Tooltip("모듈 실행 후 몇 초 뒤에 페이즈를 넘길 것인가? (0이면 즉시)")]
     public float delayTime = 0f;
 
+    public bool useCastRecoveryDelay;
+
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         if (skill == null || !skill.IsActive || skill.IsEnding || !skill.IsPhaseRunning) return;
@@ -38,10 +40,12 @@ public class Module_PhaseTransition : SkillModule
         CancellationToken token)
     {
         // 딜레이가 있다면 대기
-        if (delayTime > 0f)
+        float effectiveDelay = useCastRecoveryDelay && skill.Runtime.Cast.RecoveryDelayOverride >= 0f
+            ? skill.Runtime.Cast.RecoveryDelayOverride : delayTime;
+        if (effectiveDelay > 0f)
         {
             // 지정된 시간만큼 대기하되, 취소 명령이 들어오면 에러 없이 조용히 종료합니다.
-            bool isCancelled = await UniTask.Delay(TimeSpan.FromSeconds(delayTime), cancellationToken: token).SuppressCancellationThrow();
+            bool isCancelled = await UniTask.Delay(TimeSpan.FromSeconds(effectiveDelay), cancellationToken: token).SuppressCancellationThrow();
 
             if (isCancelled) return; // 애니메이션이 끝나거나 캔슬당했으면 발동 안 함!
         }

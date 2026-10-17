@@ -19,6 +19,21 @@ public class Module_MovementControl : SkillModule
     [Tooltip("ModifySpeed일 때 적용할 배율 (0.5 = 50% 속도로 느려짐)")]
     public float speedMultiplier = 0.5f;
 
+    public bool unlockOnPhaseExit;
+
+    /// <summary>Restore movement when the locking phase finishes or is cancelled.</summary>
+    public override void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase)
+    {
+        if (!unlockOnPhaseExit || controlType != MovementControlType.LockMovement || owner == null) return;
+        owner.GetComponent<MovementComponent>()?.Move();
+        var agent = owner.GetComponent<NavMeshAgent>();
+        if (agent != null && agent.isActiveAndEnabled)
+        {
+            agent.isStopped = false;
+            agent.updateRotation = true;
+        }
+    }
+
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         NavMeshAgent agent = owner.GetComponent<NavMeshAgent>();
