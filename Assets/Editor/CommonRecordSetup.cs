@@ -58,26 +58,26 @@ public static class CommonRecordSetup
             amount = amount, duration = duration
         };
         CommonRecordBuffModule Permanent(params RecordBuffEntry[] entries) => new() { activation = CommonRecordBuffModule.Activation.Persistent, buffs = entries.ToList() };
-        Configure(1, Permanent(Entry(attack, .05f)));
-        Configure(2, Permanent(Entry(defense, .05f)));
-        Configure(3, Permanent(Entry(speed, .01f)));
-        Configure(4, Permanent(Entry(attackSpeed, .05f)));
-        Configure(5, Permanent(Entry(crit, .05f)));
+        Configure(1, Permanent(Entry(attack, 0.1f)));
+        Configure(2, Permanent(Entry(defense, 0.1f)));
+        Configure(3, Permanent(Entry(speed, 0.1f)));
+        Configure(4, Permanent(Entry(attackSpeed, 0.1f)));
+        Configure(5, Permanent(Entry(crit, 0.1f)));
         Configure(7, new CommonRecordBuffModule { activation = CommonRecordBuffModule.Activation.LowHealth, healthThreshold = .3f, buffs = new() { Entry(attackSpeed, .3f) } });
-        Configure(8, Permanent(Entry(attack, .03f), Entry(attackSpeed, .01f)));
-        Configure(9, Permanent(Entry(defense, .03f), Entry(health, .1f)));
+        Configure(8, Permanent(Entry(attack, 0.1f), Entry(attackSpeed, 0.1f)));
+        Configure(9, Permanent(Entry(defense, 0.1f), Entry(health, .1f)));
         Configure(10, Permanent(Entry(attack, .1f)));
         Configure(12, Permanent(Entry(speed, .1f)));
-        Configure(13, Permanent(Entry(crit, .05f)));
+        Configure(13, Permanent(Entry(crit, 0.1f)));
         Configure(14, Permanent(Entry(speed, .1f)));
-        Configure(15, Permanent(Entry(attack, .05f), Entry(defense, .05f)));
+        Configure(15, Permanent(Entry(attack, 0.1f), Entry(defense, 0.1f)));
         Configure(16, Permanent(Entry(defense, .1f)));
-        Configure(17, Permanent(Entry(cooldown, .05f)));
+        Configure(17, Permanent(Entry(cooldown, .1f)));
         Configure(18, new CommonRecordBattleBleedModule { bleed = bleed, duration = 10, attackRatio = .1f });
         Configure(19, new CommonRecordBuffModule { activation = CommonRecordBuffModule.Activation.BattleStart, buffs = new() { Entry(critDamage, .2f, 30) } });
         Configure(20, new CommonRecordBuffModule { activation = CommonRecordBuffModule.Activation.Attack, probability = .05f, buffs = new() { Entry(speed, .12f, 10) } });
         Configure(21, new CommonRecordBuffModule { activation = CommonRecordBuffModule.Activation.BattleStart, buffs = new() { Entry(attack, .1f, 30) } });
-        Configure(22, Permanent(Entry(attack, .02f), Entry(crit, .05f)));
+        Configure(22, Permanent(Entry(attack, 0.1f), Entry(crit, 0.1f)));
         AssetDatabase.SaveAssets();
         // Keep reimport metadata in sync without discarding unrelated JSON fields.
         string path = "Assets/98.Datas/recordDataJson.json";
