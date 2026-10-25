@@ -105,7 +105,7 @@ public class UISkillDetail : UiBase
                 label.text = "미구현 · 잠금";
                 return;
             }
-            string text = learned ? $"ui_text_learn" : $"ui_text_learned";
+            string text = learned ? "ui_text_learned" : "ui_text_learn";
             label.text  = LocalizationManager.Instance.SafeInvoke(v => v.GetText(text));
         }
     }

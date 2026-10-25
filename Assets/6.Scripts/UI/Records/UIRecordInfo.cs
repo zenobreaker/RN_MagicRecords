@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class UIRecordInfo : UiBase
 {
     [SerializeField] private Image recordIcon;
+    [SerializeField] private Image memoryRecordIcon;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI descText;
     [SerializeField] private TextMeshProUGUI categoryText;
@@ -52,10 +53,19 @@ public class UIRecordInfo : UiBase
         var description = buildEntry != null ? buildEntry.Description : recordData?.description;
         var category = buildEntry != null ? buildEntry.Label : "획득 레코드";
 
+        bool isMemory = (buildEntry != null ? buildEntry.Type : recordData?.type) == RecordType.AUGMENT;
+        bool useMemory = isMemory && memoryRecordIcon != null;
         if (recordIcon != null)
         {
-            recordIcon.sprite = icon;
-            recordIcon.enabled = icon != null;
+            recordIcon.gameObject.SetActive(!useMemory);
+            recordIcon.sprite = useMemory ? null : icon;
+            recordIcon.enabled = !useMemory && icon != null;
+        }
+        if (memoryRecordIcon != null)
+        {
+            memoryRecordIcon.gameObject.SetActive(useMemory);
+            memoryRecordIcon.sprite = useMemory ? icon : null;
+            memoryRecordIcon.enabled = useMemory && icon != null;
         }
         if (nameText != null) nameText.text = title ?? "";
         if (categoryText != null) categoryText.text = title != null ? category : "";

@@ -9,19 +9,24 @@ public sealed class BuildEntryViewData
     public string Name { get; }
     public string Description { get; }
     public Sprite Icon { get; }
+    public RecordType Type { get; }
     public string Category { get; }
     public int Level { get; }
     public bool IsJobPassive { get; }
+    public IReadOnlyList<string> Keywords { get; }
 
     public BuildEntryViewData(string name, string description, Sprite icon, string category,
-        int level = 0, bool isJobPassive = false)
+        int level = 0, bool isJobPassive = false, IEnumerable<string> keywords = null, RecordType recordType = RecordType.NONE)
     {
         Name = ExploreBuildViewData.Localize(name);
         Description = ExploreBuildViewData.Localize(description);
         Icon = icon;
+        Type = recordType;
         Category = category;
         Level = level;
         IsJobPassive = isJobPassive;
+        Keywords = keywords?.Where(value => !string.IsNullOrWhiteSpace(value)).ToList()
+            ?? new List<string>();
     }
 
     public string Label => Level > 0 ? $"{Category} · Lv.{Level}" : Category;
@@ -37,7 +42,8 @@ public static class ExploreBuildViewData
         if (manager == null) manager = AppManager.Instance.SafeInvoke(app => app.GetRecordManager());
         return (manager.SafeInvoke(value => value.GetPossesRecord()) ?? new List<RecordData>())
             .Where(record => record != null)
-            .Select(record => new BuildEntryViewData(record.recordName, record.description, record.icon, "획득 레코드"))
+            .Select(record => new BuildEntryViewData(record.recordName, record.description, record.icon,
+                "획득 레코드", keywords: record.keywords, recordType: record.type))
             .ToList();
     }
 
@@ -55,7 +61,7 @@ public static class ExploreBuildViewData
             result.Add(new BuildEntryViewData(
                 string.IsNullOrEmpty(passive.Name) ? "패시브 효과" : passive.Name,
                 passive.Description, passive.Icon, starting ? "직업 패시브" : "패시브",
-                passive.SkillLevel, starting));
+                passive.SkillLevel, starting, passive.Keywords));
         }
         return result;
     }

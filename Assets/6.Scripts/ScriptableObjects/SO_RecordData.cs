@@ -40,6 +40,7 @@ public class RecordData
     public string recordName;
     public string description;
     public Sprite icon;
+    public List<string> keywords = new();
 
     public TargetFilterType targetFilter;
     public RecordType type;
@@ -73,6 +74,7 @@ public class RecordData
         temp.recordName = LocalizationManager.Instance.GetText(recordName);
         temp.description = LocalizationManager.Instance.GetText(description);
         temp.icon = icon;
+        temp.keywords = keywords != null ? new List<string>(keywords) : new List<string>();
         temp.targetFilter = targetFilter;
         temp.type = type;
         temp.rarity = rarity;
@@ -95,6 +97,8 @@ public class SO_RecordData : ScriptableObject
     public string recordName;
     public string description;
     public Sprite icon;
+    [Tooltip("Keyword text or localization keys shown on the record card.")]
+    public List<string> keywords = new();
 
     public TargetFilterType targetFilter;
     public RecordType type;
@@ -145,6 +149,7 @@ public class SO_RecordData : ScriptableObject
         recordData.recordName = recordName;
         recordData.description = description;
         recordData.icon = icon;
+        recordData.keywords = keywords != null ? new List<string>(keywords) : new List<string>();
         recordData.targetFilter = targetFilter;
         recordData.type = type;
         recordData.rarity = rarity;

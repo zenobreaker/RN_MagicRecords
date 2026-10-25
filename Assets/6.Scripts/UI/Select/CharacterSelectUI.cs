@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 
 public interface IExplorationSetupPage
@@ -53,6 +54,9 @@ public class CharacterSelectUI
     [SerializeField] private List<JobButton> jobButtons;
     [SerializeField] private Image selectJobImage;
 
+    [SerializeField] private TMP_Text characterSelectionPrompt;
+    [SerializeField] private TMP_Text jobSelectionPrompt;
+
     private ExplorationSetupData currentContext;
     private int selectedCharacter = -1;
     private int selectedClass = -1;
@@ -78,6 +82,11 @@ public class CharacterSelectUI
     public void OnShowPage(ExplorationSetupData setupData)
     {
 
+        characterSelectionPrompt.SafeInvoke(text => text.text = LocalizationManager.Instance.SafeInvoke(
+            localization => localization.GetText("ui_exploration_select_character")));
+        jobSelectionPrompt.SafeInvoke(text => text.text = LocalizationManager.Instance.SafeInvoke(
+            localization => localization.GetText("ui_exploration_select_job")));
+        int savedClass = setupData.SelectedClassId;
         currentContext = setupData;
         selectedCharacter = setupData.SelectedCharacterId; // 뒤로가기 해서 돌아왔을 때 기존 선택 유지용
 
@@ -87,8 +96,8 @@ public class CharacterSelectUI
         if (selectedCharacter != -1)
         {
             SelectCharacter(selectedCharacter);
-            if (selectedClass != -1)
-                SelectClass(selectedClass);
+            if (savedClass != -1)
+                SelectClass(savedClass);
         }
         else if (characterList.Count > 0)
         {

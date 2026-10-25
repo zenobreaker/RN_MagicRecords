@@ -15,6 +15,7 @@ public abstract class Skill
     public List<SkillLevelData> LevelDatas { get; protected set; }
 
     public Sprite Icon { get; private set; }
+    public IReadOnlyList<string> Keywords { get; private set; } = new List<string>();
 
     public Skill()
     {
@@ -33,6 +34,8 @@ public abstract class Skill
         : this(skillData.id, skillData.skillName, skillData.skillDescription, skillData.skillImage)
     {
         LevelDatas = skillData.levelDatas;
+        Keywords = skillData.keywords != null
+            ? new List<string>(skillData.keywords) : new List<string>();
     }
 
     public virtual void SetLevel(int level)

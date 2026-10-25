@@ -2,16 +2,20 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public sealed class UIRewardCardPopUp : UIPopUp
 {
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text continueText;
+    [SerializeField] private Button receiveAllButton;
+    [SerializeField] private TMP_Text receiveAllText;
 
     private List<IReward> rewards;
     private int remainRewardCount; 
     private Action onChapterReceived;
     private int chapter;
+    private bool receivingAll;
 
     public void SetData(List<IReward> rewards)
     {
@@ -37,6 +41,41 @@ public sealed class UIRewardCardPopUp : UIPopUp
         onChapterReceived = null;
         base.CloseUI();
         callback.Invoke();
+    }
+
+    public void OnReceiveAllButton()
+    {
+        if (chapter > 0 || receivingAll || !gameObject.activeSelf || remainRewardCount <= 0)
+            return;
+
+        receivingAll = true;
+        receiveAllButton.SafeInvoke(button => button.interactable = false);
+        var grantedRecords = new List<RecordData>();
+        try
+        {
+            // Use the same per-card receipt guard, including cards already claimed individually.
+            for (int i = 0; i < content.transform.childCount; i++)
+            {
+                var child = content.transform.GetChild(i);
+                if (!child.gameObject.activeSelf || !child.TryGetComponent<UIRewardCard>(out var card))
+                    continue;
+                if (card.TryReceive(false, out var record) && record != null)
+                    grantedRecords.Add(record);
+            }
+        }
+        finally
+        {
+            receivingAll = false;
+            receiveAllButton.SafeInvoke(button => button.interactable = remainRewardCount > 0);
+        }
+
+        if (remainRewardCount <= 0)
+            CloseAndClearRewards();
+
+        // Grant first, then show one read-only result, just like chapter rewards.
+        if (grantedRecords.Count > 0)
+            UIManager.Instance.SafeInvoke(ui =>
+                ui.OpenRecordSelectPopUp(grantedRecords, false, RecordUIMode.VIEW));
     }
 
     protected override void DrawPopUp()
@@ -70,6 +109,15 @@ public sealed class UIRewardCardPopUp : UIPopUp
             titleText.text = chapter > 0 ? $"챕터 {chapter} 클리어 보상" : "획득 보상";
         }
         continueText.SafeInvoke(text => text.text = chapter > 0 ? "보상 수령" : "닫기");
+        receiveAllButton.SafeInvoke(button =>
+        {
+            button.gameObject.SetActive(chapter <= 0);
+            button.interactable = remainRewardCount > 0;
+        });
+        receiveAllText.SafeInvoke(text => text.text =
+            LocalizationManager.Instance != null
+                ? LocalizationManager.Instance.GetText("ui_reward_receive_all")
+                : "모두 받기");
     }
 
     private void HandleReceived(UIRewardCard card)
@@ -78,7 +126,7 @@ public sealed class UIRewardCardPopUp : UIPopUp
         card.gameObject.SetActive(false);
         remainRewardCount--;
 
-        if (remainRewardCount <= 0)
+        if (remainRewardCount <= 0 && !receivingAll)
             CloseUI();
     }
 
@@ -88,6 +136,7 @@ public sealed class UIRewardCardPopUp : UIPopUp
     public override void CloseUI()
     {
         if (chapter > 0) return; // Escape/background cannot skip a chapter reward.
+        if (receivingAll) return;
         if (!gameObject.activeSelf) return;
 
         if (remainRewardCount > 0)

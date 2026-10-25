@@ -65,10 +65,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u3148\u3147\u3148\u3147\u3147\u3147"
+  m_text: "\u3147\u3147\u3147"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: e83ee2e2e31dba149a5d56d3aa365bfe, type: 2}
-  m_sharedMaterial: {fileID: -4592664541189517498, guid: e83ee2e2e31dba149a5d56d3aa365bfe, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 2715ca563252f784e87217fbd1d35912, type: 2}
+  m_sharedMaterial: {fileID: -7057489017761322527, guid: 2715ca563252f784e87217fbd1d35912, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -92,7 +92,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 44.4
+  m_fontSize: 44.75
   m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -103,6 +103,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -362,7 +363,7 @@ MonoBehaviour:
   noDataIcon: {fileID: 484678859, guid: 31b2ec5325d7a1d4eac25b7b181b275e, type: 3}
   bgImage: {fileID: 6828030780684169955}
   itemNameTxt: {fileID: 5807781804998480837}
-  itemPriceTxt: {fileID: 0}
+  itemPrice: {fileID: 0}
 --- !u!1001 &946158525558245161
 PrefabInstance:
   m_ObjectHideFlags: 0

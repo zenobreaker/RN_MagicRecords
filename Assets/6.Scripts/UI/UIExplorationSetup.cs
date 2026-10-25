@@ -119,7 +119,7 @@ public class UIExplorationSetup : UIPopUp
             return ExplorationStep.Character;
 
         if (!setupData.HasClass)
-            return ExplorationStep.Skill;
+            return ExplorationStep.Character;
 
         return ExplorationStep.Final;
     }
@@ -170,7 +170,7 @@ public class UIExplorationSetup : UIPopUp
             if (nextButton != null)
             {
                 nextButton.gameObject.SetActive(true);
-                nextButton.interactable = isReady;
+                nextButton.interactable = true;
             }
 
             if (startButton != null)
@@ -190,8 +190,21 @@ public class UIExplorationSetup : UIPopUp
 
     private void OnClickNext()
     {
+        if (currentStep == ExplorationStep.Character)
+        {
+            string missingSelectionKey = !setupData.HasCharacter
+                ? "ui_exploration_select_character"
+                : !setupData.HasClass ? "ui_exploration_select_job" : null;
+            if (missingSelectionKey != null)
+            {
+                UIManager.Instance.SafeInvoke(ui => ui.ShowToast(
+                    LocalizationManager.Instance.SafeInvoke(localization => localization.GetText(missingSelectionKey))));
+                return;
+            }
+        }
+
         if (pageObjects[currentStep] != null
-            & pageObjects[currentStep].TryGetComponent<SkillSelectUI>(
+            && pageObjects[currentStep].TryGetComponent<SkillSelectUI>(
                 out var skillpage))
         {
             bool isValid

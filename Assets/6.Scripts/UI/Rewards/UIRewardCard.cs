@@ -56,10 +56,25 @@ public sealed class UIRewardCard : UIItemSlot
 
     private void OnClickReceive()
     {
-        if (received) return;
-        received = true; 
+        TryReceive(true, out _);
+    }
 
-        reward?.Receive();
+    public bool TryReceive(bool showRecordResult, out RecordData grantedRecord)
+    {
+        grantedRecord = null;
+        if (received || reward == null) return false;
+        received = true;
+
+        if (reward is RecordReward recordReward)
+        {
+            recordReward.Receive(showRecordResult);
+            grantedRecord = recordReward.GrantedRecord;
+        }
+        else
+        {
+            reward.Receive();
+        }
         OnReceived?.Invoke(this);
+        return true;
     }
 }
