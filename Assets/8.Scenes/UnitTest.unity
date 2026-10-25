@@ -1270,6 +1270,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 910770000000000020, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 910770000000000020, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 910770000000000020, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 910770000000000020, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1163274314246688096, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1289,6 +1305,10 @@ PrefabInstance:
     - target: {fileID: 1932776284738236466, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
       propertyPath: m_Name
       value: PlayerUI_PC
+      objectReference: {fileID: 0}
+    - target: {fileID: 2016687071107667681, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2447972378282078672, guid: 2b342e88a3c44984e9b4b5509389dc91, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1689,6 +1709,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
+  subActionCancelCooldown: 7
 --- !u!114 &431370927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1716,6 +1737,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e6f2f178497d6c45a82fa0f94736ac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lightReactionTime: 0.08
+  heavyReactionTime: 0.2
+  knockbackReactionTime: 0.15
+  reactionRecoveryTime: 0.15
+  baseReactionResistance: 0
+  preserveBossReactionResistance: 1
 --- !u!114 &431370929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5278,6 +5305,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
+  subActionCancelCooldown: 7
 --- !u!1 &355404037544070759
 GameObject:
   m_ObjectHideFlags: 0
@@ -6087,6 +6115,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e6f2f178497d6c45a82fa0f94736ac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lightReactionTime: 0.08
+  heavyReactionTime: 0.2
+  knockbackReactionTime: 0.15
+  reactionRecoveryTime: 0.15
+  baseReactionResistance: 0
+  preserveBossReactionResistance: 1
 --- !u!114 &1548956726520657727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7677,6 +7711,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e6f2f178497d6c45a82fa0f94736ac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lightReactionTime: 0.08
+  heavyReactionTime: 0.2
+  knockbackReactionTime: 0.15
+  reactionRecoveryTime: 0.15
+  baseReactionResistance: 0
+  preserveBossReactionResistance: 1
 --- !u!1001 &3923038938078387812
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8092,6 +8132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
+  subActionCancelCooldown: 7
 --- !u!1 &4248613751839309091
 GameObject:
   m_ObjectHideFlags: 0
@@ -8555,6 +8596,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
+  subActionCancelCooldown: 7
 --- !u!1 &5169761270745285328
 GameObject:
   m_ObjectHideFlags: 0
@@ -8583,6 +8625,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e6f2f178497d6c45a82fa0f94736ac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lightReactionTime: 0.08
+  heavyReactionTime: 0.2
+  knockbackReactionTime: 0.15
+  reactionRecoveryTime: 0.15
+  baseReactionResistance: 0
+  preserveBossReactionResistance: 1
 --- !u!1 &5254615456761100438
 GameObject:
   m_ObjectHideFlags: 0
@@ -10051,6 +10099,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
+  subActionCancelCooldown: 7
 --- !u!1 &7037203216624080806
 GameObject:
   m_ObjectHideFlags: 0
@@ -11005,6 +11054,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e6f2f178497d6c45a82fa0f94736ac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lightReactionTime: 0.08
+  heavyReactionTime: 0.2
+  knockbackReactionTime: 0.15
+  reactionRecoveryTime: 0.15
+  baseReactionResistance: 0
+  preserveBossReactionResistance: 1
 --- !u!1 &8017435641546977749
 GameObject:
   m_ObjectHideFlags: 0

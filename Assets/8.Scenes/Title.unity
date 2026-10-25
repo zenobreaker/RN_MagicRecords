@@ -251,6 +251,7 @@ GameObject:
   - component: {fileID: 517510283}
   - component: {fileID: 517510285}
   - component: {fileID: 517510284}
+  - component: {fileID: 517510286}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -299,15 +300,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Settings
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: fcc22783f60227349a0693076a5a6b9e, type: 2}
+  m_sharedMaterial: {fileID: 4097873343951361571, guid: fcc22783f60227349a0693076a5a6b9e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -377,6 +378,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 517510282}
   m_CullTransparentMesh: 1
+--- !u!114 &517510286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 517510282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b156cf6708d89242a76e4f30d3cdaec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizeText
+  textKey: title_setting
 --- !u!1 &672673454
 GameObject:
   m_ObjectHideFlags: 0
@@ -712,6 +726,7 @@ GameObject:
   - component: {fileID: 885804829}
   - component: {fileID: 885804831}
   - component: {fileID: 885804830}
+  - component: {fileID: 885804832}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -760,15 +775,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Start
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: fcc22783f60227349a0693076a5a6b9e, type: 2}
+  m_sharedMaterial: {fileID: 4097873343951361571, guid: fcc22783f60227349a0693076a5a6b9e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -838,6 +853,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 885804828}
   m_CullTransparentMesh: 1
+--- !u!114 &885804832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885804828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b156cf6708d89242a76e4f30d3cdaec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizeText
+  textKey: title_start
 --- !u!1 &1001136522
 GameObject:
   m_ObjectHideFlags: 0
@@ -1124,6 +1152,7 @@ GameObject:
   - component: {fileID: 1693990093}
   - component: {fileID: 1693990095}
   - component: {fileID: 1693990094}
+  - component: {fileID: 1693990096}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1172,15 +1201,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Exit
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: fcc22783f60227349a0693076a5a6b9e, type: 2}
+  m_sharedMaterial: {fileID: 4097873343951361571, guid: fcc22783f60227349a0693076a5a6b9e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1250,6 +1279,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1693990092}
   m_CullTransparentMesh: 1
+--- !u!114 &1693990096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1693990092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b156cf6708d89242a76e4f30d3cdaec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizeText
+  textKey: title_exit
 --- !u!1 &1746869866
 GameObject:
   m_ObjectHideFlags: 0
