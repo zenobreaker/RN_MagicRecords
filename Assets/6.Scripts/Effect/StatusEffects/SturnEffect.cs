@@ -2,9 +2,15 @@ using UnityEngine;
 
 public class StunEffect : CrowdControlEffect
 {
-    public override StatusEffectType EffectFlag => StatusEffectType.Stun;
-    
-    public StunEffect(string id, string desc, float duration) 
+    public override StatusEffectType EffectFlag
+    {
+        get
+        {
+            return StatusEffectType.Stun;
+        }
+    }
+
+    public StunEffect(string id, string desc, float duration)
         : base(id, desc, duration)
     {
         Type = EffectType.DEBUFF;

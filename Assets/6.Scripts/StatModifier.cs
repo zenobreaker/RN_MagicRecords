@@ -1,11 +1,11 @@
 using System;
 
 [System.Serializable]
-public class StatModifier :ICloneable
+public class StatModifier : ICloneable
 {
     public StatusType type;
     public float value;
-    public ModifierValueType valueType; 
+    public ModifierValueType valueType;
 
     public StatModifier(StatusType type, float value, ModifierValueType valueType)
     {
@@ -21,7 +21,7 @@ public class StatModifier :ICloneable
 
     public string GetOnlyValue()
     {
-        return value.ToString(); 
+        return value.ToString();
     }
 
     /// <summary>
@@ -35,12 +35,14 @@ public class StatModifier :ICloneable
 
     public string GetFullValue()
     {
-        if (LocalizationManager.Instance == null) 
-            return type.ToString() + " " + GetValueAndValueType(); 
-        
+        if (LocalizationManager.Instance == null)
+        {
+            return type.ToString() + " " + GetValueAndValueType();
+        }
+
         string key = GetLocalKey();
         string value = LocalizationManager.Instance.GetText(key);
-        return value + " " + GetValueAndValueType(); 
+        return value + " " + GetValueAndValueType();
     }
 
     public object Clone()
@@ -50,12 +52,12 @@ public class StatModifier :ICloneable
 
     public string GetLocalKey()
     {
-        string key = ""; 
-        switch(type)
+        string key = "";
+        switch (type)
         {
             case StatusType.ATTACK:
                 key = "stat_attack";
-                break; 
+                break;
             case StatusType.HEALTH:
                 key = "stat_health";
                 break;
@@ -77,6 +79,6 @@ public class StatModifier :ICloneable
 
         }
 
-        return key; 
+        return key;
     }
 }

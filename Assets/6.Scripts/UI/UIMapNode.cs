@@ -7,12 +7,18 @@ public interface UINode
     void Init(MapNode mapNode);
 }
 
-public class UIMapNode 
+public class UIMapNode
     : MonoBehaviour, UINode
 {
     [SerializeField] private MapNode mapNode;
-    public MapNode Node { get { return mapNode; } }
- 
+    public MapNode Node
+    {
+        get
+        {
+            return mapNode;
+        }
+    }
+
 
     public virtual void Init(MapNode mapNode)
     {

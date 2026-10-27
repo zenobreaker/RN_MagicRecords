@@ -30,11 +30,21 @@ public class SkillTestInvoker : MonoBehaviour
 
     private void ExecuteSkill(SkillSlot slot, SO_SkillData skill, int skillLevel)
     {
-        if (skill == null) return;
-        if (owner == null) return;
+        if (skill == null)
+        {
+            return;
+        }
+
+        if (owner == null)
+        {
+            return;
+        }
 
         SkillComponent skillComponent = owner.GetComponent<SkillComponent>();
-        if (skillComponent == null) return;
+        if (skillComponent == null)
+        {
+            return;
+        }
 
         if (skill == null)
         {
@@ -52,7 +62,9 @@ public class SkillTestInvoker : MonoBehaviour
             }
 
             if (testActiveSkills.ContainsKey(slot))
+            {
                 testActiveSkills.Remove(slot);
+            }
 
             testActiveSkills.Add(slot, activeSkill);
 
@@ -82,7 +94,9 @@ public class SkillTestInvoker : MonoBehaviour
     public static void UndoSkill(SkillSlot slot, SO_SkillData skill)
     {
         if (instance == null)
+        {
             return;
+        }
 
         instance.ExecuteUndo(slot, skill);
     }
@@ -90,7 +104,10 @@ public class SkillTestInvoker : MonoBehaviour
     private void ExecuteUndo(SkillSlot slot, SO_SkillData skill)
     {
         SkillComponent skillComp = owner.GetComponent<SkillComponent>();
-        if (skillComp == null) return;
+        if (skillComp == null)
+        {
+            return;
+        }
 
         // 액티브 스킬 해제
         if (skill is SO_ActiveSkillData active)

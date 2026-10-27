@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public abstract class AbstractProjectile 
+public abstract class AbstractProjectile
     : BaseProjectile
     , ISkillEffect
     , ILifetimeSetup
@@ -24,7 +24,11 @@ public abstract class AbstractProjectile
 
     protected float DefaultForce
     {
-        get { CacheDefaults(); return defaultForce; }
+        get
+        {
+            CacheDefaults();
+            return defaultForce;
+        }
     }
 
     // 타격 이벤트
@@ -39,7 +43,11 @@ public abstract class AbstractProjectile
 
     private void CacheDefaults()
     {
-        if (defaultsCached) return;
+        if (defaultsCached)
+        {
+            return;
+        }
+
         defaultsCached = true;
         defaultForce = force;
         defaultLife = life;
@@ -55,16 +63,26 @@ public abstract class AbstractProjectile
     // Spawn-time scaling preserves configured overrides and the prefab default for pool reuse.
     public void ScaleLifeTime(float multiplier)
     {
-        if (life < 0f || multiplier <= 0f || float.IsNaN(multiplier) || float.IsInfinity(multiplier)) return;
+        if (life < 0f || multiplier <= 0f || float.IsNaN(multiplier) || float.IsInfinity(multiplier))
+        {
+            return;
+        }
+
         float scaledLife = life * multiplier;
-        if (!float.IsInfinity(scaledLife)) SetLifeTime(scaledLife);
+        if (float.IsInfinity(scaledLife) == false)
+        {
+            SetLifeTime(scaledLife);
+        }
     }
 
     // 💡 [핵심] 공통 생명주기 처리는 부모가 알아서 다 합니다.
     protected override void OnEnable()
     {
-        if (rigid == null) return;
-        
+        if (rigid == null)
+        {
+            return;
+        }
+
         // 1. 공통 물리 / 수명 초기화
         rigid.linearVelocity = transform.forward * force;
         curLife = life;
@@ -95,8 +113,11 @@ public abstract class AbstractProjectile
 
     protected override void Update()
     {
-        base.Update(); 
-        if (!isActiveAndEnabled) return;
+        base.Update();
+        if (isActiveAndEnabled == false)
+        {
+            return;
+        }
 
         if (life != -1)
         {
@@ -114,15 +135,28 @@ public abstract class AbstractProjectile
 
     protected virtual void OnTriggerEnter(Collider other)
     {
-        if (ignores.Contains(other.gameObject)) return;
-        if (ignoreLayer.Contains(other.gameObject)) return;
-        if (IsFriendlyFire(other.gameObject)) return;
+        if (ignores.Contains(other.gameObject))
+        {
+            return;
+        }
+
+        if (ignoreLayer.Contains(other.gameObject))
+        {
+            return;
+        }
+
+        if (IsFriendlyFire(other.gameObject))
+        {
+            return;
+        }
 
         // 공통 이벤트 및 사운드/이펙트 재생
         OnProjectileHit?.Invoke(collider, other, transform.position);
 
-        if (!string.IsNullOrEmpty(bombEffectName))
+        if (string.IsNullOrEmpty(bombEffectName) == false)
+        {
             ObjectPooler.SpawnFromPool(bombEffectName, transform.position);
+        }
 
         // Play Sound
         SoundManager.Instance.SafeInvoke(v => v.PlaySFX(impactSoundName));
@@ -134,8 +168,16 @@ public abstract class AbstractProjectile
     // =======================================================
     // 🧩 자식 클래스가 입맛대로 구현할 '빈 칸 (Hooks)'
     // =======================================================
-    protected virtual void OnProjectileSpawned() { }
-    protected virtual void OnProjectileDespawned() { }
-    protected virtual void OnProjectileUpdate() { }
-    protected virtual void ProcessHit(Collider other) { }
+    protected virtual void OnProjectileSpawned()
+    {
+    }
+    protected virtual void OnProjectileDespawned()
+    {
+    }
+    protected virtual void OnProjectileUpdate()
+    {
+    }
+    protected virtual void ProcessHit(Collider other)
+    {
+    }
 }

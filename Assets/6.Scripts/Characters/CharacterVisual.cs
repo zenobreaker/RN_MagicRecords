@@ -41,7 +41,11 @@ public sealed class CharacterVisual : MonoBehaviour
     private static readonly int DASH_HASH = Animator.StringToHash("Dash");
 
     // --- Components & State ---
-    public Animator Animator { get; private set; }
+    public Animator Animator
+    {
+        get;
+        private set;
+    }
     private Character character; // 💡 상위 객체에 있는 논리 컴포넌트
     private float originAnimSpeed;
     private AnimatorOverrideController overrideController;
@@ -58,13 +62,17 @@ public sealed class CharacterVisual : MonoBehaviour
     {
         // 1. 모델 렌더러 & 매테리얼 세팅
         if (modelRoot == null)
+        {
             modelRoot = transform.Find("Model")?.gameObject;
+        }
 
         if (modelRoot != null)
         {
             renderers = modelRoot.GetComponentsInChildren<MeshRenderer>();
             foreach (var rend in renderers)
+            {
                 materials.Add(rend.material);
+            }
         }
 
         // 2. 상위(Root) 오브젝트에서 Character 컴포넌트 가져오기
@@ -83,7 +91,7 @@ public sealed class CharacterVisual : MonoBehaviour
 
     public float GetAnimSpeed()
     {
-        return originAnimSpeed; 
+        return originAnimSpeed;
     }
 
     private void InitDamageMotions()
@@ -109,9 +117,15 @@ public sealed class CharacterVisual : MonoBehaviour
     }
 
     #region Model Display & Material Controls
-    // 숨김 / 표시 
-    public void HideModel() => modelRoot?.SetActive(false);
-    public void ShowModel() => modelRoot?.SetActive(true);
+    // 숨김 / 표시
+    public void HideModel()
+    {
+        modelRoot?.SetActive(false);
+    }
+    public void ShowModel()
+    {
+        modelRoot?.SetActive(true);
+    }
 
     // 투명도 적용
     public void SetAlpha(float alpha)
@@ -150,19 +164,31 @@ public sealed class CharacterVisual : MonoBehaviour
     // 💡 1. 액션(스킬/공격) 애니메이션 재생
     public void PlayActionAnimation(ActionData actionData, int layer, float statSpeedMultiplier, bool restartFromBeginning = false)
     {
-        if (actionData == null || Animator == null) return;
+        if (actionData == null || Animator == null)
+        {
+            return;
+        }
 
         float finalSpeed = actionData.ActionSpeed * statSpeedMultiplier;
         Animator.SetFloat(actionData.ActionSpeedHash, finalSpeed);
         Debug.Log($"{actionData.StateName} play anim");
-        if (restartFromBeginning) Animator.Play(actionData.StateName, layer, 0f);
-        else Animator.CrossFade(actionData.StateName, 0.1f, layer);
+        if (restartFromBeginning)
+        {
+            Animator.Play(actionData.StateName, layer, 0f);
+        }
+        else
+        {
+            Animator.CrossFade(actionData.StateName, 0.1f, layer);
+        }
     }
 
     // 💡 2. 피격 애니메이션 재생
     public void PlayDamageAnimation(HitData data, HitReactionType reaction = HitReactionType.None)
     {
-        if (data == null) return;
+        if (data == null)
+        {
+            return;
+        }
 
         // 애니메이터가 없거나 이벤트 사용 안 함 체크 시
         if (Animator == null || Animator.runtimeAnimatorController == null || useAnimationEvents == false)
@@ -172,7 +198,10 @@ public sealed class CharacterVisual : MonoBehaviour
             return;
         }
 
-        if (damageMotionTable == null) return;
+        if (damageMotionTable == null)
+        {
+            return;
+        }
 
         // Reuse serialized animation keys without changing the attack snapshot.
         DamageType motionType = reaction switch
@@ -192,7 +221,11 @@ public sealed class CharacterVisual : MonoBehaviour
 
         foreach (var parameter in Animator.parameters)
         {
-            if (parameter.type != AnimatorControllerParameterType.Trigger || parameter.name != DamageAnimStateName) continue;
+            if (parameter.type != AnimatorControllerParameterType.Trigger || parameter.name != DamageAnimStateName)
+            {
+                continue;
+            }
+
             Animator.SetTrigger(parameter.nameHash);
             break;
         }
@@ -208,7 +241,9 @@ public sealed class CharacterVisual : MonoBehaviour
     public void SetAnimationSpeedMultiplier(float multiplier)
     {
         if (Animator != null)
+        {
             Animator.speed = originAnimSpeed * multiplier;
+        }
     }
 
     public void SetMovementAnimation(float speedValue)
@@ -221,9 +256,9 @@ public sealed class CharacterVisual : MonoBehaviour
 
     public void SetWeaponEquipAnimation(int weaponType)
     {
-        if(Animator!= null)
+        if (Animator != null)
         {
-            Animator.SetBool("isEquipping", true); 
+            Animator.SetBool("isEquipping", true);
             Animator.SetInteger(WEAPONTYPE_HASH, weaponType);
         }
     }
@@ -264,7 +299,10 @@ public sealed class CharacterVisual : MonoBehaviour
         try
         {
             // 매테리얼 배열 방어 코드
-            if (materials.Count == 0) return;
+            if (materials.Count == 0)
+            {
+                return;
+            }
 
             float startAlpha = materials[0].color.a;
             float time = 0f;
@@ -289,7 +327,7 @@ public sealed class CharacterVisual : MonoBehaviour
     #endregion
 
     #region Memory Management
-    private  void OnDisable()
+    private void OnDisable()
     {
         CleanupTask();
     }
@@ -311,13 +349,37 @@ public sealed class CharacterVisual : MonoBehaviour
     #endregion
 
     #region Animation Event Bridge
-    public void Start_DoAction() => character.SafeInvoke(v=>v.Start_DoAction());
-    public void Begin_DoAction() => character.SafeInvoke(v => v.Begin_DoAction());
-    public void End_DoAction() => character.SafeInvoke(v => v.End_DoAction());
-    public void Begin_JudgeAttack(AnimationEvent e = null) => character.SafeInvoke(v => v.Begin_JudgeAttack(e));
-    public void End_JudgeAttack(AnimationEvent e = null) => character.SafeInvoke(v => v.End_JudgeAttack(e));
-    public void Play_Sound() => character.SafeInvoke(v => v.Play_Sound());
-    public void Play_CameraShake() => character.SafeInvoke(v => v.Play_CameraShake());
-    public void End_Damaged() => character.SafeInvoke(v => v.End_Damaged());
+    public void Start_DoAction()
+    {
+        character.SafeInvoke(v => v.Start_DoAction());
+    }
+    public void Begin_DoAction()
+    {
+        character.SafeInvoke(v => v.Begin_DoAction());
+    }
+    public void End_DoAction()
+    {
+        character.SafeInvoke(v => v.End_DoAction());
+    }
+    public void Begin_JudgeAttack(AnimationEvent e = null)
+    {
+        character.SafeInvoke(v => v.Begin_JudgeAttack(e));
+    }
+    public void End_JudgeAttack(AnimationEvent e = null)
+    {
+        character.SafeInvoke(v => v.End_JudgeAttack(e));
+    }
+    public void Play_Sound()
+    {
+        character.SafeInvoke(v => v.Play_Sound());
+    }
+    public void Play_CameraShake()
+    {
+        character.SafeInvoke(v => v.Play_CameraShake());
+    }
+    public void End_Damaged()
+    {
+        character.SafeInvoke(v => v.End_Damaged());
+    }
     #endregion
 }

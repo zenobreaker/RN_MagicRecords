@@ -31,7 +31,10 @@ public class RuntimeStatusEffectApplier : MonoBehaviour
 
     private void HandleHit(Collider myCol, Collider targetCol, Vector3 hitPos)
     {
-        if (!isInitialized || targetCol == null) return;
+        if (isInitialized == false || targetCol == null)
+        {
+            return;
+        }
 
         if (EffectManager.Instance != null && proj.Owner != null)
         {

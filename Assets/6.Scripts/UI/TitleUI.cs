@@ -38,7 +38,7 @@ public class TitleUI : MonoBehaviour
     {
         if (Application.isPlaying)
         {
-            if(SoundManager.Instance != null)
+            if (SoundManager.Instance != null)
             {
                 SoundManager.Instance.PlayBGM("MainTheme1");
             }
@@ -64,12 +64,14 @@ public class TitleUI : MonoBehaviour
             Debug.LogError("[TitleUI] OptionPopupUI 프리팹이 할당되지 않았습니다!");
             return;
         }
-        
-        if(UIManager.Instance != null)
+
+        if (UIManager.Instance != null)
         {
             UIPopUpOption ui = UIManager.Instance.OpenUI<UIPopUpOption>(true);
             if (ui == null)
-                return; 
+            {
+                return;
+            }
         }
 
     }
@@ -90,8 +92,19 @@ public class TitleUI : MonoBehaviour
 
     private void InitButtonReferences()
     {
-        if (startButton == null) startButton = transform.Find("Btn_Start")?.GetComponent<Button>();
-        if (settingsButton == null) settingsButton = transform.Find("Btn_Settings")?.GetComponent<Button>();
-        if (exitButton == null) exitButton = transform.Find("Btn_Exit")?.GetComponent<Button>();
+        if (startButton == null)
+        {
+            startButton = transform.Find("Btn_Start")?.GetComponent<Button>();
+        }
+
+        if (settingsButton == null)
+        {
+            settingsButton = transform.Find("Btn_Settings")?.GetComponent<Button>();
+        }
+
+        if (exitButton == null)
+        {
+            exitButton = transform.Find("Btn_Exit")?.GetComponent<Button>();
+        }
     }
 }

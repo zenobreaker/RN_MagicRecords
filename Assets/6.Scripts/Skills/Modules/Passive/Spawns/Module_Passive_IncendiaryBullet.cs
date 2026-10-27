@@ -8,7 +8,13 @@ public sealed class Module_Passive_StatusEffectBullet : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (0이면 조건 없이 발동)")]
     public int targetSkillID = 0;
-    public override int TargetSkillID => targetSkillID;
+    public override int TargetSkillID
+    {
+        get
+        {
+            return targetSkillID;
+        }
+    }
 
     [Header("Status Effect Settings")]
     [Tooltip("부여할 상태이상 ID (예: Burn, Bleed, Poison)")]
@@ -27,12 +33,14 @@ public sealed class Module_Passive_StatusEffectBullet : PassiveModule
     public override void OnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill)
     {
         if (targetSkillID != 0 && casterSkill.SkillID != targetSkillID)
+        {
             return;
+        }
 
         if (spawnedObject is AbstractProjectile proj)
         {
             // 런타임 상태이상 부여기 컴포넌트를 가져오거나 붙여줍니다.
-            if (!proj.gameObject.TryGetComponent<RuntimeStatusEffectApplier>(out var effectApplier))
+            if (proj.gameObject.TryGetComponent<RuntimeStatusEffectApplier>(out var effectApplier) == false)
             {
                 effectApplier = proj.gameObject.AddComponent<RuntimeStatusEffectApplier>();
             }

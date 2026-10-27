@@ -8,18 +8,23 @@ public class EnhanceUI_Enhancement : MonoBehaviour
 
     public void TryEnhnace(EquipmentItem equipment)
     {
-        if(equipment == null)
-            return;
-
-        if (!EnhanceSystem.CanEnhance(equipment, out string reason))
+        if (equipment == null)
         {
-            Debug.LogWarning(reason);
-            if (UIManager.Instance != null)
-                UIManager.Instance.ShowToast(reason);
             return;
         }
 
-        // 碍拳 贸府 
+        if (EnhanceSystem.CanEnhance(equipment, out string reason) == false)
+        {
+            Debug.LogWarning(reason);
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.ShowToast(reason);
+            }
+
+            return;
+        }
+
+        // 碍拳 贸府
         EnhanceSystem.ApplyEnhance(equipment);
         OnEnhanced?.Invoke();
     }

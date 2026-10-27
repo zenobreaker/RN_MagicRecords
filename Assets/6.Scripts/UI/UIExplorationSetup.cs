@@ -17,7 +17,7 @@ public class ExplorationSetupData
     public int SelectedCharacterId = -1;
     public int SelectedClassId = -1;
 
-    // 이어하기 모드인지 여부 
+    // 이어하기 모드인지 여부
     public bool IsContinue = false;
 
 
@@ -28,8 +28,20 @@ public class ExplorationSetupData
         SelectedClassId = -1;
     }
 
-    public bool HasCharacter => SelectedCharacterId != -1;
-    public bool HasClass => SelectedClassId != -1;
+    public bool HasCharacter
+    {
+        get
+        {
+            return SelectedCharacterId != -1;
+        }
+    }
+    public bool HasClass
+    {
+        get
+        {
+            return SelectedClassId != -1;
+        }
+    }
 }
 
 public class UIExplorationSetup : UIPopUp
@@ -73,11 +85,19 @@ public class UIExplorationSetup : UIPopUp
         }
 
         if (nextButton != null)
+        {
             nextButton.onClick.AddListener(OnClickNext);
+        }
+
         if (prevButton != null)
+        {
             prevButton.onClick.AddListener(OnClickPrev);
+        }
+
         if (startButton != null)
+        {
             startButton.onClick.AddListener(OnClickStart);
+        }
 
         cachedManager = AppManager.Instance.SafeInvoke(v => v.GetExploreManager());
     }
@@ -115,11 +135,15 @@ public class UIExplorationSetup : UIPopUp
 
     private ExplorationStep DetermineResumeStep()
     {
-        if (!setupData.HasCharacter)
+        if (setupData.HasCharacter == false)
+        {
             return ExplorationStep.Character;
+        }
 
-        if (!setupData.HasClass)
+        if (setupData.HasClass == false)
+        {
             return ExplorationStep.Character;
+        }
 
         return ExplorationStep.Final;
     }
@@ -135,7 +159,9 @@ public class UIExplorationSetup : UIPopUp
         foreach (var obj in pageObjects.Values)
         {
             if (obj != null)
+            {
                 obj.SetActive(false);
+            }
         }
 
         // 2. 타겟 페이지 켜고 데이터 주입
@@ -157,7 +183,9 @@ public class UIExplorationSetup : UIPopUp
         {
 
             if (nextButton != null)
+            {
                 nextButton.gameObject.SetActive(false);
+            }
 
             if (startButton != null)
             {
@@ -174,7 +202,9 @@ public class UIExplorationSetup : UIPopUp
             }
 
             if (startButton != null)
+            {
                 startButton.gameObject.SetActive(false);
+            }
         }
     }
     private void ForceProceedToNextStep()
@@ -192,9 +222,9 @@ public class UIExplorationSetup : UIPopUp
     {
         if (currentStep == ExplorationStep.Character)
         {
-            string missingSelectionKey = !setupData.HasCharacter
+            string missingSelectionKey = (setupData.HasCharacter == false)
                 ? "ui_exploration_select_character"
-                : !setupData.HasClass ? "ui_exploration_select_job" : null;
+                : (setupData.HasClass == false) ? "ui_exploration_select_job" : null;
             if (missingSelectionKey != null)
             {
                 UIManager.Instance.SafeInvoke(ui => ui.ShowToast(
@@ -211,26 +241,47 @@ public class UIExplorationSetup : UIPopUp
                 = skillpage.CheckSkillSlotValidation(ForceProceedToNextStep);
 
             if (isValid)
+            {
                 ForceProceedToNextStep();
+            }
         }
         else if (currentStep < ExplorationStep.Final)
+        {
             ChangeStep(currentStep + 1);
+        }
     }
 
     private void OnClickPrev()
     {
         if (currentStep > ExplorationStep.Character)
+        {
             ChangeStep(currentStep - 1);
+        }
     }
 
     private void OnClickStart()
     {
-        if (SceneLoadingController.IsLoading) return;
-        if (!pages[currentStep].IsReadyToProceed()) return;
+        if (SceneLoadingController.IsLoading)
+        {
+            return;
+        }
+
+        if (pages[currentStep].IsReadyToProceed() == false)
+        {
+            return;
+        }
 
         cachedManager = cachedManager == null ? AppManager.Instance.SafeInvoke(v => v.GetExploreManager()) : cachedManager;
-        if (cachedManager == null) return;
-        if (!cachedManager.FinallizeSetupAndGenerateMap(setupData)) return;
+        if (cachedManager == null)
+        {
+            return;
+        }
+
+        if (cachedManager.FinallizeSetupAndGenerateMap(setupData) == false)
+        {
+            return;
+        }
+
         CloseUI();
 
         SceneLoadingController.LoadScene("StageSelectScene");

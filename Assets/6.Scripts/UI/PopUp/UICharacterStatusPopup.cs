@@ -21,7 +21,9 @@ public sealed class UICharacterStatusPopup : UiBase
         base.Awake();
 
         if (characterBar == null)
-            characterBar = GameObject.Find("CharacterBar").SafeInvoke(v=>v.GetComponent<RectTransform>());
+        {
+            characterBar = GameObject.Find("CharacterBar").SafeInvoke(v => v.GetComponent<RectTransform>());
+        }
     }
 
     protected override void OnEnable()
@@ -33,20 +35,34 @@ public sealed class UICharacterStatusPopup : UiBase
 
     public override void RefreshUI()
     {
-        if (statusText == null) return;
+        if (statusText == null)
+        {
+            return;
+        }
+
         characterIds = ExploreBuildViewData.ReadCharacterIds();
-        if (!characterIds.Contains(selectedCharacterId))
+        if (characterIds.Contains(selectedCharacterId) == false)
+        {
             selectedCharacterId = characterIds.Count > 0 ? characterIds[0] : -1;
+        }
+
         DrawCharacterButtons();
         statusText.text = ExploreBuildViewData.ReadCharacterStatus(selectedCharacterId);
         Canvas.ForceUpdateCanvases();
         statusText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, statusText.preferredHeight + 40f);
-        if (scrollRect != null) scrollRect.verticalNormalizedPosition = 1f;
+        if (scrollRect != null)
+        {
+            scrollRect.verticalNormalizedPosition = 1f;
+        }
     }
 
     public void SelectCharacter(int characterId)
     {
-        if (!characterIds.Contains(characterId)) return;
+        if (characterIds.Contains(characterId) == false)
+        {
+            return;
+        }
+
         selectedCharacterId = characterId;
         RefreshUI();
     }
@@ -54,7 +70,9 @@ public sealed class UICharacterStatusPopup : UiBase
     private void DrawCharacterButtons()
     {
         if (characterBar == null)
+        {
             return;
+        }
 
         Debug.Assert(characterButtonPrefab != null, $"프리팹 데이터 없음");
 
@@ -63,7 +81,7 @@ public sealed class UICharacterStatusPopup : UiBase
             var button = Instantiate(characterButtonPrefab);
             button.transform.SetParent(characterBar, false);
             button.gameObject.layer = gameObject.layer;
-            
+
             characterButtons.Add(button);
         }
 
@@ -71,9 +89,12 @@ public sealed class UICharacterStatusPopup : UiBase
         {
             var button = characterButtons[index];
             button.gameObject.SetActive(index < characterIds.Count);
-            
-            if (index >= characterIds.Count) continue;
-            
+
+            if (index >= characterIds.Count)
+            {
+                continue;
+            }
+
             int id = characterIds[index];
             var info = PlayerManager.Instance.SafeInvoke(players => players.GetCharacterInfo(id));
 
@@ -84,7 +105,13 @@ public sealed class UICharacterStatusPopup : UiBase
 
     public override void CloseUI()
     {
-        if (UIManager.Instance != null) UIManager.Instance.CloseSpecificUI(this);
-        else base.CloseUI();
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.CloseSpecificUI(this);
+        }
+        else
+        {
+            base.CloseUI();
+        }
     }
 }

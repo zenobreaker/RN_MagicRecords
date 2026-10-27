@@ -26,7 +26,7 @@ public class Module_HitDetection : SkillModule
     [Tooltip("판정 검사 간격")]
     public float CheckInterval = .05f;
 
-    private float checkTimer; 
+    private float checkTimer;
 
     [Tooltip("판정 활성화 중 같은 대상은 한 번만 피격")]
     public bool preventDuplicateHit = true;
@@ -54,10 +54,10 @@ public class Module_HitDetection : SkillModule
 
     [Range(0f, 360f)]
     [Tooltip("부채꼴 각도")]
-    public float fanAngle = 90f; 
+    public float fanAngle = 90f;
 
     //=========================================================================
-    // Hit 시작 
+    // Hit 시작
     //=========================================================================
 
     public override void OnNotify(
@@ -66,8 +66,9 @@ public class Module_HitDetection : SkillModule
         PhaseSkill phaseSkill)
     {
         if (owner == null || skill == null)
+        {
             return;
-
+        }
 
         skill.Runtime.Hit.Begin();
 
@@ -76,19 +77,26 @@ public class Module_HitDetection : SkillModule
             Detect(owner, skill);
         }
 
-        checkTimer = CheckInterval; 
+        checkTimer = CheckInterval;
     }
 
     public override void FixedUpdate(Character owner, ActiveSkill skill, PhaseSkill phaseSkill, float fixedDeltaTime)
     {
-        if (owner == null || skill == null) return;
-
-        if (!skill.Runtime.Hit.IsDectecting)
+        if (owner == null || skill == null)
+        {
             return;
+        }
+
+        if (skill.Runtime.Hit.IsDectecting == false)
+        {
+            return;
+        }
 
         checkTimer -= fixedDeltaTime;
         if (checkTimer > 0.0f)
+        {
             return;
+        }
 
         checkTimer = CheckInterval;
 
@@ -99,7 +107,9 @@ public class Module_HitDetection : SkillModule
     {
         Vector3 center = owner.transform.TransformPoint(localCenter);
 
-        Collider[] hits = { };
+        Collider[] hits =
+        {
+        };
 
         switch (shape)
         {
@@ -157,7 +167,9 @@ public class Module_HitDetection : SkillModule
                 foreach (Collider candidate in candidates)
                 {
                     if (candidate == null)
+                    {
                         continue;
+                    }
 
                     // Collider의 중심을 기준으로 방향 계산
                     Vector3 targetPosition =
@@ -204,25 +216,34 @@ public class Module_HitDetection : SkillModule
         foreach (Collider hit in hits)
         {
             if (hit == null)
+            {
                 continue;
+            }
 
             GameObject target = GetDamageTarget(hit);
 
-            if (target == null) continue;
-
-            // 자기 / 아군 처리 
-            if (CombatHelper.IsFriendly(owner, target,
-                skill.Runtime?.Hit.Ignores))
-                continue;
-
-            // 같은 대상 중복 처리 
-            if (preventDuplicateHit)
+            if (target == null)
             {
-                if (!skill.Runtime.Hit.TryAddTarget(target))
-                    continue;
+                continue;
             }
 
-            // 데미지 
+            // 자기 / 아군 처리
+            if (CombatHelper.IsFriendly(owner, target,
+                skill.Runtime?.Hit.Ignores))
+            {
+                continue;
+            }
+
+            // 같은 대상 중복 처리
+            if (preventDuplicateHit)
+            {
+                if (skill.Runtime.Hit.TryAddTarget(target) == false)
+                {
+                    continue;
+                }
+            }
+
+            // 데미지
             Vector3 hitPoint = hit.ClosestPoint(center);
 
             CombatHelper.ApplyDamage(
@@ -242,13 +263,17 @@ public class Module_HitDetection : SkillModule
     private GameObject GetDamageTarget(Collider collider)
     {
         if (collider == null)
+        {
             return null;
+        }
 
         Character character =
             collider.GetComponentInParent<Character>();
 
         if (character != null)
+        {
             return character.gameObject;
+        }
 
         return collider.gameObject;
     }
@@ -260,7 +285,9 @@ public class Module_HitDetection : SkillModule
     public void EndDetection(ActiveSkill skill)
     {
         if (skill == null)
+        {
             return;
+        }
 
         skill.Runtime.Hit.End();
     }
@@ -275,7 +302,9 @@ public class Module_HitDetection : SkillModule
     private void OnDrawGizmosSelected()
     {
         if (Application.isPlaying)
+        {
             return;
+        }
 
         if (shape == HitDetectionShape.Sphere)
         {

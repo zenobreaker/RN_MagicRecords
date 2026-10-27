@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class StageReplacer
 {
-    private int currentChapter; // 스테이지 ID를 뽑기 위한 챕터 기억용 
+    private int currentChapter; // 스테이지 ID를 뽑기 위한 챕터 기억용
     private NodeReplacer nodeReplacer;
     private Dictionary<int, MapNodeInfo> nodeInfoDict = new(); // key : node id value : stage
     private float eventChance;
@@ -13,7 +13,11 @@ public class StageReplacer
     {
         foreach (var info in nodeInfoDict.Values)
         {
-            if (info.type != StageType.Boss_Combat || info.isCleared || !IsFinalNode(info.nodeId)) continue;
+            if (info.type != StageType.Boss_Combat || info.isCleared || IsFinalNode(info.nodeId) == false)
+            {
+                continue;
+            }
+
             cheatUnlockedBoss = info;
             return true;
         }
@@ -21,11 +25,13 @@ public class StageReplacer
     }
 
     public bool IsBossUnlockedForCheat(int nodeId)
-        => cheatUnlockedBoss != null && !cheatUnlockedBoss.isCleared && cheatUnlockedBoss.nodeId == nodeId;
+    {
+        return cheatUnlockedBoss != null && cheatUnlockedBoss.isCleared == false && cheatUnlockedBoss.nodeId == nodeId;
+    }
 
     public StageReplacer()
     {
-        nodeReplacer = new NodeReplacer(); 
+        nodeReplacer = new NodeReplacer();
     }
 
     public void StartChapter(int chapter,
@@ -61,31 +67,53 @@ public class StageReplacer
     {
         cheatUnlockedBoss = null;
         currentChapter = chapter;
-        if(mapData != null)
+        if (mapData != null)
         {
-            nodeReplacer?.RestoreMap(mapData.nodes); 
+            nodeReplacer?.RestoreMap(mapData.nodes);
         }
 
         nodeInfoDict.Clear();
-        nodeInfoDict[0] = new MapNodeInfo { nodeId = 0, type = StageType.None, contentId = 0, mapIndex = 0 };
+        nodeInfoDict[0] = new MapNodeInfo
+        {
+            nodeId = 0,
+            type = StageType.None,
+            contentId = 0,
+            mapIndex = 0
+        };
 
         foreach (MapNodeInfo savedInfo in stageNodeData?.nodeInfos ?? new List<MapNodeInfo>())
         {
-            if (savedInfo.contentId == 0 && savedInfo.nodeId == 0) continue;
+            if (savedInfo.contentId == 0 && savedInfo.nodeId == 0)
+            {
+                continue;
+            }
 
             // 저장된 껍데기를 깊은 복사(Copy)해서 딕셔너리에 연결!
             nodeInfoDict[savedInfo.nodeId] = savedInfo.Copy();
         }
-        if (!System.Linq.Enumerable.Any(nodeInfoDict.Values, n => n.type == StageType.Shop))
+        if (System.Linq.Enumerable.Any(nodeInfoDict.Values, n => n.type == StageType.Shop) == false)
         {
             var shop = nodeReplacer.InsertShopBeforeBoss();
-            if (shop != null) nodeInfoDict[shop.id] = new MapNodeInfo { nodeId = shop.id, type = StageType.Shop, mapIndex = -1 };
+            if (shop != null)
+            {
+                nodeInfoDict[shop.id] = new MapNodeInfo
+                {
+                    nodeId = shop.id,
+                    type = StageType.Shop,
+                    mapIndex = -1
+                };
+            }
         }
-        if (!nodeReplacer.ValidateShopConnections())
+        if (nodeReplacer.ValidateShopConnections() == false)
+        {
             Debug.LogError("Restored map contains invalid shop/boss connections.");
+        }
     }
 
-    public Dictionary<int, MapNodeInfo> GetNodeToInfo() => nodeInfoDict;
+    public Dictionary<int, MapNodeInfo> GetNodeToInfo()
+    {
+        return nodeInfoDict;
+    }
 
     public List<List<MapNode>> GetLevels()
     {
@@ -95,7 +123,9 @@ public class StageReplacer
     public MapNodeInfo GetNodeInfo(int nodeId)
     {
         if (nodeInfoDict.TryGetValue(nodeId, out var info))
+        {
             return info;
+        }
 
         return null;
     }
@@ -103,12 +133,20 @@ public class StageReplacer
     public MapNodeInfo GetReplacedNodeInfo(int nodeId)
     {
         if (nodeInfoDict.TryGetValue(nodeId, out var info))
+        {
             return info;
+        }
         else
-            return new MapNodeInfo { nodeId = nodeId, type = StageType.None };
+        {
+            return new MapNodeInfo
+            {
+                nodeId = nodeId,
+                type = StageType.None
+            };
+        }
     }
 
-    public bool CanEnableNode(int curr,  int target)
+    public bool CanEnableNode(int curr, int target)
     {
         return nodeReplacer != null && nodeReplacer.CanEnableNode(curr, target);
     }
@@ -176,7 +214,7 @@ public class StageReplacer
 
         var levels = nodeReplacer.GetLevels();
         nodeInfoDict.Clear();
-        
+
         for (int level = 0; level < levels.Count; level++)
         {
             if (level == 0)
@@ -200,12 +238,15 @@ public class StageReplacer
 
                 if (isLastLevel)
                 {
-                    // 보스용 스테이지 풀에서 랜덤추출 
+                    // 보스용 스테이지 풀에서 랜덤추출
                     info.type = StageType.Boss_Combat;
-                    StageInfo bossStage 
+                    StageInfo bossStage
                         = DataBaseManager.Instance.
-                        SafeInvoke(v=>v.GetRandomBossStageInfo(currentChapter));
-                    if (bossStage == null) continue;
+                        SafeInvoke(v => v.GetRandomBossStageInfo(currentChapter));
+                    if (bossStage == null)
+                    {
+                        continue;
+                    }
 
                     info.contentId = bossStage.id;
                     info.mapIndex = -1; // 보스 전용 맵
@@ -230,7 +271,10 @@ public class StageReplacer
                         info.type = StageType.Combat;
                         int randid = DataBaseManager.Instance.GetRandomStageID(currentChapter);
                         StageInfo stage = DataBaseManager.Instance.GetStageInfo(randid);
-                        if (stage == null) continue;
+                        if (stage == null)
+                        {
+                            continue;
+                        }
 
                         info.contentId = stage.id;
                         info.mapIndex = stage.mapIndex;

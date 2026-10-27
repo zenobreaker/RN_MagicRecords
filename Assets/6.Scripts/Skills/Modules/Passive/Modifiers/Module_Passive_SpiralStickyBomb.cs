@@ -8,7 +8,13 @@ public sealed class Module_Passive_SpiralStickyBomb : PassiveModule
     [Header("타겟 스킬 설정")]
     [Tooltip("이 효과를 적용할 특정 스킬의 ID (0이면 모든 스킬에 적용)")]
     public int targetSkillID;
-    public override int TargetSkillID => targetSkillID;
+    public override int TargetSkillID
+    {
+        get
+        {
+            return targetSkillID;
+        }
+    }
 
     [Header("끈적이 폭탄 설정")]
     [Tooltip("부착 후 소멸까지의 시간(초). 투사체의 남은 수명이 더 짧으면 먼저 소멸합니다.")]
@@ -19,7 +25,7 @@ public sealed class Module_Passive_SpiralStickyBomb : PassiveModule
     public float explosionDamage = 100f; // 막타 폭발 데미지
     public LayerMask enemyLayer;         // 적 레이어
 
-    private DamageEvent damageEvent; 
+    private DamageEvent damageEvent;
 
     public Module_Passive_SpiralStickyBomb()
     {
@@ -31,8 +37,9 @@ public sealed class Module_Passive_SpiralStickyBomb : PassiveModule
     {
         // 1. 타겟 스킬 필터링 (지정된 스킬이 아니면 패스)
         if (targetSkillID != 0 && casterSkill.SkillID != targetSkillID)
+        {
             return;
-
+        }
 
         damageEvent = casterSkill.damageData.GetMyDamageEvent(
             casterSkill.Status);
@@ -46,8 +53,8 @@ public sealed class Module_Passive_SpiralStickyBomb : PassiveModule
             attachedLifetime
         );
 
-        // 3. 투사체 본체에 러너 주입! 
-        if(spawnedObject is PiercingDrillProjectile pdp)
+        // 3. 투사체 본체에 러너 주입!
+        if (spawnedObject is PiercingDrillProjectile pdp)
         {
             pdp.AddSpawnRunner(bombRunner);
             pdp.AddHitRunner(bombRunner);

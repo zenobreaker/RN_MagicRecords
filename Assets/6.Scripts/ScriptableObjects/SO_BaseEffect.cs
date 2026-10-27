@@ -5,7 +5,7 @@ using UnityEngine;
 public class SO_BaseEffect : ScriptableObject
 {
     public string id;
-    public string description; 
+    public string description;
     public float tickInterval;
 
     public Sprite icon;

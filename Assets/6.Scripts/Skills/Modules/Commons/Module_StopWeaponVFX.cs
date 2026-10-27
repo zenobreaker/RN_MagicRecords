@@ -11,6 +11,8 @@ public class Module_StopWeaponVFX : SkillModule
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         if (owner != null && owner.TryGetComponent<SkillVFXComponent>(out var skillVFX))
+        {
             skillVFX.RemoveEffects(skill, effectId);
+        }
     }
 }

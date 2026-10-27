@@ -21,8 +21,15 @@ public class ResourceCounterUI : MonoBehaviour
 
     public int MaxVisibleIcons
     {
-        get => maxVisibleIcons;
-        set { maxVisibleIcons = Mathf.Max(1, value); SetCount(currentCount); }
+        get
+        {
+            return maxVisibleIcons;
+        }
+        set
+        {
+            maxVisibleIcons = Mathf.Max(1, value);
+            SetCount(currentCount);
+        }
     }
 
     private void OnEnable()
@@ -30,7 +37,10 @@ public class ResourceCounterUI : MonoBehaviour
         if (bindMagicBulletEvents)
         {
             if (handler == null)
+            {
                 handler = SkillManager.Instance.SafeInvoke(v => v.SkillEventHandler);
+            }
+
             subscribedHandler = handler;
             if (subscribedHandler != null)
             {
@@ -44,14 +54,24 @@ public class ResourceCounterUI : MonoBehaviour
 
     private void OnDisable()
     {
-        if (subscribedHandler == null) return;
+        if (subscribedHandler == null)
+        {
+            return;
+        }
+
         subscribedHandler.OnUpdateMagicBulletLoad -= OnCapacityChanged;
         subscribedHandler.OnChangeBullets -= OnBulletsChanged;
         subscribedHandler = null;
     }
 
-    private void OnCapacityChanged(int capacity) => SetCount(Mathf.Min(currentCount, Mathf.Max(0, capacity)));
-    private void OnBulletsChanged(Queue<BulletData> resources) => SetCount(resources == null ? 0 : resources.Count);
+    private void OnCapacityChanged(int capacity)
+    {
+        SetCount(Mathf.Min(currentCount, Mathf.Max(0, capacity)));
+    }
+    private void OnBulletsChanged(Queue<BulletData> resources)
+    {
+        SetCount(resources == null ? 0 : resources.Count);
+    }
 
     public void SetCount(int count)
     {
@@ -59,14 +79,22 @@ public class ResourceCounterUI : MonoBehaviour
         int limit = Mathf.Max(1, maxVisibleIcons);
         bool compact = currentCount > limit;
         int visible = compact ? 1 : currentCount;
-        if (iconPrefab == null) return;
+        if (iconPrefab == null)
+        {
+            return;
+        }
+
         while (icons.Count < visible)
         {
             var icon = Instantiate(iconPrefab, transform).gameObject;
             icon.transform.SetSiblingIndex(icons.Count);
             icons.Add(icon);
         }
-        for (int i = 0; i < icons.Count; i++) icons[i].SetActive(i < visible);
+        for (int i = 0; i < icons.Count; i++)
+        {
+            icons[i].SetActive(i < visible);
+        }
+
         if (countText == null && compact)
         {
             var label = new GameObject("ResourceCount", typeof(RectTransform), typeof(TextMeshProUGUI), typeof(LayoutElement));

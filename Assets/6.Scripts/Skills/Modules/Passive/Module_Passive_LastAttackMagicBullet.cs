@@ -7,7 +7,10 @@ public sealed class Module_Passive_LastAttackMagicBullet : PassiveContextModule
 {
     private SkillComponent registeredOwner;
 
-    public Module_Passive_LastAttackMagicBullet() { triggerTime = PassiveTriggerTime.OnAcquire; }
+    public Module_Passive_LastAttackMagicBullet()
+    {
+        triggerTime = PassiveTriggerTime.OnAcquire;
+    }
 
     public override void OnAcquire(GameObject skillOwner, int level)
     {
@@ -20,7 +23,10 @@ public sealed class Module_Passive_LastAttackMagicBullet : PassiveContextModule
     public override void OnLose()
     {
         if (registeredOwner != null && ReferenceEquals(registeredOwner.GetCapability<Module_Passive_LastAttackMagicBullet>(), this))
+        {
             registeredOwner.UnregisterCapability<Module_Passive_LastAttackMagicBullet>();
+        }
+
         registeredOwner = null;
         base.OnLose();
     }

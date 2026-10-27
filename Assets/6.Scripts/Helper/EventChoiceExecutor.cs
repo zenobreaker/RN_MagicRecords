@@ -17,8 +17,10 @@ public static class EventChoiceExecutor
 {
     public static EventExecutionResult Execute(EventChoice choice)
     {
-        if (!EventCostChecker.CanAfford(choice))
+        if (EventCostChecker.CanAfford(choice) == false)
+        {
             return null;
+        }
 
         EventCostProcessor.PayCost(choice, null);
 
@@ -52,12 +54,19 @@ public static class EventCostChecker
 
             case EventCostType.RECORD:
                 var rm = AppManager.Instance.GetRecordManager();
-                if (rm == null) return false;
+                if (rm == null)
+                {
+                    return false;
+                }
 
                 if (choice.CostParam == EventCostParam.SAVED)
+                {
                     return rm.GetTransferedRecordIDs().Count >= choice.CostValue;
+                }
                 else
+                {
                     return rm.GetPossesRecord().Count >= choice.CostValue;
+                }
 
             case EventCostType.HP:
                 // 체력 검사 로직
@@ -92,7 +101,10 @@ public static class EventCostProcessor
 
             case EventCostType.RECORD:
                 var rm = AppManager.Instance.GetRecordManager();
-                if (rm == null) return;
+                if (rm == null)
+                {
+                    return;
+                }
 
                 // 💡 레코드를 비용으로 쓸 때는 팝업을 열어 유저가 선택하게 만듭니다.
                 var records = choice.CostParam == EventCostParam.SAVED ? rm.GetTransferedRecordIDs() : rm.GetPossesRecord();
@@ -128,7 +140,10 @@ public static class EventActionProcessor
     // 💡 파라미터로 EventChoice 전체를 받도록 변경합니다.
     public static void Execute(EventChoice choice)
     {
-        if (choice == null || choice.ActionType == EventActionType.NONE) return;
+        if (choice == null || choice.ActionType == EventActionType.NONE)
+        {
+            return;
+        }
 
         switch (choice.ActionType)
         {
@@ -175,7 +190,10 @@ public static class EventRewardProcessor
     // 💡 참고: RewardParam은 JSON에서 string으로 넘어오므로 매개변수를 string으로 받습니다.
     public static void GiveReward(EventChoice choice)
     {
-        if (choice == null || choice.RewardType == EventRewardType.NONE) return;
+        if (choice == null || choice.RewardType == EventRewardType.NONE)
+        {
+            return;
+        }
 
         switch (choice.RewardType)
         {
@@ -206,7 +224,10 @@ public static class EventRewardProcessor
     private static void GiveRecordReward(string param, int value)
     {
         var rm = AppManager.Instance.GetRecordManager();
-        if (rm == null) return;
+        if (rm == null)
+        {
+            return;
+        }
 
         if (string.IsNullOrEmpty(param) || param == "NONE" || param == "RANDOM")
         {
@@ -219,13 +240,23 @@ public static class EventRewardProcessor
             List<RecordData> records = new List<RecordData>();
             switch (targetRarity)
             {
-                case RecordRarity.NORMAL: records = rm.GetNormalRecordDatas(); break;
-                case RecordRarity.RARE: records = rm.GetRareRecordDatas(); break;
-                case RecordRarity.LEGENDARY: records = rm.GetLengdaryRecordDatas(); break;
+                case RecordRarity.NORMAL:
+                    records = rm.GetNormalRecordDatas();
+                    break;
+                case RecordRarity.RARE:
+                    records = rm.GetRareRecordDatas();
+                    break;
+                case RecordRarity.LEGENDARY:
+                    records = rm.GetLengdaryRecordDatas();
+                    break;
             }
 
             //TODO : 레코드 보상이라면 리워드 매니저에게 처리해달라고 해야할듯
-            if (records.Count == 0) records.Add(rm.GetEmptyRecord());
+            if (records.Count == 0)
+            {
+                records.Add(rm.GetEmptyRecord());
+            }
+
             UIManager.Instance.OpenRecordSelectPopUp(records, false, RecordUIMode.DRAFT);
         }
     }

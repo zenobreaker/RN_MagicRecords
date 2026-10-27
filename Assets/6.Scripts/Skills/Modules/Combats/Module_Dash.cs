@@ -27,7 +27,11 @@ public class Module_Dash : SkillModule
 
     public Vector3 ResolveDirection(Character owner, ActiveSkill skill, MovementComponent movement)
     {
-        if (owner == null) return Vector3.zero;
+        if (owner == null)
+        {
+            return Vector3.zero;
+        }
+
         Vector3 direction;
         switch (directionType)
         {
@@ -51,63 +55,117 @@ public class Module_Dash : SkillModule
                 break;
         }
         direction.y = 0f;
-        if (direction.sqrMagnitude <= 0.001f) direction = owner.transform.forward;
+        if (direction.sqrMagnitude <= 0.001f)
+        {
+            direction = owner.transform.forward;
+        }
+
         direction.y = 0f;
         return direction.normalized;
     }
 
-    public override bool ControlsPhaseLifecycle() => advancePhaseOnFinish;
+    public override bool ControlsPhaseLifecycle()
+    {
+        return advancePhaseOnFinish;
+    }
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (skill == null || !skill.IsActive || skill.IsEnding) return;
-        if (owner == null || !owner.isActiveAndEnabled ||
-            !owner.TryGetComponent<MovementComponent>(out var movement))
+        if (skill == null || skill.IsActive == false || skill.IsEnding)
         {
-            if (advancePhaseOnFinish) skill.EndSkill();
+            return;
+        }
+
+        if (owner == null || owner.isActiveAndEnabled == false ||
+                    owner.TryGetComponent<MovementComponent>(out var movement) == false)
+        {
+            if (advancePhaseOnFinish)
+            {
+                skill.EndSkill();
+            }
+
             return;
         }
 
         Vector3 direction = ResolveDirection(owner, skill, movement);
         if (directionType == DashDirectionType.InputDirection && movement.TargetDirection.sqrMagnitude > 0.001f)
+        {
             owner.transform.rotation = Quaternion.LookRotation(direction);
+        }
+
         skill.Runtime.MovementDirection = direction;
         skill.Runtime.IsBackwardMovement = Vector3.Dot(owner.transform.forward, direction) < -0.001f;
         // Legacy monster skills used this direction for their subsequent locomotion.
         // InputDirection leaves the player's actual input untouched.
         if (directionType == DashDirectionType.Legacy)
+        {
             movement.SetDirection(new Vector2(direction.x, direction.z));
+        }
+
         float actualDistance = distance * skill.Runtime.DashDistanceMultiplier;
         float actualDuration = duration * skill.Runtime.DashDurationMultiplier;
         int version = skill.PhaseVersion;
         var lifetime = skill.PhaseToken;
         void Started()
         {
-            if (!skill.IsCurrentPhase(version)) return;
+            if (skill.IsCurrentPhase(version) == false)
+            {
+                return;
+            }
+
             skill.NotifyMovement(SkillTriggerTime.OnMovementStart);
             if (skill.IsCurrentPhase(version))
+            {
                 skill.NotifyMovement(SkillTriggerTime.OnMovementProgress);
+            }
         }
         void Progress(float elapsed)
         {
             if (skill.IsCurrentPhase(version))
+            {
                 skill.NotifyMovement(SkillTriggerTime.OnMovementProgress, elapsed);
+            }
         }
         void Finished(bool completed)
         {
-            if (!skill.IsCurrentPhase(version) || lifetime.IsCancellationRequested) return;
-            if (completed) skill.NotifyMovement(SkillTriggerTime.OnMovementEnd);
-            if (!advancePhaseOnFinish || !skill.IsCurrentPhase(version)) return;
-            if (completed) skill.EndPhaseAndNext();
-            else skill.EndSkill();
+            if (skill.IsCurrentPhase(version) == false || lifetime.IsCancellationRequested)
+            {
+                return;
+            }
+
+            if (completed)
+            {
+                skill.NotifyMovement(SkillTriggerTime.OnMovementEnd);
+            }
+
+            if (advancePhaseOnFinish == false || skill.IsCurrentPhase(version) == false)
+            {
+                return;
+            }
+
+            if (completed)
+            {
+                skill.EndPhaseAndNext();
+            }
+            else
+            {
+                skill.EndSkill();
+            }
         }
         if (bIsMoveOverTime)
+        {
             movement.MoveOverTime(direction, actualDistance, actualDuration, bIsGhostMode,
-                Started, Progress, Finished, skill.PhaseToken);
+            Started, Progress, Finished, skill.PhaseToken);
+        }
         else
+        {
             movement.Dash(direction, actualDistance, actualDuration, speedCurve,
-                Started, Progress, Finished, skill.PhaseToken);
+            Started, Progress, Finished, skill.PhaseToken);
+        }
     }
 
-    public override SkillModule Clone() => (Module_Dash)base.Clone();
+    public override SkillModule Clone()
+    {
+        return (Module_Dash)base.Clone();
+    }
 }

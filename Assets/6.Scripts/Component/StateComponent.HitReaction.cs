@@ -22,12 +22,28 @@ public partial class StateComponent
     private bool reactionOwnsState;
     private bool legacyDamageAnimation;
 
-    public HitReactionType CurrentHitReaction { get; private set; }
-    public bool IsReactionImmune => reactionImmunityRemaining > 0f;
+    public HitReactionType CurrentHitReaction
+    {
+        get;
+        private set;
+    }
+    public bool IsReactionImmune
+    {
+        get
+        {
+            return reactionImmunityRemaining > 0f;
+        }
+    }
     public HitReactionResistance BaseReactionResistance
     {
-        get => baseReactionResistance;
-        set => baseReactionResistance = value;
+        get
+        {
+            return baseReactionResistance;
+        }
+        set
+        {
+            baseReactionResistance = value;
+        }
     }
     public HitReactionResistance EffectiveReactionResistance
     {
@@ -35,8 +51,15 @@ public partial class StateComponent
         {
             var result = baseReactionResistance;
             if (preserveBossReactionResistance && character is Enemy enemy && enemy.Boss)
+            {
                 result |= HitReactionResistance.All;
-            foreach (var resistance in reactionResistanceSources.Values) result |= resistance;
+            }
+
+            foreach (var resistance in reactionResistanceSources.Values)
+            {
+                result |= resistance;
+            }
+
             return result;
         }
     }
@@ -44,21 +67,38 @@ public partial class StateComponent
     // Buffs and cloned skill modules own separate keys; one removal cannot clear another grant.
     public void SetReactionResistance(object source, HitReactionResistance resistance)
     {
-        if (source == null) return;
-        if (resistance == HitReactionResistance.None) reactionResistanceSources.Remove(source);
-        else reactionResistanceSources[source] = resistance;
+        if (source == null)
+        {
+            return;
+        }
+
+        if (resistance == HitReactionResistance.None)
+        {
+            reactionResistanceSources.Remove(source);
+        }
+        else
+        {
+            reactionResistanceSources[source] = resistance;
+        }
     }
 
     public void RemoveReactionResistance(object source)
     {
-        if (source != null) reactionResistanceSources.Remove(source);
+        if (source != null)
+        {
+            reactionResistanceSources.Remove(source);
+        }
     }
 
     public HitReactionType ResolveHitReaction(DamageEvent damageEvent)
     {
-        if (damageEvent == null || !isActiveAndEnabled || DeadMode || StopMode ||
+        if (damageEvent == null || isActiveAndEnabled == false || DeadMode || StopMode ||
             DamagedMode || IsReactionImmune ||
-            (statusEffect != null && !statusEffect.GetMovableCondition())) return HitReactionType.None;
+            (statusEffect != null && statusEffect.GetMovableCondition() == false))
+        {
+            return HitReactionType.None;
+        }
+
         HitReactionType requested = damageEvent.Reaction;
         HitReactionResistance flag = requested switch
         {
@@ -68,16 +108,25 @@ public partial class StateComponent
             _ => HitReactionResistance.None,
         };
         if (flag == HitReactionResistance.None || (EffectiveReactionResistance & flag) != 0)
+        {
             return HitReactionType.None;
+        }
+
         if (requested == HitReactionType.Light && CurrentHitReaction == HitReactionType.Light)
+        {
             return HitReactionType.None;
+        }
+
         return requested;
     }
 
     public HitReactionType ApplyHitReaction(DamageEvent damageEvent, GameObject attacker, Vector3 hitPoint)
     {
         var reaction = ResolveHitReaction(damageEvent);
-        if (reaction == HitReactionType.None) return reaction;
+        if (reaction == HitReactionType.None)
+        {
+            return reaction;
+        }
 
         CurrentHitReaction = reaction;
         legacyDamageAnimation = false;
@@ -94,36 +143,66 @@ public partial class StateComponent
             ChangeType(StateType.Damaged);
             // State entry cancels skill movement before knockback takes control of the body.
             if (reaction == HitReactionType.Knockback)
+            {
                 launch?.ApplyKnockback(attacker, hitPoint, damageEvent.hitData.Distance, reactionTimeRemaining);
+            }
         }
 
         // Existing Hit is full-body. Light never replaces an ongoing skill animation.
-        if (reactionOwnsState || (IdleMode && !(skills != null && skills.InAction)))
+        if (reactionOwnsState || (IdleMode && (skills != null && skills.InAction) == false))
+        {
             character?.Visual?.PlayDamageAnimation(damageEvent.hitData, reaction);
+        }
+
         return reaction;
     }
 
     private void Update()
     {
         reactionImmunityRemaining = Mathf.Max(0f, reactionImmunityRemaining - Time.deltaTime);
-        if (CurrentHitReaction == HitReactionType.None) return;
+        if (CurrentHitReaction == HitReactionType.None)
+        {
+            return;
+        }
+
         reactionTimeRemaining -= Time.deltaTime;
-        if (reactionTimeRemaining > 0f) return;
+        if (reactionTimeRemaining > 0f)
+        {
+            return;
+        }
+
         bool restoreState = reactionOwnsState && DamagedMode;
         CancelHitReaction();
         if (restoreState)
         {
-            if (statusEffect != null && !statusEffect.GetMovableCondition()) SetStopMode();
-            else SetIdleMode();
+            if (statusEffect != null && statusEffect.GetMovableCondition() == false)
+            {
+                SetStopMode();
+            }
+            else
+            {
+                SetIdleMode();
+            }
         }
     }
 
     public bool EndDamageAnimation()
     {
-        if (!legacyDamageAnimation || reactionOwnsState || !DamagedMode) return false;
+        if (legacyDamageAnimation == false || reactionOwnsState || DamagedMode == false)
+        {
+            return false;
+        }
+
         legacyDamageAnimation = false;
-        if (statusEffect != null && !statusEffect.GetMovableCondition()) SetStopMode();
-        else SetIdleMode();
+        if (statusEffect != null && statusEffect.GetMovableCondition() == false)
+        {
+            SetStopMode();
+        }
+        else
+        {
+            SetIdleMode();
+        }
+
         return true;
     }
 
@@ -146,6 +225,9 @@ public partial class StateComponent
     private void OnEnable()
     {
         // Notify AI/movement subscribers on reuse instead of silently changing the state field.
-        if (!IdleMode) SetIdleMode();
+        if (IdleMode == false)
+        {
+            SetIdleMode();
+        }
     }
 }

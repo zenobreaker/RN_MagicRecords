@@ -5,7 +5,13 @@ using UnityEngine;
 [ModuleCategory("Passive/Curse/저주 대상 증오 지속 피해")]
 public sealed class Module_Passive_HatredOnCursedTarget : PassiveContextModule
 {
-    [Min(0f)] public float[] cooldownByLevel = { 12f, 10f, 8f };
+    [Min(0f)]
+    public float[] cooldownByLevel =
+    {
+        12f,
+        10f,
+        8f
+    };
     [Min(0f)] public float fallbackCooldown = 12f;
     [Min(0f)] public float duration = 4f;
     [Min(0f)] public float attackRatio = 0.2f;
@@ -14,18 +20,32 @@ public sealed class Module_Passive_HatredOnCursedTarget : PassiveContextModule
     [NonSerialized] private int lastTriggerAttackID = -1;
     [NonSerialized] private bool hasTriggered;
 
-    public Module_Passive_HatredOnCursedTarget() => triggerTime = PassiveTriggerTime.OnHit;
+    public Module_Passive_HatredOnCursedTarget()
+    {
+        triggerTime = PassiveTriggerTime.OnHit;
+    }
 
     public override void OnAttackHit(GameObject attacker, GameObject target, DamageEvent damageEvent)
     {
         if (owner == null || attacker != owner || target == null || target == owner ||
-            damageEvent == null || damageEvent.IsDOTEffect()) return;
-        if (!target.TryGetComponent(out EffectComponent effects) || effects.HasEffect("Curse") == null) return;
+            damageEvent == null || damageEvent.IsDOTEffect())
+        {
+            return;
+        }
+
+        if (target.TryGetComponent(out EffectComponent effects) == false || effects.HasEffect("Curse") == null)
+        {
+            return;
+        }
 
         float cooldown = GetLevelValue(cooldownByLevel, fallbackCooldown);
         bool ready = Time.time >= lastTriggerTime + cooldown;
         bool sameAttack = hasTriggered && damageEvent.AttackInstanceID == lastTriggerAttackID;
-        if (!ready && !sameAttack) return;
+        if (ready == false && sameAttack == false)
+        {
+            return;
+        }
+
         if (ready)
         {
             lastTriggerTime = Time.time;
@@ -35,7 +55,10 @@ public sealed class Module_Passive_HatredOnCursedTarget : PassiveContextModule
 
         float power = 0f;
         if (attacker != null && attacker.TryGetComponent(out StatusComponent status))
+        {
             power = status.GetStatusValue(StatusType.ATTACK) * attackRatio;
+        }
+
         EffectManager.Instance?.RegisterEffect_Hatred(target, attacker, duration, power);
     }
 

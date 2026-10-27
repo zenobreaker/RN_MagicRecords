@@ -53,14 +53,16 @@ public class DebugUI : MonoBehaviour
             combo.ComboInputHanlder.OnInputEnableTime += Draw_InputEnableTime;
             combo.ComboInputHanlder.OnInputBuffered += Draw_InputBuffered;
             combo.ComboInputHanlder.OnInputBufferTime += Draw_InputBufferTime;
-            combo.ComboInputHanlder.OnInputReset+= Draw_InputReset;
+            combo.ComboInputHanlder.OnInputReset += Draw_InputReset;
         }
     }
 
     private void OnEnable_DebugUI(bool bView)
     {
         for (int i = 0; i < gameObject.transform.childCount; i++)
+        {
             gameObject.transform.GetChild(i).gameObject.SetActive(bView);
+        }
     }
 
     private void Start()
@@ -102,17 +104,21 @@ public class DebugUI : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (CheatConsoleUI.CapturesInput) return;
+        if (CheatConsoleUI.CapturesInput)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            bDebugView = !bDebugView;
+            bDebugView = (bDebugView == false);
         }
 
         OnEnable_DebugUI(bDebugView);
 
         Draw_PlayerState();
 
-   
+
 
         if (Input.GetKeyDown(KeyCode.O))
         {
@@ -124,7 +130,9 @@ public class DebugUI : MonoBehaviour
     private void Draw_PlayerState()
     {
         if (debug_Character == null || stateText == null)
+        {
             return;
+        }
 
         string state = debug_Character.GetComponent<StateComponent>().Type.ToString();
 
@@ -138,31 +146,45 @@ public class DebugUI : MonoBehaviour
 
 
 
-#region Input & Comob
+    #region Input & Comob
 
     private void Draw_InputText(InputCommandType inputCommandType)
     {
-        if (inputText == null) return; 
-        inputText.text ="Input : " + inputCommandType.ToString(); 
+        if (inputText == null)
+        {
+            return;
+        }
+
+        inputText.text = "Input : " + inputCommandType.ToString();
     }
 
     private void Draw_ComboText(int count)
     {
-        if (comboText == null) return;
-        comboText.text = "Combo : " + count.ToString(); 
+        if (comboText == null)
+        {
+            return;
+        }
+
+        comboText.text = "Combo : " + count.ToString();
     }
 
     private void Draw_InputResetTime(float time, float maxTime)
     {
-        if (resetTimeGauge == null) return; 
-        resetTimeGauge.fillAmount = time / maxTime; 
+        if (resetTimeGauge == null)
+        {
+            return;
+        }
+
+        resetTimeGauge.fillAmount = time / maxTime;
     }
 
     private void Draw_InputEnabled(bool enabled)
     {
-        if (inputEnabledText == null) return;
+        if (inputEnabledText == null)
+        {
+            return;
+        }
 
-      
         if (enabled)
         {
             inputEnabledText.color = inputEnabledOriginColor;
@@ -186,7 +208,9 @@ public class DebugUI : MonoBehaviour
     private void ResetEnableTime()
     {
         if (enableTimeGauge != null)
+        {
             enableTimeGauge.fillAmount = 0;
+        }
 
         if (enableTimeCoroutine != null)
         {
@@ -197,7 +221,10 @@ public class DebugUI : MonoBehaviour
 
     private void Draw_InputBuffered(bool inBuffered)
     {
-        if (inputBufferedText== null) return;
+        if (inputBufferedText == null)
+        {
+            return;
+        }
 
         inputBufferdOriginColor = inputBufferedText.color;
         if (inBuffered)
@@ -223,8 +250,9 @@ public class DebugUI : MonoBehaviour
     private void ResetBufferTime()
     {
         if (bufferTimeGauge != null)
+        {
             bufferTimeGauge.fillAmount = 0;
-
+        }
 
         if (bufferTimeCoroutine != null)
         {
@@ -236,7 +264,9 @@ public class DebugUI : MonoBehaviour
     private IEnumerator Time_Gauage(Image gauge, float time)
     {
         if (gauge == null)
-            yield break; 
+        {
+            yield break;
+        }
 
         float currentTime = time;
         while (currentTime >= 0.0f)
@@ -250,11 +280,30 @@ public class DebugUI : MonoBehaviour
 
     private void Draw_InputReset()
     {
-        if (inputText == null) return;
-        if (comboText == null) return;
-        if (resetTimeGauge == null) return;
-        if (inputEnabledText == null) return;
-        if (inputBufferedText == null) return;
+        if (inputText == null)
+        {
+            return;
+        }
+
+        if (comboText == null)
+        {
+            return;
+        }
+
+        if (resetTimeGauge == null)
+        {
+            return;
+        }
+
+        if (inputEnabledText == null)
+        {
+            return;
+        }
+
+        if (inputBufferedText == null)
+        {
+            return;
+        }
 
         //inputText.text = "Input :";
         comboText.text = "Combo : ";
@@ -268,7 +317,7 @@ public class DebugUI : MonoBehaviour
         ResetBufferTime();
     }
 
- 
+
 
     #endregion
 }

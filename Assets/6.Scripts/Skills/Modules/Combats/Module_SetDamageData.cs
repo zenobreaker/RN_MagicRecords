@@ -10,6 +10,6 @@ public class Module_SetDamageData : SkillModule
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        skill.damageData = DamageData; 
+        skill.damageData = DamageData;
     }
 }

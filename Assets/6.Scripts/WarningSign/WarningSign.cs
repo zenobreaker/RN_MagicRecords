@@ -3,12 +3,27 @@ using UnityEngine;
 
 public interface IWarningData
 {
-    float Radius { get; }
-    Vector2 RectSize { get; }
-    Vector2 MaxRectSize { get; }
+    float Radius
+    {
+        get;
+    }
+    Vector2 RectSize
+    {
+        get;
+    }
+    Vector2 MaxRectSize
+    {
+        get;
+    }
 
-    float FanAngle { get; }
-    float FanRadius { get; }
+    float FanAngle
+    {
+        get;
+    }
+    float FanRadius
+    {
+        get;
+    }
 }
 
 public abstract class WarningSign : MonoBehaviour
@@ -66,7 +81,7 @@ public abstract class WarningSign : MonoBehaviour
         this.duration = duration;
     }
 
-    public virtual void Setup(IWarningData data, float duration) 
+    public virtual void Setup(IWarningData data, float duration)
     {
         this.duration = duration;
     }

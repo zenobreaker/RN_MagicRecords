@@ -17,7 +17,13 @@ public class SoundManager : MonoBehaviour
 {
     private static SoundManager instance;
 
-    public static SoundManager Instance { get { return instance; } }
+    public static SoundManager Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
 
     [Header("사운드 등록")]
     [SerializeField] Sound[] bgmSounds = null;
@@ -69,7 +75,11 @@ public class SoundManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (instance != this) return;
+        if (instance != this)
+        {
+            return;
+        }
+
         SceneManager.sceneLoaded -= OnSceneLoaded;
         GameManager.Instance.SafeInvoke(v => v.OnBattleStage -= PlayBattleBGM);
         CancelBGMFade();
@@ -80,23 +90,32 @@ public class SoundManager : MonoBehaviour
     {
         // Temporary stage-selection music, including direct scene entry.
         if (scene.name == "StageSelectScene")
+        {
             PlayBGM("Battle1");
+        }
     }
 
     private void CancelBGMFade()
     {
-        if (bgmFadeCts == null) return;
+        if (bgmFadeCts == null)
+        {
+            return;
+        }
+
         bgmFadeCts.Cancel();
         bgmFadeCts.Dispose();
         bgmFadeCts = null;
-        if (bgmPlayer != null) bgmPlayer.volume = bgmVolumeBeforeFade;
+        if (bgmPlayer != null)
+        {
+            bgmPlayer.volume = bgmVolumeBeforeFade;
+        }
     }
 
     private void Awake_InitSFXTable()
     {
         foreach (Sound sound in sfxSounds)
         {
-            if (!sfxSoundTable.ContainsKey(sound.soundName))
+            if (sfxSoundTable.ContainsKey(sound.soundName) == false)
             {
                 sfxSoundTable.Add(sound.soundName, sound.clip);
             }
@@ -107,7 +126,7 @@ public class SoundManager : MonoBehaviour
     {
         foreach (Sound sound in bgmSounds)
         {
-            if (!bgmSoundTable.ContainsKey(sound.soundName))
+            if (bgmSoundTable.ContainsKey(sound.soundName) == false)
             {
                 bgmSoundTable.Add(sound.soundName, sound.clip);
             }
@@ -136,7 +155,10 @@ public class SoundManager : MonoBehaviour
         if (bgmPlayer != null && bgmSoundTable.TryGetValue(soundName, out AudioClip newClip))
         {
             // 이미 똑같은 음악이 나오고 있다면 무시
-            if (bgmFadeCts == null && bgmPlayer.clip == newClip && bgmPlayer.isPlaying) return;
+            if (bgmFadeCts == null && bgmPlayer.clip == newClip && bgmPlayer.isPlaying)
+            {
+                return;
+            }
 
             // 💡 1. 진행 중인 페이드 작업이 있다면 즉시 취소 (안전한 스레드 종료)
             CancelBGMFade();
@@ -186,7 +208,10 @@ public class SoundManager : MonoBehaviour
 
     public void PlayRandomBGM()
     {
-        if (bgmSounds.Length <= 0) return;
+        if (bgmSounds.Length <= 0)
+        {
+            return;
+        }
 
         // 💡 [수정] Random.Range(int min, int max)는 max를 포함하지 않습니다!
         // bgmSounds.Length - 1 을 넣으면 마지막 요소가 절대 나오지 않으므로 Length를 그대로 넣어야 합니다.
@@ -197,12 +222,19 @@ public class SoundManager : MonoBehaviour
 
     public void PlayBGM(string soundName)
     {
-        if (string.IsNullOrEmpty(soundName) || bgmSoundTable == null || bgmPlayer == null) return;
+        if (string.IsNullOrEmpty(soundName) || bgmSoundTable == null || bgmPlayer == null)
+        {
+            return;
+        }
 
         if (bgmSoundTable.ContainsKey(soundName))
         {
             CancelBGMFade();
-            if (bgmPlayer.clip == bgmSoundTable[soundName] && bgmPlayer.isPlaying) return;
+            if (bgmPlayer.clip == bgmSoundTable[soundName] && bgmPlayer.isPlaying)
+            {
+                return;
+            }
+
             bgmPlayer.clip = bgmSoundTable[soundName];
             bgmPlayer.Play();
         }
@@ -210,7 +242,10 @@ public class SoundManager : MonoBehaviour
 
     public void PlaySFX(string soundName)
     {
-        if (string.IsNullOrEmpty(soundName) || sfxSoundTable == null) return;
+        if (string.IsNullOrEmpty(soundName) || sfxSoundTable == null)
+        {
+            return;
+        }
 
         if (sfxSoundTable.TryGetValue(soundName, out AudioClip clip))
         {
@@ -234,8 +269,10 @@ public class SoundManager : MonoBehaviour
     {
         foreach (AudioSource audioSource in sfxPlayers)
         {
-            if (!audioSource.isPlaying)
+            if (audioSource.isPlaying == false)
+            {
                 return audioSource;
+            }
         }
         return null;
     }
@@ -258,7 +295,10 @@ public class SoundManager : MonoBehaviour
 
     public void SetMasterVolume(float sliderValue)
     {
-        if (masterMixer == null) return;
+        if (masterMixer == null)
+        {
+            return;
+        }
 
         // 💡 [핵심] 들어온 값(0~10)을 최대값(10)으로 나누어 0.0 ~ 1.0 비율(%)로 만듭니다.
         // 만약 슬라이더의 Max Value를 100으로 쓰신다면 100f로 나누시면 됩니다!
@@ -278,39 +318,61 @@ public class SoundManager : MonoBehaviour
 
     public void SetBGMVolume(float sliderValue)
     {
-        if (masterMixer == null) return;
+        if (masterMixer == null)
+        {
+            return;
+        }
 
         float normalizedValue = sliderValue / 10f;
 
         if (normalizedValue <= 0.001f)
+        {
             masterMixer.SetFloat("BGM", -80f);
+        }
         else
+        {
             masterMixer.SetFloat("BGM", Mathf.Lerp(-40f, 0f, normalizedValue));
+        }
     }
 
     public void SetSFXVolume(float sliderValue)
     {
-        if (masterMixer == null) return;
+        if (masterMixer == null)
+        {
+            return;
+        }
 
         float normalizedValue = sliderValue / 10f;
 
         if (normalizedValue <= 0.001f)
+        {
             masterMixer.SetFloat("SFX", -80f);
+        }
         else
+        {
             masterMixer.SetFloat("SFX", Mathf.Lerp(-40f, 0f, normalizedValue));
+        }
     }
 
 
     private void PlayBattleBGM()
     {
         StageManager sm = GameManager.Instance.SafeInvoke(v => v.StageManager);
-        if (sm == null) return;
+        if (sm == null)
+        {
+            return;
+        }
 
         StageInfo info = sm.SafeInvoke(v => v.CurrentStageInfo);
-        if (info == null) return;
+        if (info == null)
+        {
+            return;
+        }
 
         if (string.IsNullOrEmpty(info.battleBGM))
+        {
             return;
+        }
 
         ChangeBGM(info.battleBGM);
     }

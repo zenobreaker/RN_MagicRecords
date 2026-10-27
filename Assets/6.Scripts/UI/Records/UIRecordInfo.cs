@@ -14,10 +14,16 @@ public class UIRecordInfo : UiBase
     private RecordData recordData;
     private BuildEntryViewData buildEntry;
     public void SetData(RecordData recordData)
-    { this.recordData = recordData; buildEntry = null; }
+    {
+        this.recordData = recordData;
+        buildEntry = null;
+    }
 
     public void SetBuildEntry(BuildEntryViewData entry)
-    { buildEntry = entry; recordData = null; }
+    {
+        buildEntry = entry;
+        recordData = null;
+    }
 
     protected override void OnEnable()
     {
@@ -41,9 +47,13 @@ public class UIRecordInfo : UiBase
     public override void CloseUI()
     {
         if (UIManager.Instance != null)
+        {
             UIManager.Instance.CloseSpecificUI(this);
+        }
         else
+        {
             base.CloseUI();
+        }
     }
 
     private void DrawUI()
@@ -57,9 +67,9 @@ public class UIRecordInfo : UiBase
         bool useMemory = isMemory && memoryRecordIcon != null;
         if (recordIcon != null)
         {
-            recordIcon.gameObject.SetActive(!useMemory);
+            recordIcon.gameObject.SetActive(useMemory == false);
             recordIcon.sprite = useMemory ? null : icon;
-            recordIcon.enabled = !useMemory && icon != null;
+            recordIcon.enabled = useMemory == false && icon != null;
         }
         if (memoryRecordIcon != null)
         {
@@ -67,8 +77,19 @@ public class UIRecordInfo : UiBase
             memoryRecordIcon.sprite = useMemory ? icon : null;
             memoryRecordIcon.enabled = useMemory && icon != null;
         }
-        if (nameText != null) nameText.text = title ?? "";
-        if (categoryText != null) categoryText.text = title != null ? category : "";
-        if (descText != null) descText.text = description ?? "";
+        if (nameText != null)
+        {
+            nameText.text = title ?? "";
+        }
+
+        if (categoryText != null)
+        {
+            categoryText.text = title != null ? category : "";
+        }
+
+        if (descText != null)
+        {
+            descText.text = description ?? "";
+        }
     }
 }

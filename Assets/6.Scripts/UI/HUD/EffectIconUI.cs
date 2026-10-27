@@ -6,9 +6,9 @@ public class EffectIconUI : MonoBehaviour
 {
     [SerializeField] private Image effectImage;
     [SerializeField] private Image cooldownImage;
-    [SerializeField] private TextMeshProUGUI stackCount; 
+    [SerializeField] private TextMeshProUGUI stackCount;
 
-    private BaseEffect baseEffect; 
+    private BaseEffect baseEffect;
 
     public void OnApply(BaseEffect effect)
     {
@@ -29,12 +29,21 @@ public class EffectIconUI : MonoBehaviour
 
     private void RefreshDisplay()
     {
-        if (baseEffect == null) return;
+        if (baseEffect == null)
+        {
+            return;
+        }
+
         if (cooldownImage != null)
+        {
             cooldownImage.fillAmount = baseEffect.Duration > 0f
-                ? Mathf.Clamp01(baseEffect.RemainingTime / baseEffect.Duration) : 0f;
+            ? Mathf.Clamp01(baseEffect.RemainingTime / baseEffect.Duration) : 0f;
+        }
+
         if (stackCount != null)
+        {
             stackCount.text = baseEffect.StackCount > 1 || baseEffect.ShowSingleStack
-                ? baseEffect.StackCount.ToString() : string.Empty;
+            ? baseEffect.StackCount.ToString() : string.Empty;
+        }
     }
 }

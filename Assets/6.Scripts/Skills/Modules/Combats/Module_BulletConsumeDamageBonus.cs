@@ -16,8 +16,12 @@ public sealed class Module_BulletConsumeDamageBonus : SkillModule
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         var runtime = skill?.Runtime;
-        if (runtime?.Combat == null || !runtime.TryExecuteOnce(this)) return;
+        if (runtime?.Combat == null || runtime.TryExecuteOnce(this) == false)
+        {
+            return;
+        }
+
         runtime.Combat.BonusMultipiler *= 1f +
-            runtime.Combat.ConsumedBulletCount * Mathf.Max(0f, bonusPerBullet);
+                    runtime.Combat.ConsumedBulletCount * Mathf.Max(0f, bonusPerBullet);
     }
 }

@@ -7,7 +7,13 @@ public sealed class Module_Passive_OrbInstallation : PassiveModule
 {
     [Header("Target Filter")]
     public int targetSkillID;
-    public override int TargetSkillID => targetSkillID;
+    public override int TargetSkillID
+    {
+        get
+        {
+            return targetSkillID;
+        }
+    }
 
     [Header("Orb Settings")]
     [Tooltip("기존 광선 대신 소환할 구체의 프리팹 이름")]
@@ -24,7 +30,9 @@ public sealed class Module_Passive_OrbInstallation : PassiveModule
     public override void OnSkillCast(SkillUseEvent evt, SkillRuntimeContext context)
     {
         if (targetSkillID != 0 && evt.SkillID != targetSkillID)
+        {
             return;
+        }
 
         context.Cast.IsInstantCast = true;
         context.Cast.AutoFireOnMaxCharge = true;

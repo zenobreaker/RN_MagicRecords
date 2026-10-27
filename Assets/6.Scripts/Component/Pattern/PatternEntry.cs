@@ -6,10 +6,10 @@ using UnityEngine;
 
 public enum PatternConditionType
 {
-    Cooldown, 
-    Health, 
+    Cooldown,
+    Health,
     ElapseTime,
-    Distance, 
+    Distance,
     Custom,
     Count,
 }
@@ -25,10 +25,10 @@ public enum ComparisonType
 }
 
 [System.Serializable]
-public struct PatternCondition 
+public struct PatternCondition
 {
-    public PatternConditionType type; 
-    public ComparisonType ctype ; 
+    public PatternConditionType type;
+    public ComparisonType ctype;
     public float value;
 
 }
@@ -40,7 +40,7 @@ public class PatternEntry
     public string slotName;
 
     [Tooltip("외부 설정이 없을 때 사용하는 기본 활성화 여부")]
-    public bool defaultIsUse = true; 
+    public bool defaultIsUse = true;
 
     public List<PatternCondition> conditions = new List<PatternCondition>();
     public SO_ActiveSkillData skill;
@@ -49,11 +49,22 @@ public class PatternEntry
     private List<(IPatternCondition instance, float targetValue)> runtimeConditions = new();
 
     private bool? runtimeIsUse;
-    public bool IsUse =>
-        runtimeIsUse ?? defaultIsUse;
+    public bool IsUse
+    {
+        get
+        {
+            return runtimeIsUse ?? defaultIsUse;
+        }
+    }
 
-    public void SetruntimeIsUse(bool value) => runtimeIsUse = value;
-    public void CleaerRuntimeIsUse() => runtimeIsUse = null;
+    public void SetruntimeIsUse(bool value)
+    {
+        runtimeIsUse = value;
+    }
+    public void CleaerRuntimeIsUse()
+    {
+        runtimeIsUse = null;
+    }
 
 
     public void InitiaizePattern()
@@ -108,7 +119,11 @@ public class PatternEntry
     {
         foreach ((IPatternCondition instance, float targetValue) in runtimeConditions)
         {
-            if (!resetCooldown && instance is CooldownCondition) continue;
+            if (resetCooldown == false && instance is CooldownCondition)
+            {
+                continue;
+            }
+
             instance.ResetCondition();
         }
     }
@@ -131,22 +146,29 @@ public class PatternEntry
         {
             // 사용 시 재진입을 막고, 몬스터는 행동 종료 시에도 초기화해 대기 시간을 보장합니다.
             if (cond.instance is CooldownCondition cooldown)
+            {
                 cooldown.ResetCondition();
-            if(cond.instance is IUseableCondition useable)
+            }
+
+            if (cond.instance is IUseableCondition useable)
+            {
                 useable.Use();
+            }
         }
     }
 
     public bool CheckUsePattern(AIContext ctx)
     {
-        if (!IsUse)
-            return false; 
+        if (IsUse == false)
+        {
+            return false;
+        }
 
         foreach (var cond in runtimeConditions)
         {
             // 💡 3. Short-Circuit (빠른 종료) 도입
             // 조건 중 단 하나라도 실패하면, 뒤의 조건은 볼 필요 없이 즉시 false 반환 (성능 최적화)
-            if (!cond.instance.Evaluate(cond.targetValue, ctx))
+            if (cond.instance.Evaluate(cond.targetValue, ctx) == false)
             {
                 return false;
             }
@@ -159,12 +181,22 @@ public class PatternEntry
     // 접근할 사거리를 고를 때는 현재 거리를 제외하고 준비 상태만 검사합니다.
     public bool IsReadyToUse(AIContext ctx)
     {
-        if (!IsUse) return false;
+        if (IsUse == false)
+        {
+            return false;
+        }
 
         foreach (var cond in runtimeConditions)
         {
-            if (cond.instance is DistanceCondition) continue;
-            if (!cond.instance.Evaluate(cond.targetValue, ctx)) return false;
+            if (cond.instance is DistanceCondition)
+            {
+                continue;
+            }
+
+            if (cond.instance.Evaluate(cond.targetValue, ctx) == false)
+            {
+                return false;
+            }
         }
 
         return true;

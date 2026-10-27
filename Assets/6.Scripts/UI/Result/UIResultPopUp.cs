@@ -11,9 +11,9 @@ public class UITotalResultPopUp : UIPopUp
 {
     [Header("UI Components")]
     [SerializeField] private Image portrait;
-    [SerializeField] private TextMeshProUGUI characterNameText; 
+    [SerializeField] private TextMeshProUGUI characterNameText;
     [SerializeField] private Image jobIcon;
-    [SerializeField] private TextMeshProUGUI jobNameText; 
+    [SerializeField] private TextMeshProUGUI jobNameText;
     [SerializeField] protected TextMeshProUGUI playTimeText;
     [SerializeField] protected TextMeshProUGUI killCountText;
     [SerializeField] protected TextMeshProUGUI maxExploreText;
@@ -44,8 +44,8 @@ public class UITotalResultPopUp : UIPopUp
     // 연출 진행 중인지 체크하는 플래그
     private bool isAnimating = false;
 
-    // UniTask 취소를 위한 토큰 소스 
-    private CancellationTokenSource cts; 
+    // UniTask 취소를 위한 토큰 소스
+    private CancellationTokenSource cts;
 
     protected override void OnEnable()
     {
@@ -61,7 +61,7 @@ public class UITotalResultPopUp : UIPopUp
         CancelAndDisposeCTS();
         cts = new CancellationTokenSource();
 
-        // 수정 : UniTask 사용, 기존 Coroutine 제거 
+        // 수정 : UniTask 사용, 기존 Coroutine 제거
         // 💡 UniTask 실행 (Forget을 붙여 Fire and Forget 처리)
         ShowResultSequence(cts.Token).Forget();
     }
@@ -75,9 +75,9 @@ public class UITotalResultPopUp : UIPopUp
 
     private void Update()
     {
-        if (isAnimating && (Input.GetMouseButton(0) || Input.touchCount > 0)) 
+        if (isAnimating && (Input.GetMouseButton(0) || Input.touchCount > 0))
         {
-            SkipAnimation(); 
+            SkipAnimation();
         }
     }
 
@@ -110,18 +110,48 @@ public class UITotalResultPopUp : UIPopUp
     private void SetFinalState()
     {
         // 1. 모든 그룹의 투명도를 100% (알파 = 1)로 켜기
-        if (charInfoGroup != null) charInfoGroup.alpha = 1f;
-        if (playTimeGroup != null) playTimeGroup.alpha = 1f;
-        if (killCountGroup != null) killCountGroup.alpha = 1f;
-        if (exploreNodeGroup != null) exploreNodeGroup.alpha = 1f;
-        if (recordListGroup != null) recordListGroup.alpha = 1f;
-        if (buttonGroup != null) buttonGroup.alpha = 1f;
+        if (charInfoGroup != null)
+        {
+            charInfoGroup.alpha = 1f;
+        }
+
+        if (playTimeGroup != null)
+        {
+            playTimeGroup.alpha = 1f;
+        }
+
+        if (killCountGroup != null)
+        {
+            killCountGroup.alpha = 1f;
+        }
+
+        if (exploreNodeGroup != null)
+        {
+            exploreNodeGroup.alpha = 1f;
+        }
+
+        if (recordListGroup != null)
+        {
+            recordListGroup.alpha = 1f;
+        }
+
+        if (buttonGroup != null)
+        {
+            buttonGroup.alpha = 1f;
+        }
 
         // 2. 숫자 통계를 최종 목표값으로 즉시 세팅
         int minutes = Mathf.FloorToInt(targetPlayTime / 60F);
         int seconds = Mathf.FloorToInt(targetPlayTime - minutes * 60);
-        if (playTimeText != null) playTimeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
-        if (killCountText != null) killCountText.text = targetKillCount.ToString();
+        if (playTimeText != null)
+        {
+            playTimeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        }
+
+        if (killCountText != null)
+        {
+            killCountText.text = targetKillCount.ToString();
+        }
 
         // 3. 스크롤 위치를 즉시 맨 아래(0)로 강제 이동
         if (contentRect != null && scrollRect != null)
@@ -131,7 +161,10 @@ public class UITotalResultPopUp : UIPopUp
         }
 
         // 4. 확인(로비 귀환) 버튼 클릭 가능하게 활성화
-        if (confirmButton != null) confirmButton.interactable = true;
+        if (confirmButton != null)
+        {
+            confirmButton.interactable = true;
+        }
     }
 
     private void FetchResultData()
@@ -149,29 +182,56 @@ public class UITotalResultPopUp : UIPopUp
     private void InitAlphaToZero()
     {
         // 알파도 0으로 하고, 오브젝트도 아예 꺼서 공간 차지를 없앰
-        if (charInfoGroup != null) { charInfoGroup.alpha = 0; charInfoGroup.gameObject.SetActive(false); }
-        if (playTimeGroup != null) { playTimeGroup.alpha = 0; playTimeGroup.gameObject.SetActive(false); }
-        if (killCountGroup != null) { killCountGroup.alpha = 0; killCountGroup.gameObject.SetActive(false); }
-        if (exploreNodeGroup != null) { exploreNodeGroup.alpha = 0; exploreNodeGroup.gameObject.SetActive(false); }
-        if (recordListGroup != null) { recordListGroup.alpha = 0; recordListGroup.gameObject.SetActive(false); }
-        if (buttonGroup != null) { buttonGroup.alpha = 0; buttonGroup.gameObject.SetActive(false); }
+        if (charInfoGroup != null)
+        {
+            charInfoGroup.alpha = 0;
+            charInfoGroup.gameObject.SetActive(false);
+        }
+        if (playTimeGroup != null)
+        {
+            playTimeGroup.alpha = 0;
+            playTimeGroup.gameObject.SetActive(false);
+        }
+        if (killCountGroup != null)
+        {
+            killCountGroup.alpha = 0;
+            killCountGroup.gameObject.SetActive(false);
+        }
+        if (exploreNodeGroup != null)
+        {
+            exploreNodeGroup.alpha = 0;
+            exploreNodeGroup.gameObject.SetActive(false);
+        }
+        if (recordListGroup != null)
+        {
+            recordListGroup.alpha = 0;
+            recordListGroup.gameObject.SetActive(false);
+        }
+        if (buttonGroup != null)
+        {
+            buttonGroup.alpha = 0;
+            buttonGroup.gameObject.SetActive(false);
+        }
 
-        if (confirmButton != null) confirmButton.interactable = false;
+        if (confirmButton != null)
+        {
+            confirmButton.interactable = false;
+        }
     }
 
     public override void RefreshUI()
     {
         base.RefreshUI();
-        DrawPopUp(); 
+        DrawPopUp();
     }
 
     protected override void DrawPopUp()
     {
-        // 플레이한 캐릭터 정보 그리기 
+        // 플레이한 캐릭터 정보 그리기
         DrawCharInfo();
 
-        // 탐사 정도 정보 그리기 
-        DrawExploreInfo(); 
+        // 탐사 정도 정보 그리기
+        DrawExploreInfo();
 
         // 레코드 그리기
         DrawRecords();
@@ -218,9 +278,12 @@ public class UITotalResultPopUp : UIPopUp
     {
         InactiveUIElements();
 
-        if (PlayerManager.Instance == null) return; 
+        if (PlayerManager.Instance == null)
+        {
+            return;
+        }
 
-        // 캐릭터 정보 처리 
+        // 캐릭터 정보 처리
         var player = PlayerManager.Instance.GetCurrentPlayer();
         if (player == null)
         {
@@ -228,25 +291,28 @@ public class UITotalResultPopUp : UIPopUp
         }
         else
         {
-            var playerInfo = PlayerManager.Instance.GetCharacterInfo(player.CharID); 
-            if(playerInfo == null) return;
+            var playerInfo = PlayerManager.Instance.GetCharacterInfo(player.CharID);
+            if (playerInfo == null)
+            {
+                return;
+            }
 
             if (portrait != null)
             {
                 portrait.sprite = playerInfo.charSprite;
-                portrait.gameObject.SetActive(true); 
+                portrait.gameObject.SetActive(true);
             }
 
             if (characterNameText != null)
             {
                 characterNameText.text = LocalizationManager.Instance != null
                     ? LocalizationManager.Instance.GetText(playerInfo.name) : playerInfo.name;
-                characterNameText.gameObject.SetActive(true); 
+                characterNameText.gameObject.SetActive(true);
             }
         }
 
         int jobID = player.JobID;
-        // 직업 정보 처리 
+        // 직업 정보 처리
         var jobInfo = PlayerManager.Instance.GetJobInfo(jobID);
         if (jobInfo != null)
         {
@@ -268,9 +334,12 @@ public class UITotalResultPopUp : UIPopUp
     private void DrawRecords()
     {
         List<RecordData> records = AppManager.Instance?.GetRecordManager()?.GetPossesRecord();
-        if(records == null || recordParent == null || recordCard == null) return;
+        if (records == null || recordParent == null || recordCard == null)
+        {
+            return;
+        }
 
-        records.RemoveAll(x =>x == null || x.id <= 0);
+        records.RemoveAll(x => x == null || x.id <= 0);
 
         UIListDrawer.DrawListToTarget<RecordCard, RecordData>(
             recordParent.transform,
@@ -291,7 +360,9 @@ public class UITotalResultPopUp : UIPopUp
             isAnimating = true;
 
             if (scrollRect != null)
+            {
                 scrollRect.verticalNormalizedPosition = 1f;
+            }
 
             // 1. 캐릭터 정보
             charInfoGroup.gameObject.SetActive(true);
@@ -330,7 +401,10 @@ public class UITotalResultPopUp : UIPopUp
             await FadeInGroup(buttonGroup, token);
             await ScrollToBottom(token);
 
-            if (confirmButton != null) confirmButton.interactable = true;
+            if (confirmButton != null)
+            {
+                confirmButton.interactable = true;
+            }
 
             // 모든 연출이 자연스럽게 끝났을 경우
             SetFinalState();
@@ -349,7 +423,10 @@ public class UITotalResultPopUp : UIPopUp
     // ==========================================
     private async UniTask ScrollToBottom(CancellationToken token)
     {
-        if (scrollRect == null || contentRect == null) return;
+        if (scrollRect == null || contentRect == null)
+        {
+            return;
+        }
 
         // [핵심] 방금 켜진 UI 때문에 늘어난 Content의 세로 길이를 즉시 계산하도록 강제 업데이트
         //LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
@@ -361,7 +438,10 @@ public class UITotalResultPopUp : UIPopUp
         float targetPos = 0f; // 0f = 맨 아래, 1f = 맨 위
 
         // 이미 맨 아래라면 스크롤 생략
-        if (Mathf.Approximately(startPos, targetPos)) return;
+        if (Mathf.Approximately(startPos, targetPos))
+        {
+            return;
+        }
 
         // 0.3초 동안 부드럽게 스크롤을 맨 아래로 내림
         while (time < 1f)
@@ -372,7 +452,7 @@ public class UITotalResultPopUp : UIPopUp
 
             float t = time * (2f - time); // Ease-out
             scrollRect.verticalNormalizedPosition = Mathf.Lerp(startPos, targetPos, t);
-            
+
             // 💡 yield return null -> await UniTask.Yield()
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
         }
@@ -383,7 +463,10 @@ public class UITotalResultPopUp : UIPopUp
     // CanvasGroup 페이드 인 유틸 함수
     private async UniTask FadeInGroup(CanvasGroup cg, CancellationToken token)
     {
-        if (cg == null) return;
+        if (cg == null)
+        {
+            return;
+        }
 
         float t = 0;
         while (t < 1f)

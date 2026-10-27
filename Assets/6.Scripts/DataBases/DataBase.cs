@@ -5,14 +5,14 @@ using UnityEngine;
 public abstract class InfoJson
 {
     public int id;
-    public string desc; 
+    public string desc;
 }
 
 [System.Serializable]
 public abstract class InfoBase
 {
     public int id;
-    public string desc; 
+    public string desc;
 }
 
 public abstract class DataBase : MonoBehaviour

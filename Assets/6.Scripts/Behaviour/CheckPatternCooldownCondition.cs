@@ -11,7 +11,10 @@ public partial class CheckPatternCooldownCondition : Condition
 
     public override bool IsTrue()
     {
-        if (Pattern == null || Pattern.Value == null) return false;
+        if (Pattern == null || Pattern.Value == null)
+        {
+            return false;
+        }
 
         return Pattern.Value.CanUseSkill(PatternName.Value);
     }

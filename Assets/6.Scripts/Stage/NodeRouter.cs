@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public static class NodeRouter 
+public static class NodeRouter
 {
     // 💡 노드를 클릭했을 때 UI에 띄울 제목과 설명을 가져오는 만능 함수
     public static (string title, string description) GetNodeUIData(MapNodeInfo node)
@@ -46,15 +46,15 @@ public static class NodeRouter
                 break;
             case StageType.Combat:
                 StageInfo combatData =
-                    DataBaseManager.Instance.SafeInvoke(v=>v.GetStageInfo(node.contentId));
+                    DataBaseManager.Instance.SafeInvoke(v => v.GetStageInfo(node.contentId));
                 GameManager.Instance.EnterStage(combatData);
                 break;
 
             case StageType.Boss_Combat:
                 StageInfo bossCombat =
-                    DataBaseManager.Instance.SafeInvoke(v=>v.GetBossStageInfo(chapter, node.contentId));
-                GameManager.Instance.EnterStage(bossCombat); 
-                break; 
+                    DataBaseManager.Instance.SafeInvoke(v => v.GetBossStageInfo(chapter, node.contentId));
+                GameManager.Instance.EnterStage(bossCombat);
+                break;
 
             case StageType.Event:
                 EventInfo eventData =

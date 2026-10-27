@@ -16,7 +16,9 @@ public class SkillPanel : MonoBehaviour
         foreach (SkillSlotUI slot in ui_SkillSlot)
         {
             if (slot == null)
+            {
                 continue;
+            }
         }
     }
 }

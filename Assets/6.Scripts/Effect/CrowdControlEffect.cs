@@ -2,9 +2,15 @@ using UnityEngine;
 
 public class CrowdControlEffect : BaseEffect
 {
-    public virtual StatusEffectType EffectFlag => StatusEffectType.None;
+    public virtual StatusEffectType EffectFlag
+    {
+        get
+        {
+            return StatusEffectType.None;
+        }
+    }
 
-    public CrowdControlEffect(string id, string desc, float duration) 
+    public CrowdControlEffect(string id, string desc, float duration)
         : base(id, desc, duration)
     {
     }

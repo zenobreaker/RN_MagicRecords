@@ -53,7 +53,7 @@ public static class LayerMaskExtensions
 {
     public static bool Contains(this LayerMask layerMask, int layer)
     {
-        return (layerMask.value & (1 << layer)) != 0; 
+        return (layerMask.value & (1 << layer)) != 0;
     }
 
     public static bool Contains(this LayerMask layerMask, GameObject obj)
@@ -71,7 +71,9 @@ public static class Extend_TransformHelpers
         foreach (Transform t in trasnforms)
         {
             if (t.gameObject.name.Equals(name))
+            {
                 return t;
+            }
         }
 
         return null;
@@ -84,8 +86,9 @@ public static class Extend_TransformHelpers
         foreach (Transform t in trasnforms)
         {
             if (t.gameObject.name.Equals(name))
+            {
                 return t;
-
+            }
         }
 
         return null;
@@ -113,7 +116,9 @@ public static class Extend_TransformHelpers
         {
             Vector3 size = r.bounds.size;
             if (size.magnitude > result.magnitude)
+            {
                 result = size;
+            }
         }
 
         return result;
@@ -126,7 +131,9 @@ public static class Extend_Component
         where T : Component
     {
         if (go.TryGetComponent<T>(out component))
+        {
             return true;
+        }
 
         component = go.GetComponentInChildren<T>(includeInactive);
         return component != null;
@@ -140,10 +147,13 @@ public static class Extend_Component
 
     public static bool TryComponentInParent<T>(this GameObject go, out T component, bool includeInactive = false)
     {
-        if(go.TryGetComponent<T>(out component)) return true;
+        if (go.TryGetComponent<T>(out component))
+        {
+            return true;
+        }
 
         component = go.GetComponentInParent<T>(includeInactive);
-        return component != null;   
+        return component != null;
     }
 
     public static bool TryComponentInParent<T>(this Component c, out T component, bool includeInactive = false)
@@ -156,13 +166,17 @@ public static class Extend_List
 {
     public static void Unique<T>(this List<T> list, T item)
     {
-        if (list.Contains(item)) return;
+        if (list.Contains(item))
+        {
+            return;
+        }
+
         list.Add(item);
     }
 
     public static T Random<T>(this List<T> list)
     {
-        int idx = UnityEngine.Random.Range(0, list.Count); 
+        int idx = UnityEngine.Random.Range(0, list.Count);
         return list[idx];
     }
 }
@@ -274,7 +288,7 @@ public static class PositionHelpers
             points.Add(center + new Vector3(x, 0, z));
         }
 
-        if(randomize)
+        if (randomize)
         {
             points = points.OrderBy(_ => UnityEngine.Random.value).ToList();
         }
@@ -300,7 +314,10 @@ public static class PositionHelpers
     {
         float currentAngle = offset;
         if (totalCount > 1)
+        {
             currentAngle += (index - (totalCount - 1) * 0.5f) * angleBetween;
+        }
+
         return owner.rotation * Quaternion.Euler(0, currentAngle, 0);
     }
 
@@ -334,15 +351,17 @@ public static class AnimatorLayerCache
     public static int GetLayerIndex(Animator animator, string layerName)
     {
         if (string.IsNullOrEmpty(layerName))
+        {
             return 0; // 기본 레이어 인덱스는 0
+        }
 
-        if (!cache.TryGetValue(animator, out var animatorCache))
+        if (cache.TryGetValue(animator, out var animatorCache) == false)
         {
             animatorCache = new Dictionary<string, int>();
             cache[animator] = animatorCache;
         }
 
-        if (!animatorCache.TryGetValue(layerName, out var index))
+        if (animatorCache.TryGetValue(layerName, out var index) == false)
         {
             index = animator.GetLayerIndex(layerName);
             animatorCache[layerName] = index;
@@ -359,7 +378,7 @@ public static class Extend_Skill
     public static T GetValue<T>(this Dictionary<string, object> dict, string key
         , T defaultValue = default)
     {
-        if(dict != null && dict.TryGetValue(key, out var value) && value is T castedValue )
+        if (dict != null && dict.TryGetValue(key, out var value) && value is T castedValue)
         {
             return castedValue;
         }
@@ -367,10 +386,13 @@ public static class Extend_Skill
         return defaultValue;
     }
 
-    public static void SetValue(this Dictionary<string, object> dict, string key, 
+    public static void SetValue(this Dictionary<string, object> dict, string key,
         object value)
     {
-        if (dict == null) return;
+        if (dict == null)
+        {
+            return;
+        }
 
         dict[key] = value;
     }

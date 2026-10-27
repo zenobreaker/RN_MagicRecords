@@ -15,7 +15,10 @@ namespace TheWheeler.Editor
         private string result;
 
         [MenuItem("Tools/TheWheeler/Data/Record JSON Importer")]
-        public static void Open() => GetWindow<RecordJsonImportWindow>("Record JSON Importer");
+        public static void Open()
+        {
+            GetWindow<RecordJsonImportWindow>("Record JSON Importer");
+        }
         private void OnGUI()
         {
             EditorGUILayout.LabelField("Record JSON → ScriptableObjects", EditorStyles.boldLabel);
@@ -23,7 +26,11 @@ namespace TheWheeler.Editor
             assetFolder = EditorGUILayout.TextField("Record asset folder", assetFolder);
             registerAddressables = EditorGUILayout.Toggle("Register RecordData label", registerAddressables);
             bindCatalogue = EditorGUILayout.Toggle("Update record catalogue", bindCatalogue);
-            if (bindCatalogue) prefabPath = EditorGUILayout.TextField("Catalogue prefab", prefabPath);
+            if (bindCatalogue)
+            {
+                prefabPath = EditorGUILayout.TextField("Catalogue prefab", prefabPath);
+            }
+
             EditorGUILayout.HelpBox("Matches existing assets by ID and preserves their GUIDs. Missing records are created, including pending effect definitions. Existing common IDs 1–7 retain their identity and icons.", MessageType.Info);
             using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
                 if (GUILayout.Button("Import JSON and create/update records"))
@@ -31,14 +38,30 @@ namespace TheWheeler.Editor
                     try
                     {
                         var report = RecordJsonImporter.Import(jsonFolder, assetFolder);
-                        if (registerAddressables) RecordJsonImporter.RegisterAddressables(report.paths);
-                        if (bindCatalogue) RecordJsonImporter.BindPrefab(prefabPath, report.paths);
+                        if (registerAddressables)
+                        {
+                            RecordJsonImporter.RegisterAddressables(report.paths);
+                        }
+
+                        if (bindCatalogue)
+                        {
+                            RecordJsonImporter.BindPrefab(prefabPath, report.paths);
+                        }
+
                         result = JsonUtility.ToJson(report, true);
                         Debug.Log(result);
                     }
-                    catch (Exception e) { result = e.Message; Debug.LogException(e); }
+                    catch (Exception e)
+                    {
+                        result = e.Message;
+                        Debug.LogException(e);
+
+                    }
                 }
-            if (!string.IsNullOrEmpty(result)) EditorGUILayout.HelpBox(result, MessageType.None);
+            if (string.IsNullOrEmpty(result) == false)
+            {
+                EditorGUILayout.HelpBox(result, MessageType.None);
+            }
         }
         public static void ImportDefault()
         {
@@ -56,13 +79,31 @@ namespace TheWheeler.Editor
     internal static class RecordJsonImportRequest
     {
         const string Request = "Library/TheWheelerRecordImport.request";
-        static RecordJsonImportRequest() => EditorApplication.update += Tick;
+        static RecordJsonImportRequest()
+        {
+            EditorApplication.update += Tick;
+        }
         static void Tick()
         {
-            if (!File.Exists(Request) || EditorApplication.isCompiling || EditorApplication.isUpdating || EditorApplication.isPlayingOrWillChangePlaymode) return;
-            try { File.ReadAllText(Request); File.Delete(Request); }
-            catch (IOException) { return; }
-            try { RecordJsonImportWindow.ImportDefault(); }
+            if (File.Exists(Request) == false || EditorApplication.isCompiling || EditorApplication.isUpdating || EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                return;
+            }
+
+            try
+            {
+                File.ReadAllText(Request);
+                File.Delete(Request);
+            }
+            catch (IOException)
+            {
+                return;
+
+            }
+            try
+            {
+                RecordJsonImportWindow.ImportDefault();
+            }
             catch (Exception e)
             {
                 Directory.CreateDirectory("Library/RecordImport");

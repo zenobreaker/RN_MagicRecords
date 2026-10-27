@@ -20,7 +20,7 @@ public class PhaseSkillDrawer : PropertyDrawer
             SerializedProperty endProp = prop.GetEndProperty();
             prop.NextVisible(true);
 
-            while (!SerializedProperty.EqualContents(prop, endProp))
+            while (SerializedProperty.EqualContents(prop, endProp) == false)
             {
                 if (prop.name == "modules") // 💡 실제 변수명과 일치해야 합니다!
                 {
@@ -53,7 +53,7 @@ public class PhaseSkillDrawer : PropertyDrawer
             SerializedProperty endProp = prop.GetEndProperty();
             prop.NextVisible(true);
 
-            while (!SerializedProperty.EqualContents(prop, endProp))
+            while (SerializedProperty.EqualContents(prop, endProp) == false)
             {
                 if (prop.name == "modules")
                 {
@@ -84,18 +84,20 @@ public class PhaseSkillDrawer : PropertyDrawer
     {
         string key = parentProperty.propertyPath;
 
-        if (!listCache.ContainsKey(key))
+        if (listCache.ContainsKey(key) == false)
         {
             // 움직이지 않는 안전한 프로퍼티 복사본을 직접 가져옵니다.
             SerializedProperty modulesProperty = parentProperty.FindPropertyRelative("modules");
 
             ReorderableList list = new ReorderableList(modulesProperty.serializedObject, modulesProperty, true, true, true, true);
 
-            list.drawHeaderCallback = (Rect rect) => {
+            list.drawHeaderCallback = (Rect rect) =>
+            {
                 EditorGUI.LabelField(rect, modulesProperty.displayName);
             };
 
-            list.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) => {
+            list.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+            {
                 SerializedProperty element = list.serializedProperty.GetArrayElementAtIndex(index);
 
                 // 위아래 여백 살짝 띄우기
@@ -110,13 +112,15 @@ public class PhaseSkillDrawer : PropertyDrawer
                 EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUI.GetPropertyHeight(element)), element, true);
             };
 
-            list.elementHeightCallback = (int index) => {
+            list.elementHeightCallback = (int index) =>
+            {
                 SerializedProperty element = list.serializedProperty.GetArrayElementAtIndex(index);
                 return EditorGUI.GetPropertyHeight(element, true) + 4;
             };
 
             // [+] 버튼 클릭 시 카테고리 팝업
-            list.onAddDropdownCallback = (Rect buttonRect, ReorderableList l) => {
+            list.onAddDropdownCallback = (Rect buttonRect, ReorderableList l) =>
+            {
                 ShowCategoryMenu(l.serializedProperty);
             };
 
@@ -131,7 +135,7 @@ public class PhaseSkillDrawer : PropertyDrawer
         GenericMenu menu = new GenericMenu();
 
         var types = TypeCache.GetTypesDerivedFrom<SkillModule>()
-            .Where(t => !t.IsAbstract && !t.IsInterface);
+            .Where(t => t.IsAbstract == false && t.IsInterface == false);
 
         foreach (var type in types)
         {
@@ -143,7 +147,8 @@ public class PhaseSkillDrawer : PropertyDrawer
                 menuPath = ((ModuleCategoryAttribute)attributes[0]).Path;
             }
 
-            menu.AddItem(new GUIContent(menuPath), false, () => {
+            menu.AddItem(new GUIContent(menuPath), false, () =>
+            {
                 listProperty.serializedObject.Update();
 
                 int index = listProperty.arraySize;

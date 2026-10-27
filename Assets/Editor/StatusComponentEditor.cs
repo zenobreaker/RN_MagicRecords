@@ -21,7 +21,7 @@ public class StatusComponentEditor : Editor
 
         if (showStats)
         {
-            if (!Application.isPlaying)
+            if (Application.isPlaying == false)
             {
                 EditorGUILayout.HelpBox("최종 스탯은 플레이 모드에서만 실시간으로 확인 가능합니다.", MessageType.Info);
             }
@@ -51,7 +51,7 @@ public class StatusComponentEditor : Editor
             EditorGUILayout.Space(5);
             if (GUILayout.Button("데이터 강제 갱신 (Recalculate)"))
             {
-                // IsDirty를 강제로 발생시키기 위해 현재 값을 재설정하거나 
+                // IsDirty를 강제로 발생시키기 위해 현재 값을 재설정하거나
                 // GetStatusValue 호출만으로도 Recalculate가 실행됩니다.
                 Repaint();
             }

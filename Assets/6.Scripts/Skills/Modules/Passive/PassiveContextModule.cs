@@ -18,11 +18,19 @@ public abstract class PassiveContextModule : PassiveModule
         OnChangedLevel(level);
     }
 
-    public virtual void OnChangedLevel(int level) => skillLevel = level;
+    public virtual void OnChangedLevel(int level)
+    {
+        skillLevel = level;
+    }
 
-    public virtual void OnAttackHit(GameObject attacker, GameObject target, DamageEvent damageEvent) { }
+    public virtual void OnAttackHit(GameObject attacker, GameObject target, DamageEvent damageEvent)
+    {
+    }
 
-    public override void OnLose() => owner = null;
+    public override void OnLose()
+    {
+        owner = null;
+    }
 
     protected float GetLevelValue(float[] values, float fallback)
     {

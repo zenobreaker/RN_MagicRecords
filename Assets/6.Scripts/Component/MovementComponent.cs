@@ -7,7 +7,10 @@ using UnityEngine.InputSystem;
 
 public class MovementComponent : MonoBehaviour
 {
-    public enum DashDirection { Forward, Backward, Left, Right }
+    public enum DashDirection
+    {
+        Forward, Backward, Left, Right
+    }
 
     [Header("Speed Settings")]
     [SerializeField] private SO_Movement SO_Movement;
@@ -23,13 +26,29 @@ public class MovementComponent : MonoBehaviour
 
     private float speed;
     private float originSpeed;
-    public float Speed => speed;
-    public float DeltaSpeed { get; private set; }
+    public float Speed
+    {
+        get
+        {
+            return speed;
+        }
+    }
+    public float DeltaSpeed
+    {
+        get;
+        private set;
+    }
     private bool bRun = false;
     private bool bCanMove = true;
 
     private Vector2 targetDirection;
-    public Vector2 TargetDirection => targetDirection;
+    public Vector2 TargetDirection
+    {
+        get
+        {
+            return targetDirection;
+        }
+    }
 
     #region COMPONENTS
     private CharacterVisual visual;
@@ -37,8 +56,14 @@ public class MovementComponent : MonoBehaviour
     private StateComponent state;
     private Rigidbody rigid;
     private LaunchComponent launch;
-    private bool IsStateMovementBlocked => state != null &&
+    private bool IsStateMovementBlocked
+    {
+        get
+        {
+            return state != null &&
         (state.DamagedMode || state.DeadMode || state.StopMode);
+        }
+    }
     #endregion
 
 
@@ -66,22 +91,37 @@ public class MovementComponent : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         launch = GetComponent<LaunchComponent>();
 
-        ownerColliders = GetComponentsInChildren<Collider>(); 
+        ownerColliders = GetComponentsInChildren<Collider>();
 
         Debug.Assert(state != null && rigid != null);
     }
 
     private void OnEnable()
     {
-        originSpeed = speed; 
-        if (statusEffect != null) statusEffect.OnStatusEffectChanged += OnStatusEffectChanged;
-        if (state != null) state.OnStateTypeChanged += OnStateChanged;
+        originSpeed = speed;
+        if (statusEffect != null)
+        {
+            statusEffect.OnStatusEffectChanged += OnStatusEffectChanged;
+        }
+
+        if (state != null)
+        {
+            state.OnStateTypeChanged += OnStateChanged;
+        }
     }
 
     private void OnDisable()
     {
-        if (statusEffect != null) statusEffect.OnStatusEffectChanged -= OnStatusEffectChanged;
-        if (state != null) state.OnStateTypeChanged -= OnStateChanged;
+        if (statusEffect != null)
+        {
+            statusEffect.OnStatusEffectChanged -= OnStatusEffectChanged;
+        }
+
+        if (state != null)
+        {
+            state.OnStateTypeChanged -= OnStateChanged;
+        }
+
         CancelDashTimer();
     }
 
@@ -96,10 +136,20 @@ public class MovementComponent : MonoBehaviour
         originSpeed = this.speed;
         this.speed = speed;
     }
-    public void RecoverSpeed() => speed = originSpeed; 
+    public void RecoverSpeed()
+    {
+        speed = originSpeed;
+    }
 
-    public void Move() { bCanMove = true; }
-    public void Stop() { bCanMove = false; CancelDashTimer(); }
+    public void Move()
+    {
+        bCanMove = true;
+    }
+    public void Stop()
+    {
+        bCanMove = false;
+        CancelDashTimer();
+    }
 
     // --------------------------------------------------------
     // 💡 1. [로직 분리] Update: 회전과 애니메이션만 담당
@@ -107,13 +157,16 @@ public class MovementComponent : MonoBehaviour
     private void Update()
     {
         // 이동 불가거나 대시 중(EvadeMode)일 때는 일반 애니메이션 속도를 0으로!
-        if (!bCanMove || IsStateMovementBlocked || (launch != null && launch.IsLaunching) ||
+        if (bCanMove == false || IsStateMovementBlocked || (launch != null && launch.IsLaunching) ||
             bIsExternalMoving ||
             (state != null && state.EvadeMode))
         {
             DeltaSpeed = 0f;
             if (visual != null)
+            {
                 visual.SetMovementAnimation(DeltaSpeed);
+            }
+
             return;
         }
 
@@ -132,7 +185,9 @@ public class MovementComponent : MonoBehaviour
 
         DeltaSpeed = moveDir.magnitude / movement.WalkSpeed * movement.Ratio;
         if (visual != null)
+        {
             visual.SetMovementAnimation(DeltaSpeed);
+        }
     }
 
     // --------------------------------------------------------
@@ -142,16 +197,20 @@ public class MovementComponent : MonoBehaviour
     {
         // 외부 이동 중이면 일반 이동 로직을 실행하지 않는다.
         if (bIsExternalMoving || (launch != null && launch.IsLaunching))
+        {
             return;
+        }
 
-        if (rigid.isKinematic) 
+        if (rigid.isKinematic)
+        {
             return;
+        }
 
         // 대시 중(EvadeMode)이거나 이동 불가면 일반 걷기 물리 연산을 완벽 차단!
-        if (!bCanMove || IsStateMovementBlocked || (state != null && state.EvadeMode))
+        if (bCanMove == false || IsStateMovementBlocked || (state != null && state.EvadeMode))
         {
             // 대시 중이 아닐 때만 멈춤 처리 (대시 중에는 DashRoutine이 물리를 통제함)
-            if (state == null || !state.EvadeMode)
+            if (state == null || state.EvadeMode == false)
             {
                 rigid.linearVelocity = new Vector3(0, rigid.linearVelocity.y, 0);
             }
@@ -182,9 +241,15 @@ public class MovementComponent : MonoBehaviour
         GetComponent<SkillComponent>()?.UseSkill(SkillSlot.SubAction);
     }
 
-    public bool CanStartExternalMovement => isActiveAndEnabled && rigid != null &&
-        !rigid.isKinematic && state != null && !state.EvadeMode &&
-        !state.DeadMode && !state.DamagedMode && !state.StopMode && !bIsExternalMoving;
+    public bool CanStartExternalMovement
+    {
+        get
+        {
+            return isActiveAndEnabled && rigid != null &&
+        rigid.isKinematic == false && state != null && state.EvadeMode == false &&
+        state.DeadMode == false && state.DamagedMode == false && state.StopMode == false && bIsExternalMoving == false;
+        }
+    }
 
     public void Dash(Vector3 direction, float distance, float duration,
         AnimationCurve speedCurve = null, Action onStarted = null,
@@ -209,10 +274,10 @@ public class MovementComponent : MonoBehaviour
         Action<float> onProgress, Action<bool> onFinished, CancellationToken lifetime)
     {
         direction.y = 0f;
-        if (!CanStartExternalMovement || lifetime.IsCancellationRequested ||
-            !float.IsFinite(direction.x) || !float.IsFinite(direction.z) ||
-            direction.sqrMagnitude <= 0.001f || !float.IsFinite(distance) || distance <= 0f ||
-            !float.IsFinite(duration) || duration <= 0f)
+        if (CanStartExternalMovement == false || lifetime.IsCancellationRequested ||
+            float.IsFinite(direction.x) == false || float.IsFinite(direction.z) == false ||
+            direction.sqrMagnitude <= 0.001f || float.IsFinite(distance) == false || distance <= 0f ||
+            float.IsFinite(duration) == false || duration <= 0f)
         {
             onFinished?.Invoke(false);
             return;
@@ -232,12 +297,24 @@ public class MovementComponent : MonoBehaviour
         CancellationToken token = source.Token;
         try
         {
-            if (evade) state.SetEvadeMode();
+            if (evade)
+            {
+                state.SetEvadeMode();
+            }
+
             token.ThrowIfCancellationRequested();
             Vector3 start = rigid.position;
             Vector3 end = start + direction * distance;
-            if (ghost) BeginDashCollisionIgnore(start, end);
-            if (evade) OnBeginDash?.Invoke();
+            if (ghost)
+            {
+                BeginDashCollisionIgnore(start, end);
+            }
+
+            if (evade)
+            {
+                OnBeginDash?.Invoke();
+            }
+
             token.ThrowIfCancellationRequested();
             onStarted?.Invoke();
             token.ThrowIfCancellationRequested();
@@ -260,26 +337,51 @@ public class MovementComponent : MonoBehaviour
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token, cancelImmediately: true);
                 await UniTask.WaitForFixedUpdate(token, cancelImmediately: true);
                 token.ThrowIfCancellationRequested();
-                if (elapsed < duration) onProgress?.Invoke(elapsed);
+                if (elapsed < duration)
+                {
+                    onProgress?.Invoke(elapsed);
+                }
             }
             completed = true;
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+        }
         finally
         {
             if (ReferenceEquals(dashCts, source))
             {
                 dashCts = null;
                 RestoreDashCollision();
-                if (rigid != null && !rigid.isKinematic)
+                if (rigid != null && rigid.isKinematic == false)
+                {
                     rigid.linearVelocity = new Vector3(0f, rigid.linearVelocity.y, 0f);
+                }
+
                 bIsExternalMoving = false;
-                if (!evade) targetDirection = Vector2.zero;
-                if (evade && state != null && state.EvadeMode) state.SetIdleMode();
+                if (evade == false)
+                {
+                    targetDirection = Vector2.zero;
+                }
+
+                if (evade && state != null && state.EvadeMode)
+                {
+                    state.SetIdleMode();
+                }
             }
             source.Dispose();
-            try { if (evade) OnEndDash?.Invoke(); }
-            finally { onFinished?.Invoke(completed); }
+            try
+            {
+                if (evade)
+                {
+                    OnEndDash?.Invoke();
+                }
+            }
+            finally
+            {
+                onFinished?.Invoke(completed);
+
+            }
         }
     }
 
@@ -287,7 +389,9 @@ public class MovementComponent : MonoBehaviour
     {
         if (current == StateType.Dead || current == StateType.Damaged || current == StateType.Stop ||
             (previous == StateType.Evade && current != StateType.Evade))
+        {
             CancelDashTimer();
+        }
     }
 
     private void BeginDashCollisionIgnore(Vector3 start, Vector3 end)
@@ -295,13 +399,17 @@ public class MovementComponent : MonoBehaviour
         RestoreDashCollision();
 
         if (ownerColliders == null || ownerColliders.Length == 0)
+        {
             return;
+        }
 
         // 현재 주변의 Collider를 찾는다.
         Bounds bounds = ownerColliders[0].bounds;
 
         for (int i = 1; i < ownerColliders.Length; i++)
+        {
             bounds.Encapsulate(ownerColliders[i].bounds);
+        }
 
         // 캐릭터의 크기를 기준으로 탐색 반경 결정
         float radius =
@@ -309,47 +417,62 @@ public class MovementComponent : MonoBehaviour
             + dashCollisionSearchPadding;
 
         Vector3 castStart = start;
-        Vector3 castEnd = end; 
+        Vector3 castEnd = end;
 
         // 대시 시작 시 주변 캐릭터 탐색
         Collider[] nearbyColliders =
             Physics.OverlapCapsule(
                 castStart,
-                castEnd, 
-                radius, characterLayer, 
+                castEnd,
+                radius, characterLayer,
                 QueryTriggerInteraction.Ignore);
 
         foreach (Collider targetCollider in nearbyColliders)
         {
             if (targetCollider == null)
+            {
                 continue;
+            }
 
             // 자기 자신의 Collider
             if (targetCollider.transform.IsChildOf(transform))
+            {
                 continue;
+            }
 
             Character targetCharacter =
                 targetCollider.GetComponentInParent<Character>();
 
-            // Character가 아니면 무시하지 않는다. 
+            // Character가 아니면 무시하지 않는다.
             if (targetCharacter == null)
+            {
                 continue;
+            }
 
             // 자기 자신이면 무시
             if (targetCharacter == null)
+            {
                 continue;
+            }
 
-            foreach(Collider ownerColiider in ownerColliders)
+            foreach (Collider ownerColiider in ownerColliders)
             {
                 if (ownerColiider == null)
+                {
                     continue;
+                }
 
-                if (Physics.GetIgnoreCollision(ownerColiider, targetCollider)) continue;
+                if (Physics.GetIgnoreCollision(ownerColiider, targetCollider))
+                {
+                    continue;
+                }
 
                 if (IsAlreadyIgnored(
                     ownerColiider,
                     targetCollider))
+                {
                     continue;
+                }
 
                 Physics.IgnoreCollision(
                     ownerColiider,
@@ -359,53 +482,66 @@ public class MovementComponent : MonoBehaviour
                 ignoredCharacterCollisions.Add((ownerColiider, targetCollider));
             }
         }
-        
+
     }
 
     private bool IsAlreadyIgnored(
-        Collider ownerCollider, 
+        Collider ownerCollider,
         Collider targetCollider)
     {
-        for(int i = 0; i< ignoredCharacterCollisions.Count; i++)
+        for (int i = 0; i < ignoredCharacterCollisions.Count; i++)
         {
             var pair = ignoredCharacterCollisions[i];
 
             if (pair.owner == ownerCollider &&
                 pair.target == targetCollider)
-                return true; 
+            {
+                return true;
+            }
         }
 
-        return false; 
+        return false;
     }
 
     private void RestoreDashCollision()
     {
-        for(int i = 0; i< ignoredCharacterCollisions.Count; i++)
+        for (int i = 0; i < ignoredCharacterCollisions.Count; i++)
         {
             var pair = ignoredCharacterCollisions[i];
 
             if (pair.owner == null ||
                 pair.target == null)
+            {
                 continue;
+            }
 
             Physics.IgnoreCollision(
-                pair.owner, pair.target, false); 
+                pair.owner, pair.target, false);
         }
 
-        ignoredCharacterCollisions.Clear(); 
+        ignoredCharacterCollisions.Clear();
     }
 
     private void CancelDashTimer()
     {
         // The owning routine disposes its source after synchronous cleanup.
         var source = dashCts;
-        if (source != null && !source.IsCancellationRequested) source.Cancel();
+        if (source != null && source.IsCancellationRequested == false)
+        {
+            source.Cancel();
+        }
     }
 
     private void OnStatusEffectChanged(StatusEffectType prevType, StatusEffectType newType)
     {
-        bool bNotMovable = statusEffect != null && !statusEffect.GetMovableCondition();
-        if (bNotMovable) Stop();
-        else Move();
+        bool bNotMovable = statusEffect != null && statusEffect.GetMovableCondition() == false;
+        if (bNotMovable)
+        {
+            Stop();
+        }
+        else
+        {
+            Move();
+        }
     }
 }

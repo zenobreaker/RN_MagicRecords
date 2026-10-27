@@ -17,7 +17,11 @@ public class Module_Channeling : SkillModule
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (owner == null || skill == null || !skill.IsPhaseRunning || skill.IsEnding) return;
+        if (owner == null || skill == null || skill.IsPhaseRunning == false || skill.IsEnding)
+        {
+            return;
+        }
+
         CancellationToken token = skill.PhaseToken;
         ExecuteChannelingAsync(owner, skill, token).Forget();
     }
@@ -47,15 +51,17 @@ public class Module_Channeling : SkillModule
                 effect.SetDamageInfo(owner, damageData, false);
                 effect.AddIgnore(owner);
 
-                // 💡 팁: 빔이 캐릭터를 따라가야(회전/이동) 한다면 여기서 부모(parent)를 owner로 묶어주거나, 
+                // 💡 팁: 빔이 캐릭터를 따라가야(회전/이동) 한다면 여기서 부모(parent)를 owner로 묶어주거나,
                 // BeamProjectile 내부 Update에서 owner 위치를 추적하게 만들어야 합니다.
-                // obj.transform.SetParent(owner.transform); 
+                // obj.transform.SetParent(owner.transform);
             }
 
             // 💡 3. [핵심] 빔이 끝날 때까지 유니태스크로 캐릭터를 대기시킵니다!
             await UniTask.Delay(TimeSpan.FromSeconds(channelingDuration), cancellationToken: token);
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+        }
         finally
         {
             // 💡 4. 시간이 다 되거나 몬스터한테 맞아서 스킬이 취소되면?

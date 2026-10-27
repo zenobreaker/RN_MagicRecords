@@ -12,16 +12,24 @@ public class InputManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
         else
+        {
             Destroy(this.gameObject);
+        }
     }
 
     private void Update()
     {
-        if (CheatConsoleUI.CapturesInput) return;
+        if (CheatConsoleUI.CapturesInput)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if(UIManager.Instance != null)
+            if (UIManager.Instance != null)
+            {
                 UIManager.Instance.HandleCancelInput();
+            }
         }
     }
 

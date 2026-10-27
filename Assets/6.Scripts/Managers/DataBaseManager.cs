@@ -9,7 +9,13 @@ public class DataBaseManager : Singleton<DataBaseManager>
     private ItemDataBase itemDataBase;
     private RewardDataBase rewardDataBase;
     private ShopDataBase shopDataBase;
-    public ShopJsonAllData ExploreShopPolicy => shopDataBase?.ExplorePolicy;
+    public ShopJsonAllData ExploreShopPolicy
+    {
+        get
+        {
+            return shopDataBase?.ExplorePolicy;
+        }
+    }
     private EnhanceDataBase enhanceDataBase;
     private RecordDataBase recordDataBase;
     private EventDataBase eventDataBase;
@@ -22,16 +28,24 @@ public class DataBaseManager : Singleton<DataBaseManager>
         base.Awake();
 
         if (gameObject.TryComponentInChildren<StageDataBase>(out stageDataBase))
+        {
             stageDataBase.Initialize();
+        }
 
         if (gameObject.TryComponentInChildren<MonsterDataBase>(out monsterDataBase))
+        {
             monsterDataBase.InitializeData();
+        }
 
         if (gameObject.TryComponentInChildren<ItemDataBase>(out itemDataBase))
+        {
             itemDataBase.Initialize();
+        }
 
         if (gameObject.TryComponentInChildren<RewardDataBase>(out rewardDataBase))
+        {
             rewardDataBase.Initialize();
+        }
 
         if (gameObject.TryComponentInChildren<ShopDataBase>(out shopDataBase))
         {
@@ -57,41 +71,60 @@ public class DataBaseManager : Singleton<DataBaseManager>
 
 
     public GameObject GetTargetThemeObj(string themeName, int idx)
-         => stageDataBase.SafeInvoke(v => v.GetTargetThemeObj(themeName, idx));
+    {
+        return stageDataBase.SafeInvoke(v => v.GetTargetThemeObj(themeName, idx));
+    }
     public GameObject GetRandThemeObj(string themeName)
-        => stageDataBase.SafeInvoke(v => v.GetRandomThemeObj(themeName));
+    {
+        return stageDataBase.SafeInvoke(v => v.GetRandomThemeObj(themeName));
+    }
 
     public int GetRandomStageID(int chapter)
     {
-        if (stageDataBase == null) return -1;
+        if (stageDataBase == null)
+        {
+            return -1;
+        }
 
         return stageDataBase.GetRandomStageIDByChater(chapter);
     }
 
     public StageInfo GetStageInfo(int stageID)
     {
-        if (stageDataBase == null) return null;
+        if (stageDataBase == null)
+        {
+            return null;
+        }
 
         return stageDataBase.GetStageInfo(stageID);
     }
 
     public int GetRandomBossStageID(int chapter)
     {
-        if (stageDataBase == null) return -1;
+        if (stageDataBase == null)
+        {
+            return -1;
+        }
 
         return stageDataBase.GetRandomBossStageId(chapter);
     }
 
     public StageInfo GetBossStageInfo(int chapter, int stageID)
     {
-        if (stageDataBase == null) return null;
+        if (stageDataBase == null)
+        {
+            return null;
+        }
 
         return stageDataBase.GetBossStageInfo(chapter, stageID);
     }
 
     public StageInfo GetRandomBossStageInfo(int chapter)
     {
-        if (stageDataBase == null) return null;
+        if (stageDataBase == null)
+        {
+            return null;
+        }
 
         int stageid = GetRandomBossStageID(chapter);
 
@@ -100,17 +133,23 @@ public class DataBaseManager : Singleton<DataBaseManager>
 
     public Sprite GetThemeBgSptByBiome(string themeName)
     {
-        if (stageDataBase == null || 
-            string.IsNullOrEmpty(themeName)) return null;
+        if (stageDataBase == null ||
+            string.IsNullOrEmpty(themeName))
+        {
+            return null;
+        }
 
         return stageDataBase.GetThemeBgSptByTheme(themeName);
     }
 
     public string GetRandTheme(int chapter, bool forceTestMode = false)
     {
-        if (stageDataBase == null) return forceTestMode ? "Test" : "";
+        if (stageDataBase == null)
+        {
+            return forceTestMode ? "Test" : "";
+        }
 
-        return stageDataBase.GetRandThemeNameByChapter(chapter); 
+        return stageDataBase.GetRandThemeNameByChapter(chapter);
     }
 
     public MonsterData GetMonsterData(int monsterID)
@@ -120,14 +159,21 @@ public class DataBaseManager : Singleton<DataBaseManager>
 
     public MonsterGroupData GetMonsterGroupData(int groupID)
     {
-        if (monsterDataBase == null) return null;
+        if (monsterDataBase == null)
+        {
+            return null;
+        }
 
         return monsterDataBase.GetMonsterGroupData(groupID);
     }
 
     public MonsterStatData GetMonsterStatData(int monsterID)
     {
-        if (monsterDataBase == null) return null;
+        if (monsterDataBase == null)
+        {
+            return null;
+        }
+
         return monsterDataBase.GetMonsterStatData(monsterID);
     }
 
@@ -189,62 +235,89 @@ public class DataBaseManager : Singleton<DataBaseManager>
     public ShopItem GetShopItem(int itemID)
     {
         if (shopDataBase == null)
+        {
             return null;
+        }
+
         return shopDataBase.GetShopItemData(itemID);
     }
 
     public List<ItemData> GetShopItems(ItemCategory category)
     {
         if (shopDataBase == null)
+        {
             return null;
+        }
+
         return shopDataBase.GetShopItems(category);
     }
 
     public EnhanceLevelData GetEnhanceLevelData(int rank, int enhanceLevel)
     {
-        if (enhanceDataBase == null) return null;
+        if (enhanceDataBase == null)
+        {
+            return null;
+        }
 
         return enhanceDataBase.GetEnhanceLevelData(rank, enhanceLevel);
     }
 
     public EnhanceStatData GetEnhanceStatData(int rank, int level)
     {
-        if (enhanceDataBase == null) return null;
+        if (enhanceDataBase == null)
+        {
+            return null;
+        }
 
         return enhanceDataBase.GetEnhanceStatData(rank, level);
     }
 
     public List<EnhanceStatData> GetEnhanceStatDatas(int rank)
     {
-        if (enhanceDataBase == null) return null;
+        if (enhanceDataBase == null)
+        {
+            return null;
+        }
 
         return enhanceDataBase.GetEnhanceStatDatas(rank);
     }
 
     public RecordData GetRecordData(int recordID)
     {
-        if (recordDataBase == null) return null;
+        if (recordDataBase == null)
+        {
+            return null;
+        }
 
         return recordDataBase.GetRecordData(recordID);
     }
 
     public List<RecordData> GetAllRecordData()
     {
-        if (recordDataBase == null) return null;
+        if (recordDataBase == null)
+        {
+            return null;
+        }
 
         return recordDataBase.GetAllRecordData();
     }
 
     public RecordData GetEmptyRecord()
     {
-        if (recordDataBase == null) return null;
+        if (recordDataBase == null)
+        {
+            return null;
+        }
 
         return recordDataBase.GetEmptyRecord();
     }
 
     public List<RecordData> GetRecordDatas(RecordRarity rarity)
     {
-        if (recordDataBase == null) return null;
+        if (recordDataBase == null)
+        {
+            return null;
+        }
 
         return recordDataBase.GetRecordDatas(rarity);
     }

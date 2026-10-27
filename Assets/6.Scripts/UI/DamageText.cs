@@ -9,22 +9,22 @@ public class DamageText : MonoBehaviour
 
     TextMeshProUGUI text;
     private float lifeTime = 3.0f;
-    private float currentTime; 
+    private float currentTime;
     private Vector3 tdPos;
-    [SerializeField] Color critColor; 
+    [SerializeField] Color critColor;
 
     private void Awake()
     {
         text = GetComponent<TextMeshProUGUI>();
     }
 
-  
+
 
     private void LateUpdate()
     {
         tdPos += Vector3.up * Time.deltaTime;
         this.transform.position = Camera.main.WorldToScreenPoint(tdPos);
-        
+
         currentTime -= Time.deltaTime;
         if (currentTime <= 0.0f)
         {
@@ -33,7 +33,7 @@ public class DamageText : MonoBehaviour
         }
     }
 
-    
+
     public void DrawDamage(Vector3 position, DamageEvent damageEvent)
     {
         DrawDamage(position, damageEvent.BaseDamage, damageEvent.isCrit);
@@ -41,12 +41,15 @@ public class DamageText : MonoBehaviour
 
     public void DrawDamage(Vector3 position, float value, bool isCrit = false)
     {
-        if (text == null) return;
+        if (text == null)
+        {
+            return;
+        }
 
         int finalValue = Mathf.RoundToInt(value);
 
-        string colorTag = "FFFFFF"; 
-        if(isCrit && finalValue > 0)
+        string colorTag = "FFFFFF";
+        if (isCrit && finalValue > 0)
         {
             colorTag = ColorUtility.ToHtmlStringRGB(critColor);
             Debug.Log("is Critical");
@@ -61,12 +64,15 @@ public class DamageText : MonoBehaviour
 
         gameObject.SetActive(true);
 
-        transform.SetAsLastSibling();// 가장 앞에 그려지게 하기 위해 사용 
+        transform.SetAsLastSibling();// 가장 앞에 그려지게 하기 위해 사용
     }
 
     public void DrawDamage(Vector3 position, float value, DamageEvent evt)
     {
-        if (text == null) return;
+        if (text == null)
+        {
+            return;
+        }
 
         int finalValue = Mathf.RoundToInt(value);
         bool isCrit = evt.isCrit && finalValue > 0;
@@ -77,15 +83,15 @@ public class DamageText : MonoBehaviour
             colorTag = ColorUtility.ToHtmlStringRGB(critColor);
         }
 
-        if(evt.hitData.DamageType == DamageType.DOT_BLEED )
+        if (evt.hitData.DamageType == DamageType.DOT_BLEED)
         {
             colorTag = Constants.BLEED_DMG_COLOR;
         }
-        else if(evt.hitData.DamageType == DamageType.DOT_BURN)
+        else if (evt.hitData.DamageType == DamageType.DOT_BURN)
         {
             colorTag = Constants.BURN_DMG_COLOR;
         }
-        else if(evt.hitData.DamageType == DamageType.DOT_POISON)
+        else if (evt.hitData.DamageType == DamageType.DOT_POISON)
         {
             colorTag = Constants.POISON_DMG_COLOR;
         }

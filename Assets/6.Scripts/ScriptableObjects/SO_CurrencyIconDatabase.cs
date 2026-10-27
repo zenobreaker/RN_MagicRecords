@@ -20,12 +20,15 @@ public class SO_CurrencyIconDatabase : ScriptableObject
 
     private void Initialize()
     {
-        if (iconDict != null) return;
+        if (iconDict != null)
+        {
+            return;
+        }
 
         iconDict = new Dictionary<CurrencyType, Sprite>();
         foreach (var mapping in iconMappings)
         {
-            if (!iconDict.ContainsKey(mapping.type))
+            if (iconDict.ContainsKey(mapping.type) == false)
             {
                 iconDict.Add(mapping.type, mapping.icon);
             }

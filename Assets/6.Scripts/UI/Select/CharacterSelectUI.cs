@@ -97,7 +97,9 @@ public class CharacterSelectUI
         {
             SelectCharacter(selectedCharacter);
             if (savedClass != -1)
+            {
                 SelectClass(savedClass);
+            }
         }
         else if (characterList.Count > 0)
         {
@@ -143,8 +145,11 @@ public class CharacterSelectUI
     // 좌측 캐릭터 슬롯을 눌렀을 때
     private void OnCharacterSlotClicked(CharData data)
     {
-        // 이미 선택된 데이터라면 무시 
-        if (selectedCharacter == data.charId) return;
+        // 이미 선택된 데이터라면 무시
+        if (selectedCharacter == data.charId)
+        {
+            return;
+        }
 
         SelectCharacter(data.charId);
     }
@@ -158,7 +163,9 @@ public class CharacterSelectUI
 
         // 1. 우측 캐릭터 정보(스탯/장비) 갱신
         if (infoController != null)
+        {
             infoController.UpdateCharacterInfo(charId);
+        }
 
         // 2. 하단 직업 목록 갱신 및 초기화
         UpdateClassList(charId);
@@ -191,7 +198,9 @@ public class CharacterSelectUI
         foreach (var btn in jobButtons)
         {
             if (btn.jobButtonObj != null)
+            {
                 btn.jobButtonObj.SetActive(false);
+            }
         }
 
         // 가져온 직업 데이터를 바탕으로 하단의 UI 버튼들의 아이콘과 이벤트를 세팅합니다.
@@ -234,9 +243,13 @@ public class CharacterSelectUI
     public void SelectClass(int classId)
     {
         if (selectedClass != -1)
+        {
             selectedClass = selectedClass == classId ? -1 : classId;
+        }
         else
+        {
             selectedClass = classId;
+        }
 
         currentContext.SelectedClassId = selectedClass;
 
@@ -254,7 +267,10 @@ public class CharacterSelectUI
     // 선택된 직업 버튼으로 selectJobImage를 이동시키는 함수
     private void RefreshJobSlotSelectionUI()
     {
-        if (selectJobImage == null) return;
+        if (selectJobImage == null)
+        {
+            return;
+        }
 
         // 선택된 직업이 없다면 프레임을 숨깁니다 (캐릭터를 막 바꿨을 때)
         if (selectedClass == -1)

@@ -6,7 +6,7 @@ public class DamageHandleComponent : MonoBehaviour
     public Action OnDamaged;
     [SerializeField] private float dmgFontOffsetY = 1.5f;
 
-    private Character character; 
+    private Character character;
     private HealthPointComponent health;
     private StatusComponent status;
 
@@ -23,24 +23,33 @@ public class DamageHandleComponent : MonoBehaviour
     {
         // DOT and legacy callers use the same character death/reaction path.
         if (character != null)
+        {
             character.OnDamage(attacker, null, transform.position, damageEvent);
+        }
         else
+        {
             ApplyDamage(attacker, damageEvent);
+        }
     }
 
     internal bool ApplyDamage(GameObject attacker, DamageEvent damageEvent)
     {
-        if (damageEvent == null || health == null || health.Dead) return false;
+        if (damageEvent == null || health == null || health.Dead)
+        {
+            return false;
+        }
 
         OnDamaged?.Invoke();
         BattleManager.Instance.SafeInvoke(v => v.NotifyAttackHit(attacker, this.gameObject, damageEvent));
-        
+
         float value = DamageCalculator.CalcDamage(status, damageEvent);
 
-        if(!damageEvent.IsDOTEffect() && this.TryGetComponent<EffectComponent>(out var effectComp))
+        if (damageEvent.IsDOTEffect() == false && this.TryGetComponent<EffectComponent>(out var effectComp))
         {
-            if(effectComp.HasEffect("Curse") is CurseEffect curse)
+            if (effectComp.HasEffect("Curse") is CurseEffect curse)
+            {
                 value *= (1.0f + curse.GetDamageIncrease());
+            }
         }
 
         health.SafeInvoke(v => v.Damage(value));
@@ -48,7 +57,11 @@ public class DamageHandleComponent : MonoBehaviour
         ShowDamageText(value, damageEvent);
 
         // Damage notification only. Character applies the resolved reaction after death checking.
-        if (!damageEvent.IsDOTEffect()) OnDamagedEvent?.Invoke(damageEvent);
+        if (damageEvent.IsDOTEffect() == false)
+        {
+            OnDamagedEvent?.Invoke(damageEvent);
+        }
+
         return true;
     }
 

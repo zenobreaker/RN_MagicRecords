@@ -3,10 +3,22 @@ using UnityEngine;
 
 public interface IReward
 {
-    string Title { get; }
-    string Description { get; }
-    Sprite Icon { get; }
-    int Amount { get; }
+    string Title
+    {
+        get;
+    }
+    string Description
+    {
+        get;
+    }
+    Sprite Icon
+    {
+        get;
+    }
+    int Amount
+    {
+        get;
+    }
 
     void Receive();
 }
@@ -15,19 +27,49 @@ public class ItemReward : IReward
 {
     private readonly ItemData itemData;
     private int amount;
-    public bool IsExploreCoin => itemData is CurrencyItem currency &&
+    public bool IsExploreCoin
+    {
+        get
+        {
+            return itemData is CurrencyItem currency &&
         currency.Type == CurrencyType.EXPOLORE_COIN;
+        }
+    }
 
-    public string Title => itemData is CurrencyItem
+    public string Title
+    {
+        get
+        {
+            return itemData is CurrencyItem
         ? $"{itemData.LocalizedName} +{amount}"
         : IsStackable()
             ? $"{itemData.LocalizedName} x{amount}"
             : itemData.LocalizedName;
+        }
+    }
 
-    public string Description => itemData.LocalizedDescription;
-    public Sprite Icon => itemData.Icon;
+    public string Description
+    {
+        get
+        {
+            return itemData.LocalizedDescription;
+        }
+    }
+    public Sprite Icon
+    {
+        get
+        {
+            return itemData.Icon;
+        }
+    }
 
-    public int Amount => amount;
+    public int Amount
+    {
+        get
+        {
+            return amount;
+        }
+    }
 
     public ItemReward(ItemData itemData, int amount)
     {
@@ -56,14 +98,30 @@ public class ItemReward : IReward
 
 public class RecordReward : IReward
 {
-    public RecordData GrantedRecord { get; private set; }
+    public RecordData GrantedRecord
+    {
+        get;
+        private set;
+    }
     private readonly RecordRewardMode mode;
 
     private readonly int recordId;
     private readonly RecordRarity rarity;
 
-    public string Title => "레코드";
-    public string Description => "레코드를 획득합니다.";
+    public string Title
+    {
+        get
+        {
+            return "레코드";
+        }
+    }
+    public string Description
+    {
+        get
+        {
+            return "레코드를 획득합니다.";
+        }
+    }
 
     public Sprite Icon
     {
@@ -86,7 +144,13 @@ public class RecordReward : IReward
         }
     }
 
-    public int Amount => 1;
+    public int Amount
+    {
+        get
+        {
+            return 1;
+        }
+    }
 
     public RecordReward(
         RecordRewardMode mode,
@@ -98,7 +162,10 @@ public class RecordReward : IReward
         this.rarity = rarity;
     }
 
-    public void Receive() => Receive(true);
+    public void Receive()
+    {
+        Receive(true);
+    }
 
     public void Receive(bool showResult)
     {
@@ -137,7 +204,9 @@ public class RecordReward : IReward
             var granted = manager.SafeInvoke(records => records.GrantRecord(record));
             GrantedRecord = granted;
             if (showResult && granted != null && mode != RecordRewardMode.FixedRecord)
+            {
                 OpenRecordRewardUI(granted);
+            }
         }
     }
 
@@ -146,7 +215,7 @@ public class RecordReward : IReward
         List<RecordData> result = new();
         result.Add(record);
 
-        // 얻은 결과 보상 UI 
+        // 얻은 결과 보상 UI
         UIManager.Instance.SafeInvoke(v => v.OpenRecordSelectPopUp(result, false,
             RecordUIMode.VIEW));
     }
@@ -199,12 +268,18 @@ public class RewardManager
     }
 
     public bool ReceiveChapterRewards(int clearedChapter)
-        => ReceiveChapterRewards(clearedChapter, out _);
+    {
+        return ReceiveChapterRewards(clearedChapter, out _);
+    }
 
     public bool ReceiveChapterRewards(int clearedChapter, out List<RecordData> grantedRecords)
     {
         grantedRecords = new List<RecordData>();
-        if (receivingChapter || pendingChapter != clearedChapter || clearedChapter <= 0) return false;
+        if (receivingChapter || pendingChapter != clearedChapter || clearedChapter <= 0)
+        {
+            return false;
+        }
+
         var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
         bool isFinalChapter = explore != null && explore.Chapter == clearedChapter && explore.IsFinalChapter;
         receivingChapter = true;
@@ -213,48 +288,75 @@ public class RewardManager
             foreach (var reward in rewards.ToArray())
             {
                 if (isFinalChapter && (reward is RecordReward ||
-                    reward is ItemReward item && item.IsExploreCoin)) continue;
+                    reward is ItemReward item && item.IsExploreCoin))
+                {
+                    continue;
+                }
+
                 if (reward is RecordReward record)
                 {
                     record.Receive(false);
-                    if (record.GrantedRecord != null) grantedRecords.Add(record.GrantedRecord);
+                    if (record.GrantedRecord != null)
+                    {
+                        grantedRecords.Add(record.GrantedRecord);
+                    }
                 }
-                else reward.Receive();
+                else
+                {
+                    reward.Receive();
+                }
             }
             ClearPendingRewards();
             return true;
         }
-        finally { receivingChapter = false; }
+        finally
+        {
+            receivingChapter = false;
+
+        }
     }
 
     protected override void Awake()
     {
         base.Awake();
-        if (IsDuplicate) return;
-        AppManager.Instance.OnAwaked += () =>
+        if (IsDuplicate)
         {
-            if (IsInitialized) return;
+            return;
+        }
 
-            ManagerWaiter.WaitForManager<UIManager>((uiManager) =>
-            {
-                uiManager.OnJoinedLobby += OnJoinedLobby;
-                uiManager.OnReturnedStageSelect += OnReturnedStageSelectScene;
-            });
-        };
+        AppManager.Instance.OnAwaked += () =>
+                {
+                    if (IsInitialized)
+                    {
+                        return;
+                    }
+
+                    ManagerWaiter.WaitForManager<UIManager>((uiManager) =>
+                    {
+                        uiManager.OnJoinedLobby += OnJoinedLobby;
+                        uiManager.OnReturnedStageSelect += OnReturnedStageSelectScene;
+                    });
+                };
     }
 
     private void AddItemReward(RewardData reward)
     {
         if (reward == null)
+        {
             return;
+        }
 
         if (UnityEngine.Random.Range(0, 101) > reward.weight)
+        {
             return;
+        }
 
         int amount = reward.amount;
 
         if (reward.range > 0)
+        {
             amount += UnityEngine.Random.Range(0, reward.range + 1);
+        }
 
         ItemData item =
             AppManager.Instance.GetItemData(
@@ -262,7 +364,9 @@ public class RewardManager
                 reward.itemCategory);
 
         if (item == null)
+        {
             return;
+        }
 
         if (item.category == ItemCategory.EQUIPMENT)
         {
@@ -314,7 +418,7 @@ public class RewardManager
 
     public void AddReward(RewardData reward)
     {
-        //TODO : EXP로 오는 보상 처리 로직 추가 
+        //TODO : EXP로 오는 보상 처리 로직 추가
         switch (reward.rewardType)
         {
             case RewardType.ITEM:
@@ -328,25 +432,38 @@ public class RewardManager
 
     public void AddReward(ClearRewardData clearData)
     {
-        if (clearData == null) return;
+        if (clearData == null)
+        {
+            return;
+        }
 
         foreach (var id in clearData.rewardIds)
         {
             RewardData reward = AppManager.Instance.GetRewardData(id);
-            if (reward == null) continue;
+            if (reward == null)
+            {
+                continue;
+            }
+
             AddReward(reward);
         }
     }
 
-    // 챕터가 클리어 될 때마다 이 매니저는 각 챕터 보상을 저장한다. 
+    // 챕터가 클리어 될 때마다 이 매니저는 각 챕터 보상을 저장한다.
     public void GiveChapterReward(int clearedChapter)
     {
-        if (AppManager.Instance == null) return;
+        if (AppManager.Instance == null)
+        {
+            return;
+        }
 
         ClearRewardData clear = AppManager.Instance.GetChapterClearRewardData(clearedChapter);
-        if (clear == null) return;
+        if (clear == null)
+        {
+            return;
+        }
 
-        // 보상 정보로부터 받아낼 보상들을 전부 얻어냄 
+        // 보상 정보로부터 받아낼 보상들을 전부 얻어냄
         AddReward(clear);
     }
 
@@ -354,9 +471,11 @@ public class RewardManager
     private void OpenRewardPopUp()
     {
         if (UIManager.Instance == null)
+        {
             return;
+        }
 
-        //TODO : IReward로 처리해야함 로비로 가는 팝업 
+        //TODO : IReward로 처리해야함 로비로 가는 팝업
         //UIManager.Instance.OpenRewardPopUp(rewards);
 
         bIsRewardPending = false;
@@ -366,18 +485,35 @@ public class RewardManager
     // 이벤트에 의한 처리
     public void OnJoinedLobby()
     {
-        if (bIsRewardPending == false) return;
-        if (UIManager.Instance == null || UIManager.Instance.IsLobby() == false) return;
+        if (bIsRewardPending == false)
+        {
+            return;
+        }
+
+        if (UIManager.Instance == null || UIManager.Instance.IsLobby() == false)
+        {
+            return;
+        }
 
         OpenRewardPopUp();
     }
 
     public void OnReturnedStageSelectScene()
     {
-        if (pendingChapter > 0) return;
-        if (bIsRewardPending == false) return;
+        if (pendingChapter > 0)
+        {
+            return;
+        }
 
-        if (rewards.Count == 0) return;
+        if (bIsRewardPending == false)
+        {
+            return;
+        }
+
+        if (rewards.Count == 0)
+        {
+            return;
+        }
 
         UIManager.Instance.SafeInvoke(v => v.OpenRewardCardPopUp(rewards));
 

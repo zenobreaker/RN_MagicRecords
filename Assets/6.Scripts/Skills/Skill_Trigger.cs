@@ -6,13 +6,13 @@ public abstract class Skill_Trigger : MonoBehaviour
 {
 
     protected GameObject rootObject;
-    protected List<GameObject>  dmagedList = new List<GameObject>();
+    protected List<GameObject> dmagedList = new List<GameObject>();
 
     //public Action<Collider>
 
     private void Start()
     {
-        
+
     }
 
 }

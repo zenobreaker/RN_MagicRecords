@@ -4,7 +4,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PerceptionComponent 
+public class PerceptionComponent
     : MonoBehaviour
 {
     [SerializeField] private float distance = 5.0f;
@@ -48,7 +48,10 @@ public class PerceptionComponent
 
         //candidateList.ForEach(collider => print(collider.name));
 
-        if (percievedTable == null) return; 
+        if (percievedTable == null)
+        {
+            return;
+        }
 
         //2. 후보자들 시간들 갱신
         foreach (Collider collider in candidateList)
@@ -63,12 +66,14 @@ public class PerceptionComponent
             percievedTable[collider.gameObject] = Time.realtimeSinceStartup;
         }
 
-        //3. 탈락자들 갱신 
+        //3. 탈락자들 갱신
         List<GameObject> removeList = new List<GameObject>();
         foreach (var item in percievedTable)
         {
             if (Time.realtimeSinceStartup - item.Value >= lostTime)
+            {
                 removeList.Add(item.Key);
+            }
         }
 
         removeList.RemoveAll(remove => percievedTable.Remove(remove));
@@ -81,9 +86,15 @@ public class PerceptionComponent
         {
             foreach (var item in percievedTable)
             {
-                if (item.Key == null) continue;
+                if (item.Key == null)
+                {
+                    continue;
+                }
+
                 if (item.Key.CompareTag("Player"))
+                {
                     return item.Key;
+                }
             }
         }
 
@@ -98,19 +109,24 @@ public class PerceptionComponent
         foreach (Collider collider in colliders)
         {
             if (GetLooAtTarget(angle, collider.transform.position))
+            {
                 candidateList.Add(collider);
+            }
         }
     }
 
     public bool GetLooAtTarget(float angle, Vector3 targetPos)
     {
         Vector3 forward = transform.forward;
-        Vector3 direction  = targetPos - transform.position;
+        Vector3 direction = targetPos - transform.position;
         float signedAngle = Vector3.SignedAngle(forward, direction.normalized, Vector3.up);
 
         if (Mathf.Abs(signedAngle) <= angle)
+        {
             return true;
-        return false; 
+        }
+
+        return false;
     }
 
 #if UNITY_EDITOR
@@ -120,8 +136,14 @@ public class PerceptionComponent
     private void OnDrawGizmosSelected()
     {
         if (Application.isPlaying == false)
+        {
             return;
-        if (bDrawCheckDebug == false) return; 
+        }
+
+        if (bDrawCheckDebug == false)
+        {
+            return;
+        }
 
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, distance);
@@ -139,7 +161,9 @@ public class PerceptionComponent
 
         GameObject player = GetTarget();
         if (player == null)
+        {
             return;
+        }
 
         Gizmos.color = Color.red;
 

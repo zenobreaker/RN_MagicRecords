@@ -6,8 +6,10 @@ public class UIRaycastDebug : MonoBehaviour
 {
     private void Update()
     {
-        if (!Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) == false)
+        {
             return;
+        }
 
         if (EventSystem.current == null)
         {

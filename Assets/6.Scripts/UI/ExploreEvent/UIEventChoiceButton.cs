@@ -9,8 +9,8 @@ public class UIEventChoiceButton : MonoBehaviour
     [SerializeField] private TextMeshProUGUI choiceText;
 
     // (선택사항) 비활성화 시 자물쇠 아이콘이나 배경색을 바꾸고 싶다면 추가!
-    // [SerializeField] private Image background; 
-    // [SerializeField] private GameObject lockIcon; 
+    // [SerializeField] private Image background;
+    // [SerializeField] private GameObject lockIcon;
 
     private EventChoice choiceData;
     private Action<EventChoice> onClickCallback;
@@ -37,7 +37,9 @@ public class UIEventChoiceButton : MonoBehaviour
         button.onClick.RemoveAllListeners();
 
         if (isAvailable)
+        {
             button.onClick.AddListener(OnClick);
+        }
     }
 
     private void OnClick()

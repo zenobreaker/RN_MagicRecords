@@ -27,7 +27,11 @@ public class RuntimeHomingBehaviour : MonoBehaviour
         this.targetSearchOrigin = targetSearchOrigin;
         this.prioritizeHighestGrade = prioritizeHighestGrade;
 
-        if (rb == null) rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = GetComponent<Rigidbody>();
+        }
+
         drillProjectile = GetComponent<PiercingDrillProjectile>();
 
         currentSpeed = 0f; // 속도는 FixedUpdate에서 지연 캐싱
@@ -39,12 +43,19 @@ public class RuntimeHomingBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!isInitialized || rb == null) return;
+        if (isInitialized == false || rb == null)
+        {
+            return;
+        }
 
         // 드릴의 감속/부착 상태를 무시하고 캐시된 속도를 복원하지 않습니다.
         if (drillProjectile != null)
         {
-            if (drillProjectile.IsAttached) return;
+            if (drillProjectile.IsAttached)
+            {
+                return;
+            }
+
             currentSpeed = drillProjectile.MovementSpeed;
         }
 
@@ -52,12 +63,15 @@ public class RuntimeHomingBehaviour : MonoBehaviour
         if (drillProjectile == null && currentSpeed <= 0.1f)
         {
             currentSpeed = rb.linearVelocity.magnitude;
-            if (currentSpeed <= 0.1f) return;
+            if (currentSpeed <= 0.1f)
+            {
+                return;
+            }
         }
 
         // 🎯 2. 타겟 갱신 조건: 타겟이 없거나, 죽었거나, 이미 부모가 때려서 무시 목록에 들어간 경우
         if (targetEnemy == null ||
-            !targetEnemy.gameObject.activeInHierarchy ||
+            targetEnemy.gameObject.activeInHierarchy == false ||
             (ignores != null && ignores.Contains(targetEnemy.gameObject)))
         {
             FindClosestEnemy(); // 새로운 타겟 탐색
@@ -100,21 +114,27 @@ public class RuntimeHomingBehaviour : MonoBehaviour
         foreach (var col in cols)
         {
             // 무시 목록에 있는 녀석은 탐색 대상에서 원천 제외
-            if (ignores != null && ignores.Contains(col.gameObject)) continue;
+            if (ignores != null && ignores.Contains(col.gameObject))
+            {
+                continue;
+            }
 
             Transform candidate = col.transform;
             MonsterGrade grade = MonsterGrade.NONE;
             if (prioritizeHighestGrade)
             {
                 Character character = col.GetComponentInParent<Character>();
-                if (character == null) continue;
+                if (character == null)
+                {
+                    continue;
+                }
 
                 candidate = character.transform;
                 grade = character.GetGrade();
             }
 
             float dist = Vector3.Distance(searchOrigin, candidate.position);
-            if ((!prioritizeHighestGrade && dist < closestDist) ||
+            if ((prioritizeHighestGrade == false && dist < closestDist) ||
                 (prioritizeHighestGrade &&
                  (grade > highestGrade || (grade == highestGrade && dist < closestDist))))
             {

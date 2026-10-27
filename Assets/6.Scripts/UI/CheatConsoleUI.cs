@@ -22,22 +22,43 @@ public sealed class CheatConsoleUI : MonoBehaviour
     private GameObject previousSelection;
     private bool opened;
     private bool focusPending;
-    public static bool CapturesInput => (instance != null && instance.opened) || closedFrame == Time.frameCount;
+    public static bool CapturesInput
+    {
+        get
+        {
+            return (instance != null && instance.opened) || closedFrame == Time.frameCount;
+        }
+    }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void ResetStatics() { instance = null; closedFrame = -1; }
+    private static void ResetStatics()
+    {
+        instance = null;
+        closedFrame = -1;
+    }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Initialize()
     {
-        if (instance != null) return;
+        if (instance != null)
+        {
+            return;
+        }
+
         var prefab = Resources.Load<CheatConsoleUI>("CheatConsoleUI");
-        if (prefab != null) Instantiate(prefab);
+        if (prefab != null)
+        {
+            Instantiate(prefab);
+        }
     }
 
     private void Awake()
     {
-        if (instance != null && instance != this) { Destroy(gameObject); return; }
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         instance = this;
         DontDestroyOnLoad(gameObject);
         panel.SetActive(false);
@@ -52,22 +73,43 @@ public sealed class CheatConsoleUI : MonoBehaviour
     private void Update()
     {
         var keyboard = Keyboard.current;
-        if (keyboard == null) return;
-        if (keyboard.backquoteKey.wasPressedThisFrame)
+        if (keyboard == null)
         {
-            if (opened) Close();
-            else if (!SceneLoadingController.IsLoading) Open();
             return;
         }
-        if (opened && (keyboard.escapeKey.wasPressedThisFrame || SceneLoadingController.IsLoading)) Close();
+
+        if (keyboard.backquoteKey.wasPressedThisFrame)
+        {
+            if (opened)
+            {
+                Close();
+            }
+            else if (SceneLoadingController.IsLoading == false)
+            {
+                Open();
+            }
+
+            return;
+        }
+        if (opened && (keyboard.escapeKey.wasPressedThisFrame || SceneLoadingController.IsLoading))
+        {
+            Close();
+        }
     }
 
     private void LateUpdate()
     {
-        if (!opened) return;
+        if (opened == false)
+        {
+            return;
+        }
         // Also catch a player spawned while the console was already open.
         SuspendPlayerInput();
-        if (!focusPending) return;
+        if (focusPending == false)
+        {
+            return;
+        }
+
         focusPending = false;
         commandInput.Select();
         commandInput.ActivateInputField();
@@ -75,7 +117,11 @@ public sealed class CheatConsoleUI : MonoBehaviour
 
     public void Open()
     {
-        if (opened) return;
+        if (opened)
+        {
+            return;
+        }
+
         opened = true;
         previousSelection = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
         SuspendPlayerInput();
@@ -90,11 +136,23 @@ public sealed class CheatConsoleUI : MonoBehaviour
         foreach (var input in PlayerInput.all)
         {
             var map = input.actions != null ? input.actions.FindActionMap("Player", false) : null;
-            if (map == null) continue;
+            if (map == null)
+            {
+                continue;
+            }
+
             foreach (var action in map.actions)
             {
-                if (!action.enabled) continue;
-                if (!suspendedActions.Contains(action)) suspendedActions.Add(action);
+                if (action.enabled == false)
+                {
+                    continue;
+                }
+
+                if (suspendedActions.Contains(action) == false)
+                {
+                    suspendedActions.Add(action);
+                }
+
                 action.Disable();
             }
         }
@@ -102,40 +160,77 @@ public sealed class CheatConsoleUI : MonoBehaviour
 
     public void Close()
     {
-        if (!opened) return;
+        if (opened == false)
+        {
+            return;
+        }
+
         opened = false;
         closedFrame = Time.frameCount;
         focusPending = false;
         commandInput.DeactivateInputField();
         panel.SetActive(false);
         foreach (var action in suspendedActions)
-            if (action.actionMap?.asset != null) action.Enable();
+        {
+            if (action.actionMap?.asset != null)
+            {
+                action.Enable();
+            }
+        }
+
         suspendedActions.Clear();
         PauseManager.RequestResume();
         if (EventSystem.current != null)
+        {
             EventSystem.current.SetSelectedGameObject(previousSelection != null && previousSelection.activeInHierarchy ? previousSelection : null);
+        }
+
         previousSelection = null;
     }
 
     private void Submit(string command)
     {
-        if (!opened || string.IsNullOrWhiteSpace(command)) return;
+        if (opened == false || string.IsNullOrWhiteSpace(command))
+        {
+            return;
+        }
+
         messages.Enqueue($"> {command.Trim()}\n{ExecuteCommand(command)}");
-        while (messages.Count > 4) messages.Dequeue();
+        while (messages.Count > 4)
+        {
+            messages.Dequeue();
+        }
+
         output.text = string.Join("\n", messages);
         Canvas.ForceUpdateCanvases();
-        if (outputScroll != null) outputScroll.verticalNormalizedPosition = 0f;
+        if (outputScroll != null)
+        {
+            outputScroll.verticalNormalizedPosition = 0f;
+        }
+
         commandInput.SetTextWithoutNotify("");
         focusPending = true;
     }
 
-    public static string ExecuteCommand(string command) => CheatCommands.Execute(command);
+    public static string ExecuteCommand(string command)
+    {
+        return CheatCommands.Execute(command);
+    }
 
-    private void OnSceneChanged(Scene previous, Scene next) => Close();
-    private void OnDisable() => Close();
+    private void OnSceneChanged(Scene previous, Scene next)
+    {
+        Close();
+    }
+    private void OnDisable()
+    {
+        Close();
+    }
     private void OnDestroy()
     {
         SceneManager.activeSceneChanged -= OnSceneChanged;
-        if (instance == this) instance = null;
+        if (instance == this)
+        {
+            instance = null;
+        }
     }
 }

@@ -12,10 +12,13 @@ public abstract class Inventory
 
     public virtual void AddItem(ItemData item)
     {
-        if (item == null) return; 
+        if (item == null)
+        {
+            return;
+        }
 
         items.Add(item);
-        itemMap[item.id] = item; 
+        itemMap[item.id] = item;
 
         item.OnChanged += HandleItemChanged;
         OnInventoryChanged?.Invoke(this);
@@ -23,12 +26,15 @@ public abstract class Inventory
 
     public virtual void RemoveItem(ItemData item)
     {
-        if (item == null) return; 
+        if (item == null)
+        {
+            return;
+        }
 
         item.OnChanged -= HandleItemChanged;
 
         items.Remove(item);
-        itemMap.Remove(item.id); 
+        itemMap.Remove(item.id);
 
         OnInventoryChanged?.Invoke(this);
     }
@@ -36,11 +42,15 @@ public abstract class Inventory
     public virtual bool RemoveItem(int itemID, int itemCount)
     {
         if (itemMap.TryGetValue(itemID, out ItemData item) == false)
-            return false; 
+        {
+            return false;
+        }
 
         item.ModifyCount(-1 * itemCount);
         if (item.GetCount() <= 0)
+        {
             RemoveItem(item);
+        }
 
         return true;
     }
@@ -52,7 +62,7 @@ public abstract class Inventory
 
     public virtual ItemData GetItem(int itemID)
     {
-        return itemMap.TryGetValue(itemID, out var item) ? item : null; 
+        return itemMap.TryGetValue(itemID, out var item) ? item : null;
     }
 
     protected virtual void HandleItemChanged(ItemData item)
@@ -72,7 +82,11 @@ public class EquipmentInventory : Inventory
 
     public override void AddItem(ItemData item)
     {
-        if (item == null) return;
+        if (item == null)
+        {
+            return;
+        }
+
         if (item.category != ItemCategory.EQUIPMENT)
         {
             Debug.LogWarning("Cannot add non-equipment item to EquipmentInventory.");
@@ -96,7 +110,7 @@ public class EquipmentInventory : Inventory
         else
         {
             // 동일한 uniqueID를 가진 항목이 이미 있으면 새로운 복사본을 만들어서 다른 슬롯에 추가하도록 함
-            if(equipmentMap.TryGetValue(toAdd.uniqueID, out var existing))
+            if (equipmentMap.TryGetValue(toAdd.uniqueID, out var existing))
             {
                 needsCopy = true;
             }
@@ -105,7 +119,7 @@ public class EquipmentInventory : Inventory
         // 전달된 객체와 인벤토리 내 동일 참조가 있으면 복사 필요
         if (needsCopy == false)
         {
-            if(equipmentMap.TryGetValue(toAdd.uniqueID, out var existing))
+            if (equipmentMap.TryGetValue(toAdd.uniqueID, out var existing))
             {
                 if (ReferenceEquals(existing, item))
                 {
@@ -127,21 +141,26 @@ public class EquipmentInventory : Inventory
             {
                 // 안전장치: 복사 실패 시에도 uniqueID 부여(가능한 경우)하여 추가
                 if (string.IsNullOrEmpty(toAdd.uniqueID))
+                {
                     toAdd.uniqueID = Guid.NewGuid().ToString();
+                }
+
                 toAdd.SetCount(1);
             }
         }
 
         equipmentMap[toAdd.uniqueID] = toAdd;
-        base.AddItem(toAdd); 
+        base.AddItem(toAdd);
     }
 
     public override void RemoveItem(ItemData item)
     {
         if (item == null)
+        {
             return;
+        }
 
-        equipmentMap.Remove(item.uniqueID); 
+        equipmentMap.Remove(item.uniqueID);
 
         base.RemoveItem(item);
     }
@@ -156,14 +175,18 @@ public class StackableInventory : Inventory
 {
     public override void AddItem(ItemData item)
     {
-        if (item == null) return;
+        if (item == null)
+        {
+            return;
+        }
+
         if (item.category == ItemCategory.EQUIPMENT)
         {
             Debug.LogWarning("Cannot add equipment item to StackableInventory.");
             return;
         }
         // 스택형 아이템은 동일 ID가 있으면 수량만 증가시킨다.
-        if(itemMap.TryGetValue(item.id, out var existingItem))
+        if (itemMap.TryGetValue(item.id, out var existingItem))
         {
             existingItem.ModifyCount(item.GetCount());
         }
@@ -174,8 +197,11 @@ public class StackableInventory : Inventory
     }
     public override void RemoveItem(ItemData item)
     {
-        if (item == null) return;
-        
+        if (item == null)
+        {
+            return;
+        }
+
         if (itemMap.TryGetValue(item.id, out var existingItem))
         {
             existingItem.ModifyCount(-1 * item.GetCount());
@@ -189,7 +215,7 @@ public class StackableInventory : Inventory
 
     public int GetItemCount(int itemID)
     {
-        return itemMap.TryGetValue(itemID, out var item) ? item.GetCount() : 0; 
+        return itemMap.TryGetValue(itemID, out var item) ? item.GetCount() : 0;
     }
 }
 
@@ -200,9 +226,11 @@ public class CurrencyInventory : Inventory
     public override void AddItem(ItemData item)
     {
         if (item is not CurrencyItem currency)
+        {
             return;
+        }
 
-        if (currencyMap.TryGetValue(currency.Type,out var exist))
+        if (currencyMap.TryGetValue(currency.Type, out var exist))
         {
             exist.ModifyCount(currency.GetCount());
         }
@@ -224,7 +252,9 @@ public class CurrencyInventory : Inventory
         bool success = RemoveItem(currencyItem.id, amount);
 
         if (success)
+        {
             updatedCurrency?.Invoke();
+        }
 
         return success;
     }
@@ -251,9 +281,9 @@ public class CurrencyInventory : Inventory
 
     public void SetCurrency(CurrencyType type, int amount)
     {
-        if(currencyMap.TryGetValue(type, out var currencyItem))
+        if (currencyMap.TryGetValue(type, out var currencyItem))
         {
-            currencyItem.SetCount(amount); 
+            currencyItem.SetCount(amount);
         }
     }
 }
@@ -269,11 +299,20 @@ public sealed class RecordInventory
 
     public event Action<RecordInventory> OnInventoryChanged;
 
-    public IReadOnlyList<RecordData> Records => records;
+    public IReadOnlyList<RecordData> Records
+    {
+        get
+        {
+            return records;
+        }
+    }
 
     public RecordData AddRecord(RecordData record)
     {
-        if (record == null) return null;
+        if (record == null)
+        {
+            return null;
+        }
 
         // Older positive-ID stat records also serialize type=EMPTY; the reserved ID
         // identifies the actual empty reward without changing existing SO data.
@@ -281,7 +320,10 @@ public sealed class RecordInventory
         {
             // Convert before insertion so every index and caller sees the actual grant.
             record = AppManager.Instance?.GetEmptyRecord();
-            if (record == null) return null;
+            if (record == null)
+            {
+                return null;
+            }
         }
 
         if (string.IsNullOrEmpty(record.uniqueID) || recordUniqueMap.ContainsKey(record.uniqueID))
@@ -294,7 +336,7 @@ public sealed class RecordInventory
 
         recordUniqueMap[record.uniqueID] = record;
 
-        if (!recordIdMap.TryGetValue(record.id, out var list))
+        if (recordIdMap.TryGetValue(record.id, out var list) == false)
         {
             list = new List<RecordData>();
             recordIdMap.Add(record.id, list);
@@ -322,10 +364,14 @@ public sealed class RecordInventory
     public void RemoveRecord(RecordData target)
     {
         if (target == null)
+        {
             return;
+        }
 
-        if (!recordUniqueMap.TryGetValue(target.uniqueID, out var finalTarget))
+        if (recordUniqueMap.TryGetValue(target.uniqueID, out var finalTarget) == false)
+        {
             return;
+        }
 
         records.Remove(finalTarget);
 
@@ -360,6 +406,6 @@ public sealed class RecordInventory
 
     public RecordData GetRecord(string uniqueID)
     {
-        return recordUniqueMap.TryGetValue(uniqueID, out var value) ? value : null; 
+        return recordUniqueMap.TryGetValue(uniqueID, out var value) ? value : null;
     }
 }

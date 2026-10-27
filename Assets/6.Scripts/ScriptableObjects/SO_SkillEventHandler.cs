@@ -24,14 +24,20 @@ public class SO_SkillEventHandler : ScriptableObject
     // 최대 값까지 포함한 크기를 확보합니다. (기존 이벤트 구독자와의 호환용 캐시)
     public ActiveSkill[] CurrentActiveSkills = new ActiveSkill[(int)SkillSlot.MAX];
 
-    public int MagicBulletCount { get; private set; }
+    public int MagicBulletCount
+    {
+        get;
+        private set;
+    }
 
     #region EQUIP SKILL
     public void OnSetting_ActiveSkill(SkillSlot slot, ActiveSkill skill)
     {
         int slotIndex = (int)slot;
         if (slotIndex >= 0 && slotIndex < CurrentActiveSkills.Length)
+        {
             CurrentActiveSkills[slotIndex] = skill;
+        }
 
         OnSetActiveSkill?.Invoke(slot, skill);
     }
@@ -46,19 +52,34 @@ public class SO_SkillEventHandler : ScriptableObject
     #endregion
 
     #region COOLDOWN
-    // 쿨타임 
-    public void OnInCoolDown(SkillSlot slot, bool inCooldown) => OnInSkillCooldown?.Invoke(slot, inCooldown);
-    public void OnCooldown(SkillSlot slot, float cooldown, float maxCooldown) => OnSkillCooldown?.Invoke(slot, cooldown, maxCooldown);
+    // 쿨타임
+    public void OnInCoolDown(SkillSlot slot, bool inCooldown)
+    {
+        OnInSkillCooldown?.Invoke(slot, inCooldown);
+    }
+    public void OnCooldown(SkillSlot slot, float cooldown, float maxCooldown)
+    {
+        OnSkillCooldown?.Invoke(slot, cooldown, maxCooldown);
+    }
     #endregion
 
-#region USE SKILL
-    public void OnBegin_UseSkill() => OnBeginUseSkill?.Invoke();
+    #region USE SKILL
+    public void OnBegin_UseSkill()
+    {
+        OnBeginUseSkill?.Invoke();
+    }
 
-    public void OnEnd_UseSkill() => OnEndUseSkill?.Invoke();
-#endregion
+    public void OnEnd_UseSkill()
+    {
+        OnEndUseSkill?.Invoke();
+    }
+    #endregion
 
-    // 장착 해제 
-    public void OnUnequipment() => OnDisableSkill?.Invoke();
+    // 장착 해제
+    public void OnUnequipment()
+    {
+        OnDisableSkill?.Invoke();
+    }
 
     public void OnChangedBullets(Queue<BulletData> bullets)
     {

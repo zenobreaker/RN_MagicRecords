@@ -11,7 +11,7 @@ public class PhaseSkill
     [Header("Module")]
     [SerializeReference]
     [SelectImplementationAttribute]
-    public List<SkillModule> modules; 
+    public List<SkillModule> modules;
 
     // 오브젝트 풀링 적용 상태라면 굳이 오브젝트 자체를 가질 필요가 없긴함.
     //[Header("Skill Prefab")]
@@ -19,17 +19,17 @@ public class PhaseSkill
     //public string objectName;
 
     //[Header("Skill Sounds")]
-    //public string soundName; 
+    //public string soundName;
 
     //[Header("Spawn Data")]
     //public Vector3 spawnPosition;
-    
+
     //[SerializeField]
     //private Quaternion spwanQuaternion;
     //public Quaternion ValidSpawnQuaternion =>
     //    spwanQuaternion.Equals(new Quaternion(0, 0, 0, 0)) ? Quaternion.identity : spwanQuaternion;
 
-    public PhaseSkill() 
+    public PhaseSkill()
     {
         modules = new List<SkillModule>();
     }
@@ -44,7 +44,9 @@ public class PhaseSkill
         foreach (var module in modules)
         {
             if (module is Module_HitDetection hitModule)
+            {
                 hitModule.EndDetection(skill);
+            }
         }
     }
 
@@ -53,7 +55,9 @@ public class PhaseSkill
         foreach (var module in modules)
         {
             if (module != null && module.ControlsPhaseLifecycle())
+            {
                 return true;
+            }
         }
 
         return false;
@@ -66,7 +70,7 @@ public class SO_ActiveSkillData : SO_SkillData
     [Header("Skill Settings")]
     [Tooltip("AI용 값이므로 웬만하면 건들지 않는다.")]
     public float range = -1;
-    //public int cost; 
+    //public int cost;
     //public float cooldown;
     //public float limitCooldown;
     //public float castingTime;
@@ -78,7 +82,16 @@ public class SO_ActiveSkillData : SO_SkillData
     [Header("Phase")]
     public List<PhaseSkill> phaseList;
 
-    public SO_ActiveSkillData Clone() => Instantiate(this);
+    public SO_ActiveSkillData Clone()
+    {
+        return Instantiate(this);
+    }
 
-    public float Range => range; 
+    public float Range
+    {
+        get
+        {
+            return range;
+        }
+    }
 }

@@ -28,11 +28,15 @@ public class StageUIController
         {
             AppManager.Instance.OnAwaked += (() =>
             {
-                if (bIsAwaked) return;
-                ManagerWaiter.WaitForManager<UIManager>(uiManager =>
+                if (bIsAwaked)
                 {
-                    Init(uiManager);
-                });
+                    return;
+                }
+
+                ManagerWaiter.WaitForManager<UIManager>(uiManager =>
+                                {
+                                    Init(uiManager);
+                                });
                 bIsAwaked = true;
             });
         }
@@ -54,28 +58,41 @@ public class StageUIController
         InitUIMapReplace();
 
         if (exploreManager.RunStatus == RunStatus.MidRun && exploreManager.CurrentState != ExploreState.ON_EXPLORE)
+        {
             exploreManager.ChangeState(ExploreState.ON_EXPLORE);
+        }
     }
 
 
     protected void OnDisable()
     {
-        if (exploreManager != null) exploreManager.OnStageClear -= RefreshMainUI;
+        if (exploreManager != null)
+        {
+            exploreManager.OnStageClear -= RefreshMainUI;
+        }
+
         if (ManagerWaiter.TryGetManager<UIManager>(out UIManager ui))
+        {
             ui.OnReturnedStageSelect -= UpdateCurrencies;
+        }
 
         if (ManagerWaiter.TryGetManager(out CurrencyManager manager))
+        {
             manager.OnUpdatedCurrency -= UpdateCurrencies;
+        }
         //if (AppManager.Instance != null && AppManager.Instance.GetExploreManager() != null)
         //    AppManager.Instance.GetExploreManager().OnStageClear -= RefreshMainUI;
     }
 
     private void InitUIMapReplace()
     {
-        if (uiMapReplacer == null || exploreManager == null) return;
+        if (uiMapReplacer == null || exploreManager == null)
+        {
+            return;
+        }
 
         List<UIMapNode> uiMapNodes = new List<UIMapNode>();
-        // Set Map Node 
+        // Set Map Node
         {
             exploreManager.SafeInvoke(v => v.EnsureInitialized());
 
@@ -83,7 +100,7 @@ public class StageUIController
             uiMapReplacer.GetUIMapNodes(ref uiMapNodes);
             uiMapReplacer.UpdateMapUIState(exploreManager, ref uiMapNodes);
 
-            
+
             string biomeName = exploreManager.BiomeName;
             Sprite bg = DataBaseManager.Instance.GetThemeBgSptByBiome(biomeName);
 
@@ -106,7 +123,11 @@ public class StageUIController
     private void RefreshMainUI()
     {
         // A shop can disable while the scene/run managers are already being destroyed.
-        if (!isActiveAndEnabled || exploreManager == null || uiMapReplacer == null) return;
+        if (isActiveAndEnabled == false || exploreManager == null || uiMapReplacer == null)
+        {
+            return;
+        }
+
         var nodes = new List<UIMapNode>();
         uiMapReplacer.UpdateMapUIState(exploreManager, ref nodes);
 
@@ -117,7 +138,10 @@ public class StageUIController
 
     private void ChangeBgSpt(Sprite bgSpt)
     {
-        if (bgSpt == null || themeBg == null) return;
+        if (bgSpt == null || themeBg == null)
+        {
+            return;
+        }
 
         themeBg.sprite = bgSpt;
     }

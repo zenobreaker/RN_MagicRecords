@@ -11,19 +11,23 @@ public sealed class UIRewardCard : UIItemSlot
 
     public event Action<UIRewardCard> OnReceived;
     private IReward reward;
-    private bool received; 
+    private bool received;
 
     private void Awake()
     {
         if (receiveButton != null)
+        {
             receiveButton.onClick.AddListener(OnClickReceive);
+        }
 
         itemImage = transform.FindChildByName("Icon").GetComponent<Image>();
     }
     private void OnDestroy()
     {
         if (receiveButton != null)
+        {
             receiveButton.onClick.RemoveAllListeners();
+        }
     }
 
     public void Setup(IReward reward, bool canReceive = true)
@@ -31,15 +35,21 @@ public sealed class UIRewardCard : UIItemSlot
         this.reward = reward;
 
         if (titleText != null)
+        {
             titleText.text = reward.Title;
+        }
 
         if (descriptionText != null)
+        {
             descriptionText.text = reward.Description;
+        }
 
         if (itemImage != null)
+        {
             itemImage.sprite = reward.Icon;
+        }
 
-        received = !canReceive;
+        received = (canReceive == false);
         receiveButton.SafeInvoke(button => button.gameObject.SetActive(canReceive));
     }
 
@@ -62,7 +72,11 @@ public sealed class UIRewardCard : UIItemSlot
     public bool TryReceive(bool showRecordResult, out RecordData grantedRecord)
     {
         grantedRecord = null;
-        if (received || reward == null) return false;
+        if (received || reward == null)
+        {
+            return false;
+        }
+
         received = true;
 
         if (reward is RecordReward recordReward)

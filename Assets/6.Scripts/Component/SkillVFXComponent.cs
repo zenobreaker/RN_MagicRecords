@@ -28,21 +28,32 @@ public class SkillVFXComponent : MonoBehaviour
     private void OnDisable()
     {
         if (owner != null)
+        {
             owner.OnEndDoAction -= RemoveAllEffects;
+        }
+
         RemoveAllEffects();
     }
 
     public void RegisterEffect(ActiveSkill skill, string effectId, GameObject instance)
     {
-        if (instance == null) return;
-        if (!isActiveAndEnabled)
+        if (instance == null)
+        {
+            return;
+        }
+
+        if (isActiveAndEnabled == false)
         {
             DestroyEffect(instance);
             return;
         }
 
         effects.RemoveAll(entry => entry.Instance == null);
-        if (effects.Exists(entry => entry.Instance == instance)) return;
+        if (effects.Exists(entry => entry.Instance == instance))
+        {
+            return;
+        }
+
         effects.Add(new EffectEntry
         {
             Skill = skill,
@@ -69,7 +80,11 @@ public class SkillVFXComponent : MonoBehaviour
     {
         for (int i = effects.Count - 1; i >= 0; i--)
         {
-            if (!ReferenceEquals(effects[i].Skill, skill)) continue;
+            if (ReferenceEquals(effects[i].Skill, skill) == false)
+            {
+                continue;
+            }
+
             var instance = effects[i].Instance;
             effects.RemoveAt(i);
             DestroyEffect(instance);
@@ -82,12 +97,18 @@ public class SkillVFXComponent : MonoBehaviour
         var instances = effects.ToArray();
         effects.Clear();
         foreach (var entry in instances)
+        {
             DestroyEffect(entry.Instance);
+        }
     }
 
     private static void DestroyEffect(GameObject instance)
     {
-        if (instance == null) return;
+        if (instance == null)
+        {
+            return;
+        }
+
         instance.SetActive(false);
         Destroy(instance);
     }

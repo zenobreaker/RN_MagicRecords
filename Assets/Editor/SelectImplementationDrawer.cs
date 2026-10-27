@@ -40,7 +40,7 @@ public class SelectImplementationDrawer : PropertyDrawer
         if (property.isExpanded && property.managedReferenceValue != null)
         {
             EditorGUI.indentLevel++;
-           
+
             float currentY = position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
             bool prevWideMode = EditorGUIUtility.wideMode;
@@ -49,7 +49,7 @@ public class SelectImplementationDrawer : PropertyDrawer
             EditorGUIUtility.wideMode = true; // Vector3를 무조건 한 줄에 예쁘게 펴서 그리도록 강제
             EditorGUIUtility.labelWidth = 110f; // 좌측 글자(Label)가 차지하는 최대 너비를 고정 (필요하면 숫자 조절)
 
-            // [수정] 필드 목록을 가져올 때, 부모 클래스(SkillModule)의 필드부터 가져오도록 정렬하거나 
+            // [수정] 필드 목록을 가져올 때, 부모 클래스(SkillModule)의 필드부터 가져오도록 정렬하거나
             // triggerTime을 수동으로 먼저 그립니다.
             Type type = property.managedReferenceValue.GetType();
 
@@ -74,7 +74,7 @@ public class SelectImplementationDrawer : PropertyDrawer
                     for (int i = 0; i < moduleProp.arraySize; i++)
                     {
                         var m = moduleProp.GetArrayElementAtIndex(i).managedReferenceValue;
-                        if (m is Module_SetTargetByPerception || 
+                        if (m is Module_SetTargetByPerception ||
                             m is Module_SelectSpawnPoint)
                         {
                             hasTargetModule = true;
@@ -82,10 +82,10 @@ public class SelectImplementationDrawer : PropertyDrawer
                         }
                     }
 
-                    if (!hasTargetModule)
+                    if (hasTargetModule == false)
                     {
-                        // EditorGUILayout은 수동 Rect 계산이 필요 없지만 
-                        // PropertyDrawer 내부에선 위치가 꼬일 수 있으므로 
+                        // EditorGUILayout은 수동 Rect 계산이 필요 없지만
+                        // PropertyDrawer 내부에선 위치가 꼬일 수 있으므로
                         // 가급적 EditorGUI.HelpBox를 쓰고 currentY를 더해주는 게 안전합니다.
                         float helpBoxHeight = 40f;
                         Rect helpBoxRect = new Rect(position.x, currentY, position.width, helpBoxHeight);
@@ -105,7 +105,11 @@ public class SelectImplementationDrawer : PropertyDrawer
             // 나머지 필드들을 그립니다 (triggerTime 제외)
             foreach (var field in fields)
             {
-                if (field.Name == "triggerTime") continue;
+                if (field.Name == "triggerTime")
+                {
+                    continue;
+                }
+
                 DrawField(field);
             }
 
@@ -113,20 +117,33 @@ public class SelectImplementationDrawer : PropertyDrawer
             void DrawField(FieldInfo field)
             {
                 SerializedProperty childProp = property.FindPropertyRelative(field.Name);
-                if (childProp == null) return;
-                
+                if (childProp == null)
+                {
+                    return;
+                }
+
                 bool shouldShow = true;
-                // 타입별 가시성 필터링 추가 
+                // 타입별 가시성 필터링 추가
                 if (property.managedReferenceValue is Module_SpawnWarningSign signModule)
                 {
-                    // 특정 프로퍼티 숨기기 
+                    // 특정 프로퍼티 숨기기
                     switch (field.Name)
                     {
-                        case "radius": shouldShow = signModule.signType == WarningSignType.Circle; break;
-                        case "rectSize": shouldShow = signModule.signType == WarningSignType.Rectangle; break;
-                        case "maxRectSize": shouldShow = signModule.signType == WarningSignType.Rectangle; break;
-                        case "fanRadius": shouldShow = signModule.signType == WarningSignType.Fan; break;
-                        case "fanAngle": shouldShow = signModule.signType == WarningSignType.Fan; break;
+                        case "radius":
+                            shouldShow = signModule.signType == WarningSignType.Circle;
+                            break;
+                        case "rectSize":
+                            shouldShow = signModule.signType == WarningSignType.Rectangle;
+                            break;
+                        case "maxRectSize":
+                            shouldShow = signModule.signType == WarningSignType.Rectangle;
+                            break;
+                        case "fanRadius":
+                            shouldShow = signModule.signType == WarningSignType.Fan;
+                            break;
+                        case "fanAngle":
+                            shouldShow = signModule.signType == WarningSignType.Fan;
+                            break;
                     }
                 }
                 else if (property.managedReferenceValue is Module_CalcTargetPosition calcModule)
@@ -166,7 +183,10 @@ public class SelectImplementationDrawer : PropertyDrawer
                     }
                 }
 
-                if (!shouldShow) return;  // 해당 타입이 아니면 그리지 않음
+                if (shouldShow == false)
+                {
+                    return;  // 해당 타입이 아니면 그리지 않음
+                }
 
                 //////////////////////////////////////////////
 
@@ -189,14 +209,14 @@ public class SelectImplementationDrawer : PropertyDrawer
                 }
 
                 currentY += childHeight + EditorGUIUtility.standardVerticalSpacing;
-            }// End DrawField 
+            }// End DrawField
 
             // 💡 [UI FIX] 끝나는 부분: 다른 에디터 UI에 영향을 주지 않도록 원래 값으로 복구!
             EditorGUIUtility.wideMode = prevWideMode;
             EditorGUIUtility.labelWidth = prevLabelWidth;
             EditorGUI.indentLevel--;
 
-           
+
         }// End  if (property.isExpanded && property.managedReferenceValue != null)
 
         EditorGUI.EndProperty();
@@ -205,8 +225,10 @@ public class SelectImplementationDrawer : PropertyDrawer
     // 높이 계산 로직도 동일하게 필드 기반으로 수정
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        if (!property.isExpanded || property.managedReferenceValue == null)
+        if (property.isExpanded == false || property.managedReferenceValue == null)
+        {
             return EditorGUIUtility.singleLineHeight;
+        }
 
         // 💡 [UI FIX 1] OnGUI와 똑같이 wideMode를 강제해서 높이 계산 오차를 없앱니다.
         bool prevWideMode = EditorGUIUtility.wideMode;
@@ -221,19 +243,32 @@ public class SelectImplementationDrawer : PropertyDrawer
             SerializedProperty childProp = property.FindPropertyRelative(field.Name);
             if (childProp != null)
             {
-                // WarningSign 조건 처리 
+                // WarningSign 조건 처리
                 if (property.managedReferenceValue is Module_SpawnWarningSign signModule)
                 {
                     bool shouldShow = true;
                     switch (field.Name)
                     {
-                        case "radius": shouldShow = signModule.signType == WarningSignType.Circle; break;
-                        case "rectSize": shouldShow = signModule.signType == WarningSignType.Rectangle; break;
-                        case "maxRectSize": shouldShow = signModule.signType == WarningSignType.Rectangle; break;
-                        case "fanRadius": shouldShow = signModule.signType == WarningSignType.Fan; break;
-                        case "fanAngle": shouldShow = signModule.signType == WarningSignType.Fan; break;
+                        case "radius":
+                            shouldShow = signModule.signType == WarningSignType.Circle;
+                            break;
+                        case "rectSize":
+                            shouldShow = signModule.signType == WarningSignType.Rectangle;
+                            break;
+                        case "maxRectSize":
+                            shouldShow = signModule.signType == WarningSignType.Rectangle;
+                            break;
+                        case "fanRadius":
+                            shouldShow = signModule.signType == WarningSignType.Fan;
+                            break;
+                        case "fanAngle":
+                            shouldShow = signModule.signType == WarningSignType.Fan;
+                            break;
                     }
-                    if (!shouldShow) continue;
+                    if (shouldShow == false)
+                    {
+                        continue;
+                    }
                 }
 
                 height += EditorGUI.GetPropertyHeight(childProp, true) + EditorGUIUtility.standardVerticalSpacing;
@@ -256,7 +291,7 @@ public class SelectImplementationDrawer : PropertyDrawer
                         break;
                     }
                 }
-                if (!hasTargetModule)
+                if (hasTargetModule == false)
                 {
                     height += 40f + EditorGUIUtility.standardVerticalSpacing;
                 }
@@ -272,10 +307,14 @@ public class SelectImplementationDrawer : PropertyDrawer
     private void ShowTypeMenu(SerializedProperty property)
     {
         Type targetType = GetTargetType(property);
-        if (targetType == null) return;
+        if (targetType == null)
+        {
+            return;
+        }
+
         var types = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(s => s.GetTypes())
-            .Where(p => targetType.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract);
+                    .SelectMany(s => s.GetTypes())
+                    .Where(p => targetType.IsAssignableFrom(p) && p.IsClass && p.IsAbstract == false);
 
         GenericMenu menu = new GenericMenu();
         foreach (var type in types)
@@ -296,7 +335,11 @@ public class SelectImplementationDrawer : PropertyDrawer
         if (fieldInfo != null)
         {
             Type type = fieldInfo.FieldType;
-            if (type.IsGenericType) return type.GetGenericArguments()[0];
+            if (type.IsGenericType)
+            {
+                return type.GetGenericArguments()[0];
+            }
+
             return type;
         }
         return null;
@@ -306,7 +349,11 @@ public class SelectImplementationDrawer : PropertyDrawer
     private string GetParentPath(string path)
     {
         int lastDot = path.LastIndexOf(".Array.data[");
-        if (lastDot == -1) return "";
+        if (lastDot == -1)
+        {
+            return "";
+        }
+
         return path.Substring(0, lastDot);
     }
 }

@@ -38,15 +38,26 @@ public sealed class SpiralBomb
         remainingAttachedLife = attachedLifetime;
         attachedTarget = null;
         localOffset = Vector3.zero;
-        if (projectile != null) owner = projectile.Owner;
+        if (projectile != null)
+        {
+            owner = projectile.Owner;
+        }
         // Keep the projectile's normal launch velocity until a valid enemy hit.
     }
 
     public void OnHit(BaseProjectile projectile, GameObject target)
     {
-        if (hasTriggered || projectile == null || target == null || !target.activeInHierarchy) return;
-        if (!enemyLayer.Contains(target) || !target.TryGetComponent<IDamagable>(out _) ||
-            CombatHelper.IsFriendly(owner, target, projectile.Ignores)) return;
+        if (hasTriggered || projectile == null || target == null || target.activeInHierarchy == false)
+        {
+            return;
+        }
+
+        if (enemyLayer.Contains(target) == false || target.TryGetComponent<IDamagable>(out _) == false ||
+                    CombatHelper.IsFriendly(owner, target, projectile.Ignores))
+        {
+            return;
+        }
+
         hasTriggered = true;
         remainingAttachedLife = attachedLifetime;
 
@@ -56,14 +67,21 @@ public sealed class SpiralBomb
             v => v.InverseTransformPoint(projectile.transform.position));
 
         if (projectile is PiercingDrillProjectile drill)
+        {
             drill.AttachToTarget(target);
+        }
         else if (projectile.TryGetComponent<Rigidbody>(out var rigid))
+        {
             rigid.linearVelocity = Vector3.zero;
+        }
     }
 
     public void OnDestroy(BaseProjectile projectile)
     {
-        if (projectile == null) return;
+        if (projectile == null)
+        {
+            return;
+        }
 
         if (hasTriggered)
         {
@@ -77,29 +95,40 @@ public sealed class SpiralBomb
         Collider[] hits = Physics.OverlapSphere(center, radius, enemyLayer);
         foreach (var hit in hits)
         {
-            if (hit == null || !hit.gameObject.activeInHierarchy) continue;
+            if (hit == null || hit.gameObject.activeInHierarchy == false)
+            {
+                continue;
+            }
 
             if (hit.TryGetComponent<IDamagable>(out var IDamagable))
             {
-                IDamagable.OnDamage(owner, null, center, damageEvent:explosionEvent); 
+                IDamagable.OnDamage(owner, null, center, damageEvent: explosionEvent);
             }
         }
     }
 
     public void OnUpdate(BaseProjectile projectile, float dt)
     {
-        if (!hasTriggered || projectile == null) return;
-        if (attachedTarget == null || !attachedTarget.gameObject.activeInHierarchy)
+        if (hasTriggered == false || projectile == null)
+        {
+            return;
+        }
+
+        if (attachedTarget == null || attachedTarget.gameObject.activeInHierarchy == false)
         {
             projectile.gameObject.SetActive(false);
             return;
         }
 
         if (attachedTarget != null && attachedTarget.gameObject.activeInHierarchy)
+        {
             projectile.transform.position = attachedTarget.TransformPoint(localOffset);
+        }
 
         remainingAttachedLife -= dt;
         if (remainingAttachedLife <= 0f)
+        {
             projectile.gameObject.SetActive(false);
+        }
     }
 }

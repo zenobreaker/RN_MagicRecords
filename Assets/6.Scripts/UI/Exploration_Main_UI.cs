@@ -9,7 +9,10 @@ public class Exploration_Main_UI : UiBase
 
     public void EnterTheExploration()
     {
-        if (AppManager.Instance == null) return;
+        if (AppManager.Instance == null)
+        {
+            return;
+        }
 
         ExploreRunSaveData loadData = SaveManager.LoadExploreRun();
 
@@ -32,7 +35,7 @@ public class Exploration_Main_UI : UiBase
                 UIManager.Instance.SafeInvoke(v =>
                 {
                     v.OpenExplorationSetupPopUp(
-                        (setup)=>
+                        (setup) =>
                         {
                             setup.OpenForContinue(loadData.setupData);
                         });

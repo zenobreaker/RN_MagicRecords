@@ -6,15 +6,25 @@ using UnityEngine;
 public abstract class CommonRecordModule : PassiveContextModule
 {
     [NonSerialized] protected int recordId;
-    public void SetRecordId(int id) => recordId = id;
-    public virtual void OnBattleStarted(IReadOnlyList<Character> enemies) { }
-    public virtual void OnUpdate(float deltaTime) { }
+    public void SetRecordId(int id)
+    {
+        recordId = id;
+    }
+    public virtual void OnBattleStarted(IReadOnlyList<Character> enemies)
+    {
+    }
+    public virtual void OnUpdate(float deltaTime)
+    {
+    }
 }
 
 [Serializable]
 public sealed class RecordBuffEntry
 {
-    public enum BuffKind { Stat, CooldownReduction }
+    public enum BuffKind
+    {
+        Stat, CooldownReduction
+    }
     public SO_BaseEffect buff;
     public BuffKind kind;
     public StatusType stat;
@@ -28,7 +38,10 @@ public sealed class RecordBuffEntry
 [ModuleCategory("Record/공용/버프 적용")]
 public sealed class CommonRecordBuffModule : CommonRecordModule
 {
-    public enum Activation { Persistent, BattleStart, Attack, LowHealth }
+    public enum Activation
+    {
+        Persistent, BattleStart, Attack, LowHealth
+    }
     public Activation activation;
     public List<RecordBuffEntry> buffs = new();
     [Range(0, 1)] public float probability = 1f;
@@ -45,14 +58,27 @@ public sealed class CommonRecordBuffModule : CommonRecordModule
         if (activation == Activation.Attack && owner != null)
         {
             attackOwner = owner.GetComponent<Character>();
-            if (attackOwner != null) attackOwner.OnAttackExecuted += OnAttack;
+            if (attackOwner != null)
+            {
+                attackOwner.OnAttackExecuted += OnAttack;
+            }
         }
-        if (activation == Activation.Persistent) Apply();
-        if (activation == Activation.LowHealth) OnUpdate(0);
+        if (activation == Activation.Persistent)
+        {
+            Apply();
+        }
+
+        if (activation == Activation.LowHealth)
+        {
+            OnUpdate(0);
+        }
     }
     public override void OnApplyStaticEffect(StatusComponent status)
     {
-        if (status != null && status.gameObject == owner && activation == Activation.Persistent) Apply();
+        if (status != null && status.gameObject == owner && activation == Activation.Persistent)
+        {
+            Apply();
+        }
     }
     public override void OnBattleStarted(IReadOnlyList<Character> enemies)
     {
@@ -64,36 +90,69 @@ public sealed class CommonRecordBuffModule : CommonRecordModule
     }
     private void OnAttack(ActionData action, Character attacker)
     {
-        if (attacker != null && attacker.gameObject == owner) TryApplyAttack(UnityEngine.Random.value);
+        if (attacker != null && attacker.gameObject == owner)
+        {
+            TryApplyAttack(UnityEngine.Random.value);
+        }
     }
     public bool TryApplyAttack(float sample)
     {
-        if (activation != Activation.Attack || !Roll(sample)) return false;
-        Apply(); return true;
+        if (activation != Activation.Attack || Roll(sample) == false)
+        {
+            return false;
+        }
+
+        Apply();
+        return true;
     }
-    public bool Roll(float sample) => probability > 0 && sample < probability;
+    public bool Roll(float sample)
+    {
+        return probability > 0 && sample < probability;
+    }
     public override void OnUpdate(float deltaTime)
     {
-        if (activation != Activation.LowHealth || owner == null) return;
+        if (activation != Activation.LowHealth || owner == null)
+        {
+            return;
+        }
+
         var status = owner.GetComponent<StatusComponent>();
         bool active = status != null && status.GetMaxHP() > 0 && status.GetCurrentHP() > 0 &&
             status.GetCurrentHP() / status.GetMaxHP() <= healthThreshold;
-        if (active) Apply();
-        else Clear();
+        if (active)
+        {
+            Apply();
+        }
+        else
+        {
+            Clear();
+        }
     }
     private void Apply()
     {
-        if (owner == null || !owner.activeInHierarchy || effects == null) return;
+        if (owner == null || owner.activeInHierarchy == false || effects == null)
+        {
+            return;
+        }
+
         for (int i = 0; i < buffs.Count; i++)
         {
             var entry = buffs[i];
-            if (entry?.buff == null) continue;
+            if (entry?.buff == null)
+            {
+                continue;
+            }
+
             string id = $"Record:{recordId}:{entry.buff.id}:{i}";
-            if (effects.HasEffect(id) != null) continue;
+            if (effects.HasEffect(id) != null)
+            {
+                continue;
+            }
+
             BaseEffect effect = entry.kind == RecordBuffEntry.BuffKind.CooldownReduction
-                ? new CooldownReductionEffect(entry.buff, entry.amount, entry.duration, id, entry.displayName)
-                : new StatBuffEffect(id, entry.duration, new StatModifier(entry.stat, entry.amount, entry.valueType),
-                    entry.buff, entry.displayName, BuffStackPolicy.IGNOREIFEXSIST);
+                            ? new CooldownReductionEffect(entry.buff, entry.amount, entry.duration, id, entry.displayName)
+                            : new StatBuffEffect(id, entry.duration, new StatModifier(entry.stat, entry.amount, entry.valueType),
+                                entry.buff, entry.displayName, BuffStackPolicy.IGNOREIFEXSIST);
             effects.ApplyEffect(effect, owner, owner);
             applied.Add(effect);
         }
@@ -102,14 +161,26 @@ public sealed class CommonRecordBuffModule : CommonRecordModule
     private void Clear()
     {
         if (effects != null)
-            foreach (var effect in applied) effects.RemoveEffect(effect);
+        {
+            foreach (var effect in applied)
+            {
+                effects.RemoveEffect(effect);
+            }
+        }
+
         applied.Clear();
     }
     public override void OnLose()
     {
-        if (attackOwner != null) attackOwner.OnAttackExecuted -= OnAttack;
+        if (attackOwner != null)
+        {
+            attackOwner.OnAttackExecuted -= OnAttack;
+        }
+
         attackOwner = null;
-        Clear(); effects = null; base.OnLose();
+        Clear();
+        effects = null;
+        base.OnLose();
     }
 }
 
@@ -122,15 +193,27 @@ public sealed class CommonRecordBattleBleedModule : CommonRecordModule
     [Min(0)] public float attackRatio = .1f;
     public override void OnBattleStarted(IReadOnlyList<Character> enemies)
     {
-        if (owner == null || bleed == null || enemies == null) return;
+        if (owner == null || bleed == null || enemies == null)
+        {
+            return;
+        }
+
         float power = (owner.GetComponent<StatusComponent>()?.GetStatusValue(StatusType.ATTACK) ?? 0) * attackRatio;
         foreach (var target in enemies)
         {
-            if (target == null || !target.gameObject.activeInHierarchy) continue;
+            if (target == null || target.gameObject.activeInHierarchy == false)
+            {
+                continue;
+            }
+
             var effects = target.GetComponent<EffectComponent>();
-            if (effects == null) continue;
+            if (effects == null)
+            {
+                continue;
+            }
+
             var effect = EffectFactory.CreateDotStatusEffect("Bleed", bleed.description, duration,
-                bleed, Mathf.Max(.01f, bleed.tickInterval), power);
+                            bleed, Mathf.Max(.01f, bleed.tickInterval), power);
             effects.ApplyEffect(effect, target.gameObject, owner);
         }
     }
@@ -151,7 +234,13 @@ public sealed class CooldownReductionEffect : BaseEffect
         FxIcon = definition.icon;
         FxObject = definition.vfxObject;
     }
-    public override BuffStackPolicy StackPolicy => BuffStackPolicy.IGNOREIFEXSIST;
+    public override BuffStackPolicy StackPolicy
+    {
+        get
+        {
+            return BuffStackPolicy.IGNOREIFEXSIST;
+        }
+    }
     public override void OnApply(GameObject target, GameObject caster)
     {
         base.OnApply(target, caster);

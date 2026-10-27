@@ -28,13 +28,26 @@ public class RecordCard : MonoBehaviour
     [SerializeField] private TextMeshProUGUI emptyKeywordText;
 
     private readonly List<Image> keywordItems = new();
-    public IReadOnlyList<string> Keywords => keywords;
-    public bool IsShowingKeywords { get; private set; }
+    public IReadOnlyList<string> Keywords
+    {
+        get
+        {
+            return keywords;
+        }
+    }
+    public bool IsShowingKeywords
+    {
+        get;
+        private set;
+    }
 
     private void Awake()
     {
         if (keywordToggleButton != null)
+        {
             keywordToggleButton.onClick.AddListener(ToggleKeywords);
+        }
+
         SetKeywords(keywords);
     }
 
@@ -46,7 +59,9 @@ public class RecordCard : MonoBehaviour
     private void OnDestroy()
     {
         if (keywordToggleButton != null)
+        {
             keywordToggleButton.onClick.RemoveListener(ToggleKeywords);
+        }
     }
 
     private void OnRectTransformDimensionsChange()
@@ -60,8 +75,16 @@ public class RecordCard : MonoBehaviour
         // Copy first: callers may pass this card's own list.
         var next = new List<string>();
         if (values != null)
+        {
             foreach (var value in values)
-                if (!string.IsNullOrWhiteSpace(value)) next.Add(value);
+            {
+                if (string.IsNullOrWhiteSpace(value) == false)
+                {
+                    next.Add(value);
+                }
+            }
+        }
+
         keywords = next;
 
         if (keywordTemplate != null && keywordLayout != null)
@@ -70,26 +93,36 @@ public class RecordCard : MonoBehaviour
             for (int i = 0; i < keywords.Count; i++)
             {
                 if (i >= keywordItems.Count)
+                {
                     keywordItems.Add(Instantiate(keywordTemplate, keywordLayout.transform));
+                }
+
                 var item = keywordItems[i];
                 item.gameObject.SetActive(true);
                 var label = item.GetComponentInChildren<TextMeshProUGUI>(true);
                 if (label != null)
+                {
                     label.text = LocalizationManager.Instance != null
-                        ? LocalizationManager.Instance.GetText(keywords[i]) : keywords[i];
+                    ? LocalizationManager.Instance.GetText(keywords[i]) : keywords[i];
+                }
             }
             for (int i = keywords.Count; i < keywordItems.Count; i++)
+            {
                 keywordItems[i].gameObject.SetActive(false);
+            }
         }
         if (emptyKeywordText != null)
+        {
             emptyKeywordText.gameObject.SetActive(keywords.Count == 0);
+        }
+
         UpdateKeywordCellSize();
         SetKeywordView(false);
     }
 
     public void ToggleKeywords()
     {
-        SetKeywordView(!IsShowingKeywords);
+        SetKeywordView(IsShowingKeywords == false);
     }
 
     public void SetKeywordView(bool showKeywords)
@@ -102,7 +135,11 @@ public class RecordCard : MonoBehaviour
             keywordToggleButton.gameObject.SetActive(hasKeywords);
         }
         IsShowingKeywords = showKeywords && hasKeywords;
-        if (descText != null) descText.gameObject.SetActive(!IsShowingKeywords);
+        if (descText != null)
+        {
+            descText.gameObject.SetActive(IsShowingKeywords == false);
+        }
+
         if (keywordScroll != null)
         {
             keywordScroll.gameObject.SetActive(IsShowingKeywords);
@@ -115,12 +152,18 @@ public class RecordCard : MonoBehaviour
             }
         }
         if (keywordToggleText != null)
+        {
             keywordToggleText.text = IsShowingKeywords ? "설명" : "키워드";
+        }
     }
 
     private void UpdateKeywordCellSize()
     {
-        if (keywordLayout == null || keywordScroll == null || keywordScroll.viewport == null) return;
+        if (keywordLayout == null || keywordScroll == null || keywordScroll.viewport == null)
+        {
+            return;
+        }
+
         keywordLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         keywordLayout.constraintCount = 3;
         float width = keywordScroll.viewport.rect.width - keywordLayout.padding.horizontal
@@ -128,7 +171,11 @@ public class RecordCard : MonoBehaviour
         keywordLayout.cellSize = new Vector2(Mathf.Max(1f, width / 3f), 44f);
     }
 
-    public RecordData myData { get; private set; } // 부모가 읽을 수 있게 프로퍼티로 변경
+    public RecordData myData
+    {
+        get;
+        private set;
+    } // 부모가 읽을 수 있게 프로퍼티로 변경
 
     public void Setup(RecordData data,
         System.Action onClickAction = null,
@@ -177,12 +224,31 @@ public class RecordCard : MonoBehaviour
         myData = null;
         SetKeywords(entry.Keywords);
         ClearEvent();
-        if (nameText != null) nameText.text = entry.Name;
-        if (descText != null) descText.text = $"[{entry.Label}]\n{entry.Description}";
+        if (nameText != null)
+        {
+            nameText.text = entry.Name;
+        }
+
+        if (descText != null)
+        {
+            descText.text = $"[{entry.Label}]\n{entry.Description}";
+        }
+
         SetIcon(entry.Icon, entry.Type == RecordType.AUGMENT);
-        if (selectFrame != null) selectFrame.gameObject.SetActive(false);
-        if (lockButton != null) lockButton.gameObject.SetActive(false);
-        if (selectButton != null) selectButton.onClick.AddListener(() => onClick?.Invoke());
+        if (selectFrame != null)
+        {
+            selectFrame.gameObject.SetActive(false);
+        }
+
+        if (lockButton != null)
+        {
+            lockButton.gameObject.SetActive(false);
+        }
+
+        if (selectButton != null)
+        {
+            selectButton.onClick.AddListener(() => onClick?.Invoke());
+        }
     }
 
     /// <summary>Displays the icon in the prefab slot for its record type.</summary>
@@ -191,9 +257,9 @@ public class RecordCard : MonoBehaviour
         bool useMemory = isMemory && memoryIconImage != null;
         if (iconImage != null)
         {
-            iconImage.gameObject.SetActive(!useMemory);
+            iconImage.gameObject.SetActive(useMemory == false);
             iconImage.sprite = useMemory ? null : sprite;
-            iconImage.enabled = !useMemory && sprite != null;
+            iconImage.enabled = useMemory == false && sprite != null;
         }
         if (memoryIconImage != null)
         {
@@ -221,7 +287,10 @@ public class RecordCard : MonoBehaviour
 
     private void DrawLockText()
     {
-        if (lockText == null) return;
+        if (lockText == null)
+        {
+            return;
+        }
 
         lockText.text = LocalizationManager.Instance != null ? LocalizationManager.Instance.GetText(myData.isLocked ? "ui_record_unlock" : "ui_record_lock") : (myData.isLocked ? "Unlock" : "Lock");
     }
@@ -231,6 +300,6 @@ public class RecordCard : MonoBehaviour
         //selectButton.interactable = !disabled;
 
         // 시각 효과
-        selectFrame.gameObject.SetActive(!disabled);
+        selectFrame.gameObject.SetActive(disabled == false);
     }
 }

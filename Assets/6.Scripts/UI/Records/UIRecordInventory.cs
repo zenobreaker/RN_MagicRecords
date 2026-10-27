@@ -30,7 +30,9 @@ public class UIRecordInventory : UiBase
         {
             slot.SetupBuildEntry(item, () => UIManager.Instance.SafeInvoke(ui => ui.OpenBuildEntryInfoPopUp(item)));
             if (slot.gameObject.activeSelf == false)
+            {
                 slot.gameObject.SetActive(true);
+            }
         },
         slot =>
         {

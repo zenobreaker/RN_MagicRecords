@@ -29,8 +29,11 @@ public class MetorProjectile
     protected override void OnEnable()
     {
         base.OnEnable();
-        isExploded = false; 
-        if(trail != null) trail.Clear(); 
+        isExploded = false;
+        if (trail != null)
+        {
+            trail.Clear();
+        }
     }
 
     protected override void OnDisable()
@@ -43,31 +46,36 @@ public class MetorProjectile
     {
         base.Update();
 
-        if (isExploded) return; 
+        if (isExploded)
+        {
+            return;
+        }
 
-        // 1. 목표 지점을 향해 사선으로 이동 
-        transform.position = Vector3.MoveTowards(transform.position, 
-            targetPosition, 
-            fallSpeed *Time.deltaTime);
+        // 1. 목표 지점을 향해 사선으로 이동
+        transform.position = Vector3.MoveTowards(transform.position,
+            targetPosition,
+            fallSpeed * Time.deltaTime);
 
-        // 2. 목표 지점에 도달했는지 체크 
+        // 2. 목표 지점에 도달했는지 체크
         if (Vector3.Distance(transform.position, targetPosition) <= 0.1f)
+        {
             Explode();
+        }
     }
 
     private void Explode()
     {
         isExploded = true;
 
-        // 1. 폭발 이펙트 스폰 
+        // 1. 폭발 이펙트 스폰
         GameObject explosion = ObjectPooler.DeferredSpawnFromPool(explosionEffectName, transform.position,
             Quaternion.identity);
 
-        // 2. 광역 데미지 판정 
-        if(explosion != null && explosion.TryGetComponent<ISkillEffect>(out var skillEffect))
+        // 2. 광역 데미지 판정
+        if (explosion != null && explosion.TryGetComponent<ISkillEffect>(out var skillEffect))
         {
             skillEffect.SetDamageInfo(owner, cachedDamageData, false, cachedMultiplier);
-            skillEffect.AddIgnore(ownerObject); 
+            skillEffect.AddIgnore(ownerObject);
         }
 
         // Play Sound
@@ -78,7 +86,7 @@ public class MetorProjectile
         ObjectPooler.FinishSpawn(explosion);
 
         // 3. 운석 역할 끝
-        gameObject.SetActive(false); 
+        gameObject.SetActive(false);
     }
 }
-   
+

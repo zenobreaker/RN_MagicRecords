@@ -26,35 +26,58 @@ public class EnhanceUI_UpgradeTarget : UiBase
         if (selectedItem == null)
         {
             if (selcetedItemIcon != null)
+            {
                 selcetedItemIcon.sprite = emptyIcon;
+            }
+
             if (selcetedItemNameText != null)
+            {
                 selcetedItemNameText.text = "";
+            }
+
             if (selcetedItemEnhanceText != null)
+            {
                 selcetedItemEnhanceText.text = "";
+            }
+
             return;
         }
 
         if (selcetedItemIcon != null)
+        {
             selcetedItemIcon.sprite = selectedItem.Icon;
+        }
+
         if (selcetedItemNameText != null)
+        {
             selcetedItemNameText.text = selectedItem.LocalizedName;
+        }
 
         if (selcetedItemEnhanceText != null)
         {
             if (selectedItem is EquipmentItem equipment && isMaxEnhance(equipment))
+            {
                 selcetedItemEnhanceText.text = $"{equipment.Enhance} >> {equipment.Enhance + 1} ";
+            }
             else
+            {
                 selcetedItemEnhanceText.text = "MAX";
+            }
         }
     }
 
 
     private bool isMaxEnhance(EquipmentItem item)
     {
-        if (item == null) return false;
+        if (item == null)
+        {
+            return false;
+        }
 
         if (item.Enhance < Constants.ENHANCE_MAX_COUNT)
+        {
             return true;
+        }
 
         return false;
     }
@@ -62,9 +85,13 @@ public class EnhanceUI_UpgradeTarget : UiBase
     public void SetSelectItem(ItemData item)
     {
         if (selectedItem != item)
+        {
             selectedItem = item;
+        }
         else
+        {
             selectedItem = null;
+        }
     }
 
     public EquipmentItem GetSelectedEquipment()

@@ -18,6 +18,8 @@ public sealed class Module_Passive_AssistDronePierce : PassiveModule
     public override void OnAssistDroneNormalProjectile(ISkillEffect spawnedObject, Character owner)
     {
         if (spawnedObject is IProjectile projectile)
+        {
             projectile.PierceCount += bonusPierceCount;
+        }
     }
 }

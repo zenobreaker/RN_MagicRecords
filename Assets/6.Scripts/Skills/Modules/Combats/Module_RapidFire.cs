@@ -41,26 +41,39 @@ public class Module_RapidFire : SkillModule
     private float originalAnimSpeed = 1f;
     private ActionData runtimeActionData;
 
-    public override void Init(  Character owner)
+    public override void Init(Character owner)
     {
         base.Init(owner);
-        if (owner == null) return;
+        if (owner == null)
+        {
+            return;
+        }
 
         ownerChar = owner.GetComponent<Character>();
         weaponCont = owner.GetComponent<IWeaponUser>()?.GetWeaponController();
         if (owner != null)
+        {
             isCharacterComp = true;
+        }
 
         if (isCharacterComp == false)
+        {
             anim = owner.GetComponentInChildren<Animator>();
+        }
 
         if (actionData != null)
+        {
             runtimeActionData = actionData.Clone();
+        }
     }
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (owner == null || skill == null || !skill.IsPhaseRunning || skill.IsEnding) return;
+        if (owner == null || skill == null || skill.IsPhaseRunning == false || skill.IsEnding)
+        {
+            return;
+        }
+
         CancellationToken token = skill.PhaseToken;
         RapidFireAsync(owner, skill, phaseSkill, token).Forget();
     }
@@ -75,14 +88,16 @@ public class Module_RapidFire : SkillModule
         int patternCountBonus = skill != null ? skill.Runtime.Combat.PatternCountBonus : 0;
         float patternAngleBonus = skill != null ? skill.Runtime.Combat.PatternAngleBonus : 0f;
         if (skill != null && skill.Runtime.Base.TotalShots <= 0)
+        {
             skill.Runtime.Base.TotalShots = totalShots;
+        }
 
         int finalTotalShots = skill != null
             ? Mathf.Max(1, skill.Runtime.TotalShots)
-            : totalShots;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+            : totalShots;
         int finalProjectileCount = Mathf.Max(1, 1 + patternCountBonus);
         float finalAngleBetween = angleBetween + patternAngleBonus;
-        string finalObjectName = !string.IsNullOrEmpty(skill?.Runtime.Spawn.OverridePrefabName)
+        string finalObjectName = (string.IsNullOrEmpty(skill?.Runtime.Spawn.OverridePrefabName) == false)
             ? skill.Runtime.Spawn.OverridePrefabName
             : objectName;
 
@@ -104,8 +119,10 @@ public class Module_RapidFire : SkillModule
         {
             for (int i = 0; i < finalTotalShots; i++)
             {
-                if (token.IsCancellationRequested || owner == null || !owner.gameObject.activeInHierarchy)
+                if (token.IsCancellationRequested || owner == null || owner.gameObject.activeInHierarchy == false)
+                {
                     return;
+                }
 
                 if (isCharacterComp && ownerChar != null)
                 {
@@ -117,7 +134,11 @@ public class Module_RapidFire : SkillModule
                 // 1. 탄환 발사 처리
                 var attackBullets = combat.TakeBulletsForAttack();
                 bool attackIsCrit = isCrit;
-                foreach (var bullet in attackBullets) attackIsCrit |= bullet.isCrit;
+                foreach (var bullet in attackBullets)
+                {
+                    attackIsCrit |= bullet.isCrit;
+                }
+
                 Vector3 basePosition = owner.transform.TransformPoint(spawnPosition);
                 for (int projectileIndex = 0; projectileIndex < finalProjectileCount; projectileIndex++)
                 {
@@ -130,7 +151,9 @@ public class Module_RapidFire : SkillModule
 
                     GameObject obj = ObjectPooler.DeferredSpawnFromPool(finalObjectName, basePosition, finalRotation);
                     if (obj != null && obj.TryGetComponent<BaseProjectile>(out var bulletProjectile))
+                    {
                         bulletProjectile.SetMagicBullets(attackBullets, combat.BulletApplyMode);
+                    }
 
                     if (obj != null && obj.TryGetComponent<ISkillEffect>(out var projectile))
                     {
@@ -150,18 +173,29 @@ public class Module_RapidFire : SkillModule
                 if (isCharacterComp)
                 {
                     if (ownerChar != null)
-                        // 트랜지션을 무시하고 해당 상태의 0% 지점(0f)부터 즉시 재생합니다.
+                    // 트랜지션을 무시하고 해당 상태의 0% 지점(0f)부터 즉시 재생합니다.
+                    {
                         ownerChar.PlayAction(runtimeActionData);
+                    }
+
                     if (weaponCont != null)
+                    {
                         weaponCont.DoAction(runtimeActionData);
+                    }
                 }
                 else
+                {
                     anim.Play(runtimeActionData.StateName, 0, 0f);
+                }
 
-                if(isCharacterComp && ownerChar != null)
+                if (isCharacterComp && ownerChar != null)
+                {
                     ownerChar.PlayAction(runtimeActionData);
+                }
                 else
+                {
                     anim.Play(runtimeActionData.StateName, 0, 0f);
+                }
 
                 // 3. 발사 간격 대기
                 if (i < finalTotalShots - 1)
@@ -180,7 +214,9 @@ public class Module_RapidFire : SkillModule
                 }
             }
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+        }
         finally
         {
             // 💡 4. 연사가 끝나거나 취소되면 애니메이션 속도를 원래대로 복구
@@ -189,7 +225,7 @@ public class Module_RapidFire : SkillModule
                 ReturnAnimSpeed();
 
                 // Completion is handled below, only for the original phase generation.
-                // (선택) 연사가 끝난 후 부드럽게 Idle로 돌아가게 하려면 
+                // (선택) 연사가 끝난 후 부드럽게 Idle로 돌아가게 하려면
                 // 애니메이터에 설정해둔 Idle 상태로 강제 전환하거나 Trigger를 보내주면 됩니다.
                 // anim.CrossFade("Idle", 0.1f);
             }
@@ -203,7 +239,10 @@ public class Module_RapidFire : SkillModule
                 agent.isStopped = false;
                 agent.updateRotation = true;
             }
-            if (!token.IsCancellationRequested && skill.IsCurrentPhase(phaseVersion)) skill.EndSkill();
+            if (token.IsCancellationRequested == false && skill.IsCurrentPhase(phaseVersion))
+            {
+                skill.EndSkill();
+            }
         }
     }
 
@@ -229,15 +268,29 @@ public class Module_RapidFire : SkillModule
     {
         runtimeActionData.ActionSpeed = originalAnimSpeed;
         if (isCharacterComp == false && anim != null)
+        {
             anim.speed = originalAnimSpeed;
+        }
     }
 
     private DamageData GetEffectiveDamageData(ActiveSkill skill)
     {
-        if (damageApplyType == DamageApplyType.Override) return damageData;
+        if (damageApplyType == DamageApplyType.Override)
+        {
+            return damageData;
+        }
+
         var source = skill?.damageData;
-        if (source == null) return new DamageData();
-        if (damageApplyType != DamageApplyType.Multiply) return source;
+        if (source == null)
+        {
+            return new DamageData();
+        }
+
+        if (damageApplyType != DamageApplyType.Multiply)
+        {
+            return source;
+        }
+
         var result = source.Clone();
         result.baseDamage *= damageMultiplier;
         result.statCoefficient *= damageMultiplier;
@@ -247,14 +300,20 @@ public class Module_RapidFire : SkillModule
 
     public override void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase)
     {
-        if (syncAnimSpeed && runtimeActionData != null) ReturnAnimSpeed();
+        if (syncAnimSpeed && runtimeActionData != null)
+        {
+            ReturnAnimSpeed();
+        }
     }
 
-    public override bool ControlsPhaseLifecycle() => true;
+    public override bool ControlsPhaseLifecycle()
+    {
+        return true;
+    }
 
     public override bool HasAnimationData()
     {
         // 모듈에 세팅된 actionData의 서브스테이트 이름이 비어있지 않으면 true 반환!
-        return actionData != null && !string.IsNullOrEmpty(actionData.SubStateName);
+        return actionData != null && string.IsNullOrEmpty(actionData.SubStateName) == false;
     }
 }

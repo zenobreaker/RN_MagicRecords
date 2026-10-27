@@ -18,8 +18,14 @@ public class SkillTreeController : UiBase
 
     [SerializeField] private SkillUIEnterType skillUIEnterType;
 
-    public void SetMainRoomType() => skillUIEnterType = SkillUIEnterType.MainRoom;
-    public void SetSelectPopupType() => skillUIEnterType = SkillUIEnterType.SelectPopup;
+    public void SetMainRoomType()
+    {
+        skillUIEnterType = SkillUIEnterType.MainRoom;
+    }
+    public void SetSelectPopupType()
+    {
+        skillUIEnterType = SkillUIEnterType.SelectPopup;
+    }
 
     public enum Skill_Category
     {
@@ -33,7 +39,7 @@ public class SkillTreeController : UiBase
 
     protected override void Awake()
     {
-        base.Awake(); 
+        base.Awake();
 
         Debug.Assert(SkillTreeManager.Instance != null);
         skillTreeManager = SkillTreeManager.Instance;
@@ -68,9 +74,13 @@ public class SkillTreeController : UiBase
         category = Skill_Category.CLASS_ACTIVE;
 
         if (skillUIEnterType == SkillUIEnterType.MainRoom)
+        {
             uiSkillReplace.SafeInvoke(v => v.HideUI());
-        else 
+        }
+        else
+        {
             uiSkillReplace.SafeInvoke(v => v.ShowUI());
+        }
 
         RefreshUI();
     }
@@ -87,7 +97,11 @@ public class SkillTreeController : UiBase
 
     public void OnSelctedSkillData(SkillRuntimeData data)
     {
-        if (skillTreeManager == null) return;
+        if (skillTreeManager == null)
+        {
+            return;
+        }
+
         skillTreeManager.SelectedSkillData = data;
     }
 
@@ -100,23 +114,30 @@ public class SkillTreeController : UiBase
     {
         this.category = (Skill_Category)category;
 
-        RefreshUI(); 
+        RefreshUI();
     }
 
     private void DrawSkillTree()
     {
-        if (skillTreeManager == null || uiSkillTree == null) return;
+        if (skillTreeManager == null || uiSkillTree == null)
+        {
+            return;
+        }
 
         SkillTreeManager.SkillTreeCategory treeCategroy = SkillTreeManager.SkillTreeCategory.Theme;
-        
+
         if (category == Skill_Category.CLASS_PASSIVE ||
             category == Skill_Category.CLASS_ACTIVE)
+        {
             treeCategroy = SkillTreeManager.SkillTreeCategory.Theme;
+        }
         else if (category == Skill_Category.COMMON_ACTIVE ||
-            category == Skill_Category.COMMON_PASSIVE)
+                    category == Skill_Category.COMMON_PASSIVE)
+        {
             treeCategroy = SkillTreeManager.SkillTreeCategory.Common;
+        }
 
-        // 해당 직업의 전용 스킬트리를 가져옴 
+        // 해당 직업의 전용 스킬트리를 가져옴
         SkillTree skilltree = skillTreeManager.GetSkillTree(treeCategroy, jobID);
 
         uiSkillTree.DrawSkillTree(skilltree, category);

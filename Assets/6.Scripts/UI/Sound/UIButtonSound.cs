@@ -20,7 +20,7 @@ public class UIButtonSound : MonoBehaviour, IPointerEnterHandler, IPointerClickH
     {
         if (button.interactable)
         {
-            SoundManager.Instance.PlaySFX(hoverSoundName); // 가벼운 전자음 
+            SoundManager.Instance.PlaySFX(hoverSoundName); // 가벼운 전자음
         }
     }
 

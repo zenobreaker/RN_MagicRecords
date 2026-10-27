@@ -20,20 +20,25 @@ public class Fist : Weapon_Combo
 
         for (int i = 0; i < (int)PartType.Max; i++)
         {
-            if (i >= colliders.Length) continue; 
+            if (i >= colliders.Length)
+            {
+                continue;
+            }
 
             Transform t = colliders[i].transform;
             t.localPosition = Vector3.zero;
-            t.localRotation = Quaternion.identity; 
+            t.localRotation = Quaternion.identity;
 
-            if(t.TryGetComponent<Fist_Trigger>(out Fist_Trigger trigger))
+            if (t.TryGetComponent<Fist_Trigger>(out Fist_Trigger trigger))
             {
                 trigger.OnTrigger += OnTriggerEnter;
 
                 string partName = ((PartType)i).ToString();
                 Transform parent = rootObject.transform.FindChildByName(partName);
-                if(parent != null)
+                if (parent != null)
+                {
                     t.SetParent(parent, false);
+                }
             }
         }
     }
@@ -43,7 +48,7 @@ public class Fist : Weapon_Combo
 
     //    if (rootObject.TryGetComponent<Enemy>(out Enemy enemy))
     //    {
-    //        isPlayer = false; 
+    //        isPlayer = false;
     //    }
     //}
 
@@ -52,17 +57,17 @@ public class Fist : Weapon_Combo
         base.Begin_Equip();
 
         if (rootObject == null)
+        {
             return;
+        }
 
-
-
-        End_Equip(); 
+        End_Equip();
     }
 
     //public override void Begin_DoAction()
     //{
     //    base.Begin_DoAction();
-        
+
     //    hitList.Clear();
     //}
 

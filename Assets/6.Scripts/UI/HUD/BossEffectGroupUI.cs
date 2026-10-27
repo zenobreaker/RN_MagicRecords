@@ -19,18 +19,30 @@ public class BossEffectGroupUI : EffectGroupUI
 
     private void RefreshEffects()
     {
-        if (targetBoss == null) return;
+        if (targetBoss == null)
+        {
+            return;
+        }
+
         var effects = targetBoss.GetComponent<EffectComponent>();
-        if (effects == null) return;
+        if (effects == null)
+        {
+            return;
+        }
         // Battle-start effects may precede the first HP notification that creates this UI.
         foreach (var effect in effects.ActiveEffects)
+        {
             UpdateEffectIcon(effect);
+        }
     }
 
     protected override void SetHUDHandler(SO_HUDHandler handler)
     {
-        if (handler == null) return;
-        
+        if (handler == null)
+        {
+            return;
+        }
+
         // 부모의 handler.OnEffect += OnEffect; 를 하지 않기 위해 base 호출 안 함
         // 대신 보스 전용 이벤트를 구독
         handler.OnChangedBossEffect_OneParam += OnBossEffect;
@@ -38,13 +50,20 @@ public class BossEffectGroupUI : EffectGroupUI
 
     protected override void RemoveHUDHandler(SO_HUDHandler handler)
     {
-        if (handler != null) handler.OnChangedBossEffect_OneParam -= OnBossEffect;
+        if (handler != null)
+        {
+            handler.OnChangedBossEffect_OneParam -= OnBossEffect;
+        }
     }
 
     // 보스 전용 이벤트 핸들러
     private void OnBossEffect(Character boss, BaseEffect effect)
     {
-        if (boss != targetBoss) return;
+        if (boss != targetBoss)
+        {
+            return;
+        }
+
         UpdateEffectIcon(effect);
     }
 }

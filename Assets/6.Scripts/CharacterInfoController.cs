@@ -14,15 +14,19 @@ public class CharacterInfoController : UiBase
 
     protected override void Awake()
     {
-        base.Awake(); 
+        base.Awake();
 
         uiCharEquipment = FindAnyObjectByType<UICharEquipment>();
         if (uiCharEquipment != null)
+        {
             DrawenCharEquipment += uiCharEquipment.OnDrawCharEquipment;
+        }
 
         uiCharStatus = FindAnyObjectByType<UICharStatus>();
         if (uiCharStatus != null)
+        {
             DrawnCharInfo += uiCharStatus.OnDrawCharStatus;
+        }
     }
 
     protected override void OnEnable()
@@ -36,7 +40,10 @@ public class CharacterInfoController : UiBase
 
     private void SetCharEquipmentData()
     {
-        if (PlayerManager.Instance == null) return;
+        if (PlayerManager.Instance == null)
+        {
+            return;
+        }
 
         selectedCharStatus = PlayerManager.Instance.GetCharacterStatus(1);
         selectedCharEquipment = PlayerManager.Instance.GetCharEquipmentData(1);
@@ -44,10 +51,13 @@ public class CharacterInfoController : UiBase
 
     public void UpdateCharacterInfo(int charId)
     {
-        if (PlayerManager.Instance == null) return;
+        if (PlayerManager.Instance == null)
+        {
+            return;
+        }
 
         selectedCharStatus = PlayerManager.Instance.SafeInvoke(v => v.GetCharacterStatus(charId));
-        selectedCharEquipment = PlayerManager.Instance.SafeInvoke(v=>v.GetCharEquipmentData(charId));
+        selectedCharEquipment = PlayerManager.Instance.SafeInvoke(v => v.GetCharEquipmentData(charId));
 
         DrawnCharInfo?.Invoke(selectedCharStatus, selectedCharEquipment);
         DrawenCharEquipment?.Invoke(selectedCharEquipment);

@@ -41,7 +41,7 @@ public class ClearRewardJsonData
 {
     public int id;
     public string rewardIDList;
-    public string viewItemIDList; 
+    public string viewItemIDList;
 }
 
 [System.Serializable]
@@ -68,7 +68,9 @@ public class RewardDataBase : DataBase
     public override void Initialize()
     {
         if (jsonAsset == null)
+        {
             return;
+        }
 
         Debug.Log("Reward Database Init");
 
@@ -112,20 +114,24 @@ public class RewardDataBase : DataBase
                     clearRewardData.id = json.id;
                     foreach (string id in json.rewardIDList.Split(','))
                     {
-                        if(!string.IsNullOrEmpty(id))
+                        if (string.IsNullOrEmpty(id) == false)
+                        {
                             clearRewardData.rewardIds.Add(int.Parse(id));
+                        }
                     }
 
-                    foreach(string id in json.viewItemIDList.Split(','))
+                    foreach (string id in json.viewItemIDList.Split(','))
                     {
-                        if (!string.IsNullOrEmpty(id))
+                        if (string.IsNullOrEmpty(id) == false)
+                        {
                             clearRewardData.viewItemIDList.Add(int.Parse(id));
+                        }
                     }
 
                     return clearRewardData;
                 },
 
-                clearReward=>
+                clearReward =>
                 {
                     clearRewards.TryAdd(clearReward.id, clearReward);
                 }

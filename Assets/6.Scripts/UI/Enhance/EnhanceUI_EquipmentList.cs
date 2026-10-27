@@ -11,7 +11,7 @@ public class EnhanceUI_EquipmentList : UiBase
     {
         this.items = items;
     }
-    
+
     public override void RefreshUI()
     {
         Draw();
@@ -23,17 +23,21 @@ public class EnhanceUI_EquipmentList : UiBase
             items, (slot, item, index) =>
             {
                 slot.SetItemData(item);
-                if(slot.gameObject.activeSelf == false)
+                if (slot.gameObject.activeSelf == false)
+                {
                     slot.gameObject.SetActive(true);
+                }
 
-                slot.OnClickedSlot -= ClickSlot; 
+                slot.OnClickedSlot -= ClickSlot;
                 slot.OnClickedSlot += ClickSlot;
-            }, 
+            },
             slot =>
             {
                 slot.OnClickedSlot -= ClickSlot;
                 if (slot.gameObject.activeSelf == true)
+                {
                     slot.gameObject.SetActive(false);
+                }
             },
             InitReplaceContentObject,
             SetContentChildObjectsCallback
@@ -44,7 +48,7 @@ public class EnhanceUI_EquipmentList : UiBase
     {
         if (item is EquipmentItem)
         {
-            // 厘厚 贸府 
+            // 厘厚 贸府
             OnClicked?.Invoke(item);
         }
     }

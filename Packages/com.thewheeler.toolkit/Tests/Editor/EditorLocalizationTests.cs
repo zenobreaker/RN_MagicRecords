@@ -25,10 +25,14 @@ namespace TheWheeler.Tests
         [Test]
         public void LiveJsonResolvesInEditModeWithoutChangingTheSource()
         {
-            if (!File.Exists(EditorLocalization.DefaultPath)) Assert.Ignore("No project localization JSON configured.");
+            if (File.Exists(EditorLocalization.DefaultPath) == false)
+            {
+                Assert.Ignore("No project localization JSON configured.");
+            }
+
             var before = File.ReadAllBytes(EditorLocalization.DefaultPath);
             var translations = EditorLocalization.Parse(File.ReadAllText(EditorLocalization.DefaultPath));
-            var row = translations.First(p => !string.IsNullOrEmpty(p.Value));
+            var row = translations.First(p => (string.IsNullOrEmpty(p.Value) == false));
             EditorLocalization.Invalidate();
             Assert.That(EditorLocalization.Resolve(row.Key), Is.EqualTo(row.Value));
             Assert.That(EditorLocalization.Matches(row.Value, 10, row.Key), Is.True);

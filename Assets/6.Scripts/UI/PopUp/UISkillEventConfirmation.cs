@@ -15,12 +15,16 @@ public sealed class UISkillEventConfirmation : UIPopUp
     {
         base.Awake();
         // Older prefabs can predate UIPopUp's RequireComponent.
-        if (canvasGroup == null) canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        if (canvasGroup == null)
+        {
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        }
     }
     public void SetData(string title, string message, bool showCheckbox, Action<bool> confirm, Action cancel = null)
     {
         CancelPending();
-        titleText.text = title; messageText.text = message;
+        titleText.text = title;
+        messageText.text = message;
         skipToggle.gameObject.SetActive(showCheckbox);
         skipToggle.SetIsOnWithoutNotify(false);
         onConfirm = confirm;
@@ -34,7 +38,11 @@ public sealed class UISkillEventConfirmation : UIPopUp
     }
     private void Confirm()
     {
-        if (resolved || !isActiveAndEnabled) return;
+        if (resolved || isActiveAndEnabled == false)
+        {
+            return;
+        }
+
         var action = onConfirm;
         bool skip = skipToggle.gameObject.activeSelf && skipToggle.isOn;
         onConfirm = null;
@@ -51,7 +59,17 @@ public sealed class UISkillEventConfirmation : UIPopUp
         onCancel = null;
         cancel?.Invoke();
     }
-    public override void CloseUI() { CancelPending(); base.CloseUI(); }
-    protected override void OnDisable() { CancelPending(); base.OnDisable(); }
-    protected override void DrawPopUp() { }
+    public override void CloseUI()
+    {
+        CancelPending();
+        base.CloseUI();
+    }
+    protected override void OnDisable()
+    {
+        CancelPending();
+        base.OnDisable();
+    }
+    protected override void DrawPopUp()
+    {
+    }
 }

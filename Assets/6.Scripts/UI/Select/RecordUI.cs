@@ -23,7 +23,9 @@ public class RecordUI : UIPopUp
     {
         base.Awake();
         if (completeButton != null)
+        {
             completeButton.onClick.AddListener(OnCompleteSelectRecord);
+        }
     }
 
     protected override void OnEnable()
@@ -32,11 +34,15 @@ public class RecordUI : UIPopUp
 
         // 선택한 정보는 데이터가 세팅되면 초기화??
         selectCard = null;
-        // 선택한 카드가 없으면 결정 버튼 비활성화 
+        // 선택한 카드가 없으면 결정 버튼 비활성화
         if (selectCard == null)
+        {
             completeButton.interactable = false;
+        }
         else
+        {
             completeButton.interactable = true;
+        }
     }
 
     public void SetData(List<RecordData> options, bool canReroll, RecordUIMode mode = RecordUIMode.DRAFT)
@@ -46,9 +52,11 @@ public class RecordUI : UIPopUp
         cards.Clear();
 
         if (AppManager.Instance != null)
+        {
             rm = AppManager.Instance.GetRecordManager();
+        }
 
-        // 전달받은 데이터 수만큼 카드 배치 
+        // 전달받은 데이터 수만큼 카드 배치
         InitReplaceContentObject(options.Count);
 
         int index = 0;
@@ -68,7 +76,7 @@ public class RecordUI : UIPopUp
                 onClickAction: () =>
                 {
                     OnCardClicked(currentData);
-                    Card_Clicked(card); 
+                    Card_Clicked(card);
                 },
                 onlockAction: () => OnLockRecord(currentData),
                 canReroll);
@@ -80,8 +88,15 @@ public class RecordUI : UIPopUp
         });
 
         // 리롤 UI 활성화/비활성화 처리
-        if (rerollButton != null) rerollButton.gameObject.SetActive(canReroll);
-        if (rerollText != null) rerollText.gameObject.SetActive(canReroll);
+        if (rerollButton != null)
+        {
+            rerollButton.gameObject.SetActive(canReroll);
+        }
+
+        if (rerollText != null)
+        {
+            rerollText.gameObject.SetActive(canReroll);
+        }
 
         if (canReroll)
         {
@@ -93,16 +108,21 @@ public class RecordUI : UIPopUp
 
     private void Card_Clicked(RecordCard card)
     {
-        if (card == null ) return;
-        
-        // 이전에 선택한 카드랑 같으면 선택 해제 
-        if(selectCard != null && selectCard.Equals(card))
+        if (card == null)
+        {
+            return;
+        }
+
+        // 이전에 선택한 카드랑 같으면 선택 해제
+        if (selectCard != null && selectCard.Equals(card))
         {
             selectCard.Refresh(false);
             selectCard = null;
 
             foreach (var c in cards)
+            {
                 c.Refresh(false);
+            }
         }
         // 이전에 선택한 카드랑 다르거나 선택한게 없고 들어온 정보가 있다면 해당 카드 선택
         else if (selectCard == null || selectCard.Equals(card) == false)
@@ -113,24 +133,32 @@ public class RecordUI : UIPopUp
             foreach (var c in cards)
             {
                 if (c != selectCard)
+                {
                     c.Refresh(false);
+                }
             }
         }
 
-        // 팝업 다시 그림 
-        DrawPopUp(); 
+        // 팝업 다시 그림
+        DrawPopUp();
     }
 
     private void OnCardClicked(RecordData selectedData)
     {
-        if (rm == null || currentMode == RecordUIMode.VIEW) return;
+        if (rm == null || currentMode == RecordUIMode.VIEW)
+        {
+            return;
+        }
 
         rm.SelectedRecord(selectedData);
     }
 
     private void OnCompleteSelectRecord()
     {
-        if (rm == null) return; 
+        if (rm == null)
+        {
+            return;
+        }
 
         bool? result = false;
 
@@ -151,7 +179,9 @@ public class RecordUI : UIPopUp
             result = rm.OnCompleteCostDiscard();
         }
         else if (currentMode == RecordUIMode.VIEW)
-            result = true; 
+        {
+            result = true;
+        }
 
         if (result.HasValue && result.Value == true)
         {
@@ -165,25 +195,31 @@ public class RecordUI : UIPopUp
         }
         else
         {
-            //TODO : 레코드를 선택하라는 알림 띄우기 
+            //TODO : 레코드를 선택하라는 알림 띄우기
         }
     }
 
     private void OnLockRecord(RecordData recordData)
     {
-        recordData.isLocked = !recordData.isLocked;
+        recordData.isLocked = (recordData.isLocked == false);
     }
 
     private void DrawRerollText()
     {
-        if (rerollText == null) return;
+        if (rerollText == null)
+        {
+            return;
+        }
 
         rerollText.text = rm.RerollCount.ToString();
     }
 
     public void Reroll()
     {
-        if (rm == null) return;
+        if (rm == null)
+        {
+            return;
+        }
 
         if (rm.RerollCount <= 0)
         {
@@ -195,18 +231,22 @@ public class RecordUI : UIPopUp
 
         selectCard = null;
 
-        List<RecordData> replacedRecords =  rm.RerollAllCurrentRecords();
+        List<RecordData> replacedRecords = rm.RerollAllCurrentRecords();
 
         SetData(replacedRecords, cachedRerollFlag, currentMode);
-        RefreshUI(); 
+        RefreshUI();
     }
 
     protected override void DrawPopUp()
     {
-        // 선택한 카드가 없으면 결정 버튼 비활성화 
+        // 선택한 카드가 없으면 결정 버튼 비활성화
         if (currentMode != RecordUIMode.VIEW && selectCard == null)
+        {
             completeButton.interactable = false;
-        else 
+        }
+        else
+        {
             completeButton.interactable = true;
+        }
     }
 }

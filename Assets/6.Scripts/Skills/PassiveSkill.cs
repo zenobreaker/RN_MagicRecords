@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
-// 스킬 사용 시 처리 이벤트 
+// 스킬 사용 시 처리 이벤트
 public class SkillUseEvent
 {
     public int SkillID;
     public string SkillName;
-    public GameObject Owner; 
+    public GameObject Owner;
 }
 
 public abstract class PassiveSkill
@@ -17,7 +17,7 @@ public abstract class PassiveSkill
     {
     }
     public PassiveSkill(int skillID, string skillName, string skillDesc, Sprite skillIcon)
-        : base(skillID, skillName, skillDesc, skillIcon )
+        : base(skillID, skillName, skillDesc, skillIcon)
     {
 
     }
@@ -29,20 +29,42 @@ public abstract class PassiveSkill
     }
 
 
-    public virtual void OnAcquire(GameObject owner) { }
-    public virtual void OnApplyStaticEffect(StatusComponent status) { }
-    public virtual void OnChangedLevel (int newLevel) { }
-    public virtual void OnLose() { }
-    public virtual void OnUpdate(float dt) { }
+    public virtual void OnAcquire(GameObject owner)
+    {
+    }
+    public virtual void OnApplyStaticEffect(StatusComponent status)
+    {
+    }
+    public virtual void OnChangedLevel(int newLevel)
+    {
+    }
+    public virtual void OnLose()
+    {
+    }
+    public virtual void OnUpdate(float dt)
+    {
+    }
 
-    
-    public virtual void OnHit(GameObject target) { }
-    public virtual void OnDamaged(DamageData damageData) { }
-    public virtual void OnKill(GameObject target) { }
 
-    public virtual void OnSkillCast(SkillUseEvent evt, SkillRuntimeContext context) { }
-    public virtual void OnSkillJudge(SkillUseEvent evt) { }
-    public virtual void OnSkillEnd(SkillUseEvent evt) { }
+    public virtual void OnHit(GameObject target)
+    {
+    }
+    public virtual void OnDamaged(DamageData damageData)
+    {
+    }
+    public virtual void OnKill(GameObject target)
+    {
+    }
+
+    public virtual void OnSkillCast(SkillUseEvent evt, SkillRuntimeContext context)
+    {
+    }
+    public virtual void OnSkillJudge(SkillUseEvent evt)
+    {
+    }
+    public virtual void OnSkillEnd(SkillUseEvent evt)
+    {
+    }
 
 }
 
@@ -55,8 +77,11 @@ public interface IMagicBulletProvider
     // 외부에서 충전해주기 위함
     void Reload(int amount);
 
-    // 현재 탄환 개수 (UI 표시용 등..) 
-    int CurrentBulletCount { get; }
+    // 현재 탄환 개수 (UI 표시용 등..)
+    int CurrentBulletCount
+    {
+        get;
+    }
 }
 
 // 기존 bool 반환 API를 유지하면서 탄환 원본 데이터를 전달하는 공급자.
@@ -75,5 +100,5 @@ public interface IElementaryResponder
 public interface IActtackHitListner
 {
     // attacker : 공격자 target : 맞은 대상 damage : 입힌 피해 정보
-    void OnAttackHit(GameObject target, DamageData damageData); 
+    void OnAttackHit(GameObject target, DamageData damageData);
 }

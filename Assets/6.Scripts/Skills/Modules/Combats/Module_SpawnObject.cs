@@ -33,10 +33,15 @@ public class Module_SpawnObject : SkillModule
     [SerializeField]
     private Vector3 spawnRotation;
 
-    public Quaternion ValidSpawnQuaternion =>
-        spawnRotation == Vector3.zero
-            ? Quaternion.identity
-            : Quaternion.Euler(spawnRotation);
+    public Quaternion ValidSpawnQuaternion
+    {
+        get
+        {
+            return spawnRotation == Vector3.zero
+                        ? Quaternion.identity
+                        : Quaternion.Euler(spawnRotation);
+        }
+    }
 
     #endregion
 
@@ -95,7 +100,9 @@ public class Module_SpawnObject : SkillModule
         PhaseSkill phaseSkill)
     {
         if (owner == null || skill == null)
+        {
             return;
+        }
 
         var attackBullets = skill.Runtime.Combat.TakeBulletsForAttack();
 
@@ -134,7 +141,10 @@ public class Module_SpawnObject : SkillModule
         // ============================================================
         bool isCrit =
             skill.Runtime.Combat.IsCritical;
-        foreach (var bullet in attackBullets) isCrit |= bullet.isCrit;
+        foreach (var bullet in attackBullets)
+        {
+            isCrit |= bullet.isCrit;
+        }
 
         DamageData finalDamageData =
             GetEffectiveDamageData(
@@ -171,7 +181,9 @@ public class Module_SpawnObject : SkillModule
                 attackBullets);
         }
         if (broadcastAttackOnSpawn)
+        {
             owner.BroadcastAttack(skill.actionData, owner);
+        }
     }
 
 
@@ -286,8 +298,9 @@ public class Module_SpawnObject : SkillModule
         IReadOnlyList<BulletData> attackBullets)
     {
         if (spawnCount <= 0)
+        {
             return;
-
+        }
 
         for (int i = 0; i < spawnCount; i++)
         {
@@ -340,10 +353,10 @@ public class Module_SpawnObject : SkillModule
             //    basePosition,
             //    finalRotation);
 
-            bool isPoolerSpawn = false; 
+            bool isPoolerSpawn = false;
             string finalName =
-          !string.IsNullOrEmpty(
-              skill.Runtime.Spawn.OverridePrefabName)
+          (string.IsNullOrEmpty(
+              skill.Runtime.Spawn.OverridePrefabName) == false)
                   ? skill.Runtime.Spawn.OverridePrefabName
                   : objectName;
 
@@ -353,7 +366,7 @@ public class Module_SpawnObject : SkillModule
                 finalRotation);
 
 
-            isPoolerSpawn = true; 
+            isPoolerSpawn = true;
             if (obj == null)
             {
                 // ------------------------------------------------------------
@@ -362,14 +375,16 @@ public class Module_SpawnObject : SkillModule
 
                 if (spawnObj != null)
                 {
-                    obj =  UnityEngine.Object.Instantiate(
+                    obj = UnityEngine.Object.Instantiate(
                         spawnObj,
                         basePosition,
                         finalRotation);
-                    isPoolerSpawn = false; 
+                    isPoolerSpawn = false;
                 }
-                else 
+                else
+                {
                     continue;
+                }
             }
 
             // --------------------------------------------------------
@@ -377,7 +392,9 @@ public class Module_SpawnObject : SkillModule
             // --------------------------------------------------------
 
             if (obj.TryGetComponent<BaseProjectile>(out var bulletProjectile))
+            {
                 bulletProjectile.SetMagicBullets(attackBullets, skill.Runtime.Combat.BulletApplyMode);
+            }
 
             if (obj.TryGetComponent<ISkillEffect>(
                     out var skillEffect))
@@ -424,9 +441,14 @@ public class Module_SpawnObject : SkillModule
             if (attackBullets.Count > 0)
             {
                 if (lifetimeBonusPerBullet > 0f && obj.TryGetComponent<AbstractProjectile>(out var projectile))
+                {
                     projectile.ScaleLifeTime(1f + attackBullets.Count * lifetimeBonusPerBullet);
+                }
+
                 if (childRangeBonusPerBullet > 0f && obj.TryGetComponent<SplitMotherProjectile>(out var mother))
+                {
                     mother.SetChildRangeMultiplier(1f + attackBullets.Count * childRangeBonusPerBullet);
+                }
             }
 
 
@@ -455,9 +477,13 @@ public class Module_SpawnObject : SkillModule
             }
 
             if (isPoolerSpawn)
+            {
                 ObjectPooler.FinishSpawn(obj);
+            }
             else
+            {
                 ObjectPooler.NotifySpawnActivated(obj);
+            }
         }
     }
 
@@ -526,9 +552,17 @@ public class Module_SpawnObject : SkillModule
     private DamageData GetEffectiveDamageData(ActiveSkill skill)
     {
         var source = damageApplyType == DamageApplyType.Override ? damageData : skill?.damageData;
-        if (source == null) return new DamageData();
+        if (source == null)
+        {
+            return new DamageData();
+        }
+
         float ignoreBonus = skill?.Runtime?.Combat?.IgnoreDefenseBonus ?? 0f;
-        if (damageApplyType != DamageApplyType.Multiply && ignoreBonus <= 0f) return source;
+        if (damageApplyType != DamageApplyType.Multiply && ignoreBonus <= 0f)
+        {
+            return source;
+        }
+
         var result = source.Clone();
         if (damageApplyType == DamageApplyType.Multiply)
         {

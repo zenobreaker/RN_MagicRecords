@@ -4,7 +4,13 @@ using UnityEngine;
 public class UIController : MonoBehaviour, IUIContainer
 {
     private Transform popUpParent;
-    public Transform PopUpParent => popUpParent;
+    public Transform PopUpParent
+    {
+        get
+        {
+            return popUpParent;
+        }
+    }
 
     [SerializeField] private List<UICurrency> currencies;
 
@@ -30,12 +36,15 @@ public class UIController : MonoBehaviour, IUIContainer
 
     public void SetActiveTarget(GameObject target)
     {
-        target.SetActive(!target.activeInHierarchy);
+        target.SetActive(target.activeInHierarchy == false);
     }
 
     public void UpdateCurrencies()
     {
-        if (CurrencyManager.Instance == null) return;
+        if (CurrencyManager.Instance == null)
+        {
+            return;
+        }
 
         foreach (var currency in currencies)
         {

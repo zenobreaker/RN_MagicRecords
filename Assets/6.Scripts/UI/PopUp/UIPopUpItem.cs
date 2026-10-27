@@ -34,17 +34,26 @@ public class UIPopUpItem : UIPopUp
 
     protected override void DrawPopUp()
     {
-        if (item == null) return;
+        if (item == null)
+        {
+            return;
+        }
 
         if (itemIconImage != null)
+        {
             itemIconImage.sprite = item.Icon;
+        }
 
         Debug.Assert(LocalizationManager.Instance != null);
         if (itemNameText != null)
+        {
             itemNameText.text = LocalizationManager.Instance.GetText(item.name);
+        }
 
         if (itemMainDescText != null)
+        {
             itemMainDescText.text = LocalizationManager.Instance.GetText(item.description);
+        }
 
         DrawItemOption();
         if (item is not EquipmentItem)
@@ -56,15 +65,22 @@ public class UIPopUpItem : UIPopUp
 
     protected void DrawItemOption()
     {
-        if (item == null) return;
-        if (itemMainOptionText == null) return;
+        if (item == null)
+        {
+            return;
+        }
 
-        Debug.Assert(LocalizationManager.Instance != null); 
+        if (itemMainOptionText == null)
+        {
+            return;
+        }
+
+        Debug.Assert(LocalizationManager.Instance != null);
 
         if (item is EquipmentItem equipment)
         {
             string key = equipment.modifier.GetLocalKey();
-            itemMainOptionText.text = LocalizationManager.Instance.GetText(key) + " "+ equipment.modifier.GetValueAndValueType(); 
+            itemMainOptionText.text = LocalizationManager.Instance.GetText(key) + " " + equipment.modifier.GetValueAndValueType();
         }
     }
 

@@ -40,7 +40,7 @@ public class Module_CalcTargetPosition : SkillModule
             case TargetPositionType.ReadFromBlackboard:
                 return; // 덮어쓰지 않고 종료
 
-            // 4. 시전자 주변의 무작위 위치 
+            // 4. 시전자 주변의 무작위 위치
             case TargetPositionType.RandomAroundCaster:
                 Vector2 rand = UnityEngine.Random.insideUnitCircle * forwardDistance;
                 finalTargetPos = owner.transform.position + new Vector3(rand.x, 0, rand.y);
@@ -84,12 +84,17 @@ public class Module_CalcTargetPosition : SkillModule
         foreach (var col in cols)
         {
             // 💡 [핵심] 찾은 콜라이더가 시전자(owner) 본인이거나 자식 오브젝트면 무시!
-            if (col.transform.IsChildOf(owner.transform)) continue;
+            if (col.transform.IsChildOf(owner.transform))
+            {
+                continue;
+            }
             // 팀일 경우도 무시
             if (col.TryComponentInParent<ITeamAgent>(out var c))
             {
                 if (teamAgent != null && c.GetGeneriTeamId() == teamAgent.GetGeneriTeamId())
+                {
                     continue;
+                }
             }
 
             float dst = Vector3.Distance(origin, col.transform.position);
@@ -111,14 +116,19 @@ public class Module_CalcTargetPosition : SkillModule
         // 거리순으로 정렬 후 개수 제한하여 리스트 생성
         return cols.Where(c =>
         {
-            // 1. 자기 자신 무시 
-            if (c.transform.IsChildOf(owner.transform)) return false;
+            // 1. 자기 자신 무시
+            if (c.transform.IsChildOf(owner.transform))
+            {
+                return false;
+            }
 
             // 2. 같은 팀 무시
             if (teamAgent != null && c.TryComponentInParent<ITeamAgent>(out var targetTeam))
             {
                 if (targetTeam.GetGeneriTeamId() == teamAgent.GetGeneriTeamId())
+                {
                     return false;
+                }
             }
             return true;
         })

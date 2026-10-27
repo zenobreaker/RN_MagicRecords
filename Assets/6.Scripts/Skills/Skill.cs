@@ -4,18 +4,54 @@ using UnityEngine;
 public abstract class Skill
 {
     protected int skillID;
-    public int SkillID { get { return skillID; } }
+    public int SkillID
+    {
+        get
+        {
+            return skillID;
+        }
+    }
     protected string skillName;
-    public string Name { get { return skillName; } }
+    public string Name
+    {
+        get
+        {
+            return skillName;
+        }
+    }
     protected string skillDescription;
-    public string Description { get { return skillDescription; } }
+    public string Description
+    {
+        get
+        {
+            return skillDescription;
+        }
+    }
     protected int skillLevel;
-    public int SkillLevel { get { return skillLevel; } }
+    public int SkillLevel
+    {
+        get
+        {
+            return skillLevel;
+        }
+    }
 
-    public List<SkillLevelData> LevelDatas { get; protected set; }
+    public List<SkillLevelData> LevelDatas
+    {
+        get;
+        protected set;
+    }
 
-    public Sprite Icon { get; private set; }
-    public IReadOnlyList<string> Keywords { get; private set; } = new List<string>();
+    public Sprite Icon
+    {
+        get;
+        private set;
+    }
+    public IReadOnlyList<string> Keywords
+    {
+        get;
+        private set;
+    } = new List<string>();
 
     public Skill()
     {
@@ -43,7 +79,7 @@ public abstract class Skill
         skillLevel = level;
     }
 
-    protected  int GetSkillLevel()
+    protected int GetSkillLevel()
     {
         int index = Mathf.Min(skillLevel - 1, LevelDatas.Count - 1);
         int max = Mathf.Max(LevelDatas.Count - 1, 1);

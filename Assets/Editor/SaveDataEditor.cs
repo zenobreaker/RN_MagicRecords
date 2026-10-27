@@ -23,8 +23,10 @@ public static class SaveDataEditor
         }
     }
 
-    [MenuItem(MenuPath + "--- Separator ---", false, 10)] 
-    private static void Separator() { }
+    [MenuItem(MenuPath + "--- Separator ---", false, 10)]
+    private static void Separator()
+    {
+    }
 
     // 2. 맵 & 스테이지 데이터 삭제
     [MenuItem(MenuPath + "Delete Map & Stage Data", false, 11)]
@@ -60,7 +62,7 @@ public static class SaveDataEditor
     }
 
 
-    // 6. 레코드 데이터 삭제 
+    // 6. 레코드 데이터 삭제
     [MenuItem(MenuPath + "Delete Record Data", false, 15)]
     public static void DeleteRecord()
     {
@@ -68,7 +70,10 @@ public static class SaveDataEditor
         Debug.Log("레코드 데이터가 삭제되었습니다.");
     }
 
-    [MenuItem(MenuPath + "--- Separator ---", false, 30)] private static void Separator2() { }
+    [MenuItem(MenuPath + "--- Separator ---", false, 30)]
+    private static void Separator2()
+    {
+    }
 
     // 폴더 열기 기능 (여전히 매우 유용함)
     [MenuItem(MenuPath + "Open Save Folder", false, 31)]

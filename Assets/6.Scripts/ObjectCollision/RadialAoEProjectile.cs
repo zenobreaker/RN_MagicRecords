@@ -70,13 +70,13 @@ public class RadialAoEProjectile : BaseProjectile
 
         hitCheckTimer -= Time.deltaTime;
 
-        if(hitCheckTimer <= 0f)
+        if (hitCheckTimer <= 0f)
         {
             hitCheckTimer = hitCheckRate;
 
             CheckRadialHit();
         }
- 
+
         if (multiHit)
         {
             tickTimer -= Time.deltaTime;
@@ -125,25 +125,35 @@ public class RadialAoEProjectile : BaseProjectile
         foreach (Collider hit in hits)
         {
             if (IsFriendlyFire(hit.gameObject))
+            {
                 continue;
+            }
 
             if (ownerObject != null &&
                 hit.gameObject == ownerObject)
+            {
                 continue;
+            }
 
-            if (!multiHit && hitTargets.Contains(hit.gameObject))
+            if (multiHit == false && hitTargets.Contains(hit.gameObject))
+            {
                 continue;
+            }
 
-            if (!IsInsideRadialAttack(hit.transform.position))
+            if (IsInsideRadialAttack(hit.transform.position) == false)
+            {
                 continue;
+            }
 
             DealDamage(
                 hit.gameObject,
                 hit.ClosestPoint(transform.position)
             );
 
-            if (!multiHit)
+            if (multiHit == false)
+            {
                 hitTargets.Add(hit.gameObject);
+            }
         }
     }
 
@@ -162,16 +172,24 @@ public class RadialAoEProjectile : BaseProjectile
 
         // 중심부 / 최대거리 검사
         if (distance < innerRadius)
+        {
             return false;
+        }
 
         if (distance > currentRadius)
+        {
             return false;
+        }
 
         if (shardCount <= 0)
+        {
             return false;
+        }
 
         if (distance <= 0.001f)
+        {
             return true;
+        }
 
         float targetAngle =
             Mathf.Atan2(offset.x, offset.z) * Mathf.Rad2Deg;
@@ -196,7 +214,9 @@ public class RadialAoEProjectile : BaseProjectile
                 );
 
             if (delta <= shardAngle * 0.5f)
+            {
                 return true;
+            }
         }
 
         return false;
@@ -207,7 +227,9 @@ public class RadialAoEProjectile : BaseProjectile
         angle %= 360f;
 
         if (angle < 0f)
+        {
             angle += 360f;
+        }
 
         return angle;
     }
@@ -221,7 +243,11 @@ public class RadialAoEProjectile : BaseProjectile
 
     private void DrawRadialGizmo()
     {
-        if (shardCount <= 0) return;
+        if (shardCount <= 0)
+        {
+            return;
+        }
+
         Vector3 origin = transform.position;
 
         float sectorSize = 360f / shardCount;

@@ -20,15 +20,19 @@ public class UIResultPage : UiBase
 
     protected override void Awake()
     {
-        base.Awake(); 
+        base.Awake();
 
         confirmButton.onClick.AddListener(OnConfirmClicked);
 
         if (fadeImage != null)
+        {
             fadeImage.gameObject.SetActive(false);
+        }
 
         if (contentGroup != null)
+        {
             contentGroup.gameObject.SetActive(false);
+        }
     }
 
     public void Show(bool isWin)
@@ -36,28 +40,35 @@ public class UIResultPage : UiBase
         isSuccess = isWin;
 
         if (fadeImage != null)
+        {
             fadeImage.gameObject.SetActive(true);
+        }
 
         if (contentGroup != null)
+        {
             contentGroup.gameObject.SetActive(true);
-
+        }
 
         if (isWin)
         {
             if (resultText != null)
+            {
                 resultText.text = "STAGE CLEAR";
+            }
         }
         else
         {
             if (resultText != null)
+            {
                 resultText.text = "STAGE FAILED";
+            }
         }
     }
 
     private void OnConfirmClicked()
     {
-        // 일반적인 스테이지 클리어로 인한 퇴장 
-        // 스테이지 선택 씬으로 이동 
+        // 일반적인 스테이지 클리어로 인한 퇴장
+        // 스테이지 선택 씬으로 이동
         SceneManager.LoadScene("StageSelectScene");
 
         UIManager.Instance?.CloseTopUI();

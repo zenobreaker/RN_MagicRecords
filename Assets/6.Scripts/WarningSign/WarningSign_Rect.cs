@@ -148,7 +148,7 @@ public class WarningSign_Rect : WarningSign
     }
 
     /// <summary>
-    /// 시전자 위치에서 앞으로 직사각형이 채워짐 
+    /// 시전자 위치에서 앞으로 직사각형이 채워짐
     /// </summary>
     private void UpdateFillForward(float progress)
     {
@@ -190,9 +190,12 @@ public class WarningSign_Rect : WarningSign
 
     private void UpdatePlanes()
     {
-        if (subPlane == null) return;
+        if (subPlane == null)
+        {
+            return;
+        }
 
-        // Sub Plane 크기 갱신 
+        // Sub Plane 크기 갱신
         subPlane.localScale = new Vector3(
             currentRectScale.x,
             1f,
@@ -211,17 +214,17 @@ public class WarningSign_Rect : WarningSign
             meshBaseSize.z * maxRectScale.y;
 
         // 위치 처리
-        switch(fillMode)
+        switch (fillMode)
         {
             case RectFillMode.FillForward:
                 // 시전자 위치가 시작점
                 subPlane.localPosition =
-                    new Vector3(0f, 0f, currentLength * 0.5f); 
+                    new Vector3(0f, 0f, currentLength * 0.5f);
                 break;
 
             case RectFillMode.ExpandWidth:
-                // 길이는 이미 maxLength 
-                // 시작점은 시전자 위치 
+                // 길이는 이미 maxLength
+                // 시작점은 시전자 위치
                 subPlane.localPosition =
                    new Vector3(
                        0f,
@@ -247,7 +250,9 @@ public class WarningSign_Rect : WarningSign
     private void OnDrawGizmosSelected()
     {
         if (mainPlane == null)
+        {
             return;
+        }
 
         Vector3 origin =
             transform.position;
@@ -258,7 +263,9 @@ public class WarningSign_Rect : WarningSign
         forward.y = 0f;
 
         if (forward.sqrMagnitude < 0.001f)
+        {
             forward = Vector3.forward;
+        }
 
         forward.Normalize();
 

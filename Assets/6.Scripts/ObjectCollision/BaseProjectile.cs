@@ -20,12 +20,32 @@ public abstract class BaseProjectile
     protected DamageData cachedDamageData;
     private float shotDamageMultiplier = 1f;
     private bool shotExtraCrit;
-    public Character Owner => owner;
-    public DamageData DamageData => cachedDamageData;
+    public Character Owner
+    {
+        get
+        {
+            return owner;
+        }
+    }
+    public DamageData DamageData
+    {
+        get
+        {
+            return cachedDamageData;
+        }
+    }
 
     // 이 투사체에 배정된 탄환. Hit/Destroy runner에서도 읽을 수 있습니다.
-    public IReadOnlyList<BulletData> ConsumedBullets { get; private set; } = Array.Empty<BulletData>();
-    public BulletEffectApplyMode BulletApplyMode { get; private set; }
+    public IReadOnlyList<BulletData> ConsumedBullets
+    {
+        get;
+        private set;
+    } = Array.Empty<BulletData>();
+    public BulletEffectApplyMode BulletApplyMode
+    {
+        get;
+        private set;
+    }
 
     public void SetMagicBullets(IReadOnlyList<BulletData> bullets, BulletEffectApplyMode mode)
     {
@@ -37,7 +57,11 @@ public abstract class BaseProjectile
         }
 
         var snapshot = new BulletData[bullets.Count];
-        for (int i = 0; i < snapshot.Length; i++) snapshot[i] = bullets[i];
+        for (int i = 0; i < snapshot.Length; i++)
+        {
+            snapshot[i] = bullets[i];
+        }
+
         ConsumedBullets = Array.AsReadOnly(snapshot);
     }
 
@@ -45,13 +69,21 @@ public abstract class BaseProjectile
     public void CopyMagicBulletsTo(BaseProjectile child)
     {
         if (child != null && BulletApplyMode == BulletEffectApplyMode.InheritToChildren)
+        {
             child.SetMagicBullets(ConsumedBullets, BulletApplyMode);
+        }
     }
 
     // 피아식별용 공통 변수
     protected GenenricTeamId myTeamId = GenenricTeamId.NoTeamId;
     protected HashSet<GameObject> ignores = new HashSet<GameObject>();
-    public HashSet<GameObject> Ignores => ignores;
+    public HashSet<GameObject> Ignores
+    {
+        get
+        {
+            return ignores;
+        }
+    }
 
     public event Action<GameObject, Vector3> OnTargetHitEvent;
 
@@ -60,7 +92,10 @@ public abstract class BaseProjectile
     // ==========================================
     public virtual void SetDamageInfo(Character attacker, DamageData damageData, bool bExtraCrit = false, float multiplier = 1.0f)
     {
-        if (attacker == null || damageData == null) return;
+        if (attacker == null || damageData == null)
+        {
+            return;
+        }
 
         ownerObject = attacker;
         owner = attacker;
@@ -75,18 +110,28 @@ public abstract class BaseProjectile
 
     public virtual void AddIgnore(GameObject ignore)
     {
-        if (ignore != null) ignores.Add(ignore);
+        if (ignore != null)
+        {
+            ignores.Add(ignore);
+        }
     }
 
     public void SetIgnores(HashSet<GameObject> ignores)
     {
-        if (ReferenceEquals(this.ignores, ignores)) return;
+        if (ReferenceEquals(this.ignores, ignores))
+        {
+            return;
+        }
+
         this.ignores.Clear();
-        if (ignores != null) this.ignores.UnionWith(ignores);
+        if (ignores != null)
+        {
+            this.ignores.UnionWith(ignores);
+        }
     }
 
     // ==========================================
-    // 2. 자식들이 꿀 빨게 될 마법의 공통 함수 
+    // 2. 자식들이 꿀 빨게 될 마법의 공통 함수
     // ==========================================
     protected bool IsFriendlyFire(GameObject target)
     {
@@ -112,7 +157,9 @@ public abstract class BaseProjectile
     protected virtual void OnEnable()
     {
         for (int i = 0; i < spawnRunners.Count && isActiveAndEnabled; i++)
+        {
             spawnRunners[i].OnSpawn(this);
+        }
     }
 
     protected virtual void OnDisable()
@@ -159,13 +206,17 @@ public abstract class BaseProjectile
 
     protected void DealDamage(GameObject target, Vector3 hitPoint)
     {
-        if (owner == null || cachedDamageData == null) return;
+        if (owner == null || cachedDamageData == null)
+        {
+            return;
+        }
+
         CombatHelper.ApplyDamage(
-            owner,
-            cachedDamageData.GetMyDamageEvent(owner.Status, false, shotExtraCrit, shotDamageMultiplier),
-            target,
-            hitPoint
-        );
+                    owner,
+                    cachedDamageData.GetMyDamageEvent(owner.Status, false, shotExtraCrit, shotDamageMultiplier),
+                    target,
+                    hitPoint
+                );
 
         NotifyHit(target, hitPoint);
 

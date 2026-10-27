@@ -20,7 +20,10 @@ public class DynamicPartRotator : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (targetPart == null) return;
+        if (targetPart == null)
+        {
+            return;
+        }
 
         // 1. 이번 프레임에 실제로 얼마나 이동했는지 거리(magnitude) 계산
         Vector3 deltaMove = transform.position - lastPosition;

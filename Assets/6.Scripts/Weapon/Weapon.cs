@@ -94,11 +94,14 @@ public class DamageData
         bool extraCrit = false,
         float multiplier = 1f)
     {
-        return DamageCalculator.GetMyDamageEvent(attackerStatus, this,isFirstHit,extraCrit, multiplier);
+        return DamageCalculator.GetMyDamageEvent(attackerStatus, this, isFirstHit, extraCrit, multiplier);
     }
     public void PlayHitSound()
     {
-        if (hitData == null) return;
+        if (hitData == null)
+        {
+            return;
+        }
 
         hitData.PlayHitSound();
     }
@@ -133,19 +136,47 @@ public class ActionData
 {
     [SerializeField]
     private string subStateName;
-    public string SubStateName { get => subStateName; }
+    public string SubStateName
+    {
+        get
+        {
+            return subStateName;
+        }
+    }
 
     [SerializeField]
     private string stateName;
     private string state;
-    public string StateName { get => state; }
+    public string StateName
+    {
+        get
+        {
+            return state;
+        }
+    }
 
     [SerializeField]
     private string layerName;
-    public string LayerName { get => layerName; }
+    public string LayerName
+    {
+        get
+        {
+            return layerName;
+        }
+    }
 
     [SerializeField] private float actionSpeed = 1.0f;
-    public float ActionSpeed { get => actionSpeed; set => actionSpeed = value; }
+    public float ActionSpeed
+    {
+        get
+        {
+            return actionSpeed;
+        }
+        set
+        {
+            actionSpeed = value;
+        }
+    }
 
     public DroneAttackType droneReactionType = DroneAttackType.Normal;
 
@@ -156,14 +187,23 @@ public class ActionData
         get
         {
             if (actionSpeedHash == -1)
+            {
                 actionSpeedHash = Animator.StringToHash("ActionSpeed");
+            }
+
             return actionSpeedHash;
         }
     }
 
     [SerializeField]
     private string weaponActionName;
-    public string WeaponActionName { get => weaponActionName; }
+    public string WeaponActionName
+    {
+        get
+        {
+            return weaponActionName;
+        }
+    }
 
     [Header("Sound")]
     public string SoundName;
@@ -205,7 +245,9 @@ public class ActionData
     public void Play_CameraShake()
     {
         if (MovableCameraShaker.Instance != null && csp != null)
+        {
             MovableCameraShaker.Instance.Play_Impulse(csp.settings);
+        }
     }
 }
 
@@ -229,17 +271,27 @@ public class DamageEvent
 
     public HitData hitData;
 
-    public HitReactionType Reaction => IsDOTEffect() ? HitReactionType.None :
+    public HitReactionType Reaction
+    {
+        get
+        {
+            return IsDOTEffect() ? HitReactionType.None :
         hitData?.Reaction ?? HitReactionType.None;
+        }
+    }
 
     //TODO : 잃은 체력 비례 데미지의 대한 상한 조건이 서로 상이할 경우 사용
     //public List<MissingHPDamageModifier> MissingHPModifiers { get; } = new List<MissingHPDamageModifier>();
     public float MissingHPRatio; // 잃은 체력 비례 데미지
     public float IgnoreDefenseRate;  // 방어력 무시 데미지
-    public float MaxHPRatio; // 최대 체력 비례 데미지 
+    public float MaxHPRatio; // 최대 체력 비례 데미지
     public float DamageAmp;
 
-    public int AttackInstanceID { get; set; }
+    public int AttackInstanceID
+    {
+        get;
+        set;
+    }
 
     public DamageEvent(float value, bool isCrit = false, bool isFisrtHit = false, HitData hitData = null)
     {
@@ -257,7 +309,11 @@ public class DamageEvent
 
     public bool IsDOTEffect()
     {
-        if (hitData == null) return false;
+        if (hitData == null)
+        {
+            return false;
+        }
+
         return hitData.IsDOTEffect();
     }
 }
@@ -273,17 +329,35 @@ public class Weapon : MonoBehaviour
 
     [Header("Weapon Settings")]
     [SerializeField] protected WeaponType type;
-    public WeaponType Type { get => type; }
+    public WeaponType Type
+    {
+        get
+        {
+            return type;
+        }
+    }
 
-    [SerializeField] protected SO_ActiveSkillData defaultSkill; 
+    [SerializeField] protected SO_ActiveSkillData defaultSkill;
 
     [SerializeField] protected SO_Action so_Action;
-    public SO_Action GetActionData { get => so_Action; }
+    public SO_Action GetActionData
+    {
+        get
+        {
+            return so_Action;
+        }
+    }
 
     protected List<ActionData> actionDatas;
 
     private bool bEquipped;
-    public bool Equipped { get => bEquipped; }
+    public bool Equipped
+    {
+        get
+        {
+            return bEquipped;
+        }
+    }
 
 
     //private bool bDirtyMove = false;
@@ -308,13 +382,17 @@ public class Weapon : MonoBehaviour
         ownerCharacter = rootObject.GetComponent<Character>();
 
         if (so_Action != null)
+        {
             actionDatas = so_Action.actionDatas;
+        }
     }
 
     protected virtual void Start()
     {
         foreach (var actionData in actionDatas)
+        {
             actionData.Initialize();
+        }
     }
 
     protected virtual void InvokeLastAttackEvent()
@@ -333,14 +411,14 @@ public class Weapon : MonoBehaviour
             weaponController = user.GetWeaponController();
         }
 
-        if(defaultSkill != null && rootObject != null)
+        if (defaultSkill != null && rootObject != null)
         {
-            if(rootObject.TryGetComponent<SkillComponent>(out 
+            if (rootObject.TryGetComponent<SkillComponent>(out
                 var skillComponent))
             {
                 skillComponent.SetActiveSkill(SkillSlot.Default,
                     defaultSkill.CreateSkill() as ActiveSkill);
-                
+
                 Debug.Log($"{rootObject.name} is set default skill complete.");
             }
         }
@@ -348,7 +426,9 @@ public class Weapon : MonoBehaviour
         Begin_Equip();
     }
 
-    public virtual void Begin_Equip() { }
+    public virtual void Begin_Equip()
+    {
+    }
 
     public virtual void End_Equip()
     {

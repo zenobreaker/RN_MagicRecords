@@ -4,7 +4,7 @@ public class Record_FinalEffort : RecordPassive
 {
     private StatusComponent status;
     private HealthPointComponent health;
-    private StatModifier modifier; 
+    private StatModifier modifier;
     public Record_FinalEffort(SO_RecordData data) : base(data)
     {
     }
@@ -20,9 +20,9 @@ public class Record_FinalEffort : RecordPassive
         }
     }
 
-    private void OnChangedHP(float value, float maxHp) 
+    private void OnChangedHP(float value, float maxHp)
     {
-        if(value  <= maxHp * 0.3f)
+        if (value <= maxHp * 0.3f)
         {
             status.ApplyBuff(modifier = new StatModifier(StatusType.ATTACKSPEED, 0.3f, ModifierValueType.PERCENT));
         }

@@ -31,7 +31,9 @@ public class UIPopUpTwoButton : UIPopUp
                 confirmButton.onClick.RemoveAllListeners();
 
                 if (onConfirm != null)
+                {
                     confirmButton.onClick.AddListener(onConfirm);
+                }
 
                 confirmButton.onClick.AddListener(CloseUI);
             }
@@ -44,9 +46,13 @@ public class UIPopUpTwoButton : UIPopUp
                 cancelButton.onClick.RemoveAllListeners();
 
                 if (onCancel != null)
+                {
                     cancelButton.onClick.AddListener(onCancel);
+                }
                 else
+                {
                     cancelButton.onClick.AddListener(CloseUI);
+                }
             }
         }
 
@@ -60,7 +66,7 @@ public class UIPopUpTwoButton : UIPopUp
             titleText.text = LocalizationManager.Instance.SafeInvoke(v => v.GetText(title));
         }
 
-        if(contextText != null)
+        if (contextText != null)
         {
             contextText.text = LocalizationManager.Instance.SafeInvoke(v => v.GetText(context));
         }

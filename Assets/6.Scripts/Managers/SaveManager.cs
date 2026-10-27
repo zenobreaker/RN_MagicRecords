@@ -10,7 +10,7 @@ public sealed class ExploreRunSaveData
     public ExplorationSetupData setupData = new();
 
     public MapData mapData;
-    public StageNodeData stageNodeData; 
+    public StageNodeData stageNodeData;
     public List<ExploreHealthState> partyHealth = new();
     public int startingPassiveVersion;
     public List<ExplorePassiveSaveData> startingPassives = new();
@@ -130,13 +130,55 @@ public static class SaveManager
             return Application.persistentDataPath;
         }
     }
-    private static string runSaveDataPath => Path.Combine(SaveDirectory, "runSaveData.json");
-    private static string mapDataPath => Path.Combine(SaveDirectory, "mapdata.json");
-    private static string stageDataPath => Path.Combine(SaveDirectory, "stagedata.json");
-    private static string charInfoDatPah => Path.Combine(SaveDirectory, "charinfo.json");
-    private static string inventoryPath => Path.Combine(SaveDirectory, "invetory.json");
-    private static string skillPath => Path.Combine(SaveDirectory, "learnskill.json");
-    private static string recordPath => Path.Combine(SaveDirectory, "record.json");
+    private static string runSaveDataPath
+    {
+        get
+        {
+            return Path.Combine(SaveDirectory, "runSaveData.json");
+        }
+    }
+    private static string mapDataPath
+    {
+        get
+        {
+            return Path.Combine(SaveDirectory, "mapdata.json");
+        }
+    }
+    private static string stageDataPath
+    {
+        get
+        {
+            return Path.Combine(SaveDirectory, "stagedata.json");
+        }
+    }
+    private static string charInfoDatPah
+    {
+        get
+        {
+            return Path.Combine(SaveDirectory, "charinfo.json");
+        }
+    }
+    private static string inventoryPath
+    {
+        get
+        {
+            return Path.Combine(SaveDirectory, "invetory.json");
+        }
+    }
+    private static string skillPath
+    {
+        get
+        {
+            return Path.Combine(SaveDirectory, "learnskill.json");
+        }
+    }
+    private static string recordPath
+    {
+        get
+        {
+            return Path.Combine(SaveDirectory, "record.json");
+        }
+    }
 
 
     public static void SaveExploreRun(ExploreRunSaveData data)
@@ -147,7 +189,10 @@ public static class SaveManager
 
     public static ExploreRunSaveData LoadExploreRun()
     {
-        if (!System.IO.File.Exists(runSaveDataPath)) return null;
+        if (System.IO.File.Exists(runSaveDataPath) == false)
+        {
+            return null;
+        }
 
         string json = System.IO.File.ReadAllText(runSaveDataPath);
         return JsonUtility.FromJson<ExploreRunSaveData>(json);
@@ -161,7 +206,9 @@ public static class SaveManager
     public static void DeleteExploreRun()
     {
         if (System.IO.File.Exists(runSaveDataPath))
+        {
             System.IO.File.Delete(runSaveDataPath);
+        }
     }
 
     #region MapData
@@ -174,7 +221,7 @@ public static class SaveManager
 
     public static MapData LoadMap()
     {
-        if (!File.Exists(mapDataPath))
+        if (File.Exists(mapDataPath) == false)
         {
             Debug.LogWarning("No saved map data found.");
             return null;
@@ -188,7 +235,9 @@ public static class SaveManager
     public static void DeleteMapData()
     {
         if (File.Exists(mapDataPath))
+        {
             File.Delete(mapDataPath);
+        }
     }
     #endregion
 
@@ -202,7 +251,7 @@ public static class SaveManager
 
     public static StageNodeData LoadStageNode()
     {
-        if (!File.Exists(stageDataPath))
+        if (File.Exists(stageDataPath) == false)
         {
             Debug.LogWarning("No saved stage data found.");
             return null;
@@ -222,7 +271,9 @@ public static class SaveManager
     public static void DeleteStageNodeData()
     {
         if (File.Exists(stageDataPath))
-        { File.Delete(stageDataPath); }
+        {
+            File.Delete(stageDataPath);
+        }
     }
 
 
@@ -238,7 +289,7 @@ public static class SaveManager
 
     public static CharInfoListData LoadCharInfoData()
     {
-        if (!File.Exists(charInfoDatPah))
+        if (File.Exists(charInfoDatPah) == false)
         {
             Debug.LogWarning("No save char info data found.");
             return null;
@@ -260,7 +311,7 @@ public static class SaveManager
 
     public static ItemInfoListData LoadInventoryData()
     {
-        if (!File.Exists(inventoryPath))
+        if (File.Exists(inventoryPath) == false)
         {
             Debug.LogWarning("No save inventory data found.");
             return null;
@@ -282,7 +333,7 @@ public static class SaveManager
 
     public static CharacterSkillData LoadSkillData()
     {
-        if (!File.Exists(skillPath))
+        if (File.Exists(skillPath) == false)
         {
             Debug.LogWarning("No save skill data found.");
             return null;
@@ -304,7 +355,7 @@ public static class SaveManager
 
     public static RecordSaveListData LoadRecordData()
     {
-        if (!File.Exists(recordPath))
+        if (File.Exists(recordPath) == false)
         {
             Debug.LogWarning($"No save Record data found.");
             return null;

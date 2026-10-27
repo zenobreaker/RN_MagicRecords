@@ -15,6 +15,8 @@ public class Module_CameraShake : SkillModule
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         if (MovableCameraShaker.Instance != null)
+        {
             MovableCameraShaker.Instance.Play_Impulse(settings);
+        }
     }
 }

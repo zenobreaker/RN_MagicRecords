@@ -6,17 +6,20 @@ using static SkillTreeController;
 
 public class UISkillTree : UiBase
 {
-    //    private int maxLineCount = 5; // MaxLevel / 5 
+    //    private int maxLineCount = 5; // MaxLevel / 5
     public event Action<SkillRuntimeData> OnDrawedDetail;
 
     public void DrawSkillTree(SkillTree skillTree, SkillTreeController.Skill_Category category)
     {
-        if(skillTree == null) return;
+        if (skillTree == null)
+        {
+            return;
+        }
 
         bool filterActive = category == Skill_Category.CLASS_ACTIVE ||
                             category == Skill_Category.COMMON_ACTIVE;
 
-        bool filterPassive = category == Skill_Category.CLASS_PASSIVE||
+        bool filterPassive = category == Skill_Category.CLASS_PASSIVE ||
                             category == Skill_Category.COMMON_PASSIVE;
 
         DrawFilterTree(skillTree, filterActive, filterPassive);
@@ -24,7 +27,10 @@ public class UISkillTree : UiBase
 
     private void DrawFilterTree(SkillTree skillTree, bool active, bool passive)
     {
-        if (skillTree == null) return;
+        if (skillTree == null)
+        {
+            return;
+        }
 
         List<List<SkillRuntimeData>> skillLines = new();
 
@@ -48,7 +54,7 @@ public class UISkillTree : UiBase
     }
     private void DrawSkillTreeLines(int lineCount, List<List<SkillRuntimeData>> skillLines)
     {
-        // 라인 오브젝트 배치 
+        // 라인 오브젝트 배치
         InitReplaceContentObject(lineCount);
 
         // 생성된 라인 순회하면서 DrawLine
@@ -71,7 +77,10 @@ public class UISkillTree : UiBase
 
     public void OnShowSkillDetail(SkillRuntimeData data)
     {
-        if (data == null) return;
+        if (data == null)
+        {
+            return;
+        }
 
         Debug.Log($"skill data : {data?.template?.id}");
         OnDrawedDetail?.Invoke(data);

@@ -25,15 +25,45 @@ public class HealthPointComponent : MonoBehaviour
     private float currentHideTime;
     private bool isShow;
     private bool isEnemy;
-    private bool isBoss; 
+    private bool isBoss;
 
-    public float SetMaxHP { set => maxHealthPoint = value; }
-    public float GetMaxHP { get => maxHealthPoint; }
-    public float GetCurrentHP { get => currentHealthPoint; }
-    public float GetCurrentHpRatio { get => currentHealthPoint / maxHealthPoint; }
+    public float SetMaxHP
+    {
+        set
+        {
+            maxHealthPoint = value;
+        }
+    }
+    public float GetMaxHP
+    {
+        get
+        {
+            return maxHealthPoint;
+        }
+    }
+    public float GetCurrentHP
+    {
+        get
+        {
+            return currentHealthPoint;
+        }
+    }
+    public float GetCurrentHpRatio
+    {
+        get
+        {
+            return currentHealthPoint / maxHealthPoint;
+        }
+    }
 
-    public bool Dead { get => currentHealthPoint <= 0.0f; }
-    public event Action<float, float> OnChangedHP_TwoParam; 
+    public bool Dead
+    {
+        get
+        {
+            return currentHealthPoint <= 0.0f;
+        }
+    }
+    public event Action<float, float> OnChangedHP_TwoParam;
 
     private void Start()
     {
@@ -42,19 +72,25 @@ public class HealthPointComponent : MonoBehaviour
             handler = Resources.Load<SO_HUDHandler>(path);
         }
         Debug.Log($"[{gameObject.name}] maxHealthPoint (Awake) = {maxHealthPoint}");
-        ownerChar = GetComponent<Character>(); 
+        ownerChar = GetComponent<Character>();
         isShow = false;
-        
+
         InitCurrentHealth();
 
         if (ownerChar is Player player && gameObject.scene.name == "Stage")
+        {
             AppManager.Instance?.GetExploreManager()?.RegisterRunHealth(player.CharID, this);
+        }
 
         if (ownerChar is Enemy enemyComp)
         {
             isEnemy = true;
             isBoss = enemyComp.Boss;
-            if (enemyComp.Boss) return; 
+            if (enemyComp.Boss)
+            {
+                return;
+            }
+
             uiEnemyCanvas = UIHelpers.CreateBillboardCanvas(uiEnemyName, transform, Camera.main);
             uiEnemyCanvas.gameObject.SetActive(false);
 
@@ -68,12 +104,16 @@ public class HealthPointComponent : MonoBehaviour
     private void LateUpdate()
     {
         if (uiEnemyCanvas != null)
+        {
             uiEnemyCanvas.transform.rotation = Camera.main.transform.rotation;
+        }
 
         if (isEnemy)
         {
             if (isShow == false)
+            {
                 return;
+            }
 
             if (currentHideTime > 0.0f)
             {
@@ -91,9 +131,13 @@ public class HealthPointComponent : MonoBehaviour
                 if (hpGauge.fillAmount != delayGauge.fillAmount)
                 {
                     if (Mathf.Abs(delayGauge.fillAmount) > Mathf.Epsilon)
+                    {
                         delayGauge.fillAmount = Mathf.Lerp(delayGauge.fillAmount, hpGauge.fillAmount, Time.deltaTime * speed);
+                    }
                     else
+                    {
                         delayGauge.fillAmount = hpGauge.fillAmount;
+                    }
                 }
             }
         }
@@ -111,7 +155,7 @@ public class HealthPointComponent : MonoBehaviour
 
     public void SetHealthPoint(float value)
     {
-        maxHealthPoint = value; 
+        maxHealthPoint = value;
         InitCurrentHealth();
     }
     public void UpdateMaxHealthPreservingCurrent(float value)
@@ -120,13 +164,17 @@ public class HealthPointComponent : MonoBehaviour
         currentHealthPoint = Mathf.Clamp(currentHealthPoint, 0, maxHealthPoint);
         OnChangedHP_TwoParam?.Invoke(currentHealthPoint, maxHealthPoint);
         if (GetComponent<Player>() != null)
+        {
             handler.SafeInvoke(v => v.OnChangeValue_HP(currentHealthPoint, maxHealthPoint));
+        }
     }
 
     public void Damage(float amount)
     {
         if (amount < 1.0f)
+        {
             return;
+        }
 
         currentHealthPoint += (amount * -1.0f);
         currentHealthPoint = Mathf.Clamp(currentHealthPoint, 0, maxHealthPoint);
@@ -136,7 +184,7 @@ public class HealthPointComponent : MonoBehaviour
             handler.SafeInvoke(v => v.OnChangeValue_HP(currentHealthPoint, maxHealthPoint));
         }
 
-        if(isEnemy && isBoss)
+        if (isEnemy && isBoss)
         {
             handler.SafeInvoke(v => v.OnChangedValue_BossHP(ownerChar, currentHealthPoint, maxHealthPoint));
         }
@@ -154,11 +202,17 @@ public class HealthPointComponent : MonoBehaviour
     }
 
     public static float HealedValue(float current, float maximum, float amount)
-        => current <= 0 ? 0 : Mathf.Clamp(current + Mathf.Max(0, amount), 0, maximum);
+    {
+        return current <= 0 ? 0 : Mathf.Clamp(current + Mathf.Max(0, amount), 0, maximum);
+    }
 
     public void Heal(float amount)
     {
-        if (Dead) return;
+        if (Dead)
+        {
+            return;
+        }
+
         RestoreCurrentHealth(HealedValue(currentHealthPoint, maxHealthPoint, amount));
     }
 

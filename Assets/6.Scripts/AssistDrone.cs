@@ -18,7 +18,7 @@ public enum DroneAttackType
     HyperLaser      // 하이퍼 레이저
 }
 
-public class AssistDrone 
+public class AssistDrone
     : MonoBehaviour
     , ILifetimeSetup
     , IOwnerSetup
@@ -53,7 +53,10 @@ public class AssistDrone
         }
     }
 
-    private void Awake() => anims = GetComponentsInChildren<Animator>();
+    private void Awake()
+    {
+        anims = GetComponentsInChildren<Animator>();
+    }
 
     public Transform[] GetAllMuzzles()
     {
@@ -62,7 +65,10 @@ public class AssistDrone
 
     public void HandlePlayerAttack(ActionData actionData, Character attacker)
     {
-        if (actionData == null || !spawnActivated || !isActiveAndEnabled || attacker != ownerCharacter) return;
+        if (actionData == null || spawnActivated == false || isActiveAndEnabled == false || attacker != ownerCharacter)
+        {
+            return;
+        }
 
         CancelToken(ref cts);
         cts = new CancellationTokenSource();
@@ -77,8 +83,8 @@ public class AssistDrone
             case DroneAttackType.Normal:
                 DroneNormalAttackAsync(actionData, attacker, cts.Token).Forget();
                 break;
-                //DroneNormalAttackAsync(actionData, attacker, cts.Token).Forget();
-                //break;
+            //DroneNormalAttackAsync(actionData, attacker, cts.Token).Forget();
+            //break;
             case DroneAttackType.HyperLaser:
                 DroneHyperLaserAttackAsync(actionData, attacker, cts.Token).Forget();
                 break;
@@ -100,10 +106,15 @@ public class AssistDrone
     {
         // 드론만의 선딜레이 0.1초
         await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: token);
-        if (token.IsCancellationRequested) return;
+        if (token.IsCancellationRequested)
+        {
+            return;
+        }
 
-        foreach(var anim in anims)  
+        foreach (var anim in anims)
+        {
             anim.SetTrigger("Fire");
+        }
 
         // 좌우 포신에서 평타 1발씩 일제 사격
         foreach (var muzzle in muzzles)
@@ -115,9 +126,14 @@ public class AssistDrone
     private void DroneRapidFire(Character attacker)
     {
         foreach (var anim in anims)
+        {
             anim.SetTrigger("Fire");
+        }
+
         foreach (var muzzle in muzzles)
+        {
             SpawnProjectile(droneNormalProj, muzzle, attacker, isNormalProjectile: true);
+        }
     }
 
     private async UniTaskVoid DroneLaserAttackAsync(ActionData data, Character attacker, CancellationToken token)
@@ -125,7 +141,10 @@ public class AssistDrone
         // 레이저 발사 기믹 (예: LineRenderer 켜기, 이펙트 활성화 등)
 
         foreach (var anim in anims)
+        {
             anim.SetTrigger("Fire");
+        }
+
         Debug.Log("드론 좌우 포신에서 굵은 레이저 출력 시작!");
 
         foreach (var muzzle in muzzles)
@@ -143,7 +162,10 @@ public class AssistDrone
         // 레이저 발사 기믹 (예: LineRenderer 켜기, 이펙트 활성화 등)
 
         foreach (var anim in anims)
+        {
             anim.SetTrigger("Fire");
+        }
+
         Debug.Log("드론 좌우 포신에서 굵은 레이저 출력 시작!");
 
         foreach (var muzzle in muzzles)
@@ -167,18 +189,24 @@ public class AssistDrone
             projectile.AddIgnore(this.gameObject);
 
             if (isNormalProjectile)
+            {
                 AppManager.Instance.SafeInvoke(v => v.GetPassiveSystem()
-                    ?.BroadcastOnAssistDroneNormalProjectile(projectile, attacker));
+                ?.BroadcastOnAssistDroneNormalProjectile(projectile, attacker));
+            }
         }
 
-        ObjectPooler.FinishSpawn(obj); 
+        ObjectPooler.FinishSpawn(obj);
     }
 
     private static void CancelToken(ref CancellationTokenSource source)
     {
         var previous = source;
         source = null;
-        if (previous == null) return;
+        if (previous == null)
+        {
+            return;
+        }
+
         previous.Cancel();
         previous.Dispose();
     }
@@ -188,7 +216,10 @@ public class AssistDrone
         RemoveLifetimeBuff();
         lifetimeBuffIcon = null;
         if (ownerCharacter != null)
+        {
             ownerCharacter.OnAttackExecuted -= HandlePlayerAttack;
+        }
+
         ownerCharacter = null;
         spawnActivated = false;
         lifetime = 0f;
@@ -196,7 +227,10 @@ public class AssistDrone
         CancelToken(ref lifetimeCts);
     }
 
-    private void OnDestroy() => ReleaseRuntime();
+    private void OnDestroy()
+    {
+        ReleaseRuntime();
+    }
 
     private void OnDisable()
     {
@@ -219,16 +253,25 @@ public class AssistDrone
     {
         CancelToken(ref lifetimeCts);
         lifetime = time;
-        if (spawnActivated) StartLifetime();
+        if (spawnActivated)
+        {
+            StartLifetime();
+        }
     }
 
-    public void SetLifetimeBuffIcon(Sprite icon) => lifetimeBuffIcon = icon;
+    public void SetLifetimeBuffIcon(Sprite icon)
+    {
+        lifetimeBuffIcon = icon;
+    }
 
     private void RegisterLifetimeBuff()
     {
         RemoveLifetimeBuff();
         if (ownerCharacter == null || lifetimeBuffIcon == null ||
-            !ownerCharacter.TryGetComponent<EffectComponent>(out var effects)) return;
+            ownerCharacter.TryGetComponent<EffectComponent>(out var effects) == false)
+        {
+            return;
+        }
 
         lifetimeBuffOwner = effects;
         lifetimeBuff = new LifetimeBuff(GetInstanceID(), lifetime, lifetimeBuffIcon);
@@ -245,7 +288,11 @@ public class AssistDrone
 
     public void OnSpawnActivated()
     {
-        if (spawnActivated || !isActiveAndEnabled) return;
+        if (spawnActivated || isActiveAndEnabled == false)
+        {
+            return;
+        }
+
         spawnActivated = true;
         StartLifetime();
     }
@@ -267,22 +314,34 @@ public class AssistDrone
     {
         bool cancelled = await UniTask.Delay(TimeSpan.FromSeconds(duration),
             ignoreTimeScale: false, cancellationToken: token).SuppressCancellationThrow();
-        if (!cancelled && !token.IsCancellationRequested) Despawn();
+        if (cancelled == false && token.IsCancellationRequested == false)
+        {
+            Despawn();
+        }
     }
 
     private void Despawn()
     {
         bool pooled = isPoolSpawn;
         gameObject.SetActive(false);
-        if (!pooled) Destroy(gameObject);
+        if (pooled == false)
+        {
+            Destroy(gameObject);
+        }
     }
 
     public void SetupOwner(GameObject owner)
     {
         if (ownerCharacter != null)
+        {
             ownerCharacter.OnAttackExecuted -= HandlePlayerAttack;
+        }
+
         ownerCharacter = owner.SafeInvoke(value => value.GetComponent<Character>());
-        if(ownerCharacter == null) return;
+        if (ownerCharacter == null)
+        {
+            return;
+        }
 
         ownerCharacter.OnAttackExecuted += HandlePlayerAttack;
         this.gameObject.transform.SetParent(ownerCharacter.transform, true);

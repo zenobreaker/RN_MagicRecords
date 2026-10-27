@@ -79,11 +79,11 @@ public sealed class StageDataBase : DataBase
     private Dictionary<int, ChapterInfo> chapterInfoTable = new();
     private Dictionary<int, BiomesInfo> biomeInfoTable = new();
 
-    // 스테이지 정보 테이블 - key : id,  value : stage info 
+    // 스테이지 정보 테이블 - key : id,  value : stage info
     private Dictionary<int, StageInfo> stageInfoTable = new();
-    // 스테이지 챕터별 테이블 - key : chapter,  value : 해당 챕터에 등장하는 stage id  
+    // 스테이지 챕터별 테이블 - key : chapter,  value : 해당 챕터에 등장하는 stage id
     private Dictionary<int, List<int>> stageChapterTable = new();
-    // 보스 스테이지 테이블  - key : boss chatper, value : 해당 챕터에 등장하는 boss stage list 
+    // 보스 스테이지 테이블  - key : boss chatper, value : 해당 챕터에 등장하는 boss stage list
     private Dictionary<int, List<int>> bossChapterTable = new();
 
     public override void Initialize()
@@ -95,13 +95,18 @@ public sealed class StageDataBase : DataBase
         InitializeStageData();
 
         if (chapterData != null)
+        {
             chapterData.Init();
+        }
     }
 
 
     private void InitializeChapterData()
     {
-        if (chapterJson == null) return;
+        if (chapterJson == null)
+        {
+            return;
+        }
 
         Debug.Log("Chapter Database Init");
 
@@ -126,7 +131,7 @@ public sealed class StageDataBase : DataBase
                 }
             );
 
-        // Complete Message 
+        // Complete Message
         Debug.Log("===================================================");
         Debug.Log($"Complete Message => chapterInfoTable : {chapterInfoTable.Count}, " +
             $"chapterInfoTable : {chapterInfoTable.Count}");
@@ -134,7 +139,10 @@ public sealed class StageDataBase : DataBase
 
     private void InitializeBiomeData()
     {
-        if (biomeJson == null) return;
+        if (biomeJson == null)
+        {
+            return;
+        }
 
         Debug.Log("Biome Database Init");
 
@@ -159,7 +167,7 @@ public sealed class StageDataBase : DataBase
                 }
             );
 
-        // Complete Message 
+        // Complete Message
         Debug.Log("===================================================");
         Debug.Log($"Complete Message => biomeInfoTable: {biomeInfoTable.Count}, " +
             $"biomeInfoTable : {biomeInfoTable.Count}");
@@ -167,7 +175,10 @@ public sealed class StageDataBase : DataBase
 
     private void InitializeStageData()
     {
-        if (stageJson == null) return;
+        if (stageJson == null)
+        {
+            return;
+        }
 
         Debug.Log("Stage Database Init");
 
@@ -195,13 +206,15 @@ public sealed class StageDataBase : DataBase
 
               stage =>
               {
-                  // Stage Info 
+                  // Stage Info
                   stageInfoTable.TryAdd(stage.id, stage);
 
                   if (stage.type == StageType.Boss_Combat)
                   {
                       if (bossChapterTable.TryGetValue(stage.chapter, out List<int> bossIds))
+                      {
                           bossIds.Add(stage.id);
+                      }
                       else
                       {
                           bossChapterTable.Add(stage.chapter, new List<int>());
@@ -212,7 +225,9 @@ public sealed class StageDataBase : DataBase
 
                   // Stage Chapter
                   if (stageChapterTable.TryGetValue(stage.chapter, out List<int> ids))
+                  {
                       ids.Add(stage.id);
+                  }
                   else
                   {
                       stageChapterTable.Add(stage.chapter, new List<int>());
@@ -222,7 +237,7 @@ public sealed class StageDataBase : DataBase
           );
 
 
-        // Complete Message 
+        // Complete Message
         Debug.Log("===================================================");
         Debug.Log($"Complete Message => stageInfoTable : {stageInfoTable.Count}, " +
             $"stageChapterTable : {stageChapterTable.Count}, " +
@@ -254,10 +269,16 @@ public sealed class StageDataBase : DataBase
 
     public string GetRandThemeNameByChapter(int chapter)
     {
-        if (chapterData == null) return "Test";
+        if (chapterData == null)
+        {
+            return "Test";
+        }
 
         var theme = chapterData.GetRandomTheme(chapter);
-        if (theme == null) return "Test";
+        if (theme == null)
+        {
+            return "Test";
+        }
 
         return theme.GetThemeName;
     }
@@ -272,7 +293,9 @@ public sealed class StageDataBase : DataBase
         List<SO_Theme> theme = GetPossibleThemes(chapter);
 
         if (theme == null || theme.Count == 0)
+        {
             return null;
+        }
 
         int randomIndex = Random.Range(0, theme.Count);
 
@@ -281,47 +304,69 @@ public sealed class StageDataBase : DataBase
 
     public Sprite GetThemeBgSptByTheme(string themeName)
     {
-        if (string.IsNullOrEmpty(themeName)) return null;
+        if (string.IsNullOrEmpty(themeName))
+        {
+            return null;
+        }
 
         return chapterData.GetThemeSprite(themeName);
     }
 
     public GameObject GetTargetThemeObj(string themeName, int idx)
     {
-        if (chapterData == null) return null; 
+        if (chapterData == null)
+        {
+            return null;
+        }
 
         return chapterData.GetTargetThemeObj(themeName, idx);
     }
 
     public GameObject GetRandomThemeObj(string themeName)
     {
-        if (chapterData == null) return null;
+        if (chapterData == null)
+        {
+            return null;
+        }
 
         return chapterData.GetTargetThemeRandObj(themeName);
     }
 
     public List<SO_Theme> GetPossibleThemes(int chapter)
     {
-        if (chapterData == null) return null;
+        if (chapterData == null)
+        {
+            return null;
+        }
 
         return chapterData.GetPossibleThemes(chapter);
     }
 
-    public string GetTestBiome() { return "Test"; }
+    public string GetTestBiome()
+    {
+        return "Test";
+    }
 
     public List<int> GetIdsByChapter(int chapter)
     {
         if (stageChapterTable.TryGetValue(chapter, out List<int> ids))
+        {
             return ids;
+        }
         else
+        {
             return null;
+        }
     }
 
     public int GetRandomStageIDByChater(int chapter)
     {
         if (stageChapterTable.TryGetValue(chapter, out var ids))
         {
-            if (ids.Count == 0) return -1;
+            if (ids.Count == 0)
+            {
+                return -1;
+            }
 
             int randID = Random.Range(0, ids.Count);
             return ids[randID];
@@ -333,9 +378,13 @@ public sealed class StageDataBase : DataBase
     public StageInfo GetStageInfo(int stageID)
     {
         if (stageInfoTable.TryGetValue(stageID, out StageInfo stageInfo))
+        {
             return stageInfo.Copy();
+        }
         else
+        {
             return null;
+        }
     }
 
     public StageInfo GetBossStageInfo(int chapter, int stageID)
@@ -345,7 +394,9 @@ public sealed class StageDataBase : DataBase
             foreach (var id in ids)
             {
                 if (id == stageID)
+                {
                     return GetStageInfo(stageID);
+                }
             }
         }
         return null;
@@ -355,7 +406,11 @@ public sealed class StageDataBase : DataBase
     {
         if (bossChapterTable.TryGetValue(chapter, out List<int> ids))
         {
-            if (ids.Count == 0) return -1;
+            if (ids.Count == 0)
+            {
+                return -1;
+            }
+
             int randID = Random.Range(0, ids.Count);
             return ids[randID];
         }

@@ -4,11 +4,17 @@ using UnityEngine;
 public sealed class RuntimeMagicBulletLoad : Passive_MagicBulletLoad
 {
     private SkillComponent registeredOwner;
-    public RuntimeMagicBulletLoad(SO_SkillData data) : base(data) { }
+    public RuntimeMagicBulletLoad(SO_SkillData data) : base(data)
+    {
+    }
 
     public override void OnAcquire(GameObject skillOwner)
     {
-        if (registeredOwner != null) OnLose();
+        if (registeredOwner != null)
+        {
+            OnLose();
+        }
+
         base.OnAcquire(skillOwner);
         registeredOwner = skillOwner != null ? skillOwner.GetComponent<SkillComponent>() : null;
     }
@@ -17,7 +23,10 @@ public sealed class RuntimeMagicBulletLoad : Passive_MagicBulletLoad
     {
         base.OnLose();
         if (registeredOwner != null && ReferenceEquals(registeredOwner.GetCapability<IMagicBulletProvider>(), this))
+        {
             registeredOwner.UnregisterCapability<IMagicBulletProvider>();
+        }
+
         registeredOwner = null;
     }
 }

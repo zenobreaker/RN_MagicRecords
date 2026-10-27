@@ -20,53 +20,111 @@ public class Module_SpawnWeaponVFX : SkillModule
     [FormerlySerializedAs("specificMuzzleIndices")]
     public int[] specificEffectSpawnIndices;
 
-    protected virtual string EffectId => string.Empty;
-    protected virtual bool FollowEffectSpawnPoint => false;
-    protected virtual bool ReplaceExistingEffects => false;
+    protected virtual string EffectId
+    {
+        get
+        {
+            return string.Empty;
+        }
+    }
+    protected virtual bool FollowEffectSpawnPoint
+    {
+        get
+        {
+            return false;
+        }
+    }
+    protected virtual bool ReplaceExistingEffects
+    {
+        get
+        {
+            return false;
+        }
+    }
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (owner == null || !owner.isActiveAndEnabled || effectPrefab == null) return;
+        if (owner == null || owner.isActiveAndEnabled == false || effectPrefab == null)
+        {
+            return;
+        }
+
         if (spawnAtOwner)
         {
-            if (!owner.TryGetComponent<SkillVFXComponent>(out var effects))
+            if (owner.TryGetComponent<SkillVFXComponent>(out var effects) == false)
+            {
                 effects = owner.gameObject.AddComponent<SkillVFXComponent>();
-            if (!effects.isActiveAndEnabled) return;
-            if (ReplaceExistingEffects) effects.RemoveEffects(skill, EffectId);
+            }
+
+            if (effects.isActiveAndEnabled == false)
+            {
+                return;
+            }
+
+            if (ReplaceExistingEffects)
+            {
+                effects.RemoveEffects(skill, EffectId);
+            }
+
             SpawnEffect(owner.transform, effects, skill);
             return;
         }
-        if (!owner.TryGetComponent<WeaponComponent>(out var weaponComponent)) return;
-        if (!(weaponComponent.GetCurrentWeapon() is IAttackOriginProvider originProvider)) return;
+        if (owner.TryGetComponent<WeaponComponent>(out var weaponComponent) == false)
+        {
+            return;
+        }
+
+        if ((weaponComponent.GetCurrentWeapon() is IAttackOriginProvider originProvider) == false)
+        {
+            return;
+        }
 
         var effectSpawnPoints = originProvider.GetAttackOrigins();
-        if (effectSpawnPoints == null || effectSpawnPoints.Count == 0) return;
+        if (effectSpawnPoints == null || effectSpawnPoints.Count == 0)
+        {
+            return;
+        }
 
-        if (!owner.TryGetComponent<SkillVFXComponent>(out var skillVFX))
+        if (owner.TryGetComponent<SkillVFXComponent>(out var skillVFX) == false)
+        {
             skillVFX = owner.gameObject.AddComponent<SkillVFXComponent>();
-        if (!skillVFX.isActiveAndEnabled) return;
+        }
+
+        if (skillVFX.isActiveAndEnabled == false)
+        {
+            return;
+        }
 
         if (ReplaceExistingEffects)
+        {
             skillVFX.RemoveEffects(skill, EffectId);
+        }
 
         if (useAllEffectSpawnPoints)
         {
             foreach (var effectSpawnPoint in effectSpawnPoints)
+            {
                 SpawnEffect(effectSpawnPoint, skillVFX, skill);
+            }
         }
         else if (specificEffectSpawnIndices != null)
         {
             foreach (int index in specificEffectSpawnIndices)
             {
                 if (index >= 0 && index < effectSpawnPoints.Count)
+                {
                     SpawnEffect(effectSpawnPoints[index], skillVFX, skill);
+                }
             }
         }
     }
 
     private void SpawnEffect(Transform effectSpawnPoint, SkillVFXComponent skillVFX, ActiveSkill skill)
     {
-        if (effectSpawnPoint == null) return;
+        if (effectSpawnPoint == null)
+        {
+            return;
+        }
 
         var instance = UnityEngine.Object.Instantiate(effectPrefab,
             effectSpawnPoint.position, effectSpawnPoint.rotation,

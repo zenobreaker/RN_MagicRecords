@@ -24,10 +24,10 @@ public class ParabolicProjectile
     private float cachedMultiplier = 1f;
     private bool cachedCrit;
 
-    public override  void SetDamageInfo(Character attacker, DamageData damageData
+    public override void SetDamageInfo(Character attacker, DamageData damageData
         , bool bExtraCrit = false, float multiplier = 1.0f)
     {
-        base.SetDamageInfo(attacker, damageData , bExtraCrit , multiplier); 
+        base.SetDamageInfo(attacker, damageData, bExtraCrit, multiplier);
 
         ownerObject = attacker;
         owner = attacker;
@@ -54,37 +54,44 @@ public class ParabolicProjectile
 
     protected override void OnDisable()
     {
-        base.OnDisable();   
-        ObjectPooler.ReturnToPool(gameObject); 
+        base.OnDisable();
+        ObjectPooler.ReturnToPool(gameObject);
     }
 
     protected override void Update()
     {
-        base.Update();  
+        base.Update();
 
-        if (!isFired) return;
+        if (isFired == false)
+        {
+            return;
+        }
 
         // 1. 진행도 (t) 계산 : 0에서 시작해서 도착하면 1이됨.
-        progress += Time.deltaTime / flightTime;    
+        progress += Time.deltaTime / flightTime;
 
         // 2. 바닥 기준 직선 이동 ( 시작점 -> 끝 점)
         Vector3 currentPos = Vector3.Lerp(startPos, targetPos, progress);
 
         // 3. 포물선 정리 : sin 함수를 이용한 높이 추가
-        float heightOffset = Mathf.Sin(progress * Mathf.PI) * arcHeight; 
+        float heightOffset = Mathf.Sin(progress * Mathf.PI) * arcHeight;
         currentPos.y += heightOffset;
 
-        // 4. 투사체 머리 부분이 날아가는 궤적 방향을 바라보도록 
+        // 4. 투사체 머리 부분이 날아가는 궤적 방향을 바라보도록
         Vector3 moveDirection = currentPos - transform.position;
-        if(moveDirection != Vector3.zero)
+        if (moveDirection != Vector3.zero)
+        {
             transform.rotation = Quaternion.LookRotation(moveDirection);
+        }
 
         // 5. 실제 위치 이동
         transform.position = currentPos;
 
-        // 6. 목표 도달 체크 
+        // 6. 목표 도달 체크
         if (progress >= 1f)
-            Exlpode(); 
+        {
+            Exlpode();
+        }
     }
 
     private void Exlpode()
@@ -95,7 +102,7 @@ public class ParabolicProjectile
         if (explosion != null && explosion.TryGetComponent<ISkillEffect>(out var effect))
         {
             effect.SetDamageInfo(owner, cachedDamageData, cachedCrit, cachedMultiplier);
-            effect.AddIgnore(ownerObject); 
+            effect.AddIgnore(ownerObject);
         }
 
         // Play Sound
@@ -104,6 +111,6 @@ public class ParabolicProjectile
         }
 
         ObjectPooler.FinishSpawn(explosion);
-        gameObject.SetActive(false); 
+        gameObject.SetActive(false);
     }
 }

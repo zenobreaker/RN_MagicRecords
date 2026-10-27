@@ -4,26 +4,32 @@ using Unity.Behavior;
 //TODO: 확장성을 위하여 enum이 아닌 string으로 처리해보기
 public enum SkillSlot
 {
-    Default = 0, 
+    Default = 0,
 
     SLOT1 = 100,
-    SLOT2, 
-    SLOT3, 
-    SLOT4, 
+    SLOT2,
+    SLOT3,
+    SLOT4,
     MAX = SLOT4 + 1,
     SubAction = 77,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Monster Grade
-public enum MonsterGrade { NONE = 0, NORMAL = 1, ELITE, BOSS };
+public enum MonsterGrade
+{
+    NONE = 0, NORMAL = 1, ELITE, BOSS
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Language
-public enum LanguageType { KR, EN }
+public enum LanguageType
+{
+    KR, EN
+}
 
 ///////////////////////////////////////////////////////////////////////////////
-//  Record UI Type 
+//  Record UI Type
 public enum RecordUIMode
 {
     DRAFT,          // 새로운 레코드를 획득하는 모드
@@ -46,7 +52,7 @@ public enum ExploreState
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Node State 
+// Node State
 public enum MapNodeState
 {
     Locked,     // 선택 불가 (다른 분기점이거나 아직 못 가는 미래)
@@ -75,7 +81,7 @@ public enum ItemCategory
     NONE,
     CURRENCY = 1,       // 화폐
     EQUIPMENT = 2,      // 장비
-    INGREDIANT,         // 재료 
+    INGREDIANT,         // 재료
     MAX,
 }
 
@@ -91,11 +97,11 @@ public enum CurrencyType
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Reward
-  public enum RewardType
+public enum RewardType
 {
     NONE,
     ITEM,
-    RECORD, 
+    RECORD,
     EXP,
 }
 
@@ -118,7 +124,7 @@ public enum StatusType
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//  Damage 
+//  Damage
 // Serialized legacy values are retained for DOT classification and animation tables.
 public enum DamageType
 {
@@ -156,7 +162,7 @@ public enum HitReactionResistance
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//  Input 
+//  Input
 public enum InputCommandType
 {
     NONE = 0,
@@ -191,7 +197,7 @@ public enum ModifierValueType
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//  Effect Type 
+//  Effect Type
 public enum EffectType
 {
     NONE,
@@ -215,7 +221,7 @@ public enum EquipParts
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//  Item Rank 
+//  Item Rank
 public enum ItemRank
 {
     NONE,
@@ -229,7 +235,7 @@ public enum ItemRank
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//  Passive Trigger 
+//  Passive Trigger
 public enum TriggerEvent
 {
     ON_GAME_START = 0,
@@ -268,14 +274,14 @@ public enum HitShape
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//  Record Type 
+//  Record Type
 public enum RecordType
 {
     NONE,
     EMPTY,
-    PASSIVE,    // 일반적인 status 형식 
-    AUGMENT, // 증강 (수치 강화) 
-    MODIFY,  // 변형 (기믹 변형 : 관통 제거 등등) 
+    PASSIVE,    // 일반적인 status 형식
+    AUGMENT, // 증강 (수치 강화)
+    MODIFY,  // 변형 (기믹 변형 : 관통 제거 등등)
 }
 
 // 필터링을 위한 Enum (시트의 TargetFilter와 맞춤)
@@ -303,7 +309,7 @@ public enum RecordRewardMode
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// 이벤트 
+// 이벤트
 public enum EventCostType
 {
     NONE,
@@ -392,7 +398,7 @@ public enum EventActionParam
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//  Target Position Type 
+//  Target Position Type
 public enum TargetPositionType
 {
     CasterForward,      // 시전자의 정면 일정 거리

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class UISkillTreeSlot : MonoBehaviour
 {
     private SkillRuntimeData skillData;
-    [SerializeField] private Image skillIcon; 
+    [SerializeField] private Image skillIcon;
 
     public event Action<SkillRuntimeData> OnClickedSlot;
 
@@ -18,14 +18,16 @@ public class UISkillTreeSlot : MonoBehaviour
     {
         this.skillData = skillData;
 
-        DrawSkillSlot(); 
+        DrawSkillSlot();
     }
 
     private void DrawSkillSlot()
     {
-        if (skillData == null ||  skillData.template == null || 
+        if (skillData == null || skillData.template == null ||
             skillIcon == null)
+        {
             return;
+        }
 
         skillIcon.sprite = skillData.template.skillImage;
         skillIcon.color = skillData.IsDevelopmentLocked ? new Color(.4f, .4f, .4f, .65f) : Color.white;
@@ -33,6 +35,6 @@ public class UISkillTreeSlot : MonoBehaviour
 
     public void OnClick()
     {
-        OnClickedSlot?.Invoke(skillData); 
+        OnClickedSlot?.Invoke(skillData);
     }
 }

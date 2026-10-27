@@ -9,24 +9,27 @@ public class UICharEquipment : UiBase
 
     public void OnDrawCharEquipment(CharEquipmentData ce)
     {
-        if ( ce == null)
+        if (ce == null)
         {
-            // 빈 이미지로 처리 
+            // 빈 이미지로 처리
             return;
         }
-        if (charEquipmentsSlots.Length != ce.equipments.Count) return;
+        if (charEquipmentsSlots.Length != ce.equipments.Count)
+        {
+            return;
+        }
 
         for (var e = EquipParts.WEAPON; e < EquipParts.MAX; e++)
         {
             var equipment = InventoryManager.Instance.FindItem(ce.equipments[(int)e]?.itemUniqueId);
-            
-            if(equipment != null)
+
+            if (equipment != null)
             {
                 charEquipmentsSlots[(int)e].sprite = equipment.Icon;
             }
             else
             {
-                // 빈 이미지로 처리 
+                // 빈 이미지로 처리
                 charEquipmentsSlots[(int)e].sprite = emptySlot;
             }
         } // for(e)

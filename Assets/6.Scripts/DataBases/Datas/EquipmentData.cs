@@ -6,7 +6,7 @@ public class EquipmentInfoData
 {
     public int slotId;
     public int itemId;
-    public string itemUniqueId; 
+    public string itemUniqueId;
 }
 
 
@@ -36,7 +36,10 @@ public class CharEquipmentData
 
     public void EquipItem(EquipmentItem item)
     {
-        if (item == null) return;
+        if (item == null)
+        {
+            return;
+        }
 
         Debug.Log($"Item equip {characterId} : {item.id}");
         equipments[(int)item.parts].slotId = (int)item.parts;
@@ -46,7 +49,10 @@ public class CharEquipmentData
 
     public void UnequipItem(EquipmentItem item)
     {
-        if (item == null) return;
+        if (item == null)
+        {
+            return;
+        }
 
         Debug.Log($"Item unequip {characterId} : {item.id}");
         equipments[(int)item.parts].slotId = 0;
@@ -57,7 +63,7 @@ public class CharEquipmentData
     public List<string> GetEquippedItemIDs()
     {
         List<string> ids = new();
-        foreach(var equip in  equipments)
+        foreach (var equip in equipments)
         {
             ids.Add(equip.itemUniqueId);
         }

@@ -19,13 +19,25 @@ public sealed class Module_GainLaserEnergy : SkillModule
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
         var runtime = skill?.Runtime;
-        if (owner == null || runtime?.Combat == null || !runtime.TryExecuteOnce(this)) return;
-        if (skipIfEnergyConsumed && runtime.Combat.ConsumedLaserEnergyCount > 0) return;
+        if (owner == null || runtime?.Combat == null || runtime.TryExecuteOnce(this) == false)
+        {
+            return;
+        }
+
+        if (skipIfEnergyConsumed && runtime.Combat.ConsumedLaserEnergyCount > 0)
+        {
+            return;
+        }
+
         long gain = (long)Math.Max(0, baseGain) + Math.Max(0, runtime.Combat.LaserEnergyGainBonus) +
-            (long)runtime.Combat.ConsumedBulletCount * Math.Max(0, gainPerConsumedBullet);
+                    (long)runtime.Combat.ConsumedBulletCount * Math.Max(0, gainPerConsumedBullet);
         // Stack은 캐릭터의 EffectComponent가 소유합니다. 모듈에는 누적 상태를 두지 않습니다.
         var effects = EffectManager.Instance;
-        if (effects == null || !owner.TryGetComponent<EffectComponent>(out _)) return;
+        if (effects == null || owner.TryGetComponent<EffectComponent>(out _) == false)
+        {
+            return;
+        }
+
         for (long i = 0; i < gain; i++)
         {
             effects.RegisterEffect(owner.gameObject, owner.gameObject, new LaserEnergyEffect(energyIcon));

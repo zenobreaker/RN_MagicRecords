@@ -4,11 +4,31 @@ using UnityEngine;
 public sealed class LaserEnergyEffect : BaseEffect
 {
     public const string EffectID = "LaserEnergy";
-    public override int MaxStack => int.MaxValue;
-    public override BuffStackPolicy StackPolicy => BuffStackPolicy.STACKABLE;
-    public override bool ShowSingleStack => true;
+    public override int MaxStack
+    {
+        get
+        {
+            return int.MaxValue;
+        }
+    }
+    public override BuffStackPolicy StackPolicy
+    {
+        get
+        {
+            return BuffStackPolicy.STACKABLE;
+        }
+    }
+    public override bool ShowSingleStack
+    {
+        get
+        {
+            return true;
+        }
+    }
 
-    public LaserEnergyEffect() : this(null) { }
+    public LaserEnergyEffect() : this(null)
+    {
+    }
 
     public LaserEnergyEffect(Sprite icon) : base(EffectID, "레이저 에너지", 0f)
     {

@@ -9,7 +9,7 @@ public class EnhanceUI_EquipmentOption : UiBase
 
     public void Init()
     {
-        selectedItem = null;    
+        selectedItem = null;
     }
 
     public override void RefreshUI()
@@ -20,7 +20,9 @@ public class EnhanceUI_EquipmentOption : UiBase
     public void Draw()
     {
         if (mainOptionText == null)
+        {
             return;
+        }
 
         if (selectedItem == null)
         {
@@ -29,15 +31,21 @@ public class EnhanceUI_EquipmentOption : UiBase
         }
 
 
-        if(selectedItem is EquipmentItem equipment)
+        if (selectedItem is EquipmentItem equipment)
+        {
             mainOptionText.text = equipment.GetMainOptionText();
+        }
     }
 
     public void SetSelectItem(ItemData item)
     {
         if (selectedItem != item)
+        {
             selectedItem = item;
+        }
         else
+        {
             selectedItem = null;
+        }
     }
 }

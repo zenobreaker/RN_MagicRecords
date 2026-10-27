@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEngine;
 
 #if UNITY_EDITOR
-public class Cheater 
+public class Cheater
     : Singleton<Cheater>
 {
 
@@ -32,20 +32,25 @@ public class Cheater
 
     private void Update()
     {
-        if (CheatConsoleUI.CapturesInput) return;
-        // 스턴 테스트 
+        if (CheatConsoleUI.CapturesInput)
+        {
+            return;
+        }
+        // 스턴 테스트
         if (Input.GetKeyDown(KeyCode.Keypad7))
+        {
             Test_Stun();
+        }
 
-        // 필드에 모든 적 체력 0 
-        if(Input.GetKeyDown(KeyCode.Keypad8))
+        // 필드에 모든 적 체력 0
+        if (Input.GetKeyDown(KeyCode.Keypad8))
         {
             //Test_AllEnemyDead();
             Test_PlayerDamaged();
         }
 
         // 플레이이어 무적
-        if(Input.GetKeyDown(KeyCode.Keypad9))
+        if (Input.GetKeyDown(KeyCode.Keypad9))
         {
             Test_PlayerInvicible();
         }
@@ -78,12 +83,12 @@ public class Cheater
         {
             Test_UI();
         }
-        
+
     }
 
     private void Test_UI()
     {
-        UIManager.Instance.SafeInvoke(v => v.OpenExplorationSetupPopUp()); 
+        UIManager.Instance.SafeInvoke(v => v.OpenExplorationSetupPopUp());
     }
 
     private void Test_AddCurrencies()
@@ -98,10 +103,16 @@ public class Cheater
 
     private void Test_PlayerRemoveBuff()
     {
-        if (player == null) return;
+        if (player == null)
+        {
+            return;
+        }
 
         EffectComponent buff = player.GetComponent<EffectComponent>();
-        if (buff == null) return;
+        if (buff == null)
+        {
+            return;
+        }
 
         buff.RemoveEffect("AttackBuff");
         Debug.Log("Cheater - Buff Off");
@@ -109,22 +120,35 @@ public class Cheater
 
     private void Test_PlayerAttackBuff()
     {
-        if (player == null) return;
+        if (player == null)
+        {
+            return;
+        }
 
         EffectComponent buff = player.GetComponent<EffectComponent>();
-        if (buff == null) return;
+        if (buff == null)
+        {
+            return;
+        }
 
         Debug.Log("Buff On");
 
 
         StatBuffEffect attackbuff = new StatBuffEffect("AttackBuff", 10.0f, StatusType.ATTACK, 0.2f);
-        buff.ApplyEffect(attackbuff, player, null); 
+        buff.ApplyEffect(attackbuff, player, null);
     }
 
     private void Test_PlayerAddBurn()
     {
-        if(enemy == null) return;  
-        if(EffectManager.Instance == null) return;
+        if (enemy == null)
+        {
+            return;
+        }
+
+        if (EffectManager.Instance == null)
+        {
+            return;
+        }
 
         Debug.Log("Debuff On");
 
@@ -153,12 +177,15 @@ public class Cheater
 
     private void Test_PlayerInvicible()
     {
-        
+
     }
 
     private void Test_PlayerDamaged()
     {
-        if (player == null) return;
+        if (player == null)
+        {
+            return;
+        }
 
         DamageEvent dev = new DamageEvent(70);
         player.OnDamage(null, null, Vector3.zero, dev);
@@ -167,12 +194,12 @@ public class Cheater
     {
         Debug.Log("All Enemy Kill!");
         Enemy[] enemies = GameObject.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
-        
-        foreach(var enemy in enemies)
+
+        foreach (var enemy in enemies)
         {
             if (enemy != null)
             {
-                if(enemy.TryGetComponent<HealthPointComponent>(out var health))
+                if (enemy.TryGetComponent<HealthPointComponent>(out var health))
                 {
                     DamageEvent e = new DamageEvent(health.GetMaxHP);
                     enemy.OnDamage(null, null, Vector3.zero, e);
@@ -185,28 +212,41 @@ public class Cheater
     {
         if (player != null)
         {
-            bStunToggle = !bStunToggle;
+            bStunToggle = (bStunToggle == false);
 
             StatusEffectComponent sfc = player.GetComponent<StatusEffectComponent>();
             if (sfc != null && bStunToggle)
+            {
                 sfc.AddStunEffect();
-            else if( sfc!=null && bStunToggle == false)
+            }
+            else if (sfc != null && bStunToggle == false)
+            {
                 sfc.RemoveStunEffect();
+            }
         }
     }
 
 
     private void Test_RewardPopUp()
     {
-        if (AppManager.Instance == null) return;
+        if (AppManager.Instance == null)
+        {
+            return;
+        }
 
-       var  rewardData = AppManager.Instance.GetRewardData(1);
-        if (rewardData == null) return;
+        var rewardData = AppManager.Instance.GetRewardData(1);
+        if (rewardData == null)
+        {
+            return;
+        }
 
         Debug.Log("Data 정상 생성");
 
         RewardManager rm = FindAnyObjectByType<RewardManager>();
-        if (rm == null) return;
+        if (rm == null)
+        {
+            return;
+        }
 
         rm.AddReward(rewardData);
     }
@@ -221,11 +261,14 @@ public class Cheater
 
     private void OnDrawGizmos()
     {
-        if (gizmoPoints.Count == 0) return;
+        if (gizmoPoints.Count == 0)
+        {
+            return;
+        }
 
         Gizmos.color = Color.green;
-        int cnt = 1; 
-        foreach(var point in gizmoPoints)
+        int cnt = 1;
+        foreach (var point in gizmoPoints)
         {
             Gizmos.DrawWireSphere(point, 0.5f);
             Handles.color = Color.white;

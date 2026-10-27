@@ -12,9 +12,17 @@ public partial class CheckTargetInViewAngleCondition : Condition
 
     public override bool IsTrue()
     {
-        if(Target == null || Target.Value == null) return false;
-        if (Perception == null || Perception.Value == null) return false;
+        if (Target == null || Target.Value == null)
+        {
+            return false;
+        }
 
-        return Perception.Value.GetLooAtTarget(ViewAngle.Value, Target.Value.transform.position); ;
+        if (Perception == null || Perception.Value == null)
+        {
+            return false;
+        }
+
+        return Perception.Value.GetLooAtTarget(ViewAngle.Value, Target.Value.transform.position);
+        ;
     }
 }

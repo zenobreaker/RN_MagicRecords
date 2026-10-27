@@ -21,7 +21,13 @@ public class MovableStopper : MonoBehaviour
         }
     }
 
-    public static MovableStopper Instance { get => instance; }
+    public static MovableStopper Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
 
     // /////////////////////////////////////////////////////////////////////////
 
@@ -44,7 +50,9 @@ public class MovableStopper : MonoBehaviour
     public void Start_Delay(int frame)
     {
         if (frame < 1)
+        {
             return;
+        }
 
         // 💡 3. (주석 해결) 딜레이 중에 딜레이가 오면 기존 것을 취소!
         // 코루틴을 일일이 끌 필요 없이 토큰 하나만 캔슬하면 전원이 멈춥니다.

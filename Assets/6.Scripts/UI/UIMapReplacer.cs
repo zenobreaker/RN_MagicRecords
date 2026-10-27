@@ -24,7 +24,9 @@ public class UIMapReplacer : MonoBehaviour
         this.stageReplacer = stageReplacer;
 
         if (this.stageReplacer == null)
+        {
             return;
+        }
 
         ReplaceNodeObject();
         CalcFinalRectArea();
@@ -33,12 +35,15 @@ public class UIMapReplacer : MonoBehaviour
 
     private void ReplaceNodeObject()
     {
-        if (NodeContainer == null || NodeObject == null) return;
+        if (NodeContainer == null || NodeObject == null)
+        {
+            return;
+        }
 
         List<List<MapNode>> levels = stageReplacer.GetLevels();
 
         mapNodes.Clear();
-        uiMapNodes.Clear(); 
+        uiMapNodes.Clear();
 
         for (int level = 0; level < levels.Count; level++)
         {
@@ -47,10 +52,12 @@ public class UIMapReplacer : MonoBehaviour
                 MapNode node = levels[level][n];
 
                 GameObject nodeObject = Instantiate<GameObject>(NodeObject, NodeContainer.transform);
-                
+
                 // 위치 맞추기
                 if (nodeObject.TryGetComponent<RectTransform>(out var rect))
+                {
                     rect.anchoredPosition = node.position;
+                }
 
                 // UI에 현재 MapNode 정보 연결
                 if (nodeObject.TryGetComponent<UIMapNode>(out var uiNode))
@@ -67,7 +74,10 @@ public class UIMapReplacer : MonoBehaviour
     // 영역 재계산
     private void CalcFinalRectArea()
     {
-        if (Content == null || stageReplacer == null) return;
+        if (Content == null || stageReplacer == null)
+        {
+            return;
+        }
 
         // Content의 부모(일반적으로 ScrollRect의 Viewport)를 가져옵니다.
         RectTransform viewport = Content.parent as RectTransform;
@@ -96,7 +106,10 @@ public class UIMapReplacer : MonoBehaviour
 
     private void DrawNodeLine()
     {
-        if (mapNodes.Count == 0 || CustomLineObject == null) return;
+        if (mapNodes.Count == 0 || CustomLineObject == null)
+        {
+            return;
+        }
 
         float width = NodeObject.GetComponent<RectTransform>().sizeDelta.x;
 
@@ -108,7 +121,11 @@ public class UIMapReplacer : MonoBehaviour
 
                 Vector2 a = new Vector2(mapNodes[i].position.x + width * 0.5f, mapNodes[i].position.y);
                 var next = mapNodes.Find(n => n.id == id);
-                if (next == null) continue;
+                if (next == null)
+                {
+                    continue;
+                }
+
                 Vector2 b = new Vector2(next.position.x + width * 0.5f, next.position.y);
 
                 cl.DrawLine(a, b);
@@ -118,7 +135,10 @@ public class UIMapReplacer : MonoBehaviour
     // 화면에 떠있는 UI 노드들에게 "상태에 맞춰서 색깔 바꿔!" 라고 명령하는 함수
     public void UpdateMapUIState(ExploreManager exploreManager, ref List<UIMapNode> spawnedNodes)
     {
-        if (exploreManager == null) return;
+        if (exploreManager == null)
+        {
+            return;
+        }
 
         // 모든 UI 노드를 순회하면서 알맞은 옷(상태)을 입혀줍니다.
         foreach (var uiNode in uiMapNodes)

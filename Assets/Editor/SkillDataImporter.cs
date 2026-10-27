@@ -63,7 +63,7 @@ namespace UserEditor
                 Convert_SkillData();
             }
 
-            if(GUILayout.Button("Convert Passive Skill Data"))
+            if (GUILayout.Button("Convert Passive Skill Data"))
             {
                 Convert_PassiveSkill();
             }
@@ -75,19 +75,25 @@ namespace UserEditor
         }
 
         private string GetSkillNameKeycode(string skillKeycode)
-            => "skill_name_" + skillKeycode;
+        {
+            return "skill_name_" + skillKeycode;
+        }
 
         private string GetSkillDecKeycode(string skillKeycode)
-            => "skill_desc_" + skillKeycode;
+        {
+            return "skill_desc_" + skillKeycode;
+        }
 
         private string GetSkillImageKeycode(string skillKeycode)
-            => "img_" + skillKeycode;
+        {
+            return "img_" + skillKeycode;
+        }
 
 
         private void LoadJsonData()
         {
 
-            if (!File.Exists(masterSkillFilePath))
+            if (File.Exists(masterSkillFilePath) == false)
             {
                 Debug.LogError(" Master Skill Data JSON 파일 경로가 잘못되었습니다.");
                 return;
@@ -96,7 +102,7 @@ namespace UserEditor
             string masterSkillJson = File.ReadAllText(masterSkillFilePath);
             masterskillDataGroupData = JsonUtility.FromJson<MasterSkillDataGroup>(masterSkillJson);
 
-            if (!File.Exists(activeSkillFilePath))
+            if (File.Exists(activeSkillFilePath) == false)
             {
                 Debug.LogError(" Active Skill Data JSON 파일 경로가 잘못되었습니다.");
                 return;
@@ -106,7 +112,7 @@ namespace UserEditor
             string activeSkillJson = File.ReadAllText(activeSkillFilePath);
             activeSkillDataGroupData = JsonUtility.FromJson<ActiveSkillDataGroup>(activeSkillJson);
 
-            if (!File.Exists(phaseSkillFilePath))
+            if (File.Exists(phaseSkillFilePath) == false)
             {
                 Debug.LogError(" Phase Skill Data JSON 파일 경로가 잘못되었습니다.");
                 return;
@@ -115,7 +121,7 @@ namespace UserEditor
             string phaseSkillJson = File.ReadAllText(phaseSkillFilePath);
             phaseSkillDataGroupData = JsonUtility.FromJson<PhaseSkillDataGroup>(phaseSkillJson);
 
-            if (!File.Exists(passiveSkillFilePath))
+            if (File.Exists(passiveSkillFilePath) == false)
             {
                 Debug.LogError("Passive Skill Data JSON 파일 경로가 잘못되었습니다.");
                 return;
@@ -130,9 +136,11 @@ namespace UserEditor
             {
                 var list = LoadSkillDataFromJobID(job);
                 if (list == null)
+                {
                     continue;
+                }
 
-                // Active 
+                // Active
                 if (activeSkillTable.ContainsKey(job) == false)
                 {
                     List<ActiveSkillData> activeList = new List<ActiveSkillData>();
@@ -142,13 +150,17 @@ namespace UserEditor
                     {
                         ActiveSkillData activeSkill = LoadActiveSkillData(skillDataJson.id);
                         if (activeSkill == null)
+                        {
                             continue;
+                        }
 
                         if (activeSkillTable[job].Contains(activeSkill) == false)
+                        {
                             activeSkillTable[job].Add(activeSkill);
+                        }
                         else
                         {
-                            // 기존에 있다면 삭제하고 추가 
+                            // 기존에 있다면 삭제하고 추가
                             activeSkillTable[job].Remove(activeSkill);
                             activeSkillTable[job].Add(activeSkill);
                         }
@@ -156,7 +168,9 @@ namespace UserEditor
 
                     // 정렬
                     if (activeSkillTable[job].Count > 0)
+                    {
                         activeSkillTable[job].Sort((a, b) => a.id.CompareTo(b.id));
+                    }
 
                     // Passive
                     if (passiveSkillTable.ContainsKey(job) == false)
@@ -164,32 +178,38 @@ namespace UserEditor
                         List<PassiveSkillData> passiveSKillList = new List<PassiveSkillData>();
                         passiveSkillTable.Add(job, passiveSKillList);
 
-                        foreach(SkillData skillDataJson in list)
+                        foreach (SkillData skillDataJson in list)
                         {
                             PassiveSkillData passiveSkill = LoadPassiveSkillData(skillDataJson.id);
                             if (passiveSkill == null)
+                            {
                                 continue;
+                            }
 
                             if (passiveSkillTable[job].Contains(passiveSkill) == false)
+                            {
                                 passiveSkillTable[job].Add(passiveSkill);
+                            }
                         }
 
                         // 정렬
                         if (passiveSkillTable[job].Count > 0)
-                            passiveSkillTable[job].Sort((a,b) => a.id.CompareTo(b.id));
+                        {
+                            passiveSkillTable[job].Sort((a, b) => a.id.CompareTo(b.id));
+                        }
                     }
 
-                } // if end 
+                } // if end
 
 
-            }// for end 
+            }// for end
 
             Debug.Log("데이터 로드 완료");
         }
 
 
 
-        // 마스터 스킬 테이블에서 스킬 정보를 ID로 구분 지어서 가져옴 
+        // 마스터 스킬 테이블에서 스킬 정보를 ID로 구분 지어서 가져옴
         private List<SkillData> LoadSkillDataFromJobID(JOB_ID id)
         {
             // 데이터가 null이 아닌지 확인
@@ -208,15 +228,18 @@ namespace UserEditor
         private ActiveSkillData LoadActiveSkillData(SKILL_ID id)
         {
             if (activeSkillDataGroupData == null)
+            {
                 return null;
-
+            }
 
             foreach (ActiveSkillData data in activeSkillDataGroupData.ActiveSkillDataJson)
             {
                 if (id != data.id)
+                {
                     continue;
+                }
 
-                //Phase 
+                //Phase
                 if (activeSkillPhaseTable.ContainsKey(id) == false)
                 {
                     activeSkillPhaseTable.Add(id, GetPhaseSkillDataList(id));
@@ -230,14 +253,18 @@ namespace UserEditor
 
         private PassiveSkillData LoadPassiveSkillData(SKILL_ID id)
         {
-            if(passiveSkillDataGroupData == null)
+            if (passiveSkillDataGroupData == null)
+            {
                 return null;
+            }
 
             foreach (PassiveSkillData data in passiveSkillDataGroupData.PassiveSkillDataJson)
             {
                 if (id != data.id)
+                {
                     continue;
-               
+                }
+
                 return data;
             }
 
@@ -254,10 +281,10 @@ namespace UserEditor
         {
             for (int job = (int)JobType.Common; job <= (int)JobType.MAX; job++)
             {
-                //Active 
+                //Active
                 Convert_ActiveSkill(job);
 
-              
+
             }
         }
 
@@ -266,10 +293,14 @@ namespace UserEditor
             foreach (KeyValuePair<JOB_ID, List<ActiveSkillData>> jobAndSkillPair in activeSkillTable)
             {
                 if (jobAndSkillPair.Key != jobID)
+                {
                     continue;
+                }
 
                 if (jobAndSkillPair.Value.Count <= 0)
+                {
                     continue;
+                }
 
                 // Create Scriptable Object
                 string assetPath = "";
@@ -286,7 +317,9 @@ namespace UserEditor
 
                     List<PhaseSkillData> phaseList = activeSkillPhaseTable[data.id];
                     if (phaseList == null)
+                    {
                         continue;
+                    }
 
                     soSkill.id = data.id;
                     soSkill.skillDescription = GetSkillDecKeycode(data.skillKeycode);
@@ -319,7 +352,7 @@ namespace UserEditor
                         // Sound
                         //phase.soundName = phaseSkill.skillSound;
 
-                        //TODO: bonus 
+                        //TODO: bonus
                         //soSkill.
                         soSkill.phaseList.Add(phase);
                     }
@@ -335,8 +368,8 @@ namespace UserEditor
 
                     AssetDatabase.CreateAsset(soSkill, assetPath);
                     Debug.Log("Active Skills imported from JSON");
-                } //   end   foreach (ActiveSkillData data 
-            } //  end  foreach (KeyValuePair<JOB_ID, List<ActiveSkillData>>  
+                } //   end   foreach (ActiveSkillData data
+            } //  end  foreach (KeyValuePair<JOB_ID, List<ActiveSkillData>>
 
             AssetDatabase.Refresh();
         }
@@ -349,10 +382,14 @@ namespace UserEditor
                 foreach (KeyValuePair<JOB_ID, List<PassiveSkillData>> jobAndSkillPair in passiveSkillTable)
                 {
                     if (jobAndSkillPair.Key != job)
+                    {
                         continue;
+                    }
 
                     if (jobAndSkillPair.Value.Count <= 0)
+                    {
                         continue;
+                    }
 
 
                     // Create Scriptable Object
@@ -374,7 +411,7 @@ namespace UserEditor
                         soSkill.skillName = GetSkillNameKeycode(data.skillKeycode);
                         soSkill.maxLevel = data.maxLevel;
 
-                        // enhance target skill 
+                        // enhance target skill
 
                         //leading Skill
                         soSkill.leadingSkillList = stringTointList(data.leadingSkillList);
@@ -390,7 +427,7 @@ namespace UserEditor
 
                         AssetDatabase.CreateAsset(soSkill, assetPath);
                         Debug.Log("Passive Skills imported from JSON");
-                    } //   end   foreach (ActiveSkillData data 
+                    } //   end   foreach (ActiveSkillData data
                 }
             }
         }
@@ -415,7 +452,7 @@ namespace UserEditor
                 foreach (string folder in splitPath)
                 {
                     string tempPath = Path.Combine(currentPath, folder);
-                    if (!AssetDatabase.IsValidFolder(tempPath))
+                    if (AssetDatabase.IsValidFolder(tempPath) == false)
                     {
                         AssetDatabase.CreateFolder(currentPath, folder);
                     }
@@ -437,18 +474,21 @@ namespace UserEditor
             foreach (string str2 in lists)
             {
                 if (string.IsNullOrEmpty(str2))
-                    continue; 
+                {
+                    continue;
+                }
+
                 int value = int.Parse(str2);
                 list.Add(value);
             }
 
-            return list; 
+            return list;
         }
 
 
-    }  // class end 
+    }  // class end
 
-}// namespace end; 
+}// namespace end;
 
 
 

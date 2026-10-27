@@ -6,14 +6,38 @@ using UnityEngine;
 // UI 전용 복사본이며 게임 데이터나 저장 데이터로 등록하지 않습니다.
 public sealed class BuildEntryViewData
 {
-    public string Name { get; }
-    public string Description { get; }
-    public Sprite Icon { get; }
-    public RecordType Type { get; }
-    public string Category { get; }
-    public int Level { get; }
-    public bool IsJobPassive { get; }
-    public IReadOnlyList<string> Keywords { get; }
+    public string Name
+    {
+        get;
+    }
+    public string Description
+    {
+        get;
+    }
+    public Sprite Icon
+    {
+        get;
+    }
+    public RecordType Type
+    {
+        get;
+    }
+    public string Category
+    {
+        get;
+    }
+    public int Level
+    {
+        get;
+    }
+    public bool IsJobPassive
+    {
+        get;
+    }
+    public IReadOnlyList<string> Keywords
+    {
+        get;
+    }
 
     public BuildEntryViewData(string name, string description, Sprite icon, string category,
         int level = 0, bool isJobPassive = false, IEnumerable<string> keywords = null, RecordType recordType = RecordType.NONE)
@@ -25,26 +49,38 @@ public sealed class BuildEntryViewData
         Category = category;
         Level = level;
         IsJobPassive = isJobPassive;
-        Keywords = keywords?.Where(value => !string.IsNullOrWhiteSpace(value)).ToList()
+        Keywords = keywords?.Where(value => (string.IsNullOrWhiteSpace(value) == false)).ToList()
             ?? new List<string>();
     }
 
-    public string Label => Level > 0 ? $"{Category} · Lv.{Level}" : Category;
+    public string Label
+    {
+        get
+        {
+            return Level > 0 ? $"{Category} · Lv.{Level}" : Category;
+        }
+    }
 }
 
 public static class ExploreBuildViewData
 {
-    public static string Localize(string value) =>
-        LocalizationManager.Instance != null ? LocalizationManager.Instance.GetText(value) : value ?? "";
+    public static string Localize(string value)
+    {
+        return LocalizationManager.Instance != null ? LocalizationManager.Instance.GetText(value) : value ?? "";
+    }
 
     public static List<BuildEntryViewData> ReadRecords(RecordManager manager = null)
     {
-        if (manager == null) manager = AppManager.Instance.SafeInvoke(app => app.GetRecordManager());
+        if (manager == null)
+        {
+            manager = AppManager.Instance.SafeInvoke(app => app.GetRecordManager());
+        }
+
         return (manager.SafeInvoke(value => value.GetPossesRecord()) ?? new List<RecordData>())
-            .Where(record => record != null)
-            .Select(record => new BuildEntryViewData(record.recordName, record.description, record.icon,
-                "획득 레코드", keywords: record.keywords, recordType: record.type))
-            .ToList();
+                    .Where(record => record != null)
+                    .Select(record => new BuildEntryViewData(record.recordName, record.description, record.icon,
+                        "획득 레코드", keywords: record.keywords, recordType: record.type))
+                    .ToList();
     }
 
     public static List<BuildEntryViewData> ReadPassives()
@@ -54,7 +90,11 @@ public static class ExploreBuildViewData
         var explore = app.SafeInvoke(value => value.GetExploreManager());
         var setup = explore.SafeInvoke(value => value.CurrentSetupData);
         var system = app.SafeInvoke(value => value.GetPassiveSystem());
-        if (setup == null || !setup.HasClass || system == null) return result;
+        if (setup == null || setup.HasClass == false || system == null)
+        {
+            return result;
+        }
+
         foreach (var passive in system.GetPassives(setup.SelectedClassId))
         {
             bool starting = explore.IsJobStartingPassive(setup.SelectedClassId, passive.SkillID);
@@ -78,16 +118,25 @@ public static class ExploreBuildViewData
     {
         var setup = AppManager.Instance.SafeInvoke(app => app.GetExploreManager())
             .SafeInvoke(explore => explore.CurrentSetupData);
-        return setup != null && setup.HasCharacter ? new List<int> { setup.SelectedCharacterId } : new List<int>();
+        return setup != null && setup.HasCharacter ? new List<int>
+        {
+            setup.SelectedCharacterId
+        } : new List<int>();
     }
 
     public static string ReadCharacterStatus(int characterId = -1)
     {
         var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
         var setup = explore.SafeInvoke(value => value.CurrentSetupData);
-        if (setup == null || !setup.HasCharacter || !setup.HasClass)
+        if (setup == null || setup.HasCharacter == false || setup.HasClass == false)
+        {
             return "탐사 캐릭터를 선택한 뒤 확인할 수 있습니다.";
-        if (characterId < 0) characterId = setup.SelectedCharacterId;
+        }
+
+        if (characterId < 0)
+        {
+            characterId = setup.SelectedCharacterId;
+        }
 
         var players = PlayerManager.Instance;
         var player = players.SafeInvoke(value => value.GetCurrentPlayer(characterId));
@@ -104,17 +153,27 @@ public static class ExploreBuildViewData
         if (status == null)
         {
             if (explore.TryGetRunHealth(characterId, out float hp, out float maxHP))
+            {
                 text.AppendLine($"HP  {hp:0} / {maxHP:0}");
+            }
             else if (growth != null)
+            {
                 text.AppendLine($"HP  {growth.GetStatusValue(StatusType.HEALTH):0} / {growth.GetStatusValue(StatusType.HEALTH):0}");
+            }
+
             text.AppendLine("기본·장비 스탯 (전투 효과는 전투 중 반영)");
         }
         else
+        {
             text.AppendLine($"HP  {status.GetCurrentHP():0} / {status.GetMaxHP():0}");
+        }
 
         var equipment = players.SafeInvoke(value => value.GetCharEquipmentData(characterId));
-        float Stat(StatusType type) => status != null ? status.GetStatusValue(type) :
+        float Stat(StatusType type)
+        {
+            return status != null ? status.GetStatusValue(type) :
             growth != null ? StatusCalculator.GetFinalStatus(growth, equipment, type) : 0f;
+        }
         text.AppendLine($"공격력  {Stat(StatusType.ATTACK):0}    방어력  {Stat(StatusType.DEFENSE):0}");
         text.AppendLine($"이동속도  {Stat(StatusType.MOVESPEED):0}    공격속도  {Stat(StatusType.ATTACKSPEED):0}");
         text.AppendLine($"치명타 확률  {Stat(StatusType.CRIT_RATIO) * 100f:0}%    치명타 피해  {Stat(StatusType.CRIT_DMG) * 100f:0}%");
@@ -145,8 +204,14 @@ public static class ExploreBuildViewData
     private static void AppendEntries(StringBuilder text, string title, List<BuildEntryViewData> entries)
     {
         text.AppendLine($"\n<color=#9CD9FF>{title}</color>");
-        if (entries.Count == 0) text.AppendLine("없음");
+        if (entries.Count == 0)
+        {
+            text.AppendLine("없음");
+        }
+
         foreach (var entry in entries)
+        {
             text.AppendLine($"• {entry.Name}  [{entry.Label}]");
+        }
     }
 }

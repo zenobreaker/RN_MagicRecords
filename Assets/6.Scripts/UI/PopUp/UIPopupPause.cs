@@ -9,7 +9,7 @@ public class UIPopUpPause : UIPopUp
 {
     [SerializeField] protected Button exitButton;
     [SerializeField] protected Button stageContinueButton;
-    [SerializeField]  protected UIRecordInventory inventory;
+    [SerializeField] protected UIRecordInventory inventory;
     [SerializeField] private Button statusButton;
 
     protected override void Awake()
@@ -17,7 +17,9 @@ public class UIPopUpPause : UIPopUp
         base.Awake();
 
         if (statusButton != null)
+        {
             statusButton.onClick.AddListener(() => UIManager.Instance.SafeInvoke(ui => ui.OpenCharacterStatusPopUp()));
+        }
 
         if (exitButton != null)
         {

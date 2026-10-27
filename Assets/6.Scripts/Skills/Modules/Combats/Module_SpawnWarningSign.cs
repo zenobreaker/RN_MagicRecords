@@ -54,22 +54,62 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
     public float fanRadius = 2.0f;
     [Range(0, 360)] public float fanAngle = 90f;
 
-    public float Radius => radius;
-    public Vector2 RectSize => rectSize;
-    public Vector2 MaxRectSize => maxRectSize;
+    public float Radius
+    {
+        get
+        {
+            return radius;
+        }
+    }
+    public Vector2 RectSize
+    {
+        get
+        {
+            return rectSize;
+        }
+    }
+    public Vector2 MaxRectSize
+    {
+        get
+        {
+            return maxRectSize;
+        }
+    }
 
-    public float FanAngle => fanAngle;
-    public float FanRadius => fanRadius;
+    public float FanAngle
+    {
+        get
+        {
+            return fanAngle;
+        }
+    }
+    public float FanRadius
+    {
+        get
+        {
+            return fanRadius;
+        }
+    }
 
     public override void Init(Character owner)
     {
-        if (onSignEndModules == null) return;
-        foreach (var module in onSignEndModules) module?.Init(owner);
+        if (onSignEndModules == null)
+        {
+            return;
+        }
+
+        foreach (var module in onSignEndModules)
+        {
+            module?.Init(owner);
+        }
     }
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (owner == null || skill == null || phaseSkill == null || !skill.IsActive || skill.IsEnding) return;
+        if (owner == null || skill == null || phaseSkill == null || skill.IsActive == false || skill.IsEnding)
+        {
+            return;
+        }
 
 
         // 값을 결정합니다 (인스펙터 값 쓸래? 블랙보드 값 쓸래?)
@@ -87,7 +127,7 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
             : fallbackAngleBetween;
 
         //  만약 내가 인스펙터 값을 썼다면, 다음 페이즈를 위해 블랙보드에 갱신
-        if (!useBlackboardPattern)
+        if (useBlackboardPattern == false)
         {
             skill.Runtime.Base.PatternCount = finalSpawnCount;
             skill.Runtime.Base.PatternAngle = finalAngleBetween;
@@ -95,7 +135,9 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
 
         Vector3 basePosition = skill.Runtime.Spawn.TargetPosition;
         if (isSetTargetPos == false)
+        {
             basePosition = owner.transform.position;
+        }
 
         basePosition.y += 0.01f;// y축 보정
 
@@ -131,15 +173,24 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
                 sign.Setup(this, duration);
 
                 spawnedCount++;
-                Action releaseCompletion = !ownsPhase && waitForSignBeforeSkillEnd
-                    ? skill.HoldCompletion() : () => { };
+                Action releaseCompletion = ownsPhase == false && waitForSignBeforeSkillEnd
+                    ? skill.HoldCompletion() : () =>
+                    {
+                    };
                 bool handled = false;
                 sign.OnEndSign = () =>
                 {
-                    if (handled) return;
+                    if (handled)
+                    {
+                        return;
+                    }
+
                     handled = true;
-                    if (lifetime.IsCancellationRequested || !skill.IsActive || skill.IsEnding ||
-                        (ownsPhase && !skill.IsCurrentPhase(phaseVersion))) return;
+                    if (lifetime.IsCancellationRequested || skill.IsActive == false || skill.IsEnding ||
+                        (ownsPhase && skill.IsCurrentPhase(phaseVersion) == false))
+                    {
+                        return;
+                    }
                     // Validate the lease first: a canceled callback must not untrack a reused sign.
                     skill.RemoveTrackedEffect(sign.gameObject);
                     int callbackPhaseVersion = skill.PhaseVersion;
@@ -154,30 +205,49 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
                     try
                     {
                         if (onSignEndModules != null)
+                        {
                             foreach (var chainModule in onSignEndModules)
                             {
-                                if (lifetime.IsCancellationRequested || !skill.IsCurrentPhase(callbackPhaseVersion)) break;
-                                if (chainModule == null) continue;
+                                if (lifetime.IsCancellationRequested || skill.IsCurrentPhase(callbackPhaseVersion) == false)
+                                {
+                                    break;
+                                }
+
+                                if (chainModule == null)
+                                {
+                                    continue;
+                                }
+
                                 runtime.Spawn.TargetPosition = context.Position;
                                 chainModule.OnChainNotify(owner, skill, phaseSkill, context);
                             }
+                        }
                     }
                     finally
                     {
                         // Do not overwrite a new phase's target or a new cast's Runtime.
                         if (ReferenceEquals(runtime, skill.Runtime) && skill.IsCurrentPhase(callbackPhaseVersion))
+                        {
                             runtime.Spawn.TargetPosition = previousTarget;
+                        }
+
                         releaseCompletion();
                     }
                     finishedCount++;
                     if (ownsPhase && finishedCount >= spawnedCount &&
-                        !lifetime.IsCancellationRequested && skill.IsCurrentPhase(phaseVersion))
+                        lifetime.IsCancellationRequested == false && skill.IsCurrentPhase(phaseVersion))
+                    {
                         skill.EndPhaseAndNext();
+                    }
                 };
-                skill.AddTrackedEffect(sign.gameObject, untilSkillEnd: !ownsPhase);
+                skill.AddTrackedEffect(sign.gameObject, untilSkillEnd: ownsPhase == false);
                 sign.OnStopped = () =>
                 {
-                    if (!lifetime.IsCancellationRequested) skill.RemoveTrackedEffect(sign.gameObject);
+                    if (lifetime.IsCancellationRequested == false)
+                    {
+                        skill.RemoveTrackedEffect(sign.gameObject);
+                    }
+
                     releaseCompletion();
                 };
 
@@ -187,7 +257,9 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
             }
         } // for(i) end
         if (spawnedCount == 0 && ownsPhase && skill.IsCurrentPhase(phaseVersion))
+        {
             skill.EndPhaseAndNext();
+        }
     }
 
     private string GetSignName()
@@ -201,15 +273,22 @@ public class Module_SpawnWarningSign : SkillModule, IWarningData
         };
     }
 
-    public override bool ControlsPhaseLifecycle() => endPhaseOnFinish;
+    public override bool ControlsPhaseLifecycle()
+    {
+        return endPhaseOnFinish;
+    }
 
     private void SetFillMode(WarningSign sign)
     {
         if (sign == null)
+        {
             return;
+        }
 
         if (sign.TryGetComponent<WarningSign_Rect>(out var rect))
+        {
             rect.fillMode = fillMode;
+        }
     }
 
     private Quaternion GetSpawnRotation(

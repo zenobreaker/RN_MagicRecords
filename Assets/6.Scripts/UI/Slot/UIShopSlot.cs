@@ -7,7 +7,7 @@ public class UIShopSlot : UIItemSlot
     private System.Action offerClick;
     [SerializeField] private Image bgImage;
     [SerializeField] private TextMeshProUGUI itemNameTxt;
-    [SerializeField] private UICurrency itemPrice; 
+    [SerializeField] private UICurrency itemPrice;
 
     private void Awake()
     {
@@ -25,7 +25,11 @@ public class UIShopSlot : UIItemSlot
     public override void SetItemData(ItemData data)
     {
         CacheReferences(); // Pooled slots are configured while inactive, before Awake.
-        if (itemPrice != null) itemPrice.gameObject.SetActive(true);
+        if (itemPrice != null)
+        {
+            itemPrice.gameObject.SetActive(true);
+        }
+
         offerClick = null;
         GetComponent<Button>().interactable = true;
         base.SetItemData(data);
@@ -35,34 +39,52 @@ public class UIShopSlot : UIItemSlot
         string unavailableLabel = null)
     {
         CacheReferences();
-        if (itemPrice != null) itemPrice.gameObject.SetActive(showPrice);
+        if (itemPrice != null)
+        {
+            itemPrice.gameObject.SetActive(showPrice);
+        }
+
         itemData = null;
         OnClickedSlot = null;
         offerClick = sold || unavailableLabel != null ? null : click;
-        if (itemImage != null) itemImage.sprite = icon;
-        if (itemNameTxt != null) itemNameTxt.text = title;
+        if (itemImage != null)
+        {
+            itemImage.sprite = icon;
+        }
+
+        if (itemNameTxt != null)
+        {
+            itemNameTxt.text = title;
+        }
+
         itemPrice?.SetValue(price, CurrencyType.EXPOLORE_COIN,
-            unavailableLabel ?? (sold ? "판매 완료" : price < 0 ? "가격 미정" : null), itemNameTxt?.font);
-        GetComponent<Button>().interactable = !sold && unavailableLabel == null;
+                    unavailableLabel ?? (sold ? "판매 완료" : price < 0 ? "가격 미정" : null), itemNameTxt?.font);
+        GetComponent<Button>().interactable = sold == false && unavailableLabel == null;
     }
 
     public override void OnClick()
     {
-        if (offerClick != null) offerClick();
-        else if (itemData != null) base.OnClick();
+        if (offerClick != null)
+        {
+            offerClick();
+        }
+        else if (itemData != null)
+        {
+            base.OnClick();
+        }
     }
 
     public override void Refresh()
     {
         base.Refresh();
 
-        if(itemNameTxt != null ) 
+        if (itemNameTxt != null)
         {
-            Debug.Assert(LocalizationManager.Instance != null); 
+            Debug.Assert(LocalizationManager.Instance != null);
             itemNameTxt.text = itemData?.LocalizedName ?? "";
         }
 
-        if(itemPrice != null && itemData is ShopItem shopItem)
+        if (itemPrice != null && itemData is ShopItem shopItem)
         {
             itemPrice.SetValue(shopItem.Price, shopItem.CurrencyType);
         }

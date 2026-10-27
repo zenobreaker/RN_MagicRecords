@@ -10,32 +10,64 @@ public enum WeaponType
 
 
 /// <summary>
-/// 무기 관리 - 유사 커맨더 패턴 이용 
+/// 무기 관리 - 유사 커맨더 패턴 이용
 /// </summary>
 
-public class WeaponComponent 
+public class WeaponComponent
     : MonoBehaviour
 {
     [Header("Weapons")]
     [SerializeField] private GameObject[] originPrefabs;
 
     [Header("Weapon Type")]
-    [SerializeField]  private WeaponType initType = WeaponType.Unarmed;
+    [SerializeField] private WeaponType initType = WeaponType.Unarmed;
     private WeaponType type = WeaponType.Unarmed;
-    public WeaponType Type { get => type; }
+    public WeaponType Type
+    {
+        get
+        {
+            return type;
+        }
+    }
 
     #region Equipment 
-    public bool UnarmedMode { get => type == WeaponType.Unarmed; }
-    public bool FistMode { get => type == WeaponType.Fist; }
-    public bool SwordMode { get => type == WeaponType.Sword; }
-    public bool GunMode { get => type == WeaponType.Gun; }
+    public bool UnarmedMode
+    {
+        get
+        {
+            return type == WeaponType.Unarmed;
+        }
+    }
+    public bool FistMode
+    {
+        get
+        {
+            return type == WeaponType.Fist;
+        }
+    }
+    public bool SwordMode
+    {
+        get
+        {
+            return type == WeaponType.Sword;
+        }
+    }
+    public bool GunMode
+    {
+        get
+        {
+            return type == WeaponType.Gun;
+        }
+    }
 
 
 
     public void SetFistMode()
     {
         if (state.IdleMode == false)
+        {
             return;
+        }
 
         SetMode(WeaponType.Fist);
     }
@@ -43,7 +75,9 @@ public class WeaponComponent
     public void SetSwordMode()
     {
         if (state.IdleMode == false)
+        {
             return;
+        }
 
         SetMode(WeaponType.Sword);
     }
@@ -51,7 +85,9 @@ public class WeaponComponent
     public void SetGunMode()
     {
         if (state.IdleMode == false)
+        {
             return;
+        }
 
         Debug.Log("Gun 장착 ");
         SetMode(WeaponType.Gun);
@@ -60,10 +96,14 @@ public class WeaponComponent
     public void SetUnarmedMode()
     {
         if (state.IdleMode == false)
+        {
             return;
+        }
 
         if (weaponTable[type] != null)
+        {
             weaponTable[type]?.Unequip();
+        }
 
         ChangeType(WeaponType.Unarmed);
         visual?.SetWeaponEquipAnimation((int)WeaponType.Unarmed);
@@ -99,7 +139,7 @@ public class WeaponComponent
     private CharacterVisual visual;
     private StateComponent state;
     private Dictionary<WeaponType, Weapon> weaponTable;
- 
+
     public event Action<WeaponType, WeaponType> OnWeaponTypeChanged;
     public event Action<SO_Combo> OnWeaponTypeChanged_Combo;
 
@@ -111,19 +151,26 @@ public class WeaponComponent
         state = GetComponent<StateComponent>();
 
         Awake_InitWeapon();
-    } 
+    }
 
     private void Awake_InitWeapon()
     {
         for (int i = 0; i < (int)WeaponType.MAX; i++)
+        {
             weaponTable.Add((WeaponType)i, null);
+        }
 
         if (originPrefabs == null)
+        {
             return;
+        }
 
         for (int i = 0; i < originPrefabs.Length; i++)
         {
-            if (originPrefabs[i] == null) continue; 
+            if (originPrefabs[i] == null)
+            {
+                continue;
+            }
 
             GameObject obj = Instantiate<GameObject>(originPrefabs[i], transform);
             Weapon weapon = obj.GetComponent<Weapon>();
@@ -142,13 +189,13 @@ public class WeaponComponent
         {
             case WeaponType.Fist:
                 SetFistMode();
-                break; 
+                break;
             case WeaponType.Sword:
                 SetSwordMode();
                 break;
             case WeaponType.Gun:
                 SetGunMode();
-                break; 
+                break;
         }
     }
 
@@ -156,7 +203,9 @@ public class WeaponComponent
     private void ChangeType(WeaponType type)
     {
         if (this.type == type)
+        {
             return;
+        }
 
         WeaponType prevType = this.type;
         this.type = type;
@@ -171,7 +220,11 @@ public class WeaponComponent
 
     public Weapon GetCurrentWeapon()
     {
-        if (weaponTable == null) return null;
+        if (weaponTable == null)
+        {
+            return null;
+        }
+
         return weaponTable[type];
     }
 
@@ -194,16 +247,16 @@ public class WeaponComponent
     //    weaponTable[type]?.End_DoAction();
     //}
 
-    //public override void BeginJudgeAttack(AnimationEvent e) 
+    //public override void BeginJudgeAttack(AnimationEvent e)
     //{
-    //    base.BeginJudgeAttack(e); 
-    //    weaponTable[type]?.Begin_JudgeAttack(e); 
+    //    base.BeginJudgeAttack(e);
+    //    weaponTable[type]?.Begin_JudgeAttack(e);
     //}
 
-    //public override void EndJudgeAttack(AnimationEvent e) 
+    //public override void EndJudgeAttack(AnimationEvent e)
     //{
-    //    base.EndJudgeAttack(e); 
-    //    weaponTable[type]?.End_JudgeAttack(e); 
+    //    base.EndJudgeAttack(e);
+    //    weaponTable[type]?.End_JudgeAttack(e);
     //}
 
     //public override void PlaySound()

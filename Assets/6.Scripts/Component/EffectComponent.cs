@@ -4,12 +4,22 @@ using UnityEngine;
 
 public class EffectComponent : MonoBehaviour
 {
-    public int DebuffCount { get; private set; } = 0;
+    public int DebuffCount
+    {
+        get;
+        private set;
+    } = 0;
 
     private Character owner;
 
     private Dictionary<string, BaseEffect> activeEffects = new Dictionary<string, BaseEffect>();
-    public IReadOnlyCollection<BaseEffect> ActiveEffects => activeEffects.Values;
+    public IReadOnlyCollection<BaseEffect> ActiveEffects
+    {
+        get
+        {
+            return activeEffects.Values;
+        }
+    }
     private List<BaseEffect> expiredEffects = new();
     private readonly List<BaseEffect> updatingEffects = new();
 
@@ -24,12 +34,17 @@ public class EffectComponent : MonoBehaviour
         statusEffect = owner.GetComponent<StatusEffectComponent>();
 
         if (owner is Player || (owner is Enemy enemy && enemy.Boss))
+        {
             handler = Resources.Load<SO_HUDHandler>("SO_HUDHandler");
+        }
     }
 
     private void Update()
     {
-        if (activeEffects.Count == 0) return;
+        if (activeEffects.Count == 0)
+        {
+            return;
+        }
 
         expiredEffects.Clear();
         updatingEffects.Clear();
@@ -37,12 +52,20 @@ public class EffectComponent : MonoBehaviour
 
         foreach (BaseEffect effect in updatingEffects)
         {
-            if (HasEffect(effect.ID) != effect) continue;
+            if (HasEffect(effect.ID) != effect)
+            {
+                continue;
+            }
+
             if (effect.IsExpired == false)
+            {
                 effect.Update(Time.deltaTime);
+            }
 
             if (effect.IsExpired)
+            {
                 expiredEffects.Add(effect);
+            }
         }
 
         for (int i = expiredEffects.Count - 1; i >= 0; --i)
@@ -54,7 +77,10 @@ public class EffectComponent : MonoBehaviour
 
     public void ApplyEffect(BaseEffect newEffect, GameObject target, GameObject appliedBy)
     {
-        if (newEffect == null) return;
+        if (newEffect == null)
+        {
+            return;
+        }
 
         if (activeEffects.TryGetValue(newEffect.ID, out var existingEffect))
         {
@@ -74,7 +100,9 @@ public class EffectComponent : MonoBehaviour
         else
         {
             if (newEffect.Type == EffectType.DEBUFF)
+            {
                 DebuffCount++;
+            }
 
             activeEffects.Add(newEffect.ID, newEffect);
             newEffect.OnApply(target, appliedBy);
@@ -86,10 +114,20 @@ public class EffectComponent : MonoBehaviour
     public bool TryConsumeStacks(string effectID, int amount)
     {
         var effect = HasEffect(effectID);
-        if (effect == null || !effect.TryConsumeStacks(amount)) return false;
+        if (effect == null || effect.TryConsumeStacks(amount) == false)
+        {
+            return false;
+        }
 
-        if (effect.StackCount == 0) RemoveEffect(effect);
-        else NotifyEffectUI(effect);
+        if (effect.StackCount == 0)
+        {
+            RemoveEffect(effect);
+        }
+        else
+        {
+            NotifyEffectUI(effect);
+        }
+
         return true;
     }
 
@@ -97,29 +135,45 @@ public class EffectComponent : MonoBehaviour
     {
         // SpawnManager assigns the boss grade after Awake (also for pooled enemies).
         if (handler == null && (owner is Player || (owner is Enemy boss && boss.Boss)))
+        {
             handler = Resources.Load<SO_HUDHandler>("SO_HUDHandler");
+        }
 
         if (owner is Player)
+        {
             handler.SafeInvoke(ui => ui.OnApplyEffect(newEffect));
+        }
         else if (owner is Enemy enemy && enemy.Boss)
+        {
             handler.SafeInvoke(ui => ui.OnChangedBossEffect(owner, newEffect));
+        }
     }
 
     public void RemoveEffect(BaseEffect effect)
     {
-        if (effect == null || HasEffect(effect.ID) != effect) return;
+        if (effect == null || HasEffect(effect.ID) != effect)
+        {
+            return;
+        }
 
         RemoveEffect(effect.ID);
     }
 
     public void RemoveEffect(string buffID)
     {
-        if (string.IsNullOrEmpty(buffID)) return;
+        if (string.IsNullOrEmpty(buffID))
+        {
+            return;
+        }
 
         if (activeEffects.TryGetValue(buffID, out BaseEffect baseEffect))
         {
             activeEffects.Remove(buffID);
-            if (baseEffect.Type == EffectType.DEBUFF) DebuffCount--;
+            if (baseEffect.Type == EffectType.DEBUFF)
+            {
+                DebuffCount--;
+            }
+
             baseEffect.OnRemove();
 
             // 상태 플래그 동기화 처리
@@ -135,7 +189,9 @@ public class EffectComponent : MonoBehaviour
     public void ClearEffects()
     {
         foreach (var effect in new List<BaseEffect>(activeEffects.Values))
+        {
             RemoveEffect(effect);
+        }
     }
 
     private void OnDisable()
@@ -147,18 +203,29 @@ public class EffectComponent : MonoBehaviour
     public BaseEffect HasEffect(string effectName)
     {
         if (activeEffects.TryGetValue(effectName, out BaseEffect value))
+        {
             return value;
+        }
         else
+        {
             return null;
+        }
     }
 
     private void SynchronizeStatusFlag(StatusEffectType type, bool isAdding)
     {
-        if (statusEffect == null) return;
+        if (statusEffect == null)
+        {
+            return;
+        }
 
         if (isAdding)
+        {
             statusEffect.AddStatusEffect(type);
+        }
         else
+        {
             statusEffect.RemoveStatusEffect(type);
+        }
     }
 }

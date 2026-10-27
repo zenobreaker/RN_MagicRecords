@@ -24,7 +24,13 @@ public class ComboComponent : MonoBehaviour
 
     [SerializeField] private SO_Combo currComboObj;
     [SerializeField] private SO_ComboInputHanlder comboInputHandler;
-    public SO_ComboInputHanlder ComboInputHanlder { get => comboInputHandler; }
+    public SO_ComboInputHanlder ComboInputHanlder
+    {
+        get
+        {
+            return comboInputHandler;
+        }
+    }
 
     private WeaponComponent weapon;
     private SkillComponent skill;
@@ -43,7 +49,9 @@ public class ComboComponent : MonoBehaviour
 
             weapon = ownerCharacter.GetComponent<WeaponComponent>();
             if (weapon != null)
+            {
                 weapon.OnWeaponTypeChanged_Combo += OnWeaponTypeChanged_Combo;
+            }
 
             skill = ownerCharacter.GetComponent<SkillComponent>();
         }
@@ -60,27 +68,42 @@ public class ComboComponent : MonoBehaviour
     {
         // 이동은 선입력만 취소합니다. 진행 중인 타수와 마지막 타격의 입력 제한은 유지합니다.
         inputQueue?.Clear();
-        if (!bCanComboInput || !CanExecuteNextAction()) return;
+        if (bCanComboInput == false || CanExecuteNextAction() == false)
+        {
+            return;
+        }
+
         ResetCombo();
     }
 
     private void OnWeaponTypeChanged_Combo(SO_Combo comboData)
     {
-        if (comboData == null) return;
+        if (comboData == null)
+        {
+            return;
+        }
+
         currComboObj = comboData;
         ResetCombo();
     }
 
     private bool CanExecuteNextAction()
     {
-        if (skill != null && skill.InAction) return false;
+        if (skill != null && skill.InAction)
+        {
+            return false;
+        }
 
         return true; // 아무것도 안 하고 있을 때만 true!
     }
 
     public void InputQueue(InputCommandType commandType, int skillIndex = -1)
     {
-        if (SceneLoadingController.IsLoading || ObjectPooler.IsPrewarming) return;
+        if (SceneLoadingController.IsLoading || ObjectPooler.IsPrewarming)
+        {
+            return;
+        }
+
         float currentTime = Time.time;
         var inputCommand = new InputCommand
         {
@@ -95,7 +118,10 @@ public class ComboComponent : MonoBehaviour
 
     private void TryProcessInput(InputCommand newInput)
     {
-        if (newInput == null) return;
+        if (newInput == null)
+        {
+            return;
+        }
 
         // 이동 입력은 공격 중인 콤보나 마지막 타격의 대기시간을 초기화하지 않습니다.
         if (newInput.InputType == InputCommandType.SKILL)
@@ -105,14 +131,25 @@ public class ComboComponent : MonoBehaviour
 
         switch (newInput.InputType)
         {
-            case InputCommandType.ACTION: TryProcess_Action(newInput); break;
-            case InputCommandType.SKILL: TryProcess_Skill(newInput); break;
-            case InputCommandType.MOVE: TryProcess_Move(newInput); break;
-            case InputCommandType.DASH: TryProcess_Dash(newInput); break;
+            case InputCommandType.ACTION:
+                TryProcess_Action(newInput);
+                break;
+            case InputCommandType.SKILL:
+                TryProcess_Skill(newInput);
+                break;
+            case InputCommandType.MOVE:
+                TryProcess_Move(newInput);
+                break;
+            case InputCommandType.DASH:
+                TryProcess_Dash(newInput);
+                break;
         }
     }
 
-    private void TryProcess_Move(InputCommand newInput) => BreakCombo();
+    private void TryProcess_Move(InputCommand newInput)
+    {
+        BreakCombo();
+    }
     private void TryProcess_Skill(InputCommand newInput)
     {
         skill.SafeInvoke(v => v.UseSkill($"SLOT{newInput.SkillSlotIndex + 1}"));
@@ -124,8 +161,11 @@ public class ComboComponent : MonoBehaviour
 
     private void TryProcess_Action(InputCommand newInput)
     {
-        if (!bCanComboInput || currComboObj == null || currComboObj.MaxComboIndex() == 0 ||
-            comboIndex >= currComboObj.MaxComboIndex()) return;
+        if (bCanComboInput == false || currComboObj == null || currComboObj.MaxComboIndex() == 0 ||
+            comboIndex >= currComboObj.MaxComboIndex())
+        {
+            return;
+        }
 
         ComboData comboData = currComboObj.GetComboData(comboIndex);
         float currentTime = newInput.TimeStamp;
@@ -166,7 +206,10 @@ public class ComboComponent : MonoBehaviour
 
     private void ExecuteAttack(int index)
     {
-        if (currComboObj == null) return;
+        if (currComboObj == null)
+        {
+            return;
+        }
 
         ComboData data = currComboObj.GetComboData(index);
         comboInputHandler.SafeInvoke(v => v.HandleComboIndex(index));
@@ -225,11 +268,17 @@ public class ComboComponent : MonoBehaviour
 
             ResetCombo();
         }
-        catch (OperationCanceledException) { /* 타이머 캔슬 시 정상 종료 */ }
+        catch (OperationCanceledException)
+        {
+            /* 타이머 캔슬 시 정상 종료 */
+        }
     }
 
     /// <summary>Clear buffered attacks before a successful sub-action interrupts the current action.</summary>
-    public void CancelForSubAction() => ResetCombo();
+    public void CancelForSubAction()
+    {
+        ResetCombo();
+    }
 
     private void ResetCombo()
     {
@@ -237,7 +286,10 @@ public class ComboComponent : MonoBehaviour
         comboIndex = 0;
 
         var data = currComboObj != null && currComboObj.MaxComboIndex() > 0 ? currComboObj.GetComboData(0) : null;
-        if (data != null) comboResetTime = data.ComboResetTime;
+        if (data != null)
+        {
+            comboResetTime = data.ComboResetTime;
+        }
 
         lastInputTime = Time.time;
         bCanComboInput = true;

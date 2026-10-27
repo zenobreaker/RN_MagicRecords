@@ -6,7 +6,7 @@ public class CharacterInfo
 {
     public int id;
     public Sprite charSprite;
-    public string name; 
+    public string name;
     public GameObject obj;
 }
 
@@ -19,6 +19,8 @@ public class SO_CharacterObjects : ScriptableObject
     public void Init()
     {
         foreach (CharacterInfo co in list)
+        {
             charTable[co.id] = co;
+        }
     }
 }

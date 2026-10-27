@@ -9,7 +9,13 @@ public class SkillRuntimeData
     public SO_SkillData template; // 어떤 스킬의 템플릿인지 참조
     public int currentLevel;    // 플레이어가 배운 현재 레벨
     public bool isUnlocked;     // 해금 여부
-    public bool IsDevelopmentLocked => template != null && template.isDevelopmentLocked;
+    public bool IsDevelopmentLocked
+    {
+        get
+        {
+            return template != null && template.isDevelopmentLocked;
+        }
+    }
 
     public Action<SkillRuntimeData> OnDataChanged;
 
@@ -20,14 +26,20 @@ public class SkillRuntimeData
 
     public string GetSkillName()
     {
-        if (template == null) return "";
+        if (template == null)
+        {
+            return "";
+        }
 
         return template.skillName;
     }
 
     public string GetSkillDesc()
     {
-        if (template == null) return "";
+        if (template == null)
+        {
+            return "";
+        }
 
         return template.skillDescription;
     }
@@ -35,14 +47,21 @@ public class SkillRuntimeData
 
     public int GetMaxSkillLevel()
     {
-        if (template == null) return 0;
+        if (template == null)
+        {
+            return 0;
+        }
 
         return template.maxLevel;
     }
 
     public void OpenSkill()
     {
-        if (IsDevelopmentLocked) return;
+        if (IsDevelopmentLocked)
+        {
+            return;
+        }
+
         isUnlocked = true;
 
         OnDataChanged?.Invoke(this);
@@ -50,7 +69,11 @@ public class SkillRuntimeData
 
     public void IncreaseSkillLevel()
     {
-        if (IsDevelopmentLocked) return;
+        if (IsDevelopmentLocked)
+        {
+            return;
+        }
+
         currentLevel = Mathf.Clamp(currentLevel + 1, 0, GetMaxSkillLevel());
 
         OnDataChanged?.Invoke(this);
@@ -65,7 +88,11 @@ public class SkillRuntimeData
 
     public void SetMaxSkillLevel()
     {
-        if (IsDevelopmentLocked) return;
+        if (IsDevelopmentLocked)
+        {
+            return;
+        }
+
         currentLevel = GetMaxSkillLevel();
 
         OnDataChanged?.Invoke(this);
@@ -79,8 +106,8 @@ public class SkillRuntimeData
 
 
 // 선택된 캐릭터에서 스킬트리를 선택해서 넘어오면
-// 캐릭터 ID와 캐릭터의 직업군 ID를 받아내고 그 정보값들로 스킬트리UI에게 전달하여 
-// 화면을 그리게 한다. 
+// 캐릭터 ID와 캐릭터의 직업군 ID를 받아내고 그 정보값들로 스킬트리UI에게 전달하여
+// 화면을 그리게 한다.
 
 public class SkillTreeManager
     : Singleton<SkillTreeManager>
@@ -89,16 +116,26 @@ public class SkillTreeManager
     [SerializeField] private SkillTree commonSkillTree;
     [SerializeField] private List<SkillTree> onwerSkillTreeList;
 
-    private int selectedCharacterID = -1;  // 스킬트리를 결정한 캐릭터 ID 
-    //private int selectedClassId = 1;          // 스킬트리를 결정한 직업 ID 
+    private int selectedCharacterID = -1;  // 스킬트리를 결정한 캐릭터 ID
+    //private int selectedClassId = 1;          // 스킬트리를 결정한 직업 ID
 
-    // 선택한 스킬 정보 
+    // 선택한 스킬 정보
     private SkillRuntimeData selectedSkillData;
-    public SkillRuntimeData SelectedSkillData { get { return selectedSkillData; } set { selectedSkillData = value; } }
+    public SkillRuntimeData SelectedSkillData
+    {
+        get
+        {
+            return selectedSkillData;
+        }
+        set
+        {
+            selectedSkillData = value;
+        }
+    }
 
     public enum SkillTreeCategory
     {
-        Theme,      // 직업군 전용 
+        Theme,      // 직업군 전용
         Common,     // 공용
         Personal,   // 캐릭터 전용
     }
@@ -107,7 +144,13 @@ public class SkillTreeManager
     private Dictionary<SkillTreeCategory, SkillTree> skillTreeByCategoryTable = new();
 
     private bool isDirty = false;
-    public bool IsDirty => isDirty;
+    public bool IsDirty
+    {
+        get
+        {
+            return isDirty;
+        }
+    }
     public Action OnDataChanged;
 
     protected override void Awake()
@@ -115,13 +158,18 @@ public class SkillTreeManager
         Debug.Log($"Awake {GetInstanceID()} Dirty:{isDirty}");
         base.Awake();
 
-        if (IsDuplicate) return;
+        if (IsDuplicate)
+        {
+            return;
+        }
 
         InitializeClassSkillTable();
 
         var loadData = SaveManager.LoadSkillData();
         if (loadData != null)
+        {
             ApplySavedSkills(loadData);
+        }
     }
 
     protected override void Start()
@@ -169,27 +217,43 @@ public class SkillTreeManager
     public IEnumerable<SkillRuntimeData> GetAvailableSkills(int classID)
     {
         var trees = new List<SkillTree>();
-        if (skillByClassIdTable.TryGetValue(classID, out var tree)) trees.Add(tree);
-        if (commonSkillTree != null) trees.Add(commonSkillTree);
+        if (skillByClassIdTable.TryGetValue(classID, out var tree))
+        {
+            trees.Add(tree);
+        }
+
+        if (commonSkillTree != null)
+        {
+            trees.Add(commonSkillTree);
+        }
+
         return trees.Where(t => t.allSkills != null).SelectMany(t => t.allSkills
-            .Where(s => s != null).Select(s => t.GetSkillRuntimeDataByID(s.id)))
-            .Where(s => s != null && !s.IsDevelopmentLocked).GroupBy(s => s.GetSkillID()).Select(g => g.First());
+                    .Where(s => s != null).Select(s => t.GetSkillRuntimeDataByID(s.id)))
+                    .Where(s => s != null && s.IsDevelopmentLocked == false).GroupBy(s => s.GetSkillID()).Select(g => g.First());
     }
 
     public void SkillUnlock(SkillRuntimeData data)
     {
-        if (data == null || data.IsDevelopmentLocked) return;
+        if (data == null || data.IsDevelopmentLocked)
+        {
+            return;
+        }
+
         data.isUnlocked = true;
     }
 
     private IEnumerable<SkillTree> GetAllSkillTrees()
-        => (classSkillTreeList ?? new List<SkillTree>())
-            .Concat(onwerSkillTreeList ?? new List<SkillTree>())
-            .Append(commonSkillTree).Where(tree => tree?.allSkills != null).Distinct();
+    {
+        return (classSkillTreeList ?? new List<SkillTree>())
+                .Concat(onwerSkillTreeList ?? new List<SkillTree>())
+                .Append(commonSkillTree).Where(tree => tree?.allSkills != null).Distinct();
+    }
 
     public SO_SkillData FindSkillTemplate(int skillID)
-        => GetAllSkillTrees().SelectMany(tree => tree.allSkills)
-            .FirstOrDefault(skill => skill != null && skill.id == skillID);
+    {
+        return GetAllSkillTrees().SelectMany(tree => tree.allSkills)
+                .FirstOrDefault(skill => skill != null && skill.id == skillID);
+    }
 
     public int LearnAllSkillsForCheat()
     {
@@ -198,12 +262,23 @@ public class SkillTreeManager
         {
             // Common/personal trees may not have been opened in the lobby yet.
             if (tree.allSkills.Count > 0 && tree.allSkills.All(skill => skill != null && tree.GetSkillRuntimeDataByID(skill.id) == null))
+            {
                 tree.Initialize(OnSkillRuntimeDataChanged);
+            }
+
             foreach (var template in tree.allSkills)
             {
-                if (template == null || template.isDevelopmentLocked || template.maxLevel < 1) continue;
+                if (template == null || template.isDevelopmentLocked || template.maxLevel < 1)
+                {
+                    continue;
+                }
+
                 var data = tree.GetSkillRuntimeDataByID(template.id);
-                if (data == null || (data.isUnlocked && data.currentLevel > 0)) continue;
+                if (data == null || (data.isUnlocked && data.currentLevel > 0))
+                {
+                    continue;
+                }
+
                 data.currentLevel = Mathf.Clamp(data.currentLevel, 1, template.maxLevel);
                 data.OpenSkill();
                 changed++;
@@ -219,7 +294,7 @@ public class SkillTreeManager
         skillTreeByCategoryTable[SkillTreeCategory.Theme] = skillByClassIdTable[classId];
     }
 
-    // 직업 스킬트리 
+    // 직업 스킬트리
     public void InitializeClassSkillTable()
     {
         skillByClassIdTable.Clear();
@@ -233,14 +308,24 @@ public class SkillTreeManager
 
     public void ApplySavedSkills(CharacterSkillData savedData)
     {
-        if (savedData == null) return;
+        if (savedData == null)
+        {
+            return;
+        }
+
         SkillTree tree = GetSkillTableByClassId(savedData.classID);
-        if (tree == null) return;
+        if (tree == null)
+        {
+            return;
+        }
 
         foreach (var skillSave in savedData.skillSaveDatas)
         {
             var runtimeSkill = tree.GetSkillRuntimeDataByID(skillSave.skillID);
-            if (runtimeSkill == null) continue;
+            if (runtimeSkill == null)
+            {
+                continue;
+            }
 
             runtimeSkill.currentLevel = skillSave.skillLevel;
             runtimeSkill.isUnlocked = skillSave.unlocked;
@@ -256,7 +341,10 @@ public class SkillTreeManager
     public SkillRuntimeData GetSkillRuntimeData(int classID, int skillID)
     {
         if (skillByClassIdTable.TryGetValue(classID, out SkillTree tree))
+        {
             return tree.GetSkillRuntimeDataByID(skillID);
+        }
+
         return null;
     }
 
@@ -285,14 +373,23 @@ public class SkillTreeManager
     public void SaveIfDirty()
     {
         if (isDirty == false)
+        {
             return;
+        }
 
-        // 스킬 정보 저장 
-        CharacterSkillData charSkillData = new CharacterSkillData { charID = 1, classID = 1 };
+        // 스킬 정보 저장
+        CharacterSkillData charSkillData = new CharacterSkillData
+        {
+            charID = 1,
+            classID = 1
+        };
 
-        //TODO : id 지정해야할 듯 
+        //TODO : id 지정해야할 듯
         SkillTree skillTree = GetSkillTableByClassId(1);
-        if (skillTree == null) return;
+        if (skillTree == null)
+        {
+            return;
+        }
 
         List<SkillSaveData> saveList = new();
         for (int i = 0; i <= 50; i++)

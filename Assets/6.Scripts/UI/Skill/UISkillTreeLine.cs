@@ -32,8 +32,11 @@ public class UISkillTreeLine : UiBase
 
     public void OnClickSlot(SkillRuntimeData data)
     {
-        if (data == null) return;
+        if (data == null)
+        {
+            return;
+        }
 
-        OnClickedSkillSlot?.Invoke(data); 
+        OnClickedSkillSlot?.Invoke(data);
     }
 }

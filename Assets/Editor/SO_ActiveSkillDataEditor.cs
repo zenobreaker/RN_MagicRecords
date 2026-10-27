@@ -9,7 +9,7 @@ public class SO_ActiveSkillDataEditor : Editor
     private static bool showSkillInfo = true;
     private static bool showLeadingIds = false;
     private static bool showSettings = true;
-    private static bool showDatas= true;
+    private static bool showDatas = true;
     private static bool showPhases = true;
     private ReorderableList phaseList;
 
@@ -113,7 +113,9 @@ public class SO_ActiveSkillDataEditor : Editor
         if (phaseList != null &&
             phaseList.serializedProperty.serializedObject.targetObject == target &&
             phaseList.serializedProperty.propertyPath == phaseListProperty.propertyPath)
+        {
             return phaseList;
+        }
 
         phaseList = new ReorderableList(serializedObject, phaseListProperty, true, true, true, true);
         phaseList.drawHeaderCallback = rect => EditorGUI.LabelField(rect, "Phase List");
@@ -146,7 +148,9 @@ public class SO_ActiveSkillDataEditor : Editor
         Undo.RecordObject(skillData, "Add Independent Skill Phase");
 
         if (skillData.phaseList == null)
+        {
             skillData.phaseList = new System.Collections.Generic.List<PhaseSkill>();
+        }
 
         // 새 Phase와 모듈 리스트를 직접 생성하여 기존 Phase의 SerializeReference를 공유하지 않습니다.
         skillData.phaseList.Add(new PhaseSkill());

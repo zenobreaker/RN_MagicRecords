@@ -30,7 +30,9 @@ public class SkillSelectUI
         currentContext = setupData;
 
         if (currentContext == null)
+        {
             return;
+        }
 
         ShowPopUp();
     }
@@ -56,16 +58,16 @@ public class SkillSelectUI
 
         bool hasEquippedSkill = false;
 
-        foreach(var data in list)
+        foreach (var data in list)
         {
-            if(data != null && data.GetSkillID() != 0)
+            if (data != null && data.GetSkillID() != 0)
             {
-                hasEquippedSkill = true; 
-                break; 
+                hasEquippedSkill = true;
+                break;
             }
         }
 
-        if (!hasEquippedSkill)
+        if (hasEquippedSkill == false)
         {
             UIManager.Instance.SafeInvoke(v => v.OpenTwoButtonPopUp("경고!", "해당 상태로 진행하시겠습니까?",
                 confirmText: "확인",
@@ -76,7 +78,7 @@ public class SkillSelectUI
                 },
                 null));
 
-            return false; 
+            return false;
         }
 
         return true;

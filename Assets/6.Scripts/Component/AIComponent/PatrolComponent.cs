@@ -10,8 +10,8 @@ using UnityEngine.AI;
 
 public class PatrolComponent : MonoBehaviour
 {
-    [SerializeField] private float radius = 10.0f; // 반경 
-    [SerializeField] private float goalDelay = 2.0f; // 도착 주기 
+    [SerializeField] private float radius = 10.0f; // 반경
+    [SerializeField] private float goalDelay = 2.0f; // 도착 주기
     [SerializeField] private float goalDelayRandom = 0.5f; // goalDelay +( - 최소~ + 최대)
     [SerializeField] //private PatrolPoints patrolPoints;
                      //public bool HasPatrolPoints { get => patrolPoints != null; }
@@ -19,7 +19,7 @@ public class PatrolComponent : MonoBehaviour
     #region Circular
     private Queue<Vector3> sidePositionQueue = new Queue<Vector3>();
     [SerializeField] private float angleIncrement = 10.0f; // 각도 값
-    [SerializeField] float totalAngle = 90.0f; // 최종 인지 각도 
+    [SerializeField] float totalAngle = 90.0f; // 최종 인지 각도
     //bool bCircularMode = false;
 
     #endregion
@@ -28,7 +28,17 @@ public class PatrolComponent : MonoBehaviour
 
 
     private bool bArrived = false;
-    public bool Arrived { get => bArrived; set => bArrived = value; }
+    public bool Arrived
+    {
+        get
+        {
+            return bArrived;
+        }
+        set
+        {
+            bArrived = value;
+        }
+    }
 
     private Vector3 initPosition; // 시작 위치
     private Vector3 goalPosition; // 도착 위치
@@ -68,10 +78,14 @@ public class PatrolComponent : MonoBehaviour
     private void Update()
     {
         if (navMeshPath == null)
+        {
             return;
+        }
 
         if (bArrived == true)
+        {
             return;
+        }
 
         if (bDebugMode)
         {
@@ -81,11 +95,13 @@ public class PatrolComponent : MonoBehaviour
         float distance = Vector3.Distance(transform.position, goalPosition);
 
         if (distance >= navMeshAgent.stoppingDistance)
+        {
             return;
+        }
 
         bArrived = true;
 
-        //TODO: Wait Mode 
+        //TODO: Wait Mode
         float waitTime = goalDelay + UnityEngine.Random.Range(-goalDelayRandom, goalDelayRandom);
 
         IEnumerator waitRoutine = WaitDelay(waitTime);
@@ -96,7 +112,9 @@ public class PatrolComponent : MonoBehaviour
     public void SetPath()
     {
         if (bArrived)
+        {
             return;
+        }
 
         coroutienPathRoutine = StartCoroutine(CreateNavMeshPathRoutine());
     }
@@ -122,7 +140,7 @@ public class PatrolComponent : MonoBehaviour
 
         Vector3 prevGoalPosition = goalPosition;
 
-   
+
         while (true)
         {
             while (true)
@@ -133,7 +151,9 @@ public class PatrolComponent : MonoBehaviour
                 goalPosition = new Vector3(x, 0, z) + initPosition;
 
                 if (Vector3.Distance(goalPosition, prevGoalPosition) > radius * 0.25f)
+                {
                     break;
+                }
 
                 yield return null;
             }
@@ -141,7 +161,7 @@ public class PatrolComponent : MonoBehaviour
             path = new NavMeshPath();
 
 
-          
+
             if (navMeshAgent.CalculatePath(goalPosition, path) == true)
             {
                 navMeshPath = path;
@@ -150,7 +170,7 @@ public class PatrolComponent : MonoBehaviour
             }
 
 
-            yield return null; 
+            yield return null;
         }
     }
 
@@ -173,7 +193,9 @@ public class PatrolComponent : MonoBehaviour
     public void StartSideStep(GameObject target)
     {
         if (target == null)
+        {
             return;
+        }
 
         GenerateCircularPath(target.transform.position);
     }
@@ -181,7 +203,9 @@ public class PatrolComponent : MonoBehaviour
     public void MoveTo()
     {
         if (navMeshPath == null)
+        {
             return;
+        }
 
         navMeshAgent.SetPath(navMeshPath);
     }
@@ -203,10 +227,14 @@ public class PatrolComponent : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         if (Application.isPlaying == false)
+        {
             return;
+        }
 
         if (Selection.activeGameObject != gameObject)
+        {
             return;
+        }
 
         Vector3 form = transform.position + new Vector3(0, 0.1f, 0);
         Vector3 to = goalPosition + new Vector3(0, 0.1f, 0);
@@ -223,7 +251,10 @@ public class PatrolComponent : MonoBehaviour
 
         Gizmos.color = Color.green;
         if (sidePositionQueue == null || sidePositionQueue.Count <= 0)
+        {
             return;
+        }
+
         foreach (Vector3 pos in sidePositionQueue)
         {
             Gizmos.DrawWireSphere(pos, .25f);

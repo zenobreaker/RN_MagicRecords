@@ -17,12 +17,30 @@ public class Projectile
     private bool pierceInitialized;
 
     private int index;
-    public int Index { get { return index; } set { index = value; } }
+    public int Index
+    {
+        get
+        {
+            return index;
+        }
+        set
+        {
+            index = value;
+        }
+    }
 
     public int PierceCount
     {
-        get { InitializePierce(); return currentPierceCount; }
-        set { InitializePierce(); currentPierceCount = value; }
+        get
+        {
+            InitializePierce();
+            return currentPierceCount;
+        }
+        set
+        {
+            InitializePierce();
+            currentPierceCount = value;
+        }
     }
 
     // 💡 1. 세상에 처음 태어났을 때 최초 1회 초기화
@@ -34,7 +52,11 @@ public class Projectile
 
     private void InitializePierce()
     {
-        if (pierceInitialized) return;
+        if (pierceInitialized)
+        {
+            return;
+        }
+
         pierceInitialized = true;
         currentPierceCount = basePierceCount;
     }
@@ -54,10 +76,18 @@ public class Projectile
         DealDamage(other.gameObject, other.transform.InverseTransformPoint(hitPoint));
 
         // 관통 로직
-        if (currentPierceCount == -1) return;
+        if (currentPierceCount == -1)
+        {
+            return;
+        }
+
         if (currentPierceCount > 0)
+        {
             currentPierceCount--;
+        }
         else
+        {
             this.gameObject.SetActive(false);
+        }
     }
 }

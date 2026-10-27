@@ -38,11 +38,16 @@ public class InventoryUI : UiBase
     private void DrawInventory()
     {
         var manager = InventoryManager.Instance;
-        if (manager == null) return;
+        if (manager == null)
+        {
+            return;
+        }
 
         items = manager.GetItems(category);
         if (items == null)
+        {
             return;
+        }
 
         UIListDrawer.DrawList<UIInvenSlot, ItemData>(
           items, (slot, item, index) =>
@@ -50,7 +55,9 @@ public class InventoryUI : UiBase
               // Use provided item to avoid indexing closure
               slot.SetItemData(item);
               if (slot.gameObject.activeSelf == false)
+              {
                   slot.gameObject.SetActive(true);
+              }
 
               slot.OnClickedSlot -= ClickSlot;
               slot.OnClickedSlot += ClickSlot;
@@ -59,7 +66,9 @@ public class InventoryUI : UiBase
           {
               slot.OnClickedSlot -= ClickSlot;
               if (slot.gameObject.activeSelf == true)
+              {
                   slot.gameObject.SetActive(false);
+              }
           },
           InitReplaceContentObject,
            SetContentChildObjectsCallback<UIInvenSlot>
@@ -69,14 +78,14 @@ public class InventoryUI : UiBase
     public void OnClickedCategoryButton(int category)
     {
         this.category = (ItemCategory)category;
-        DrawInventory(); 
+        DrawInventory();
     }
 
     public void ClickSlot(ItemData item)
     {
-        if(item is EquipmentItem)
+        if (item is EquipmentItem)
         {
-            // 장비 처리 
+            // 장비 처리
             UIManager.Instance.OpenItemPopUp(item);
         }
     }

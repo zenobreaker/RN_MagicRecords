@@ -5,12 +5,15 @@ using System.Threading;
 using UnityEngine;
 
 
-public enum WarningSignType { Circle, Rectangle, Fan }
+public enum WarningSignType
+{
+    Circle, Rectangle, Fan
+}
 
 
 public interface ISkillEffect
 {
-    void SetDamageInfo(Character attacker, DamageData damageData, bool bExtraCrit = false, 
+    void SetDamageInfo(Character attacker, DamageData damageData, bool bExtraCrit = false,
         float multiplier = 1.0f);
     void AddIgnore(GameObject ignore);
     void SetIgnores(HashSet<GameObject> ignores);
@@ -18,7 +21,11 @@ public interface ISkillEffect
 
 public interface IProjectile : ISkillEffect
 {
-    int PierceCount { get; set; }
+    int PierceCount
+    {
+        get;
+        set;
+    }
 }
 
 public interface ILifetimeSetup

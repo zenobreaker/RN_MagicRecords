@@ -16,8 +16,12 @@ public class Module_ChargeWait : SkillModule
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (skill == null) return;
-        CancelCharge(); 
+        if (skill == null)
+        {
+            return;
+        }
+
+        CancelCharge();
 
         currentMaxChargeTime = (skill.Runtime?.Cast?.MaxChargeTime ?? maxChargeTime) /
             Mathf.Max(0.01f, skill.Runtime?.Cast?.ChargeSpeedMultiplier ?? 1f);
@@ -36,7 +40,10 @@ public class Module_ChargeWait : SkillModule
                 .SuppressCancellationThrow();
 
             // 중간에 유저가 키를 떼서(OnReleaseKey) 캔슬되었다면 조용히 종료!
-            if (isCancelled) return;
+            if (isCancelled)
+            {
+                return;
+            }
         }
     }
 
@@ -46,12 +53,17 @@ public class Module_ChargeWait : SkillModule
     }
 
 
-    public override void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase) => CancelCharge();
+    public override void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase)
+    {
+        CancelCharge();
+    }
 
     private void CancelCharge()
     {
         if (chargeCts == null)
+        {
             return;
+        }
 
         chargeCts.Cancel();
         chargeCts.Dispose();

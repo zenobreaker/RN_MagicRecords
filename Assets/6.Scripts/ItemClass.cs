@@ -12,7 +12,13 @@ public abstract class ItemData
     public string name;
     public string description;
     protected int itemCount = 0;
-    public Sprite Icon  => ResourceManager.Instance.SafeInvoke(v=>v.GetSprite(iconPath));
+    public Sprite Icon
+    {
+        get
+        {
+            return ResourceManager.Instance.SafeInvoke(v => v.GetSprite(iconPath));
+        }
+    }
 
     public event Action<ItemData> OnChanged;
     public ItemData(int id, string iconPath, string name = "", string desc = "")
@@ -20,7 +26,7 @@ public abstract class ItemData
         this.id = id;
         this.iconPath = iconPath;
         this.name = name;
-        this.description = desc; 
+        this.description = desc;
         this.uniqueID = Guid.NewGuid().ToString();
         rank = ItemRank.NONE;
     }
@@ -37,7 +43,10 @@ public abstract class ItemData
         rank = other.rank;
     }
 
-    public int GetCount() => itemCount;
+    public int GetCount()
+    {
+        return itemCount;
+    }
     public virtual void SetCount(int newCount)
     {
         itemCount = newCount;
@@ -47,7 +56,11 @@ public abstract class ItemData
     public virtual void ModifyCount(int delta)
     {
         itemCount += delta;
-        if (itemCount < 0) itemCount = 0;
+        if (itemCount < 0)
+        {
+            itemCount = 0;
+        }
+
         NotifyChanged();
     }
 
@@ -63,18 +76,25 @@ public abstract class ItemData
         get
         {
             if (LocalizationManager.Instance != null)
+            {
                 return LocalizationManager.Instance.GetText(name);
+            }
             else
+            {
                 return name;
+            }
         }
     }
     public string LocalizedDescription
     {
         get
         {
-            if(LocalizationManager.Instance != null) 
+            if (LocalizationManager.Instance != null)
+            {
                 return LocalizationManager.Instance.GetText(description);
-            return description; 
+            }
+
+            return description;
         }
     }
 }
@@ -83,18 +103,28 @@ public class EquipmentItem : ItemData
 {
     public EquipParts parts;
     public StatModifier modifier;
-    // 강화해도 변하지 않는 원본 스탯 
-    public float baseModifierValue { get; private set; }
+    // 강화해도 변하지 않는 원본 스탯
+    public float baseModifierValue
+    {
+        get;
+        private set;
+    }
 
-    public int owner = 0; 
+    public int owner = 0;
     public bool Eqeuipped = false;
 
-    private int enhance; 
-    public int Enhance { get { return enhance; } }
+    private int enhance;
+    public int Enhance
+    {
+        get
+        {
+            return enhance;
+        }
+    }
 
     public EquipmentItem(int id, string iconPath, string name, string description, EquipParts parts,
         ItemRank rank, StatusType mainStatus, float mainValue, bool isPercent)
-        :base(id, iconPath, name, description)
+        : base(id, iconPath, name, description)
     {
         this.parts = parts;
         modifier = new StatModifier(mainStatus, mainValue
@@ -145,11 +175,14 @@ public class EquipmentItem : ItemData
     {
         enhance = enhanceLevel;
         //Debug.Log($"강화 전 {modifier.value}");
-        modifier.value = EnhanceCalculator.CaclculateEnhancedStat(this, 
+        modifier.value = EnhanceCalculator.CaclculateEnhancedStat(this,
             AppManager.Instance.GetEnhanceStatDatas(rank));
         //Debug.Log($"강화 후 {modifier.value}");
         if (loaded)
+        {
             return;
+        }
+
         NotifyChanged();
     }
 }
@@ -157,19 +190,19 @@ public class EquipmentItem : ItemData
 public class IngredientItem
     : ItemData
 {
-    public IngredientItem(int id, string iconPath, int itemCategory) 
+    public IngredientItem(int id, string iconPath, int itemCategory)
         : base(id, iconPath)
     {
         category = (ItemCategory)itemCategory;
-        itemCount = 1; 
+        itemCount = 1;
     }
 
     public IngredientItem(int id, string iconPath, ItemCategory category = ItemCategory.INGREDIANT
-        , string name = "", string desc = "") 
+        , string name = "", string desc = "")
         : base(id, iconPath, name, desc)
     {
         this.category = category;
-        itemCount = 1; 
+        itemCount = 1;
     }
 
     public override ItemData Copy()
@@ -185,7 +218,13 @@ public class CurrencyItem
     : ItemData
 {
     private CurrencyType type;
-    public CurrencyType Type { get => type; }
+    public CurrencyType Type
+    {
+        get
+        {
+            return type;
+        }
+    }
     public CurrencyItem(int id, string iconPath, CurrencyType type, string name = "", string desc = "")
         : base(id, iconPath, name, desc)
     {
@@ -195,7 +234,7 @@ public class CurrencyItem
 
     public override ItemData Copy()
     {
-        var copy = new CurrencyItem(id, iconPath, Type, name ,description);
+        var copy = new CurrencyItem(id, iconPath, Type, name, description);
         copy.uniqueID = uniqueID;
         copy.itemCount = itemCount;
         return copy;
@@ -206,24 +245,46 @@ public class CurrencyItem
 public class ShopItem : ItemData
 {
     private int targetItemID;
-    public int TargetItemID => targetItemID;
+    public int TargetItemID
+    {
+        get
+        {
+            return targetItemID;
+        }
+    }
     private CurrencyType currencyType;
-    public CurrencyType CurrencyType => currencyType;
+    public CurrencyType CurrencyType
+    {
+        get
+        {
+            return currencyType;
+        }
+    }
     private int price;
-    public int Price => price; 
-    public ItemData TargetItemData { get; private set; }
+    public int Price
+    {
+        get
+        {
+            return price;
+        }
+    }
+    public ItemData TargetItemData
+    {
+        get;
+        private set;
+    }
 
-    public ShopItem(int id, int targetItemID, string iconPath ,
-        int price = 0, CurrencyType currencyType = CurrencyType.NONE) 
+    public ShopItem(int id, int targetItemID, string iconPath,
+        int price = 0, CurrencyType currencyType = CurrencyType.NONE)
         : base(id, iconPath)
     {
         this.price = price;
         this.targetItemID = targetItemID;
         this.currencyType = currencyType;
     }
-    public ShopItem(ItemData data) :base(data) 
-    { 
-        if(data is ShopItem shopItem)
+    public ShopItem(ItemData data) : base(data)
+    {
+        if (data is ShopItem shopItem)
         {
             this.targetItemID = shopItem.targetItemID;
             this.price = shopItem.Price;
@@ -234,7 +295,10 @@ public class ShopItem : ItemData
 
     public void SetShopData(ShopItem shopItem)
     {
-        if (shopItem == null) return;
+        if (shopItem == null)
+        {
+            return;
+        }
 
         this.targetItemID = shopItem.targetItemID;
         this.price = shopItem.Price;
@@ -243,7 +307,11 @@ public class ShopItem : ItemData
 
     public void ResolveTargetItem(ItemDataBase database)
     {
-        if (database == null) return;
+        if (database == null)
+        {
+            return;
+        }
+
         TargetItemData = database.GetItem(TargetItemID);
     }
 

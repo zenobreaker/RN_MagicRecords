@@ -17,7 +17,13 @@ public class AppManager
     private ExploreManager exploreManager;
 
     [SerializeField] private bool bCheat;
-    public bool Cheat => bCheat;
+    public bool Cheat
+    {
+        get
+        {
+            return bCheat;
+        }
+    }
 
     private bool isProcessingReward = false;
 
@@ -32,10 +38,14 @@ public class AppManager
         base.Awake();
 
         if (IsDuplicate)
+        {
             return;
+        }
 
         if (Instance != this)
+        {
             return;
+        }
 
 
         // --------------------------------------------------
@@ -181,7 +191,9 @@ public class AppManager
     private void OnDisable()
     {
         if (Instance != this)
+        {
             return;
+        }
 
 
         // --------------------------------------------------
@@ -257,15 +269,23 @@ public class AppManager
     public void HandleStageResult(StageResult result)
     {
         if (exploreManager == null)
+        {
             return;
+        }
+
         if (exploreManager.IsEventCombat)
         {
             exploreManager.CompleteEventCombat(result.IsSuccess);
             SaveIfDirty();
             if (result.IsSuccess)
+            {
                 MoveToNextNodeScene();
+            }
             else
+            {
                 UIManager.Instance.SafeInvoke(ui => ui.OpenExploreResultPopUp());
+            }
+
             return;
         }
         if (exploreManager.RunStatus == RunStatus.ChapterCleared)
@@ -273,7 +293,10 @@ public class AppManager
             ShowPendingChapterReward();
             return;
         }
-        if (exploreManager.RunStatus == RunStatus.FinalRunCleared || exploreManager.IsCurrentNodeCleared) return;
+        if (exploreManager.RunStatus == RunStatus.FinalRunCleared || exploreManager.IsCurrentNodeCleared)
+        {
+            return;
+        }
         // 1. ExploreManager에게 결과 전달
         exploreManager.ClearStage(
             result.IsSuccess);
@@ -288,7 +311,7 @@ public class AppManager
 
         // 2. 결과 UI
         bool isRunCompletelyFinished =
-            !result.IsSuccess ||
+            result.IsSuccess == false ||
             exploreManager.AllStageClear;
 
 
@@ -324,7 +347,9 @@ public class AppManager
     {
         if (isProcessingReward || exploreManager == null || exploreManager.RunStatus == RunStatus.ChapterCleared ||
             exploreManager.RunStatus == RunStatus.FinalRunCleared)
+        {
             return;
+        }
 
         isProcessingReward = true;
 
@@ -434,7 +459,9 @@ public class AppManager
     {
         if (node == null ||
             exploreManager == null)
+        {
             return false;
+        }
 
         return exploreManager.CanEnableNode(
             node.id,
@@ -445,7 +472,9 @@ public class AppManager
     public StageInfo GetStageInfo(int stageID)
     {
         if (databaseManager == null)
+        {
             return null;
+        }
 
         return databaseManager.GetStageInfo(
             stageID);
@@ -457,7 +486,9 @@ public class AppManager
         int stageID)
     {
         if (databaseManager == null)
+        {
             return null;
+        }
 
         return databaseManager.GetBossStageInfo(
             chapter,
@@ -468,7 +499,9 @@ public class AppManager
     public int GetRandomStageId(int chapter)
     {
         if (databaseManager == null)
+        {
             return -1;
+        }
 
         return databaseManager.GetRandomStageID(
             chapter);
@@ -478,7 +511,9 @@ public class AppManager
     public int GetRandomBossStageID(int chapter)
     {
         if (databaseManager == null)
+        {
             return -1;
+        }
 
         return databaseManager.GetRandomBossStageID(
             chapter);
@@ -491,7 +526,9 @@ public class AppManager
             GetRandomBossStageID(chapter);
 
         if (stageID < 0)
+        {
             return null;
+        }
 
         return GetBossStageInfo(
             chapter,
@@ -505,7 +542,9 @@ public class AppManager
             GetRandomStageId(chapter);
 
         if (stageID < 0)
+        {
             return null;
+        }
 
         return GetStageInfo(stageID);
     }
@@ -514,7 +553,9 @@ public class AppManager
     public MonsterData GetMonsterData(int monsterID)
     {
         if (databaseManager == null)
+        {
             return null;
+        }
 
         return databaseManager.GetMonsterData(
             monsterID);
@@ -524,7 +565,9 @@ public class AppManager
     public MonsterGroupData GetGroupData(int groupID)
     {
         if (databaseManager == null)
+        {
             return null;
+        }
 
         return databaseManager.GetMonsterGroupData(
             groupID);
@@ -535,7 +578,9 @@ public class AppManager
         int monsterID)
     {
         if (databaseManager == null)
+        {
             return null;
+        }
 
         return databaseManager.GetMonsterStatData(
             monsterID);
@@ -546,7 +591,9 @@ public class AppManager
     {
         if (node == null ||
             exploreManager == null)
+        {
             return;
+        }
 
         Debug.Log(
             $"Current Select Node ID : {node.id}");
@@ -563,7 +610,9 @@ public class AppManager
     private void HandleReturnToMain()
     {
         if (recordManager == null)
+        {
             return;
+        }
 
         recordManager.GenerateChapterStartRecords();
     }
@@ -599,7 +648,9 @@ public class AppManager
     {
         if (mapNode == null ||
             exploreManager == null)
+        {
             return null;
+        }
 
         return exploreManager.GetReplacedNodeInfo(
             mapNode.id);
@@ -617,10 +668,15 @@ public class AppManager
     {
         if (skillManager == null ||
             skillTree == null)
+        {
             return;
+        }
 
         // A resumed run owns its loadout; a delayed lobby-save callback must not overwrite it.
-        if (skillManager.HasRunSkills(characterID) || skillIDs == null) return;
+        if (skillManager.HasRunSkills(characterID) || skillIDs == null)
+        {
+            return;
+        }
 
         int slot = 0;
 
@@ -647,7 +703,9 @@ public class AppManager
         SkillRuntimeData skill)
     {
         if (skillManager == null)
+        {
             return;
+        }
 
         skillManager.EquipActiveSkill(
             charId,
@@ -661,7 +719,9 @@ public class AppManager
         int slot)
     {
         if (skillManager == null)
+        {
             return;
+        }
 
         skillManager.EquipActiveSkill(
             charId,
@@ -675,7 +735,9 @@ public class AppManager
             int charId)
     {
         if (skillManager == null)
+        {
             return null;
+        }
 
         return skillManager.GetActiveSkillList(
             charId);
@@ -687,7 +749,9 @@ public class AppManager
             int charID)
     {
         if (skillManager == null)
+        {
             return null;
+        }
 
         return skillManager.GetActiveSkillIDList(
             charID);
@@ -700,7 +764,9 @@ public class AppManager
     {
         if (skillManager == null ||
             skillComp == null)
+        {
             return;
+        }
 
         skillManager.SetActiveSkills(
             jobID,
@@ -719,7 +785,9 @@ public class AppManager
         PassiveSkill passiveSkill)
     {
         if (passiveSystem == null)
+        {
             return;
+        }
 
         passiveSystem.Add(
             jobID,
@@ -732,7 +800,9 @@ public class AppManager
         PassiveSkill passiveSkill)
     {
         if (passiveSystem == null)
+        {
             return;
+        }
 
         passiveSystem.Remove(
             jobID,
@@ -795,10 +865,14 @@ public class AppManager
         ItemCategory category)
     {
         if (category == ItemCategory.EQUIPMENT)
+        {
             return GetEquipmentItem(itemId);
+        }
 
         if (category == ItemCategory.INGREDIANT)
+        {
             return GetIngredientItem(itemId);
+        }
 
         return GetCurrencyItem(itemId);
     }
@@ -1043,7 +1117,11 @@ public class AppManager
     public void ShowPendingChapterReward()
     {
         if (exploreManager == null || exploreManager.RunStatus != RunStatus.ChapterCleared ||
-            rewardManager == null || UIManager.Instance == null) return;
+            rewardManager == null || UIManager.Instance == null)
+        {
+            return;
+        }
+
         int clearedChapter = exploreManager.Chapter;
         var rewards = rewardManager.PrepareChapterRewards(clearedChapter);
         if (exploreManager.IsFinalChapter)
@@ -1058,8 +1136,15 @@ public class AppManager
 
     private void ReceiveChapterRewardAndContinue(int clearedChapter)
     {
-        if (exploreManager.RunStatus != RunStatus.ChapterCleared || exploreManager.Chapter != clearedChapter) return;
-        if (!rewardManager.ReceiveChapterRewards(clearedChapter, out var grantedRecords)) return;
+        if (exploreManager.RunStatus != RunStatus.ChapterCleared || exploreManager.Chapter != clearedChapter)
+        {
+            return;
+        }
+
+        if (rewardManager.ReceiveChapterRewards(clearedChapter, out var grantedRecords) == false)
+        {
+            return;
+        }
         // 지급 상태를 먼저 저장해 확인창에서 종료해도 같은 보상이 중복 지급되지 않게 합니다.
         exploreManager.CompleteChapterReward(clearedChapter);
         SaveIfDirty();

@@ -23,14 +23,14 @@ public class BossHUDController : MonoBehaviour
 
     private void UpdateBossHP(Character boss, float current, float max)
     {
-        // 1. 등록되지 않은 보스라면 새로 생성 
-        if (!bossHpMap.ContainsKey(boss))
+        // 1. 등록되지 않은 보스라면 새로 생성
+        if (bossHpMap.ContainsKey(boss) == false)
         {
-            CreateNewBossHPBar(boss); 
+            CreateNewBossHPBar(boss);
         }
 
-        // 2. 해당 봇의 HP만 업데이트 
-        bossHpMap[boss].OnDrawBossGauge(boss, current, max); 
+        // 2. 해당 봇의 HP만 업데이트
+        bossHpMap[boss].OnDrawBossGauge(boss, current, max);
 
         // 3. 만약 죽었다면 제거 로직
     }
@@ -41,8 +41,11 @@ public class BossHUDController : MonoBehaviour
         var hpBarUI = obj.GetComponent<BossGauageUI>();
         obj.GetComponentInChildren<BossEffectGroupUI>(true).SafeInvoke(ui => ui.SetBoss(boss));
 
-        if (boss is Enemy enemy) hpBarUI.SetName(boss.name);
+        if (boss is Enemy enemy)
+        {
+            hpBarUI.SetName(boss.name);
+        }
 
-        bossHpMap.Add(boss, hpBarUI); 
+        bossHpMap.Add(boss, hpBarUI);
     }
 }

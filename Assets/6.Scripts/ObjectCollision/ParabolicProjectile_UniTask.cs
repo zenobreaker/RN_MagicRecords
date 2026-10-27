@@ -58,7 +58,10 @@ public class ParabolicProjectile_UniTask
             currentPos.y += Mathf.Sin(progress * Mathf.PI) * arcHeight;
 
             Vector3 moveDir = currentPos - transform.position;
-            if (moveDir != Vector3.zero) transform.rotation = Quaternion.LookRotation(moveDir);
+            if (moveDir != Vector3.zero)
+            {
+                transform.rotation = Quaternion.LookRotation(moveDir);
+            }
 
             transform.position = currentPos;
 

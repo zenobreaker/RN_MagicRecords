@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public enum ExploreShopKind { Record, SkillSwap, Heal15, Heal60, CharacterLevelUp }
+public enum ExploreShopKind
+{
+    Record, SkillSwap, Heal15, Heal60, CharacterLevelUp
+}
 
 [Serializable]
 public sealed class ExploreShopOffer
@@ -12,14 +15,23 @@ public sealed class ExploreShopOffer
     public int price = -1; // Unconfigured is never a free purchase.
     public bool sold;
     public int purchases;
-    public ExploreShopOffer Copy() => (ExploreShopOffer)MemberwiseClone();
+    public ExploreShopOffer Copy()
+    {
+        return (ExploreShopOffer)MemberwiseClone();
+    }
 }
 
 [Serializable]
 public sealed class ExploreShopStock
 {
     public List<ExploreShopOffer> offers = new();
-    public ExploreShopStock Copy() => new ExploreShopStock { offers = offers.Select(o => o.Copy()).ToList() };
+    public ExploreShopStock Copy()
+    {
+        return new ExploreShopStock
+        {
+            offers = offers.Select(o => o.Copy()).ToList()
+        };
+    }
 }
 
 [Serializable]

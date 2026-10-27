@@ -9,16 +9,24 @@ public static class CombatHelper
        HashSet<GameObject> ignores)
     {
         if (owner == null || target == null)
+        {
             return true;
+        }
 
         if (ignores != null && ignores.Contains(target))
+        {
             return true;
+        }
 
         if (target == owner.gameObject)
+        {
             return true;
+        }
 
         if (target.transform.IsChildOf(owner.transform))
+        {
             return true;
+        }
 
         GenenricTeamId myTeamId = TeamUtility.GetTeamId(owner);
 
@@ -35,7 +43,9 @@ public static class CombatHelper
         if (owner == null ||
             damageEvent == null ||
             target == null)
+        {
             return;
+        }
 
         if (target.TryGetComponent<IDamagable>(out var damage))
         {
@@ -57,7 +67,9 @@ public static class CombatHelper
         if (owner == null ||
             damageData == null ||
             target == null)
+        {
             return;
+        }
 
         DamageEvent damageEvent = damageData.GetMyDamageEvent(owner.GetComponent<StatusComponent>());
 

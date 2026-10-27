@@ -33,12 +33,18 @@ public class ActiveSkillEditorWindow : EditorWindow
         window.Show();
     }
 
-    private void OnEnable() => RefreshSkillList();
+    private void OnEnable()
+    {
+        RefreshSkillList();
+    }
 
     private void RefreshSkillList()
     {
         activeSkills.Clear();
-        string[] guids = AssetDatabase.FindAssets("t:ScriptableObject", new[] { SkillFolder });
+        string[] guids = AssetDatabase.FindAssets("t:ScriptableObject", new[]
+        {
+            SkillFolder
+        });
         foreach (string guid in guids)
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
@@ -46,7 +52,10 @@ public class ActiveSkillEditorWindow : EditorWindow
             if (skill != null)
             {
                 SerializedObject so = new SerializedObject(skill);
-                if (so.FindProperty("phaseList") != null) activeSkills.Add(skill);
+                if (so.FindProperty("phaseList") != null)
+                {
+                    activeSkills.Add(skill);
+                }
             }
         }
     }
@@ -68,10 +77,17 @@ public class ActiveSkillEditorWindow : EditorWindow
         EditorGUILayout.BeginVertical("box", GUILayout.Width(280f), GUILayout.ExpandHeight(true));
 
         EditorGUILayout.LabelField("⚡ Active Skills", EditorStyles.boldLabel);
-        if (GUILayout.Button("새로고침", EditorStyles.miniButton)) RefreshSkillList();
+        if (GUILayout.Button("새로고침", EditorStyles.miniButton))
+        {
+            RefreshSkillList();
+        }
+
         EditorGUILayout.Space(5f);
 
-        if (GUILayout.Button("+ 새 Active Skill 만들기", GUILayout.Height(30f))) CreateNewActiveSkill();
+        if (GUILayout.Button("+ 새 Active Skill 만들기", GUILayout.Height(30f)))
+        {
+            CreateNewActiveSkill();
+        }
 
         EditorGUILayout.Space(10f);
         leftScrollPos = EditorGUILayout.BeginScrollView(leftScrollPos);
@@ -86,27 +102,44 @@ public class ActiveSkillEditorWindow : EditorWindow
 
         foreach (var skill in activeSkills)
         {
-            if (skill == null) continue;
+            if (skill == null)
+            {
+                continue;
+            }
+
             SerializedObject so = new SerializedObject(skill);
 
             SerializedProperty nameProp = so.FindProperty("skillName") ?? so.FindProperty("SkillName");
             string sName = nameProp != null ? nameProp.stringValue : "";
-            if (string.IsNullOrEmpty(sName)) sName = skill.name;
+            if (string.IsNullOrEmpty(sName))
+            {
+                sName = skill.name;
+            }
+
             sName = TheWheeler.Editor.EditorLocalization.Resolve(sName);
 
             Texture2D icon = null;
             SerializedProperty imageProp = so.FindProperty("skillImage") ?? so.FindProperty("icon");
             if (imageProp != null && imageProp.objectReferenceValue != null)
             {
-                if (imageProp.objectReferenceValue is Sprite spr) icon = spr.texture;
-                else if (imageProp.objectReferenceValue is Texture2D tex) icon = tex;
+                if (imageProp.objectReferenceValue is Sprite spr)
+                {
+                    icon = spr.texture;
+                }
+                else if (imageProp.objectReferenceValue is Texture2D tex)
+                {
+                    icon = tex;
+                }
             }
 
             int sId = so.FindProperty("skillID")?.intValue ?? so.FindProperty("id")?.intValue ?? 0;
             GUIContent content = new GUIContent($" [{sId}] {sName}", icon, nameProp?.stringValue ?? skill.name);
 
             Color oldBg = GUI.backgroundColor;
-            if (selectedSkill == skill) GUI.backgroundColor = new Color(0.3f, 0.6f, 0.9f);
+            if (selectedSkill == skill)
+            {
+                GUI.backgroundColor = new Color(0.3f, 0.6f, 0.9f);
+            }
 
             if (GUILayout.Button(content, listItemStyle))
             {
@@ -233,7 +266,10 @@ public class ActiveSkillEditorWindow : EditorWindow
     {
         EditorGUILayout.LabelField("Phase Modules", EditorStyles.boldLabel);
 
-        if (modulesProp == null || !modulesProp.isArray) return;
+        if (modulesProp == null || modulesProp.isArray == false)
+        {
+            return;
+        }
 
         string currentGroup = "";
 
@@ -306,7 +342,10 @@ public class ActiveSkillEditorWindow : EditorWindow
 
     private string GetTriggerGroupName(SerializedProperty modProp)
     {
-        if (modProp == null) return "Unknown";
+        if (modProp == null)
+        {
+            return "Unknown";
+        }
 
         var tProp = modProp.FindPropertyRelative("triggerTime") ??
                     modProp.FindPropertyRelative("TriggerTime") ??
@@ -321,20 +360,37 @@ public class ActiveSkillEditorWindow : EditorWindow
 
     private string GetModuleSummary(SerializedProperty modProp)
     {
-        if (modProp == null) return "Null";
+        if (modProp == null)
+        {
+            return "Null";
+        }
+
         string typeName = modProp.managedReferenceFullTypename;
-        if (string.IsNullOrEmpty(typeName)) return "Empty Module";
+        if (string.IsNullOrEmpty(typeName))
+        {
+            return "Empty Module";
+        }
 
         string name = typeName.Split(' ').Last().Replace("Module_", "");
         List<string> details = new List<string>();
 
         var timeProp = modProp.FindPropertyRelative("castingTime") ?? modProp.FindPropertyRelative("duration") ?? modProp.FindPropertyRelative("time");
-        if (timeProp != null && timeProp.propertyType == SerializedPropertyType.Float) details.Add($"Time: {timeProp.floatValue}s");
+        if (timeProp != null && timeProp.propertyType == SerializedPropertyType.Float)
+        {
+            details.Add($"Time: {timeProp.floatValue}s");
+        }
 
         var overProp = modProp.FindPropertyRelative("overrideCasting");
-        if (overProp != null && overProp.propertyType == SerializedPropertyType.Boolean) details.Add($"Override: {overProp.boolValue}");
+        if (overProp != null && overProp.propertyType == SerializedPropertyType.Boolean)
+        {
+            details.Add($"Override: {overProp.boolValue}");
+        }
 
-        if (details.Count > 0) return $"{name} ({string.Join(", ", details)})";
+        if (details.Count > 0)
+        {
+            return $"{name} ({string.Join(", ", details)})";
+        }
+
         return name;
     }
 
@@ -343,10 +399,13 @@ public class ActiveSkillEditorWindow : EditorWindow
         GenericMenu menu = new GenericMenu();
         Type phaseType = typeof(PhaseSkill);
         FieldInfo modulesField = phaseType.GetField("modules", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        if (modulesField == null) return;
+        if (modulesField == null)
+        {
+            return;
+        }
 
         Type baseModuleType = modulesField.FieldType.GetGenericArguments()[0];
-        var derivedTypes = TypeCache.GetTypesDerivedFrom(baseModuleType).Where(t => !t.IsAbstract && !t.IsInterface && !t.IsGenericType);
+        var derivedTypes = TypeCache.GetTypesDerivedFrom(baseModuleType).Where(t => t.IsAbstract == false && t.IsInterface == false && t.IsGenericType == false);
 
         foreach (var type in derivedTypes)
         {
@@ -355,10 +414,14 @@ public class ActiveSkillEditorWindow : EditorWindow
 
             var categoryAttr = type.GetCustomAttribute<ModuleCategoryAttribute>();
 
-            if (categoryAttr != null && !string.IsNullOrEmpty(categoryAttr.Path))
+            if (categoryAttr != null && string.IsNullOrEmpty(categoryAttr.Path) == false)
+            {
                 menuPath = categoryAttr.Path;
+            }
             else
+            {
                 menuPath = $"Etc/{typeName}";
+            }
 
             menu.AddItem(new GUIContent($"{menuPath}"), false, () =>
             {
@@ -383,7 +446,10 @@ public class ActiveSkillEditorWindow : EditorWindow
         EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
         EditorGUILayout.LabelField("🔗 Phase Flow Canvas (우클릭 드래그로 뷰 이동)", EditorStyles.boldLabel);
         if (selectedSkill != null && GUILayout.Button("+ 페이즈 추가", EditorStyles.toolbarButton, GUILayout.Width(90f)))
+        {
             AddPhaseToSelectedSkill();
+        }
+
         EditorGUILayout.EndHorizontal();
 
         Rect canvasRect = GUILayoutUtility.GetRect(100, 100, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
@@ -409,9 +475,19 @@ public class ActiveSkillEditorWindow : EditorWindow
         Event e = Event.current;
         if (rect.Contains(e.mousePosition))
         {
-            if (e.type == EventType.MouseDown && e.button == 1) isDraggingCanvas = true;
-            else if (e.type == EventType.MouseDrag && isDraggingCanvas) { nodePanOffset += e.delta; Repaint(); }
-            else if (e.type == EventType.MouseUp && e.button == 1) isDraggingCanvas = false;
+            if (e.type == EventType.MouseDown && e.button == 1)
+            {
+                isDraggingCanvas = true;
+            }
+            else if (e.type == EventType.MouseDrag && isDraggingCanvas)
+            {
+                nodePanOffset += e.delta;
+                Repaint();
+            }
+            else if (e.type == EventType.MouseUp && e.button == 1)
+            {
+                isDraggingCanvas = false;
+            }
         }
     }
 
@@ -424,7 +500,11 @@ public class ActiveSkillEditorWindow : EditorWindow
 
         SerializedObject so = serializedSelectedSkill;
         SerializedProperty phaseListProp = so.FindProperty("phaseList");
-        if (phaseListProp == null) return;
+        if (phaseListProp == null)
+        {
+            return;
+        }
+
         so.Update();
 
         float startX = 50f + nodePanOffset.x;
@@ -450,7 +530,10 @@ public class ActiveSkillEditorWindow : EditorWindow
             {
                 string tGroup = GetTriggerGroupName(modulesProp.GetArrayElementAtIndex(m));
                 string pGroup = m > 0 ? GetTriggerGroupName(modulesProp.GetArrayElementAtIndex(m - 1)) : "";
-                if (m == 0 || tGroup != pGroup) headerCount++;
+                if (m == 0 || tGroup != pGroup)
+                {
+                    headerCount++;
+                }
             }
 
             float nodeHeight = 45f + (modCount * 22f) + (headerCount * 18f);
@@ -458,7 +541,11 @@ public class ActiveSkillEditorWindow : EditorWindow
             Rect nodeRect = new Rect(posX, startY, nodeWidth, nodeHeight);
 
             Color oldBg = GUI.backgroundColor;
-            if (selectedPhaseIndex == i && selectedModuleIndex == -1) GUI.backgroundColor = new Color(0.4f, 0.7f, 1f);
+            if (selectedPhaseIndex == i && selectedModuleIndex == -1)
+            {
+                GUI.backgroundColor = new Color(0.4f, 0.7f, 1f);
+            }
+
             GUI.Box(nodeRect, "", "window");
             GUI.backgroundColor = oldBg;
 
@@ -470,7 +557,9 @@ public class ActiveSkillEditorWindow : EditorWindow
 
             if (GUI.Button(titleRect, $"Phase [{i}]", EditorStyles.boldLabel))
             {
-                selectedPhaseIndex = i; selectedModuleIndex = -1; GUI.FocusControl(null);
+                selectedPhaseIndex = i;
+                selectedModuleIndex = -1;
+                GUI.FocusControl(null);
             }
 
             // ◀ 인덱스 앞으로 이동
@@ -479,8 +568,14 @@ public class ActiveSkillEditorWindow : EditorWindow
                 phaseListProp.MoveArrayElement(i, i - 1);
 
                 // 선택된 인덱스 추적 보정
-                if (selectedPhaseIndex == i) selectedPhaseIndex--;
-                else if (selectedPhaseIndex == i - 1) selectedPhaseIndex++;
+                if (selectedPhaseIndex == i)
+                {
+                    selectedPhaseIndex--;
+                }
+                else if (selectedPhaseIndex == i - 1)
+                {
+                    selectedPhaseIndex++;
+                }
 
                 so.ApplyModifiedProperties();
                 GUI.FocusControl(null);
@@ -493,8 +588,14 @@ public class ActiveSkillEditorWindow : EditorWindow
                 phaseListProp.MoveArrayElement(i, i + 1);
 
                 // 선택된 인덱스 추적 보정
-                if (selectedPhaseIndex == i) selectedPhaseIndex++;
-                else if (selectedPhaseIndex == i + 1) selectedPhaseIndex--;
+                if (selectedPhaseIndex == i)
+                {
+                    selectedPhaseIndex++;
+                }
+                else if (selectedPhaseIndex == i + 1)
+                {
+                    selectedPhaseIndex--;
+                }
 
                 so.ApplyModifiedProperties();
                 GUI.FocusControl(null);
@@ -545,11 +646,16 @@ public class ActiveSkillEditorWindow : EditorWindow
                 Rect modRect = new Rect(nodeRect.x + 5, currentY, nodeWidth - 10, 20f);
 
                 oldBg = GUI.backgroundColor;
-                if (selectedPhaseIndex == i && selectedModuleIndex == m) GUI.backgroundColor = new Color(0.6f, 0.9f, 0.6f);
+                if (selectedPhaseIndex == i && selectedModuleIndex == m)
+                {
+                    GUI.backgroundColor = new Color(0.6f, 0.9f, 0.6f);
+                }
 
                 if (GUI.Button(modRect, GetModuleSummary(modProp), EditorStyles.miniButton))
                 {
-                    selectedPhaseIndex = i; selectedModuleIndex = m; GUI.FocusControl(null);
+                    selectedPhaseIndex = i;
+                    selectedModuleIndex = m;
+                    GUI.FocusControl(null);
                 }
                 GUI.backgroundColor = oldBg;
                 currentY += 22f;
@@ -561,7 +667,10 @@ public class ActiveSkillEditorWindow : EditorWindow
     private void DrawPropertyIfExists(SerializedObject so, string propName)
     {
         var prop = so.FindProperty(propName);
-        if (prop != null) EditorGUILayout.PropertyField(prop, true);
+        if (prop != null)
+        {
+            EditorGUILayout.PropertyField(prop, true);
+        }
     }
 
     private void DrawNodeCurve(Vector2 start, Vector2 end)
@@ -581,7 +690,10 @@ public class ActiveSkillEditorWindow : EditorWindow
             "스킬 데이터(SO)를 저장할 위치와 이름을 지정하세요.",
             SkillFolder);
 
-        if (string.IsNullOrEmpty(path)) return;
+        if (string.IsNullOrEmpty(path))
+        {
+            return;
+        }
 
         ScriptableObject newSkill = ScriptableObject.CreateInstance("SO_ActiveSkillData");
 
@@ -593,10 +705,16 @@ public class ActiveSkillEditorWindow : EditorWindow
 
         SerializedObject so = new SerializedObject(newSkill);
         var nameProp = so.FindProperty("skillName") ?? so.FindProperty("SkillName");
-        if (nameProp != null) nameProp.stringValue = "New Active Skill";
+        if (nameProp != null)
+        {
+            nameProp.stringValue = "New Active Skill";
+        }
 
         var idProp = so.FindProperty("skillID") ?? so.FindProperty("id");
-        if (idProp != null) idProp.intValue = 1000 + activeSkills.Count;
+        if (idProp != null)
+        {
+            idProp.intValue = 1000 + activeSkills.Count;
+        }
 
         so.ApplyModifiedPropertiesWithoutUndo();
 
@@ -614,7 +732,10 @@ public class ActiveSkillEditorWindow : EditorWindow
 
     private void AddPhaseToSelectedSkill()
     {
-        if (selectedSkill == null) return;
+        if (selectedSkill == null)
+        {
+            return;
+        }
 
         if (serializedSelectedSkill == null || serializedSelectedSkill.targetObject != selectedSkill)
         {

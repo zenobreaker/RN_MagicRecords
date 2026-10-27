@@ -32,24 +32,24 @@ public class PatrolPoints : MonoBehaviour
     }
 
 
-    public  void  UpdateNextIndex()
+    public void UpdateNextIndex()
     {
         int count = transform.childCount;
 
-        if(bReverse)
+        if (bReverse)
         {
-            if(toIndex > 0)
+            if (toIndex > 0)
             {
                 toIndex--;
 
-                return; 
+                return;
             }
 
-            if(bLoop)
+            if (bLoop)
             {
                 toIndex = count - 1;
 
-                return; 
+                return;
             }
 
             bReverse = false;
@@ -63,15 +63,15 @@ public class PatrolPoints : MonoBehaviour
         if (toIndex < count - 1)
         {
             toIndex++;
-            
+
             return;
         }
 
-        if(bLoop)
+        if (bLoop)
         {
             toIndex = 0;
 
-            return; 
+            return;
         }
 
         bReverse = true;
@@ -88,12 +88,15 @@ public class PatrolPoints : MonoBehaviour
             DrawSphere(i);
 
             if (i < count - 1)
+            {
                 DrawLine(i, i + 1);
+            }
         }
 
         if (bLoop)
+        {
             DrawLine(count - 1, 0);
-
+        }
     }
 
     private void DrawSphere(int index)

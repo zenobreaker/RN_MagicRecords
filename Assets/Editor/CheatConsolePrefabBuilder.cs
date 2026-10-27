@@ -12,7 +12,11 @@ public static class CheatConsolePrefabBuilder
     [MenuItem("Tools/Cheats/Rebuild Console Prefab")]
     public static void Build()
     {
-        if (Application.isPlaying) throw new System.InvalidOperationException("Build the prefab in Edit Mode.");
+        if (Application.isPlaying)
+        {
+            throw new System.InvalidOperationException("Build the prefab in Edit Mode.");
+        }
+
         font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/99.Fonts/DNFBitBitTTF SDF.asset");
         var root = Rect("CheatConsoleUI", null, Vector2.zero, Vector2.zero).gameObject;
         root.SetActive(false);
@@ -28,7 +32,8 @@ public static class CheatConsolePrefabBuilder
             root.AddComponent<GraphicRaycaster>();
             var console = root.AddComponent<CheatConsoleUI>();
             var overlay = Rect("Overlay", root.transform, Vector2.zero, Vector2.zero);
-            overlay.anchorMin = Vector2.zero; overlay.anchorMax = Vector2.one;
+            overlay.anchorMin = Vector2.zero;
+            overlay.anchorMax = Vector2.one;
             overlay.offsetMin = overlay.offsetMax = Vector2.zero;
             Background(overlay, new Color(0, 0, 0, .72f));
             var panel = Rect("Console", overlay, new Vector2(1280, 850), Vector2.zero);
@@ -39,11 +44,15 @@ public static class CheatConsolePrefabBuilder
             Background(log, new Color(.055f, .07f, .1f));
             log.gameObject.AddComponent<RectMask2D>();
             var scroll = log.gameObject.AddComponent<ScrollRect>();
-            scroll.horizontal = false; scroll.movementType = ScrollRect.MovementType.Clamped;
-            scroll.scrollSensitivity = 30; scroll.viewport = log;
+            scroll.horizontal = false;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.scrollSensitivity = 30;
+            scroll.viewport = log;
             var output = Label("Output", log, "명령어를 입력하고 Enter를 누르세요.", new Vector2(1160, 0), Vector2.zero, 22);
-            output.rectTransform.anchorMin = new Vector2(0, 1); output.rectTransform.anchorMax = Vector2.one;
-            output.rectTransform.pivot = new Vector2(.5f, 1); output.rectTransform.sizeDelta = Vector2.zero;
+            output.rectTransform.anchorMin = new Vector2(0, 1);
+            output.rectTransform.anchorMax = Vector2.one;
+            output.rectTransform.pivot = new Vector2(.5f, 1);
+            output.rectTransform.sizeDelta = Vector2.zero;
             output.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             scroll.content = output.rectTransform;
             output.alignment = TextAlignmentOptions.TopLeft;
@@ -76,7 +85,11 @@ public static class CheatConsolePrefabBuilder
             root.SetActive(true);
             PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
         }
-        finally { Object.DestroyImmediate(root); }
+        finally
+        {
+            Object.DestroyImmediate(root);
+
+        }
     }
 
     private static RectTransform Rect(string name, Transform parent, Vector2 size, Vector2 position)
@@ -84,16 +97,24 @@ public static class CheatConsolePrefabBuilder
         var rect = new GameObject(name, typeof(RectTransform)).GetComponent<RectTransform>();
         rect.SetParent(parent, false);
         rect.anchorMin = rect.anchorMax = new Vector2(.5f, .5f);
-        rect.sizeDelta = size; rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+        rect.anchoredPosition = position;
         return rect;
     }
     private static Image Background(RectTransform rect, Color color)
-    { var image = rect.gameObject.AddComponent<Image>(); image.color = color; return image; }
+    {
+        var image = rect.gameObject.AddComponent<Image>();
+        image.color = color;
+        return image;
+    }
     private static TextMeshProUGUI Label(string name, Transform parent, string value, Vector2 size, Vector2 position, int fontSize)
     {
         var text = Rect(name, parent, size, position).gameObject.AddComponent<TextMeshProUGUI>();
-        text.font = font; text.fontSize = fontSize; text.text = value;
-        text.color = new Color(.8f, .92f, 1f); text.alignment = TextAlignmentOptions.MidlineLeft;
+        text.font = font;
+        text.fontSize = fontSize;
+        text.text = value;
+        text.color = new Color(.8f, .92f, 1f);
+        text.alignment = TextAlignmentOptions.MidlineLeft;
         text.raycastTarget = false;
         return text;
     }
@@ -101,7 +122,8 @@ public static class CheatConsolePrefabBuilder
     {
         var rect = Rect(name, parent, size, position);
         var image = Background(rect, new Color(.14f, .25f, .34f));
-        var button = rect.gameObject.AddComponent<Button>(); button.targetGraphic = image;
+        var button = rect.gameObject.AddComponent<Button>();
+        button.targetGraphic = image;
         var text = Label("Label", rect, title, size, Vector2.zero, 24);
         text.alignment = TextAlignmentOptions.Center;
         return button;

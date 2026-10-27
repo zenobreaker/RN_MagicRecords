@@ -12,12 +12,18 @@ public class CurrencyManager
     {
         base.Awake();
 
-        if (IsDuplicate) return;
+        if (IsDuplicate)
+        {
+            return;
+        }
     }
 
     public void OnInit(CurrencyInventory inventory)
     {
-        if (inventory == null) return;
+        if (inventory == null)
+        {
+            return;
+        }
 
         currencyInventory = inventory;
         currencyInventory.OnInventoryChanged += CurrencyInventory_OnInventoryChanged;
@@ -42,11 +48,14 @@ public class CurrencyManager
 
     private void AddItem(ItemData item)
     {
-        if (item == null || (item is CurrencyItem) == false) return;
+        if (item == null || (item is CurrencyItem) == false)
+        {
+            return;
+        }
 
         CurrencyItem currency = item as CurrencyItem;
         currencyInventory.AddItem(item);
-        
+
     }
 
     public void AddCurrency(CurrencyType type, int amount)
@@ -61,10 +70,13 @@ public class CurrencyManager
         return currencyInventory.SpendCurrency(type, amount, OnUpdatedCurrency);
     }
 
-    public int GetCurrency(CurrencyType type) => currencyInventory.GetCurrency(type);
+    public int GetCurrency(CurrencyType type)
+    {
+        return currencyInventory.GetCurrency(type);
+    }
 
     public void ClearExploreCurrency()
     {
-        currencyInventory.SetCurrency(CurrencyType.EXPOLORE_COIN, 0); 
+        currencyInventory.SetCurrency(CurrencyType.EXPOLORE_COIN, 0);
     }
 }

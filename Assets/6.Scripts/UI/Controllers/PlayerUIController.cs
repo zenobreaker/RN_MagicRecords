@@ -23,7 +23,9 @@ public class PlayerUIController : UIController
                 }
 
             },
-            onUnregister: ui => { });
+            onUnregister: ui =>
+            {
+            });
 
     }
 }

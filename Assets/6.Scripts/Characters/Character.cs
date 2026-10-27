@@ -20,7 +20,13 @@ public class Character
 
     // 💡 애니메이터 대신 Visual 매니저만 가집니다.
     protected CharacterVisual visual;
-    public CharacterVisual Visual { get => visual; }
+    public CharacterVisual Visual
+    {
+        get
+        {
+            return visual;
+        }
+    }
 
     protected StateComponent state;
     protected HealthPointComponent healthPoint;
@@ -28,17 +34,33 @@ public class Character
     private DamageHandleComponent damageHandler;
     private Collider[] characterColliders;
     private bool[] initialColliderStates;
-    public StatusComponent Status => status;
+    public StatusComponent Status
+    {
+        get
+        {
+            return status;
+        }
+    }
 
     protected bool bInAction = false;
     protected bool endingAction;
-    public virtual bool InAction { get { return bInAction; } protected set { bInAction = value; } }
+    public virtual bool InAction
+    {
+        get
+        {
+            return bInAction;
+        }
+        protected set
+        {
+            bInAction = value;
+        }
+    }
 
     // 슬로우 관리를 위한 토큰 (코루틴 대체)
     private CancellationTokenSource slowCts;
 
     #region ACTION
-    public event Action<ActionData, Character> OnAttackExecuted; 
+    public event Action<ActionData, Character> OnAttackExecuted;
     public Action OnBeginDoAction;
     public Action OnEndDoAction;
     public Action<Character> OnDead;
@@ -47,8 +69,14 @@ public class Character
     private int charID;
     public int CharID
     {
-        get { return charID; }
-        set { charID = value; }
+        get
+        {
+            return charID;
+        }
+        set
+        {
+            charID = value;
+        }
     }
 
     protected virtual void Awake()
@@ -58,14 +86,18 @@ public class Character
         characterColliders = GetComponentsInChildren<Collider>(true);
         initialColliderStates = new bool[characterColliders.Length];
         for (int i = 0; i < characterColliders.Length; i++)
+        {
             initialColliderStates[i] = characterColliders[i].enabled;
+        }
 
         state = GetComponent<StateComponent>();
         healthPoint = GetComponent<HealthPointComponent>();
         damageHandler = GetComponent<DamageHandleComponent>();
         status = GetComponent<StatusComponent>();
         if (status != null && healthPoint != null)
+        {
             status.OnSetHealth += healthPoint.SetHealthPoint;
+        }
 
         // 💡 자식(Model)에 있는 Visual 컴포넌트를 가져옵니다.
         visual = GetComponentInChildren<CharacterVisual>();
@@ -80,7 +112,11 @@ public class Character
 
     protected virtual void OnDisable()
     {
-        if (TryGetComponent<SkillComponent>(out var activeSkills)) activeSkills.CancelCurrentSkill();
+        if (TryGetComponent<SkillComponent>(out var activeSkills))
+        {
+            activeSkills.CancelCurrentSkill();
+        }
+
         OnDead = null;
 
         // 메모리 누수 방지
@@ -94,18 +130,32 @@ public class Character
     public virtual void End_Damaged()
     {
         // Timed reactions own their completion; late animation events cannot cancel a new skill.
-        if (state != null && state.EndDamageAnimation()) bInAction = false;
+        if (state != null && state.EndDamageAnimation())
+        {
+            bInAction = false;
+        }
     }
 
     public virtual void OnDamage(GameObject attacker, Weapon causer, Vector3 hitPoint, DamageEvent damageEvent)
     {
-        if (damageEvent == null || !isActiveAndEnabled || healthPoint == null || healthPoint.Dead ||
-            (state != null && state.DeadMode) || !CanReceiveDamage(damageEvent)) return;
-        if (damageHandler == null || !damageHandler.ApplyDamage(attacker, damageEvent)) return;
+        if (damageEvent == null || isActiveAndEnabled == false || healthPoint == null || healthPoint.Dead ||
+            (state != null && state.DeadMode) || CanReceiveDamage(damageEvent) == false)
+        {
+            return;
+        }
+
+        if (damageHandler == null || damageHandler.ApplyDamage(attacker, damageEvent) == false)
+        {
+            return;
+        }
 
         if (healthPoint.Dead)
         {
-            if (state != null && state.DeadMode) return;
+            if (state != null && state.DeadMode)
+            {
+                return;
+            }
+
             state?.SetDeadMode();
             OnDamageDeath();
             return;
@@ -113,7 +163,10 @@ public class Character
         state?.ApplyHitReaction(damageEvent, attacker, hitPoint);
     }
 
-    protected virtual bool CanReceiveDamage(DamageEvent damageEvent) => true;
+    protected virtual bool CanReceiveDamage(DamageEvent damageEvent)
+    {
+        return true;
+    }
     protected virtual void OnDamageDeath()
     {
         SetCharacterCollidersEnabled(false);
@@ -122,52 +175,99 @@ public class Character
     // Restore prefab states so attack hitboxes that start disabled stay disabled on reuse.
     protected void SetCharacterCollidersEnabled(bool enabled)
     {
-        if (characterColliders == null) return;
+        if (characterColliders == null)
+        {
+            return;
+        }
+
         for (int i = 0; i < characterColliders.Length; i++)
         {
             if (characterColliders[i] != null)
+            {
                 characterColliders[i].enabled = enabled && initialColliderStates[i];
+            }
         }
     }
 
 
     #region Team ID 
-    public void SetGenericTeamId(GenenricTeamId id) { genericTeamId = id; }
-    public GenenricTeamId GetGeneriTeamId() { return genericTeamId; }
+    public void SetGenericTeamId(GenenricTeamId id)
+    {
+        genericTeamId = id;
+    }
+    public GenenricTeamId GetGeneriTeamId()
+    {
+        return genericTeamId;
+    }
     #endregion
 
     #region Set Grade
-    public virtual void SetGrade(MonsterGrade monsterGrade) { }
-    public virtual void SetGrade(MonsterData data) { }
-    public virtual MonsterGrade GetGrade() => grade;
+    public virtual void SetGrade(MonsterGrade monsterGrade)
+    {
+    }
+    public virtual void SetGrade(MonsterData data)
+    {
+    }
+    public virtual MonsterGrade GetGrade()
+    {
+        return grade;
+    }
     #endregion
 
     #region AnimationEvent
     // 🚨 주의: 애니메이터가 자식(Model)으로 이동했으므로, Unity Animation Event는 Visual 스크립트를 때리게 됩니다.
     // Visual 스크립트에서 이 함수들을 호출해주도록 브릿지(Bridge) 연결이 필요합니다!
-    public virtual void Start_DoAction() { }
-    public virtual void Begin_DoAction() { OnBeginDoAction?.Invoke(); }
+    public virtual void Start_DoAction()
+    {
+    }
+    public virtual void Begin_DoAction()
+    {
+        OnBeginDoAction?.Invoke();
+    }
     public virtual void End_DoAction()
     {
-        if (endingAction) return;
+        if (endingAction)
+        {
+            return;
+        }
+
         endingAction = true;
         try
         {
             if (TryGetComponent<SkillComponent>(out var activeSkills) && activeSkills.InAction)
             {
                 activeSkills.EndDoAction();
-                if (activeSkills.InAction) return;
+                if (activeSkills.InAction)
+                {
+                    return;
+                }
             }
             bInAction = false;
-            if (state != null && !state.DamagedMode && !state.DeadMode && !state.StopMode) state.SetIdleMode();
+            if (state != null && state.DamagedMode == false && state.DeadMode == false && state.StopMode == false)
+            {
+                state.SetIdleMode();
+            }
+
             OnEndDoAction?.Invoke();
         }
-        finally { endingAction = false; }
+        finally
+        {
+            endingAction = false;
+
+        }
     }
-    public virtual void Begin_JudgeAttack(AnimationEvent e = null) { }
-    public virtual void End_JudgeAttack(AnimationEvent e = null) { }
-    public virtual void Play_Sound() { }
-    public virtual void Play_CameraShake() { }
+    public virtual void Begin_JudgeAttack(AnimationEvent e = null)
+    {
+    }
+    public virtual void End_JudgeAttack(AnimationEvent e = null)
+    {
+    }
+    public virtual void Play_Sound()
+    {
+    }
+    public virtual void Play_CameraShake()
+    {
+    }
     #endregion
 
     #region Slow (UniTask로 업그레이드)
@@ -203,7 +303,10 @@ public class Character
             await UniTask.Delay(TimeSpan.FromSeconds(duration), cancellationToken: token);
             ResetSpeed();
         }
-        catch (OperationCanceledException) { /* 무시 */ }
+        catch (OperationCanceledException)
+        {
+            /* 무시 */
+        }
     }
     #endregion
 
@@ -230,7 +333,9 @@ public class Character
     }
     #endregion
 
-    public virtual void SetStatus() { }
+    public virtual void SetStatus()
+    {
+    }
 
     public virtual void PlayerAction(ActionData actionData)
     {
@@ -244,16 +349,20 @@ public class Character
         float statSpeed = status != null ? status.GetStatusValue(StatusType.ATTACKSPEED) : 1.0f;
 
         // 💡 액션 재생을 온전히 Visual에게 위임합니다!
-        if(visual != null)
+        if (visual != null)
+        {
             visual.PlayActionAnimation(actionData, layer, statSpeed);
+        }
     }
 
-    protected virtual void Dead() { }
+    protected virtual void Dead()
+    {
+    }
 
 
     public void BroadcastAttack(ActionData actionData, Character attacker)
     {
-        OnAttackExecuted?.Invoke(actionData, attacker);    
+        OnAttackExecuted?.Invoke(actionData, attacker);
     }
 
     public static implicit operator GameObject(Character c)

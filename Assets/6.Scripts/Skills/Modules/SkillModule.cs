@@ -20,16 +20,29 @@ public abstract class SkillModule
     public bool useFireIntervalMultiplier;
 
     // 설정 위치로 만든 키이며 반복 횟수는 Skill Runtime에서 관리합니다.
-    public string RuntimeKey { get; internal set; }
+    public string RuntimeKey
+    {
+        get;
+        internal set;
+    }
 
-    public float GetTriggerDelay(ActiveSkill skill) => Mathf.Max(0f, triggerDelay) *
+    public float GetTriggerDelay(ActiveSkill skill)
+    {
+        return Mathf.Max(0f, triggerDelay) *
         (useFireIntervalMultiplier ? skill.Runtime.FireIntervalMultiplier : 1f);
+    }
 
-    public virtual void OnPhaseEnter(Character owner, ActiveSkill skill, PhaseSkill phase) { }
-    public virtual void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase) { }
+    public virtual void OnPhaseEnter(Character owner, ActiveSkill skill, PhaseSkill phase)
+    {
+    }
+    public virtual void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase)
+    {
+    }
 
     // 스킬이 생성되거나 페이즈가 바뀔 때(CacheModule 시점) 호출
-    public virtual void Init(Character owner) { }
+    public virtual void Init(Character owner)
+    {
+    }
     public abstract void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill);
 
     public virtual void OnChainNotify(
@@ -42,11 +55,14 @@ public abstract class SkillModule
         OnNotify(owner, skill, phaseSkill);
     }
 
-    public virtual void Update (Character owner, ActiveSkill skill, 
-        PhaseSkill phase, float deltaTime) { }
+    public virtual void Update(Character owner, ActiveSkill skill,
+        PhaseSkill phase, float deltaTime)
+    {
+    }
     public virtual void FixedUpdate(Character owner, ActiveSkill skill,
         PhaseSkill phaseSkill, float fixedDeltaTime)
-    { }
+    {
+    }
 
     public virtual bool HasAnimationData()
     {
@@ -60,7 +76,7 @@ public abstract class SkillModule
 
     public virtual SkillModule Clone()
     {
-        // MemberwiseClone()은 값(Value) 타입은 복사하지만, 
+        // MemberwiseClone()은 값(Value) 타입은 복사하지만,
         // 참조(Reference) 타입은 주소만 복사하는 '얕은 복사'를 수행합니다.
         return (SkillModule)this.MemberwiseClone();
     }
@@ -70,7 +86,11 @@ public abstract class SkillModule
 [AttributeUsage(AttributeTargets.Class)]
 public class ModuleCategoryAttribute : Attribute
 {
-    public string Path { get; private set; }
+    public string Path
+    {
+        get;
+        private set;
+    }
 
     public ModuleCategoryAttribute(string path)
     {

@@ -18,10 +18,16 @@ public sealed class Module_ConsumeLaserEnergy : SkillModule
     {
         var runtime = skill?.Runtime;
         if (owner == null || runtime?.Combat == null || runtime.Cast == null ||
-            energyCost <= 0 || !runtime.TryExecuteOnce(this) ||
-            !owner.TryGetComponent<EffectComponent>(out var effects)) return;
+            energyCost <= 0 || runtime.TryExecuteOnce(this) == false ||
+            owner.TryGetComponent<EffectComponent>(out var effects) == false)
+        {
+            return;
+        }
 
-        if (!effects.TryConsumeStacks(LaserEnergyEffect.EffectID, energyCost)) return;
+        if (effects.TryConsumeStacks(LaserEnergyEffect.EffectID, energyCost) == false)
+        {
+            return;
+        }
 
         runtime.Combat.ConsumedLaserEnergyCount += energyCost;
         runtime.Combat.IgnoreDefenseBonus += Mathf.Clamp01(ignoreDefenseBonus);

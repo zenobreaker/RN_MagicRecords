@@ -12,7 +12,7 @@ public sealed class UIRewardCardPopUp : UIPopUp
     [SerializeField] private TMP_Text receiveAllText;
 
     private List<IReward> rewards;
-    private int remainRewardCount; 
+    private int remainRewardCount;
     private Action onChapterReceived;
     private int chapter;
     private bool receivingAll;
@@ -22,7 +22,7 @@ public sealed class UIRewardCardPopUp : UIPopUp
         chapter = 0;
         onChapterReceived = null;
         this.rewards = rewards;
-        ShowPopUp(); 
+        ShowPopUp();
     }
 
     public void SetChapterData(int clearedChapter, List<IReward> rewards, Action onReceived)
@@ -35,9 +35,17 @@ public sealed class UIRewardCardPopUp : UIPopUp
 
     public void OnContinueButton()
     {
-        if (chapter <= 0) { CloseUI(); return; }
+        if (chapter <= 0)
+        {
+            CloseUI();
+            return;
+        }
         var callback = onChapterReceived;
-        if (callback == null) return;
+        if (callback == null)
+        {
+            return;
+        }
+
         onChapterReceived = null;
         base.CloseUI();
         callback.Invoke();
@@ -45,8 +53,10 @@ public sealed class UIRewardCardPopUp : UIPopUp
 
     public void OnReceiveAllButton()
     {
-        if (chapter > 0 || receivingAll || !gameObject.activeSelf || remainRewardCount <= 0)
+        if (chapter > 0 || receivingAll || gameObject.activeSelf == false || remainRewardCount <= 0)
+        {
             return;
+        }
 
         receivingAll = true;
         receiveAllButton.SafeInvoke(button => button.interactable = false);
@@ -57,10 +67,15 @@ public sealed class UIRewardCardPopUp : UIPopUp
             for (int i = 0; i < content.transform.childCount; i++)
             {
                 var child = content.transform.GetChild(i);
-                if (!child.gameObject.activeSelf || !child.TryGetComponent<UIRewardCard>(out var card))
+                if (child.gameObject.activeSelf == false || child.TryGetComponent<UIRewardCard>(out var card) == false)
+                {
                     continue;
+                }
+
                 if (card.TryReceive(false, out var record) && record != null)
+                {
                     grantedRecords.Add(record);
+                }
             }
         }
         finally
@@ -70,24 +85,32 @@ public sealed class UIRewardCardPopUp : UIPopUp
         }
 
         if (remainRewardCount <= 0)
+        {
             CloseAndClearRewards();
+        }
 
         // Grant first, then show one read-only result, just like chapter rewards.
         if (grantedRecords.Count > 0)
+        {
             UIManager.Instance.SafeInvoke(ui =>
-                ui.OpenRecordSelectPopUp(grantedRecords, false, RecordUIMode.VIEW));
+            ui.OpenRecordSelectPopUp(grantedRecords, false, RecordUIMode.VIEW));
+        }
     }
 
     protected override void DrawPopUp()
     {
         if (rewards == null)
+        {
             return;
+        }
 
         InitReplaceContentObject(rewards.Count);
         remainRewardCount = 0;
 
         for (int index = 0; index < content.transform.childCount; index++)
+        {
             content.transform.GetChild(index).gameObject.SetActive(index < rewards.Count);
+        }
 
         for (int i = 0; i < rewards.Count; i++)
         {
@@ -101,7 +124,7 @@ public sealed class UIRewardCardPopUp : UIPopUp
                 card.OnReceived += HandleReceived;
                 card.Setup(rewards[i], chapter <= 0);
             }
-            remainRewardCount++; 
+            remainRewardCount++;
         }
 
         if (titleText != null)
@@ -122,12 +145,18 @@ public sealed class UIRewardCardPopUp : UIPopUp
 
     private void HandleReceived(UIRewardCard card)
     {
-        if (card == null) return;
+        if (card == null)
+        {
+            return;
+        }
+
         card.gameObject.SetActive(false);
         remainRewardCount--;
 
-        if (remainRewardCount <= 0 && !receivingAll)
+        if (remainRewardCount <= 0 && receivingAll == false)
+        {
             CloseUI();
+        }
     }
 
     /// <summary>
@@ -135,9 +164,20 @@ public sealed class UIRewardCardPopUp : UIPopUp
     /// </summary>
     public override void CloseUI()
     {
-        if (chapter > 0) return; // Escape/background cannot skip a chapter reward.
-        if (receivingAll) return;
-        if (!gameObject.activeSelf) return;
+        if (chapter > 0)
+        {
+            return; // Escape/background cannot skip a chapter reward.
+        }
+
+        if (receivingAll)
+        {
+            return;
+        }
+
+        if (gameObject.activeSelf == false)
+        {
+            return;
+        }
 
         if (remainRewardCount > 0)
         {
@@ -156,7 +196,11 @@ public sealed class UIRewardCardPopUp : UIPopUp
     /// </summary>
     private void CloseAndClearRewards()
     {
-        if (chapter > 0 || !gameObject.activeSelf) return;
+        if (chapter > 0 || gameObject.activeSelf == false)
+        {
+            return;
+        }
+
         base.CloseUI();
 
         RewardManager.Instance.SafeInvoke(v => v.ClearPendingRewards());

@@ -69,7 +69,7 @@ public abstract class UIPopUp : UiBase, IPointerClickHandler
     public virtual void OnPointerClick(PointerEventData eventData)
     {
         // popupArea가 존재하고, 클릭한 위치가 popupArea 바깥이라면 팝업 종료
-        if (popupArea != null && !RectTransformUtility.RectangleContainsScreenPoint(popupArea, eventData.position))
+        if (popupArea != null && RectTransformUtility.RectangleContainsScreenPoint(popupArea, eventData.position) == false)
         {
             CloseUI();
         }

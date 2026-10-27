@@ -8,14 +8,20 @@ public class StatBuffEffect : BaseEffect
     private StatusComponent status;
 
     public StatBuffEffect(string id, float duration, StatModifier modifier, ModifierValueType type)
-        : this(id, duration, modifier) { }
+        : this(id, duration, modifier)
+    {
+    }
 
     public StatBuffEffect(string id, float duration, StatusType type,
         float amount, ModifierValueType valueType = ModifierValueType.PERCENT)
-        : this(id, duration, new StatModifier(type, amount, valueType)) { }
+        : this(id, duration, new StatModifier(type, amount, valueType))
+    {
+    }
 
     public StatBuffEffect(string id, float duration, StatModifier modifier)
-        : this(id, duration, modifier, null, "Stat Buff", BuffStackPolicy.REFRESH_ONLY) { }
+        : this(id, duration, modifier, null, "Stat Buff", BuffStackPolicy.REFRESH_ONLY)
+    {
+    }
 
     public StatBuffEffect(string id, float duration, StatModifier modifier,
         SO_BaseEffect definition, string displayName, BuffStackPolicy stackPolicy)
@@ -33,14 +39,28 @@ public class StatBuffEffect : BaseEffect
         Actions.Add(new ApplyStatModifierAction(modifier));
     }
 
-    public override BuffStackPolicy StackPolicy => stackPolicy;
+    public override BuffStackPolicy StackPolicy
+    {
+        get
+        {
+            return stackPolicy;
+        }
+    }
 
     public override void OnApply(GameObject target, GameObject caster)
     {
         // An effect instance owns one modifier on one target.
-        if (status != null) return;
+        if (status != null)
+        {
+            return;
+        }
+
         status = target != null ? target.GetComponent<StatusComponent>() : null;
-        if (status == null) return;
+        if (status == null)
+        {
+            return;
+        }
+
         base.OnApply(target, caster);
         SynchronizeHealth();
     }
@@ -58,8 +78,12 @@ public class StatBuffEffect : BaseEffect
 
     private void SynchronizeHealth()
     {
-        if (modifier == null || modifier.type != StatusType.HEALTH) return;
+        if (modifier == null || modifier.type != StatusType.HEALTH)
+        {
+            return;
+        }
+
         status.GetComponent<HealthPointComponent>().SafeInvoke(
-            health => health.UpdateMaxHealthPreservingCurrent(status.GetStatusValue(StatusType.HEALTH)));
+                    health => health.UpdateMaxHealthPreservingCurrent(status.GetStatusValue(StatusType.HEALTH)));
     }
 }

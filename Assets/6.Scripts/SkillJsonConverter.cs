@@ -30,7 +30,7 @@ public class ActiveSkillData
     public float castingTime;
     public int cost;
     public string leadingSkillList;
-   
+
     public int activation;
 }
 
@@ -75,7 +75,7 @@ public class SkillSpawnData
 
     public float rotX;
     public float rotY;
-    public float rotZ; 
+    public float rotZ;
 }
 
 [System.Serializable]
@@ -119,7 +119,7 @@ public class SkillJsonConverter : MonoBehaviour
     private void Awake()
     {
 
-   
+
     }
 
     private void Start()
@@ -129,7 +129,7 @@ public class SkillJsonConverter : MonoBehaviour
 
     public void ConvertSkillData_Skill()
     {
-       
+
 
     }
 

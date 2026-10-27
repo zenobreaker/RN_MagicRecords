@@ -22,7 +22,9 @@ public class SO_JobData : ScriptableObject
         foreach (JobInfo info in list)
         {
             if (info.isActive == false)
-                continue; 
+            {
+                continue;
+            }
 
             jobTable[info.id] = info;
         }
@@ -30,8 +32,11 @@ public class SO_JobData : ScriptableObject
 
     public JobInfo GetJobInfo(int id)
     {
-        if(jobTable.ContainsKey(id))
+        if (jobTable.ContainsKey(id))
+        {
             return jobTable[id];
+        }
+
         return null;
     }
 }

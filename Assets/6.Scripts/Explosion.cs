@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class Explosion 
+public class Explosion
     : MonoBehaviour
     , IPoolObject
 {
@@ -12,7 +12,7 @@ public class Explosion
     public event Action<Collider, Collider, Vector3> OnExpolsionHit;
     public void OnDisableEvent()
     {
-        
+
     }
 
     public void OnDisable()
@@ -24,17 +24,19 @@ public class Explosion
 
     private void Start()
     {
-        
+
     }
 
     private void LateUpdate()
     {
-        Collider[] colliders  = Physics.OverlapSphere(transform.position, radius);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
 
-        foreach(Collider collider in colliders)
+        foreach (Collider collider in colliders)
         {
             if (collider.gameObject == ownerObject)
+            {
                 continue;
+            }
 
             OnExpolsionHit?.Invoke(null, collider, transform.position);
         }
@@ -43,7 +45,7 @@ public class Explosion
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        
+
     }
 #endif
 }

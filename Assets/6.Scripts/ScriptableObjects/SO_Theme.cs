@@ -5,21 +5,41 @@ using UnityEngine;
 public class SO_Theme : ScriptableObject
 {
     [SerializeField] private string themeName = "";
-    [SerializeField] private Sprite themeBgSpt; 
+    [SerializeField] private Sprite themeBgSpt;
 
     [Header("이 테마에서 나올 수 있는 맵 구조들")]
     [SerializeField] private List<GameObject> possibleRoomPrefabs;
 
-    public string GetThemeName => themeName;
-    public Sprite GetThemeSprite => themeBgSpt;
+    public string GetThemeName
+    {
+        get
+        {
+            return themeName;
+        }
+    }
+    public Sprite GetThemeSprite
+    {
+        get
+        {
+            return themeBgSpt;
+        }
+    }
 
-    public List<GameObject> GetPossiblePrefabs => possibleRoomPrefabs;
+    public List<GameObject> GetPossiblePrefabs
+    {
+        get
+        {
+            return possibleRoomPrefabs;
+        }
+    }
 
     public GameObject GetRoom(int idx)
     {
         if (idx >= possibleRoomPrefabs.Count)
-            return null; 
-        
-        return possibleRoomPrefabs[idx]; 
+        {
+            return null;
+        }
+
+        return possibleRoomPrefabs[idx];
     }
 }

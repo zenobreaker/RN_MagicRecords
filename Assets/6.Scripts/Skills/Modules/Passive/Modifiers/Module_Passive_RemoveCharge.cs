@@ -7,7 +7,13 @@ public sealed class Module_Passive_RemoveCharge : PassiveModule
 {
     [Header("Target Filter")]
     public int targetSkillID;
-    public override int TargetSkillID => targetSkillID;
+    public override int TargetSkillID
+    {
+        get
+        {
+            return targetSkillID;
+        }
+    }
 
     public Module_Passive_RemoveCharge()
     {
@@ -18,12 +24,14 @@ public sealed class Module_Passive_RemoveCharge : PassiveModule
     public override void OnSkillCast(SkillUseEvent evt, SkillRuntimeContext context)
     {
         if (targetSkillID != 0 && evt.SkillID != targetSkillID)
+        {
             return;
+        }
 
         context.Cast.CastingTime = 0f;
         // 충전 계산 모듈에서 시간에 대해서 처리해서 Bonus값에 대입하므로 계산식 수정
         context.Cast.ChargedTime = context.Cast.MaxChargeTime * 0.5f;
-        
-        context.Cast.IsInstantCast = true; 
+
+        context.Cast.IsInstantCast = true;
     }
 }

@@ -8,19 +8,22 @@ public class RecordImporter : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        owner = GetComponent<Character>(); 
+        owner = GetComponent<Character>();
     }
 
 
     [ContextMenu("지정한 ID 레코드 즉시 획득")]
     public static void AddRecordDirectly(RecordData data)
     {
-        if (!Application.isPlaying) return;
+        if (Application.isPlaying == false)
+        {
+            return;
+        }
 
         var rm = AppManager.Instance.SafeInvoke(v => v.GetRecordManager());
-        if(rm != null)
+        if (rm != null)
         {
-            rm.OnCompleteSelctRecords(); 
+            rm.OnCompleteSelctRecords();
         }
 
         instance.ExecuteRecord();

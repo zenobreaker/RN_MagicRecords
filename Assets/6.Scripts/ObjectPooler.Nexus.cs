@@ -14,18 +14,24 @@ public partial class ObjectPooler : MonoBehaviour
         foreach (Pool pool in pools)
         {
             if (pool == null || string.IsNullOrEmpty(pool.tag) || pool.prefab == null)
+            {
                 throw new System.InvalidOperationException("Invalid pool entry (tag/prefab).");
+            }
+
             if (poolDictionary.ContainsKey(pool.tag))
+            {
                 throw new System.InvalidOperationException($"Duplicate pool tag: {pool.tag}");
+            }
+
             poolDictionary.Add(pool.tag, new Queue<GameObject>());
         }
-        foreach(Pool pool in pools)
+        foreach (Pool pool in pools)
         {
 
             // 기존 오브젝트 생성 및 부모 설정
-            for(int i = 0; i< pool.size; i++)
+            for (int i = 0; i < pool.size; i++)
             {
-                // Ver 25.05.04 : 하나의 함수로 처리하게 
+                // Ver 25.05.04 : 하나의 함수로 처리하게
                 GameObject obj = CreateNewObjectSetParent(pool.tag, pool.prefab, pool.parentTransform);
                 ArrangePool(pool.parentTransform, pool.tag, obj);
                 if (++batchCount >= Mathf.Max(1, prewarmBatchSize) || watch.Elapsed.TotalMilliseconds >= Mathf.Max(.1f, prewarmFrameBudgetMs))
@@ -38,9 +44,13 @@ public partial class ObjectPooler : MonoBehaviour
 
             // OnDisable에 ReturnToPool 구현여부와 중복구현 검사
             if (pool.size > 0 && poolDictionary[pool.tag].Count <= 0)
+            {
                 Debug.LogError($"{pool.tag}{INFO}");
+            }
             else if (poolDictionary[pool.tag].Count != pool.size)
+            {
                 Debug.LogError($"{pool.tag}에 ReturnToPool이 중복됩니다");
+            }
         }
     }
 
@@ -73,7 +83,11 @@ public partial class ObjectPooler : MonoBehaviour
         var enabledAgents = new List<NavMeshAgent>();
         foreach (var agent in agents)
         {
-            if (!agent.enabled) continue;
+            if (agent.enabled == false)
+            {
+                continue;
+            }
+
             enabledAgents.Add(agent);
             agent.enabled = false;
         }
@@ -87,10 +101,17 @@ public partial class ObjectPooler : MonoBehaviour
             obj.transform.SetParent(parent, true);
             obj.SetActive(false);
         }
-        finally { IsPrewarming = wasPrewarming; }
+        finally
+        {
+            IsPrewarming = wasPrewarming;
+
+        }
         foreach (var agent in enabledAgents)
         {
-            if (agent != null) agent.enabled = true;
+            if (agent != null)
+            {
+                agent.enabled = true;
+            }
         }
 
         // Inactive prefabs/parents do not receive OnDisable. Register explicitly;
@@ -110,7 +131,10 @@ public partial class ObjectPooler : MonoBehaviour
         if (hasKey == false || parent == null)
         {
             // 기존에 null인 주소가 들어있었다면 제거 (메모리 정리)
-            if (hasKey) parentDictionary.Remove(tag);
+            if (hasKey)
+            {
+                parentDictionary.Remove(tag);
+            }
 
             GameObject parentObj = new GameObject($"{tag}_Parent");
             parent = parentObj.transform;
@@ -137,7 +161,10 @@ public partial class ObjectPooler : MonoBehaviour
     {
         // Creation already chose the correct parent. Avoid scanning siblings and
         // inserting into the middle of a growing global list for every object.
-        if (obj != null) spawnObjects.Add(obj);
+        if (obj != null)
+        {
+            spawnObjects.Add(obj);
+        }
     }
 
 

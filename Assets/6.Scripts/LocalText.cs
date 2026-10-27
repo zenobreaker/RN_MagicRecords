@@ -18,9 +18,16 @@ public class LocalizeText : MonoBehaviour
     // 키값에 맞춰 즉시 번역 텍스트를 꽂아줍니다.
     public void ApplyLocalization()
     {
-        if (string.IsNullOrEmpty(textKey) || LocalizationManager.Instance == null) return;
+        if (string.IsNullOrEmpty(textKey) || LocalizationManager.Instance == null)
+        {
+            return;
+        }
 
-        if (uiText == null) uiText = GetComponent<TextMeshProUGUI>();
+        if (uiText == null)
+        {
+            uiText = GetComponent<TextMeshProUGUI>();
+        }
+
         uiText.text = LocalizationManager.Instance.GetText(textKey);
     }
 }

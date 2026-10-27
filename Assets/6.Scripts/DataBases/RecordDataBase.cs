@@ -72,7 +72,7 @@ public class RecordDataBase : DataBase
     [Header("Addressables Settings")]
     [Tooltip("어드레서블에서 긁어올 라벨 이름")]
     [SerializeField] private string recordLabel = "RecordData";
-    [SerializeField] private string spriteLabel = "SpriteData"; 
+    [SerializeField] private string spriteLabel = "SpriteData";
 
     [SerializeField] private TextAsset recordDataJsonAsset;
     [SerializeField] private Dictionary<int, RecordData> recordDatas = new();
@@ -85,7 +85,10 @@ public class RecordDataBase : DataBase
 
     public override void Initialize()
     {
-        if (jsonAsset == null) return;
+        if (jsonAsset == null)
+        {
+            return;
+        }
 
         recordDataList = new();
         recordDataByRarity.Clear();
@@ -104,7 +107,11 @@ public class RecordDataBase : DataBase
         try
         {
             var locations = await locationsHandle.ToUniTask();
-            if (locations.Count == 0) return null; // Optional legacy sprite label.
+            if (locations.Count == 0)
+            {
+                return null; // Optional legacy sprite label.
+            }
+
             AsyncOperationHandle<Sprite> handle = Addressables.LoadAssetAsync<Sprite>(locations[0]);
             return await handle.ToUniTask();
         }
@@ -115,7 +122,11 @@ public class RecordDataBase : DataBase
 
             return null;
         }
-        finally { Addressables.Release(locationsHandle); }
+        finally
+        {
+            Addressables.Release(locationsHandle);
+
+        }
     }
 
     private async UniTaskVoid LoadRecordsFromAddressablesAsync()
@@ -133,7 +144,10 @@ public class RecordDataBase : DataBase
             // 2. 로드된 에셋들을 순회하며 딕셔너리에 세팅
             foreach (var recordSO in loadedRecords)
             {
-                if (recordSO == null || !recordSO.isImplemented) continue;
+                if (recordSO == null || recordSO.isImplemented == false)
+                {
+                    continue;
+                }
 
                 // SO 내부의 실제 데이터 추출
                 RecordData recordData = recordSO.GetRecordData();
@@ -141,17 +155,24 @@ public class RecordDataBase : DataBase
                 // 리스트와 딕셔너리에 쏙쏙 집어넣기
                 recordDatas[recordData.id] = recordData;
                 // Keep the dummy available by ID, outside every random catalogue.
-                if (recordData.id == EmptyRecordId) continue;
+                if (recordData.id == EmptyRecordId)
+                {
+                    continue;
+                }
+
                 recordDataList.Add(recordData);
 
-                if (!recordDataByRarity.ContainsKey(recordData.rarity))
+                if (recordDataByRarity.ContainsKey(recordData.rarity) == false)
                 {
                     recordDataByRarity[recordData.rarity] = new List<RecordData>();
                 }
                 recordDataByRarity[recordData.rarity].Add(recordData);
 
-                if (!recordIDByType.ContainsKey(recordData.type))
+                if (recordIDByType.ContainsKey(recordData.type) == false)
+                {
                     recordIDByType[recordData.type] = new List<int>();
+                }
+
                 recordIDByType[recordData.type].Add(recordData.id);
             }
 
@@ -167,7 +188,7 @@ public class RecordDataBase : DataBase
         if (recordDatas.TryGetValue(EmptyRecordId, out RecordData recordData))
         {
             emptyRecordTemplate = recordData;
-            return; 
+            return;
         }
 
         emptyRecordTemplate = new RecordData
@@ -187,7 +208,10 @@ public class RecordDataBase : DataBase
 
     public RecordData GetEmptyRecord()
     {
-        if (emptyRecordTemplate == null) CreateEmptyRecordTemplate();
+        if (emptyRecordTemplate == null)
+        {
+            CreateEmptyRecordTemplate();
+        }
         // Prefer the authored empty-record SO once the database has loaded it.
         var template = recordDatas.TryGetValue(EmptyRecordId, out var authored) ? authored : emptyRecordTemplate;
         var record = template.GetData();
@@ -195,20 +219,36 @@ public class RecordDataBase : DataBase
         record.uniqueID = Guid.NewGuid().ToString();
         return record;
     }
-    public RecordData GetRecordData(int recordID) => recordDatas.TryGetValue(recordID, out RecordData recordData) ? recordData.GetData() : null;
-    public List<RecordData> GetAllRecordData() => recordDataList.ToList();
+    public RecordData GetRecordData(int recordID)
+    {
+        return recordDatas.TryGetValue(recordID, out RecordData recordData) ? recordData.GetData() : null;
+    }
+    public List<RecordData> GetAllRecordData()
+    {
+        return recordDataList.ToList();
+    }
 
     public List<RecordData> GetRecordDatas(RecordRarity rarity)
     {
         if (recordDataByRarity.TryGetValue(rarity, out List<RecordData> list))
+        {
             return list.ToList();
+        }
+
         return new List<RecordData>();
     }
 
     private TargetFilterType GetTargetFilterType(string targetFilter)
     {
-        if (string.IsNullOrEmpty(targetFilter) || targetFilter.Equals("ALL")) return TargetFilterType.ALL;
-        else if (targetFilter.Equals("Shooter")) return TargetFilterType.Shooter;
+        if (string.IsNullOrEmpty(targetFilter) || targetFilter.Equals("ALL"))
+        {
+            return TargetFilterType.ALL;
+        }
+        else if (targetFilter.Equals("Shooter"))
+        {
+            return TargetFilterType.Shooter;
+        }
+
         return TargetFilterType.ALL;
     }
 
@@ -216,14 +256,22 @@ public class RecordDataBase : DataBase
     {
         switch (statusType)
         {
-            case "ATK": return StatusType.ATTACK;
-            case "DEF": return StatusType.DEFENSE;
-            case "CRIT_RATIO": return StatusType.CRIT_RATIO;
-            case "CRIT_DMG": return StatusType.CRIT_DMG;
-            case "SPD": return StatusType.MOVESPEED;
-            case "ASPD": return StatusType.ATTACKSPEED;
-            case "HP": return StatusType.HEALTH;
-            case "HP_REGEN": return StatusType.HEALTH_REGEN;
+            case "ATK":
+                return StatusType.ATTACK;
+            case "DEF":
+                return StatusType.DEFENSE;
+            case "CRIT_RATIO":
+                return StatusType.CRIT_RATIO;
+            case "CRIT_DMG":
+                return StatusType.CRIT_DMG;
+            case "SPD":
+                return StatusType.MOVESPEED;
+            case "ASPD":
+                return StatusType.ATTACKSPEED;
+            case "HP":
+                return StatusType.HEALTH;
+            case "HP_REGEN":
+                return StatusType.HEALTH_REGEN;
         }
         return StatusType.NONE;
     }
@@ -285,7 +333,7 @@ public class RecordDataBase : DataBase
                     recordDataList.Add(record);
 
                     // 파싱이 끝난 레코드를 타입별 딕셔너리에 분류
-                    if (!recordDataByRarity.ContainsKey(record.rarity))
+                    if (recordDataByRarity.ContainsKey(record.rarity) == false)
                     {
                         recordDataByRarity[record.rarity] = new List<RecordData>();
                     }

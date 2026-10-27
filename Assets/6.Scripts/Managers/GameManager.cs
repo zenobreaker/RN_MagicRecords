@@ -24,23 +24,34 @@ public class GameManager
     public event Action<float> OnUpdated;
 
     private StageManager stageManager;
-    public StageManager StageManager => stageManager;
+    public StageManager StageManager
+    {
+        get
+        {
+            return stageManager;
+        }
+    }
 
     protected override void Awake()
     {
         base.Awake();
 
-        if (IsDuplicate) return;
+        if (IsDuplicate)
+        {
+            return;
+        }
 
         stageManager = GetComponent<StageManager>();
 
         if (Instance == this)
+        {
             SceneManager.sceneLoaded += HandleSceneLoaded;
+        }
     }
 
     private void OnEnable()
     {
-        if(stageManager != null)
+        if (stageManager != null)
         {
             stageManager.OnProcessBattle += OnPrecessBattle;
         }
@@ -48,7 +59,7 @@ public class GameManager
 
     private void OnDisable()
     {
-        if(stageManager != null)
+        if (stageManager != null)
         {
             stageManager.OnProcessBattle -= OnPrecessBattle;
         }
@@ -120,15 +131,24 @@ public class GameManager
         state = newState;
         switch (state)
         {
-            case GameState.BEGIN_STAGE: OnBeginStage?.Invoke(); break;
-            case GameState.PROCESS_BATTLE: OnBattleStage?.Invoke(); break;
-            case GameState.FINISH_STAGE: OnFinishStage?.Invoke(); break;
+            case GameState.BEGIN_STAGE:
+                OnBeginStage?.Invoke();
+                break;
+            case GameState.PROCESS_BATTLE:
+                OnBattleStage?.Invoke();
+                break;
+            case GameState.FINISH_STAGE:
+                OnFinishStage?.Invoke();
+                break;
         }
     }
 
     public void EnterStage(StageInfo info)
     {
-        if (info == null || SceneLoadingController.IsLoading) return;
+        if (info == null || SceneLoadingController.IsLoading)
+        {
+            return;
+        }
 
         state = GameState.NONE;
         stageManager.SetEnteredStage(info);

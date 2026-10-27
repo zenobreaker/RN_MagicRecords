@@ -8,14 +8,23 @@ public sealed class Module_Passive_DamagePerDebuff : PassiveContextModule
     [Min(0f)] public float damageAmpPerEffect = 0.1f;
     [Min(0f)] public float damageAmpPerLevel;
 
-    public Module_Passive_DamagePerDebuff() => triggerTime = PassiveTriggerTime.OnHit;
+    public Module_Passive_DamagePerDebuff()
+    {
+        triggerTime = PassiveTriggerTime.OnHit;
+    }
 
     public override void OnAttackHit(GameObject attacker, GameObject target, DamageEvent damageEvent)
     {
         if (owner == null || attacker != owner || target == null || target == owner ||
-            damageEvent == null || damageEvent.IsDOTEffect()) return;
+            damageEvent == null || damageEvent.IsDOTEffect())
+        {
+            return;
+        }
+
         if (target.TryGetComponent(out EffectComponent effects))
+        {
             damageEvent.DamageAmp = 1f + effects.DebuffCount *
-                (damageAmpPerEffect + Mathf.Max(0, skillLevel - 1) * damageAmpPerLevel);
+            (damageAmpPerEffect + Mathf.Max(0, skillLevel - 1) * damageAmpPerLevel);
+        }
     }
 }

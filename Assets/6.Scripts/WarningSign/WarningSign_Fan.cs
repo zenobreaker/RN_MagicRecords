@@ -15,13 +15,17 @@ public class WarningSign_Fan : WarningSign
     private void InitializeMesh()
     {
         if (mainPlane == null || subPlane == null)
+        {
             return;
+        }
 
         mainMeshFilter = mainPlane.GetComponent<MeshFilter>();
         subMeshFilter = subPlane.GetComponent<MeshFilter>();
 
         if (mainMeshFilter == null || subMeshFilter == null)
+        {
             return;
+        }
 
         // Main의 Mesh를 Sub에도 동일하게 적용
         subMeshFilter.sharedMesh = mainMeshFilter.sharedMesh;
@@ -32,7 +36,9 @@ public class WarningSign_Fan : WarningSign
         base.Setup(data, duration);
 
         if (data == null)
+        {
             return;
+        }
 
         SetFan(data.FanRadius, data.FanAngle);
     }
@@ -40,15 +46,21 @@ public class WarningSign_Fan : WarningSign
     public void SetFan(float radius, float angle)
     {
         if (mainMeshFilter == null || subMeshFilter == null)
+        {
             InitializeMesh();
+        }
 
         if (mainMeshFilter == null || subMeshFilter == null)
+        {
             return;
+        }
 
         Mesh fanMesh = CreateFanMesh(radius, angle);
 
         if (fanMesh == null)
+        {
             return;
+        }
 
         mainMeshFilter.sharedMesh = fanMesh;
         subMeshFilter.sharedMesh = fanMesh;

@@ -9,15 +9,21 @@ public sealed class Module_Passive_SplitProjectile : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (예: 1002 = 매그넘샷)")]
     public int targetSkillID;
-    public override int TargetSkillID => targetSkillID;
+    public override int TargetSkillID
+    {
+        get
+        {
+            return targetSkillID;
+        }
+    }
 
     [Header("Split Settings")]
     public int splitCount = 6;
-    public string splitPrefabName; 
+    public string splitPrefabName;
     public GameObject splitPrefab;
 
     [Header("Spawn Origin Bonus")]
-    public Vector3 bonusPos; 
+    public Vector3 bonusPos;
 
     public Module_Passive_SplitProjectile()
     {
@@ -27,7 +33,9 @@ public sealed class Module_Passive_SplitProjectile : PassiveModule
     public override void OnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill)
     {
         if (targetSkillID != 0 && casterSkill.SkillID != targetSkillID)
+        {
             return;
+        }
 
         if (spawnedObject is BaseProjectile proj)
         {
@@ -35,7 +43,11 @@ public sealed class Module_Passive_SplitProjectile : PassiveModule
 
             proj.OnTargetHitEvent += (target, hitPoint) =>
             {
-                if (hasSplit) return; // 이미 분열했다면 무시 (관통 총알인 경우 첫 타에만 분열)
+                if (hasSplit)
+                {
+                    return; // 이미 분열했다면 무시 (관통 총알인 경우 첫 타에만 분열)
+                }
+
                 hasSplit = true;
 
                 PerformSplit(target.transform.position, proj.transform.rotation,
@@ -44,7 +56,7 @@ public sealed class Module_Passive_SplitProjectile : PassiveModule
         }
     }
 
-    private void PerformSplit(Vector3 position, Quaternion baseRotation, Character owner, DamageData cachedData, 
+    private void PerformSplit(Vector3 position, Quaternion baseRotation, Character owner, DamageData cachedData,
         HashSet<GameObject> cachedIgnores, GameObject target)
     {
         float angleStep = 360f / splitCount;
@@ -62,13 +74,13 @@ public sealed class Module_Passive_SplitProjectile : PassiveModule
                 childBullet = ObjectPooler.DeferredSpawnFromPool(splitPrefabName, finalPos, rot);
 
             }
-            else if(splitPrefab != null)
+            else if (splitPrefab != null)
             {
                 childBullet = ObjectPooler.DeferredSpawnFromPool(splitPrefab.name, position, rot);
             }
 
             // (자탄 데미지 세팅 로직 추가...)
-            if(childBullet != null && childBullet.TryGetComponent<ISkillEffect>(out var effect))
+            if (childBullet != null && childBullet.TryGetComponent<ISkillEffect>(out var effect))
             {
                 effect.AddIgnore(owner);
                 effect.AddIgnore(target);

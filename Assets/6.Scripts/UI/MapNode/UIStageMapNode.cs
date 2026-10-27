@@ -8,16 +8,22 @@ public sealed class UIStageMapNode : UIMapNode
     [SerializeField] private MapNodeInfo nodeInfo;
     [SerializeField] private Image stageIcon;
     [SerializeField] private Image nodeImage;
-    [SerializeField] private Color currentColor; 
+    [SerializeField] private Color currentColor;
 
-    // 선택 시 활성화 되는 UI 
+    // 선택 시 활성화 되는 UI
     // [SerializeField] private Image outlineImage;
 
     // 💡 2. 클릭 이벤트도 껍데기(MapNodeInfo)를 던지도록 수정
     public event Action<MapNodeInfo> OnClicked;
 
     private MapNodeState currentState = MapNodeState.Locked;
-    public MapNodeState CurrentState => currentState;
+    public MapNodeState CurrentState
+    {
+        get
+        {
+            return currentState;
+        }
+    }
 
     public override void Init(MapNode mapNode)
     {
@@ -30,12 +36,15 @@ public sealed class UIStageMapNode : UIMapNode
         DrawStageIcon();
     }
 
-    // 매니저가 이 노드의 상태를 결정해서 던져줌 
+    // 매니저가 이 노드의 상태를 결정해서 던져줌
     public void SetState(MapNodeState state)
     {
         currentState = state;
 
-        if (nodeImage == null || stageIcon == null) return;
+        if (nodeImage == null || stageIcon == null)
+        {
+            return;
+        }
 
         switch (state)
         {
@@ -70,7 +79,9 @@ public sealed class UIStageMapNode : UIMapNode
 #endif
         // 잠겨있거나 이미 지나온 길이면 클릭이벤트 무시
         if (currentState == MapNodeState.Locked || currentState == MapNodeState.Cleared)
+        {
             return;
+        }
 
         // 💡 5. 정상 클릭 시 nodeInfo 전달
         OnClicked?.Invoke(nodeInfo);
@@ -79,7 +90,10 @@ public sealed class UIStageMapNode : UIMapNode
     private void DrawStageIcon()
     {
         // 💡 6. stageInfo 검사를 nodeInfo 검사로 변경
-        if (nodeInfo == null || stageIcon == null) return;
+        if (nodeInfo == null || stageIcon == null)
+        {
+            return;
+        }
 
         // nodeInfo.type(전투, 이벤트, 상점 등)에 맞춰서 아이콘을 가져옵니다!
         Sprite icon = AppManager.Instance.GetStageIcon(nodeInfo.type);

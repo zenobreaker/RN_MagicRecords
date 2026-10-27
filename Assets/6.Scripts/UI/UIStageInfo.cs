@@ -11,9 +11,9 @@ public class UIStageInfo
 
     [SerializeField] private TextMeshProUGUI titleText;
 
-    protected override  void Awake()
+    protected override void Awake()
     {
-        base.Awake(); 
+        base.Awake();
 
         rect = GetComponent<RectTransform>();
     }
@@ -42,7 +42,10 @@ public class UIStageInfo
 
     public void SetStageData(MapNode node, MapNodeInfo mapNodeInfo)
     {
-        if (node == null || mapNodeInfo == null) return;
+        if (node == null || mapNodeInfo == null)
+        {
+            return;
+        }
 
         this.node = node;
         this.mapNodeInfo = mapNodeInfo;
@@ -54,9 +57,12 @@ public class UIStageInfo
 
     private void DrawStageTitle()
     {
-        if (mapNodeInfo == null ||  titleText == null) return;
+        if (mapNodeInfo == null || titleText == null)
+        {
+            return;
+        }
 
-        Debug.Assert(LocalizationManager.Instance != null); 
+        Debug.Assert(LocalizationManager.Instance != null);
 
         string title = "";
 
@@ -76,19 +82,21 @@ public class UIStageInfo
                 break;
             case StageType.Boss_Combat:
                 // 보스전은 보스의 이름이나 전용 타이틀로 작성
-                //TODO : 임시적으로 할당 
-                title = "BOSS"; 
+                //TODO : 임시적으로 할당
+                title = "BOSS";
                 break;
         }
 
-        titleText.text = title; 
+        titleText.text = title;
     }
 
     public void EnterStage()
     {
         if (node == null || (mapNodeInfo.isCleared && mapNodeInfo.type != StageType.Shop)
             || AppManager.Instance.CanEnableNode(node) == false)
+        {
             return;
+        }
 
         UIManager.Instance.CloseTopUI();
         AppManager.Instance.EnterStageByNode(node);

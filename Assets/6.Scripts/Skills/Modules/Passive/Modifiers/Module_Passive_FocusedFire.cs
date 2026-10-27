@@ -8,7 +8,13 @@ public sealed class Module_Passive_FocusedFire : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (예: 산탄 사격 스킬 ID)")]
     public int targetSkillID;
-    public override int TargetSkillID => targetSkillID;
+    public override int TargetSkillID
+    {
+        get
+        {
+            return targetSkillID;
+        }
+    }
 
     [Header("Focused Fire Settings")]
     [Tooltip("추가로 발사할 산탄의 개수")]
@@ -27,13 +33,15 @@ public sealed class Module_Passive_FocusedFire : PassiveModule
     {
         // 타겟 스킬 검사
         if (targetSkillID != 0 && evt.SkillID != targetSkillID)
+        {
             return;
+        }
 
         // 💡 CombatContext의 보너스 수치를 조작하여 런타임 프로퍼티에 반영되게 합니다.
         context.Combat.PatternCountBonus += bonusPatternCount;
         context.Combat.PatternAngleBonus += bonusPatternAngle;
 
         // (선택) 근접 화력이 강해지는 대신, 밸런스를 위해 전체 데미지 배율을 살짝 깎고 싶다면?
-        // context.Combat.BonusMultipiler -= 0.1f; 
+        // context.Combat.BonusMultipiler -= 0.1f;
     }
 }

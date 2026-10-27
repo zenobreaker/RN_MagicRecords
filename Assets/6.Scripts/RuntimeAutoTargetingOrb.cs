@@ -4,7 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class RuntimeAutoTargetingOrb 
+public class RuntimeAutoTargetingOrb
     : MonoBehaviour
     , ISkillEffect
     , ISpawnActivationHandler
@@ -14,17 +14,17 @@ public class RuntimeAutoTargetingOrb
     [SerializeField] private float searchRadius = 20.0f;   // 탐색 반경
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private string beamPrefabName = "Beam"; // 쏠 광선
-    [SerializeField] private string createOrbSoundName = ""; 
-    [SerializeField] private string watingShootSoundName = ""; 
-    [SerializeField] private string shootSoundName = ""; 
-    [SerializeField] private string destroyOrbSoundName = ""; 
+    [SerializeField] private string createOrbSoundName = "";
+    [SerializeField] private string watingShootSoundName = "";
+    [SerializeField] private string shootSoundName = "";
+    [SerializeField] private string destroyOrbSoundName = "";
 
 
     private Character owner;
     private DamageData cachedDamageData;
     private GenenricTeamId myTeamId = GenenricTeamId.NoTeamId;
     private HashSet<GameObject> ignores = new HashSet<GameObject>();
-    private float multiplier = 1.0f; 
+    private float multiplier = 1.0f;
     private bool isExtraCrit = false;
 
     // 💡 풀링 환경에서 비동기 작업을 안전하게 취소하기 위한 토큰
@@ -53,14 +53,19 @@ public class RuntimeAutoTargetingOrb
         cachedDamageData = null;
         ignores = new HashSet<GameObject>();
         if (wasInstalled)
+        {
             SoundManager.Instance.SafeInvoke(v => v.PlaySFX(destroyOrbSoundName));
-        ObjectPooler.ReturnToPool(gameObject);    // 한 객체에 한번만 
+        }
+
+        ObjectPooler.ReturnToPool(gameObject);    // 한 객체에 한번만
     }
 
     public void Install()
     {
-        if (bIsInstalled || !isActiveAndEnabled)
+        if (bIsInstalled || isActiveAndEnabled == false)
+        {
             return;
+        }
 
         cancelTokenSource = new CancellationTokenSource();
         bIsInstalled = true;
@@ -78,7 +83,10 @@ public class RuntimeAutoTargetingOrb
         bool isCanceled = await UniTask.Delay(System.TimeSpan.FromSeconds(delayTime), cancellationToken: token).SuppressCancellationThrow();
 
         // 대기 도중 OnDisable이 호출되어 취소되었다면 아래 로직은 무시
-        if (isCanceled) return;
+        if (isCanceled)
+        {
+            return;
+        }
 
         // 2. 발사 직전에 최우선 타겟 탐색
         Transform target = FindPriorityTarget();
@@ -93,12 +101,12 @@ public class RuntimeAutoTargetingOrb
 
         // 4. 조준된 방향으로 진짜 파괴광선 스폰
         GameObject beam = ObjectPooler.DeferredSpawnFromPool(beamPrefabName, transform.position, transform.rotation);
-        if(beam != null)
+        if (beam != null)
         {
             if (beam.TryGetComponent<ISkillEffect>(out var effect))
             {
                 effect.SetDamageInfo(owner, cachedDamageData, isExtraCrit, multiplier);
-                effect.SetIgnores(ignores); 
+                effect.SetIgnores(ignores);
             }
         }
         SoundManager.Instance.SafeInvoke(v => v.PlaySFX(shootSoundName));
@@ -113,7 +121,10 @@ public class RuntimeAutoTargetingOrb
     {
         Collider[] cols = Physics.OverlapSphere(transform.position, searchRadius, enemyLayer);
 
-        if (cols.Length == 0) return null;
+        if (cols.Length == 0)
+        {
+            return null;
+        }
 
         var enemyList = new List<(Transform transform, MonsterGrade grade, float distance)>();
 
@@ -122,11 +133,14 @@ public class RuntimeAutoTargetingOrb
             if (col.TryGetComponent<Character>(out var character))
             {
                 float dist = Vector3.Distance(transform.position, col.transform.position);
-                enemyList.Add((col.transform, character.GetGrade(), dist)); 
+                enemyList.Add((col.transform, character.GetGrade(), dist));
             }
         }
 
-        if (enemyList.Count == 0) return null;
+        if (enemyList.Count == 0)
+        {
+            return null;
+        }
 
         // 1순위: 등급이 높은 순, 2순위: 거리가 가까운 순
         var bestTarget = enemyList

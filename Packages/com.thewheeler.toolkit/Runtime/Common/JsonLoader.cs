@@ -19,9 +19,12 @@ public class JsonLoader
         }
 
         var dataList = extractListFunc(rootData);
-        if (dataList == null) return; 
+        if (dataList == null)
+        {
+            return;
+        }
 
-        foreach(var jsonData in dataList)
+        foreach (var jsonData in dataList)
         {
             var result = converFunc(jsonData);
             onResult?.Invoke(result);

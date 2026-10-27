@@ -28,24 +28,39 @@ public class Module_PlayAnimation : SkillModule
         if (useMovementAnimation)
         {
             if (owner != null && skill != null)
-                owner.Visual.SafeInvoke(v=>v.PlayDashAnimation(skill.Runtime.IsBackwardMovement));
+            {
+                owner.Visual.SafeInvoke(v => v.PlayDashAnimation(skill.Runtime.IsBackwardMovement));
+            }
+
             return;
         }
-        if (owner == null || actionData == null) return;
+        if (owner == null || actionData == null)
+        {
+            return;
+        }
+
         var playback = actionData;
         if (syncFireInterval)
         {
             playback = actionData.Clone();
             float interval = fireInterval * (skill?.Runtime.FireIntervalMultiplier ?? 1f);
             if (skill != null && phaseSkill?.modules != null)
+            {
                 foreach (var module in phaseSkill.modules)
+                {
                     if (module is Module_PhaseLoop && module.triggerTime == SkillTriggerTime.OnPhaseTime)
                     {
                         interval = module.GetTriggerDelay(skill);
                         break;
                     }
+                }
+            }
+
             if (skill?.Runtime.ActivePhaseLoop != null)
+            {
                 interval = skill.Runtime.ActivePhaseLoop.GetTriggerDelay(skill);
+            }
+
             playback.ActionSpeed = 1f / Mathf.Max(0.01f, interval);
             playback.Initialize();
         }
@@ -54,15 +69,29 @@ public class Module_PlayAnimation : SkillModule
             float speed = owner.Status != null ? owner.Status.GetStatusValue(StatusType.ATTACKSPEED) : 1f;
             owner.Visual.PlayActionAnimation(playback, 0, speed, true);
         }
-        else owner.PlayAction(playback);
-        if (weaponController != null) weaponController.DoAction(playback, restartFromBeginning);
-        if (skill != null) skill.actionData = playback;
+        else
+        {
+            owner.PlayAction(playback);
+        }
+
+        if (weaponController != null)
+        {
+            weaponController.DoAction(playback, restartFromBeginning);
+        }
+
+        if (skill != null)
+        {
+            skill.actionData = playback;
+        }
     }
 
     public override bool HasAnimationData()
     {
-        if (useMovementAnimation) return true;
+        if (useMovementAnimation)
+        {
+            return true;
+        }
         // 모듈에 세팅된 actionData의 서브스테이트 이름이 비어있지 않으면 true 반환!
-        return actionData != null && !string.IsNullOrEmpty(actionData.SubStateName);
+        return actionData != null && string.IsNullOrEmpty(actionData.SubStateName) == false;
     }
 }

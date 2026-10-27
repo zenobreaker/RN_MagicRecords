@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerManager :
     Singleton<PlayerManager>
 {
-    public SO_PlayerObjects playerObjects; 
+    public SO_PlayerObjects playerObjects;
     public SO_JobData jobdata;
     [Tooltip("Character base-stat ScriptableObjects. Add every playable character here.")]
     public List<CharStatusData> charInfoDataList = new();
@@ -12,7 +12,10 @@ public class PlayerManager :
     private List<int> characterIds = new List<int>();
     public List<int> CharIds
     {
-        get { return characterIds; }
+        get
+        {
+            return characterIds;
+        }
     }
     // key : char id
     private Dictionary<int, CharStatusData> charStatusDatas = new();
@@ -22,7 +25,13 @@ public class PlayerManager :
     private Dictionary<int, int> charEquippedSkills = new();
 
     private bool isDirty = false;
-    public bool IsDirty => isDirty;
+    public bool IsDirty
+    {
+        get
+        {
+            return isDirty;
+        }
+    }
 
     private Dictionary<int, Player> currentPlayerDicts = new Dictionary<int, Player>();
 
@@ -30,7 +39,10 @@ public class PlayerManager :
     {
         base.Awake();
 
-        if (IsDuplicate) return;
+        if (IsDuplicate)
+        {
+            return;
+        }
     }
 
     public void SetCurrentPlayer(Player player)
@@ -42,10 +54,16 @@ public class PlayerManager :
     public Player GetCurrentPlayer(int charID = 0)
     {
         if (charID > 0)
+        {
             return currentPlayerDicts.TryGetValue(charID, out var selected) ? selected : null;
+        }
+
         foreach (KeyValuePair<int, Player> p in currentPlayerDicts)
         {
-            if (p.Value != null) return p.Value;
+            if (p.Value != null)
+            {
+                return p.Value;
+            }
         }
 
         return null;
@@ -63,7 +81,9 @@ public class PlayerManager :
         foreach (CharStatusData charInfoData in charInfoDataList)
         {
             if (charInfoData == null)
+            {
                 continue;
+            }
 
             if (charStatusDatas.ContainsKey(charInfoData.id))
             {
@@ -106,15 +126,18 @@ public class PlayerManager :
             // 임시적으로 리스트에 추가
             characterIds.Add(1);
             charClass.Add(1, 1);
-            charEquipments.Add(1, new CharEquipmentData { characterId = 1, });
+            charEquipments.Add(1, new CharEquipmentData
+            {
+                characterId = 1,
+            });
             foreach (var ce in charEquipments)
             {
                 ce.Value.Init();
             }
         }
 
-        playerObjects?.Init(); 
-        jobdata?.Init(); 
+        playerObjects?.Init();
+        jobdata?.Init();
 
         ManagerWaiter.WaitForManager<InventoryManager>((inventory) =>
         {
@@ -162,8 +185,12 @@ public class PlayerManager :
 
     public bool TryLevelUpRunCharacter(int charId)
     {
-        if (!CanLevelUpRunCharacter(charId)) return false;
-        if (!runCharacterStatus.TryGetValue(charId, out var data) || data == null)
+        if (CanLevelUpRunCharacter(charId) == false)
+        {
+            return false;
+        }
+
+        if (runCharacterStatus.TryGetValue(charId, out var data) == false || data == null)
         {
             data = Instantiate(GetCharacterStatus(charId));
             runCharacterStatus[charId] = data;
@@ -172,7 +199,10 @@ public class PlayerManager :
         // SetStatusData reuses StatGrowth and preserves the existing stat modifiers.
         var player = GetCurrentPlayer(charId);
         if (player != null && player.gameObject.scene.name == "Stage")
+        {
             player.SetStatus();
+        }
+
         return true;
     }
 
@@ -180,20 +210,41 @@ public class PlayerManager :
     {
         var result = new List<CharacterSaveData>();
         foreach (var pair in runCharacterStatus)
+        {
             if (pair.Value != null)
-                result.Add(new CharacterSaveData { charId = pair.Key, charLevel = Mathf.Clamp(pair.Value.level, 1, CharStatusData.MaxLevel) });
+            {
+                result.Add(new CharacterSaveData
+                {
+                    charId = pair.Key,
+                    charLevel = Mathf.Clamp(pair.Value.level, 1, CharStatusData.MaxLevel)
+                });
+            }
+        }
+
         return result;
     }
 
     public void RestoreRunCharacterLevels(List<CharacterSaveData> levels)
     {
         ResetRunCharacterLevels();
-        if (levels == null) return;
+        if (levels == null)
+        {
+            return;
+        }
+
         foreach (var saved in levels)
         {
-            if (saved == null || runCharacterStatus.ContainsKey(saved.charId)) continue;
+            if (saved == null || runCharacterStatus.ContainsKey(saved.charId))
+            {
+                continue;
+            }
+
             var template = GetCharacterStatus(saved.charId);
-            if (template == null) continue;
+            if (template == null)
+            {
+                continue;
+            }
+
             var data = Instantiate(template);
             data.level = Mathf.Clamp(Mathf.Max(template.level, saved.charLevel), 1, CharStatusData.MaxLevel);
             runCharacterStatus[saved.charId] = data;
@@ -203,7 +254,13 @@ public class PlayerManager :
     public void ResetRunCharacterLevels()
     {
         foreach (var data in runCharacterStatus.Values)
-            if (data != null) Destroy(data);
+        {
+            if (data != null)
+            {
+                Destroy(data);
+            }
+        }
+
         runCharacterStatus.Clear();
     }
 
@@ -216,13 +273,17 @@ public class PlayerManager :
     public List<JobInfo> GetAvailableJobs(int charId)
     {
         List<JobInfo> availableJobs = new();
-        if (jobdata == null || !charStatusDatas.TryGetValue(charId, out CharStatusData charInfoData))
+        if (jobdata == null || charStatusDatas.TryGetValue(charId, out CharStatusData charInfoData) == false)
+        {
             return availableJobs;
+        }
 
         foreach (JobInfo job in jobdata.list)
         {
             if (charInfoData.CanUseJob(job.id) && jobdata.GetJobInfo(job.id) != null)
+            {
                 availableJobs.Add(job);
+            }
         }
 
         return availableJobs;
@@ -230,7 +291,13 @@ public class PlayerManager :
 
     private CharEquipmentData CreateCharEquipmentData(int charId, List<string> equipementIds)
     {
-        if (equipementIds.Count == 0) return new CharEquipmentData { characterId = charId };
+        if (equipementIds.Count == 0)
+        {
+            return new CharEquipmentData
+            {
+                characterId = charId
+            };
+        }
 
         CharEquipmentData newData = new CharEquipmentData();
         newData.Init();
@@ -247,32 +314,45 @@ public class PlayerManager :
 
     public CharacterInfo GetCharacterInfo(int charID)
     {
-        if(playerObjects == null) return null;
+        if (playerObjects == null)
+        {
+            return null;
+        }
 
         return playerObjects.GetPlayerInfo(charID);
     }
 
     public JobInfo GetJobInfo(int jobID)
     {
-        if (jobdata == null) return null; 
+        if (jobdata == null)
+        {
+            return null;
+        }
 
         return jobdata.GetJobInfo(jobID);
     }
 
     public void SaveIfDirty()
     {
-        if (isDirty == false) return;
+        if (isDirty == false)
+        {
+            return;
+        }
 
         CharInfoListData listData = new();
         foreach (var info in characterIds)
         {
-            if (charClass == null || 
+            if (charClass == null ||
                 charEquipments[info] == null)
+            {
                 continue;
+            }
 
             int level = 1;
             if (charStatusDatas.TryGetValue(info, out var data))
+            {
                 level = data.level;
+            }
 
             CharacterSaveData newData = new()
             {

@@ -19,9 +19,9 @@ public abstract class UiBase : MonoBehaviour
 
         foreach (Button button in allButtons)
         {
-            if (button.GetComponent<UIButtonSound>() != null) 
+            if (button.GetComponent<UIButtonSound>() != null)
             {
-                continue; 
+                continue;
             }
 
             button.gameObject.AddComponent<UIButtonSound>();
@@ -45,42 +45,57 @@ public abstract class UiBase : MonoBehaviour
     }
 
     // 갱신 시 아래 함수가 호출되어 진다.
-    public virtual void RefreshUI() { }
+    public virtual void RefreshUI()
+    {
+    }
 
     // 부모 오브젝트에 자식 오브젝트 배치
     public void InitReplaceContentObject(int count = 0)
     {
-        if (content == null || childObject == null) return;
+        if (content == null || childObject == null)
+        {
+            return;
+        }
 
-        InitReplaceContentObjectByTarget(content, childObject, count); 
+        InitReplaceContentObjectByTarget(content, childObject, count);
     }
 
     protected void InitReplaceContentObjectByTarget(GameObject target, GameObject childObj, int count = 0)
     {
-        if (target == null || childObj == null) return;
+        if (target == null || childObj == null)
+        {
+            return;
+        }
 
-        // 이미 자식들이 있는지 검사 
+        // 이미 자식들이 있는지 검사
         if (target.transform.childCount > 0)
         {
             for (int i = 0; i < target.transform.childCount; i++)
             {
                 if (target.transform.GetChild(i) != null)
-                    target.transform.GetChild(i).gameObject.SetActive(false); 
+                {
+                    target.transform.GetChild(i).gameObject.SetActive(false);
+                }
             }
         }
 
         // 이미 원하는 자식들이 있다면 가지고 있는 자식을 쓰도록
         if (target.transform.childCount >= count)
-            return; 
-        
+        {
+            return;
+        }
+
         // 기존 자식은 재사용하고 부족한 수만 추가합니다.
         AddContentObject(target, childObj, count - target.transform.childCount);
     }
 
-    // 부모 오브젝트에 자식 추가하기 
+    // 부모 오브젝트에 자식 추가하기
     protected void AddContentObject(GameObject parentObj, GameObject childObj, int count = 0)
     {
-        if (parentObj == null || childObj == null) return;
+        if (parentObj == null || childObj == null)
+        {
+            return;
+        }
 
         for (int i = 0; i < count; i++)
         {
@@ -91,7 +106,10 @@ public abstract class UiBase : MonoBehaviour
     // 자식 오브젝트들을 설정하고 콜백 기능을 할당한다.
     public virtual void SetContentChildObjectCallback(Action callback)
     {
-        if (content == null || childObject == null) return;
+        if (content == null || childObject == null)
+        {
+            return;
+        }
 
         for (int i = 0; i < content.transform.childCount; i++)
         {
@@ -102,7 +120,10 @@ public abstract class UiBase : MonoBehaviour
 
     public virtual void SetContentChildObjectsCallback<T>(Action<T> callback)
     {
-        if (content == null || childObject == null) return;
+        if (content == null || childObject == null)
+        {
+            return;
+        }
 
         for (int i = 0; i < content.transform.childCount; i++)
         {
@@ -120,7 +141,7 @@ public abstract class UiBase : MonoBehaviour
         }
     }
 
-    // 엔터/스페이스 등의 버튼을 눌렀을 때 실행할 함수 
+    // 엔터/스페이스 등의 버튼을 눌렀을 때 실행할 함수
     public virtual void OnSubmit()
     {
 

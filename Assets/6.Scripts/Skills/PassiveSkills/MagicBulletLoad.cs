@@ -5,14 +5,16 @@ public struct BulletData
 {
     public bool isCrit;
     public BulletData(bool isCrit)
-        { this.isCrit = isCrit; }
+    {
+        this.isCrit = isCrit;
+    }
 }
 
 
 /// <summary>
-///  패시브 - 마법탄 장전 
-///  습득 시 4/6/7 발 탄환을 장전, 탄환류 스킬에 소모됨 
-///  마지막 공격 시, 탄환 1발 장전 
+///  패시브 - 마법탄 장전
+///  습득 시 4/6/7 발 탄환을 장전, 탄환류 스킬에 소모됨
+///  마지막 공격 시, 탄환 1발 장전
 /// </summary>
 
 public class Passive_MagicBulletLoad
@@ -27,13 +29,27 @@ public class Passive_MagicBulletLoad
     private float reloadProgress;
     public const float BaseReloadInterval = 4f;
 
-    public float ReloadInterval => BaseReloadInterval * (1f -
+    public float ReloadInterval
+    {
+        get
+        {
+            return BaseReloadInterval * (1f -
         (skillComponent.SafeInvoke(component => component.GetCapability<Module_Passive_AutoReload>())?.Reduction ?? 0f));
+        }
+    }
 
     public override void OnUpdate(float dt)
     {
-        if (owner == null || !owner.activeInHierarchy || dt <= 0f) return;
-        if (bullets.Count >= maxBullets) { reloadProgress = 0f; return; }
+        if (owner == null || owner.activeInHierarchy == false || dt <= 0f)
+        {
+            return;
+        }
+
+        if (bullets.Count >= maxBullets)
+        {
+            reloadProgress = 0f;
+            return;
+        }
 
         // 비율로 진행도를 보관해 레코드 획득/제거 시 이미 진행한 장전을 유지합니다.
         reloadProgress += dt / ReloadInterval;
@@ -42,11 +58,14 @@ public class Passive_MagicBulletLoad
             reloadProgress -= 1f;
             Reload(1);
         }
-        if (bullets.Count >= maxBullets) reloadProgress = 0f;
+        if (bullets.Count >= maxBullets)
+        {
+            reloadProgress = 0f;
+        }
     }
 
 
-    public Passive_MagicBulletLoad(int skillID, string skillName, string skillDesc, Sprite skillIcon) 
+    public Passive_MagicBulletLoad(int skillID, string skillName, string skillDesc, Sprite skillIcon)
         : base(skillID, skillName, skillDesc, skillIcon)
     {
         bullets = new();
@@ -57,7 +76,7 @@ public class Passive_MagicBulletLoad
         : base(skillData)
     {
         bullets = new();
-        currentBullet = 0; 
+        currentBullet = 0;
     }
 
 
@@ -71,20 +90,26 @@ public class Passive_MagicBulletLoad
     public bool TryConsumeBullet(out BulletData bullet)
     {
         bullet = default;
-        if (bullets.Count == 0) return false;
+        if (bullets.Count == 0)
+        {
+            return false;
+        }
 
         bullet = bullets.Dequeue();
         Debug.Log($"탄환 소모 ! crit = {bullet.isCrit}");
 
         NotifyBulletChanged();
-        return true; 
+        return true;
     }
 
     public void Reload(int amount)
     {
-        for(int i = 0; i < amount; i++)
+        for (int i = 0; i < amount; i++)
         {
-            if (bullets.Count >= maxBullets) break;
+            if (bullets.Count >= maxBullets)
+            {
+                break;
+            }
 
             ++currentBullet;
             bool isCrit = currentBullet == 4 || currentBullet == 7;
@@ -95,22 +120,30 @@ public class Passive_MagicBulletLoad
         NotifyBulletChanged();
     }
 
-    public int CurrentBulletCount => bullets.Count;
+    public int CurrentBulletCount
+    {
+        get
+        {
+            return bullets.Count;
+        }
+    }
 
     public override void OnAcquire(GameObject owner)
     {
         reloadProgress = 0f;
         if (owner != null)
+        {
             this.owner = owner;
+        }
 
-        // SkillComponent에 제네릭으로 자신을 등록 
-        if(owner != null &&
+        // SkillComponent에 제네릭으로 자신을 등록
+        if (owner != null &&
             owner.TryGetComponent<SkillComponent>(out skillComponent))
         {
             skillComponent.RegisterCapability<IMagicBulletProvider>(this);
         }
 
-        if (owner != null && 
+        if (owner != null &&
             owner.TryGetComponent<WeaponComponent>(out weaponComponent))
         {
             BindLastAttackEvent();
@@ -127,7 +160,7 @@ public class Passive_MagicBulletLoad
         reloadProgress = 0f;
         bullets.Clear();
         NotifyBulletChanged();
-     
+
         Weapon weapon = weaponComponent.SafeInvoke(component => component.GetCurrentWeapon());
         if (weapon != null)
         {
@@ -145,7 +178,7 @@ public class Passive_MagicBulletLoad
         GenerateBullets();
     }
 
-    // 레벨별 최대 탄환 수 계산 
+    // 레벨별 최대 탄환 수 계산
     private void CalculateMaxBullet()
     {
         maxBullets = skillLevel switch
@@ -157,8 +190,8 @@ public class Passive_MagicBulletLoad
         };
     }
 
-    // 탄환 생성 
-    private void GenerateBullets() 
+    // 탄환 생성
+    private void GenerateBullets()
     {
         reloadProgress = 0f;
         bullets.Clear();
@@ -184,7 +217,9 @@ public class Passive_MagicBulletLoad
     private void ExecuteReload(GameObject owner)
     {
         if (bullets.Count >= maxBullets)
-            return; 
+        {
+            return;
+        }
 
         ++currentBullet;
         bool isCrit = currentBullet == 4 || currentBullet == 7;
@@ -193,7 +228,7 @@ public class Passive_MagicBulletLoad
 
         NotifyBulletChanged();
     }
-    
+
 
     private void NotifyBulletInit()
     {
@@ -205,5 +240,5 @@ public class Passive_MagicBulletLoad
         skillComponent.SafeInvoke(component => component.NotifyMagicBulletChanged(this.bullets));
     }
 
-  
+
 }

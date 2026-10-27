@@ -8,7 +8,13 @@ public sealed class Module_Passive_SplitMotherSlow : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (0이면 조건 없이 발동)")]
     public int targetSkillID = 0;
-    public override int TargetSkillID => targetSkillID;
+    public override int TargetSkillID
+    {
+        get
+        {
+            return targetSkillID;
+        }
+    }
 
     [Header("Mother Projectile Settings")]
     [Tooltip("모탄 속도 배율입니다. 0.1이면 기본 속도의 10%로 매우 느리게 이동합니다.")]
@@ -23,9 +29,13 @@ public sealed class Module_Passive_SplitMotherSlow : PassiveModule
     public override void OnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill)
     {
         if (targetSkillID != 0 && casterSkill.SkillID != targetSkillID)
+        {
             return;
+        }
 
         if (spawnedObject is SplitMotherProjectile motherProjectile)
+        {
             motherProjectile.SetMotherSpeedMultiplier(speedMultiplier);
+        }
     }
 }

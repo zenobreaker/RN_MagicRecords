@@ -7,7 +7,7 @@ public class MapNodeInfo
     public int contentId;      // 알맹이의 ID (StageDB의 ID 이거나 EventDB의 ID)
     public string biome;       // 테마 (Forest 등)
     public int mapIndex;       // 맵 프리팹 인덱스 (-1이면 전용 맵)
-    
+
     public bool isCleared;
     public int clearRewardId;
     public ExploreShopStock shopStock;

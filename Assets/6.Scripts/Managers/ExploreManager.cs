@@ -29,40 +29,97 @@ public enum RunStatus
 
 public sealed partial class ExploreManager : MonoBehaviour
 {
-    public ExploreState CurrentState { get; private set; } = ExploreState.NONE;
+    public ExploreState CurrentState
+    {
+        get;
+        private set;
+    } = ExploreState.NONE;
 
-    public ExplorationSetupData CurrentSetupData { get; private set; } = new();
+    public ExplorationSetupData CurrentSetupData
+    {
+        get;
+        private set;
+    } = new();
 
     // 탐사 단계별 이벤트
     public event Action OnExploreStart;     // 탐사 시작 시
-    public event Action OnReturnToMain;     // 탐사 메인 
+    public event Action OnReturnToMain;     // 탐사 메인
     public event Action<int> OnInStage;     // 특정 스테이지 선택 시
     public event Action OnStageClear;       // 스테이지 클리어 시
     public event Action OnExploreFinish;    // 전체 탐사 완료 시
 
-    // 스테이지 배치자 
+    // 스테이지 배치자
     private StageReplacer stageReplacer;
-    public StageReplacer StageReplacer => stageReplacer;
+    public StageReplacer StageReplacer
+    {
+        get
+        {
+            return stageReplacer;
+        }
+    }
 
     private string chapterBiomeName;
-    public RunStatus RunStatus { get; private set; }
+    public RunStatus RunStatus
+    {
+        get;
+        private set;
+    }
     // MidRun is saved as soon as setup finishes. Keep this session-only intent
     // separate so loading a MidRun never grants another starting draft.
-    public bool InitialRecordRewardPending { get; private set; }
+    public bool InitialRecordRewardPending
+    {
+        get;
+        private set;
+    }
     private EventChoice eventCombatChoice;
     private EventChoice pendingEventCombatReward;
-    public bool IsEventCombat => eventCombatChoice != null;
-    public void ConsumeInitialRecordReward() => InitialRecordRewardPending = false;
+    public bool IsEventCombat
+    {
+        get
+        {
+            return eventCombatChoice != null;
+        }
+    }
+    public void ConsumeInitialRecordReward()
+    {
+        InitialRecordRewardPending = false;
+    }
 
-    public int Chapter { get; private set; } = 1;
-    public int MapNodeID { get; private set; }
+    public int Chapter
+    {
+        get;
+        private set;
+    } = 1;
+    public int MapNodeID
+    {
+        get;
+        private set;
+    }
     public string BiomeName
     {
-        get { return chapterBiomeName; }
-        set { chapterBiomeName = value; }
+        get
+        {
+            return chapterBiomeName;
+        }
+        set
+        {
+            chapterBiomeName = value;
+        }
     }
-    public bool AllStageClear => bAllCleared;
-    public bool IsFinalChapter => Chapter >= maxChapter;
+    public bool AllStageClear
+    {
+        get
+        {
+            return bAllCleared;
+        }
+    }
+    public bool IsFinalChapter
+    {
+        get
+        {
+            return Chapter >= maxChapter;
+        }
+    }
 
     private bool bCreate = false;
     private bool bAllCleared = false;
@@ -98,9 +155,14 @@ public sealed partial class ExploreManager : MonoBehaviour
         {
             // Returning from the lobby in the same process must also reopen pending rewards.
             if (RunStatus == RunStatus.ChapterCleared)
+            {
                 AppManager.Instance.SafeInvoke(app => app.ShowPendingChapterReward());
+            }
             else if (RunStatus == RunStatus.FinalRunCleared)
+            {
                 UIManager.Instance.SafeInvoke(ui => ui.OpenExploreResultPopUp());
+            }
+
             return;
         }
         if (bCreate == false)
@@ -188,7 +250,9 @@ public sealed partial class ExploreManager : MonoBehaviour
     {
         // 마지막 챕터라면 다음 챕터가 없음
         if (Chapter >= maxChapter)
+        {
             return false;
+        }
 
         Chapter++;
 
@@ -199,7 +263,11 @@ public sealed partial class ExploreManager : MonoBehaviour
         stageReplacer ??= new StageReplacer();
         stageReplacer.StartChapter(Chapter);
         var startNode = stageReplacer.GetReplacedNodeInfo(MapNodeID);
-        if (startNode != null) startNode.isCleared = true;
+        if (startNode != null)
+        {
+            startNode.isCleared = true;
+        }
+
         bCreate = true;
         InitialRecordRewardPending = false;
         RunStatus = RunStatus.MidRun;
@@ -210,18 +278,25 @@ public sealed partial class ExploreManager : MonoBehaviour
     public void Init(bool forceGenerate = false)
     {
         if (forceGenerate)
+        {
             bCreate = false;
+        }
 
         if (bCreate)
+        {
             return;
-
+        }
 
         bCreate = true;
 
         if (stageReplacer == null)
+        {
             stageReplacer = new StageReplacer();
+        }
         else
+        {
             stageReplacer.ClearStage();
+        }
 
         ReplaceLevel(forceGenerate);
     }
@@ -240,12 +315,18 @@ public sealed partial class ExploreManager : MonoBehaviour
             CurrentSetupData = loadData.setupData ?? new ExplorationSetupData();
             runHealth = loadData.partyHealth ?? new();
             PlayerManager.Instance.SafeInvoke(players => players.RestoreRunCharacterLevels(loadData.characterLevels));
-            if (!RestoreStartingPassives(loadData)) { bCreate = false; return; }
+            if (RestoreStartingPassives(loadData) == false)
+            {
+                bCreate = false;
+                return;
+            }
             SkillManager.Instance?.RestoreRunSkills(loadData.activeSkills);
 
             // 세팅 중이었다면 맵/스테이지는 없으므로 로드 중단
             if (RunStatus == RunStatus.SetupIncomplete)
+            {
                 return;
+            }
 
             // ChapterCleared restores the cleared map until its reward is accepted.
 
@@ -274,15 +355,17 @@ public sealed partial class ExploreManager : MonoBehaviour
                     stageReplacer.GetReplacedNodeInfo(0);
 
                 if (startNode != null)
+                {
                     startNode.isCleared = true;
+                }
             }
 
             return;
         }
 
-        // 2. 저장 데이터가 없는 경우 
+        // 2. 저장 데이터가 없는 경우
 
-        // forceGenerate가 아닌데 세이브가 없다면 새 탐사 
+        // forceGenerate가 아닌데 세이브가 없다면 새 탐사
         if (forceGenerate == false)
         {
             Chapter = 1;
@@ -298,7 +381,9 @@ public sealed partial class ExploreManager : MonoBehaviour
             stageReplacer.GetReplacedNodeInfo(MapNodeID);
 
         if (starteNode != null)
+        {
             starteNode.isCleared = true;
+        }
 
         // 새 맵이 생성되었지만 아직 세팅 전
         RunStatus = RunStatus.SetupIncomplete;
@@ -310,20 +395,31 @@ public sealed partial class ExploreManager : MonoBehaviour
     // 유저가 세팅창에서 최종 시작 버튼을 눌렀을 때 호출
     public bool FinallizeSetupAndGenerateMap(ExplorationSetupData finalSetup)
     {
-        if (finalSetup == null || !finalSetup.HasCharacter || !finalSetup.HasClass) return false;
+        if (finalSetup == null || finalSetup.HasCharacter == false || finalSetup.HasClass == false)
+        {
+            return false;
+        }
         // A resumed setup can enter here without StartExplore/Init(true).
         // Initialize before committing so SaveExploreMap cannot reject this run.
         Init(false);
         bool startingNewRun = Chapter == 1 &&
             (RunStatus == RunStatus.SetupIncomplete || RunStatus == RunStatus.NoSave);
-        if (!startingNewRun) return false;
-        if (!TryGrantStartingPassives(finalSetup.SelectedClassId, out var passiveError))
+        if (startingNewRun == false)
+        {
+            return false;
+        }
+
+        if (TryGrantStartingPassives(finalSetup.SelectedClassId, out var passiveError) == false)
         {
             Debug.LogError(passiveError);
             UIManager.Instance?.ShowToast("기본 패시브 설정을 확인해주세요.");
             return false;
         }
-        if (startingNewRun) { runHealth.Clear(); liveHealth.Clear(); }
+        if (startingNewRun)
+        {
+            runHealth.Clear();
+            liveHealth.Clear();
+        }
         CurrentSetupData = new ExplorationSetupData
         {
             SelectedCharacterId = finalSetup.SelectedCharacterId,
@@ -340,7 +436,9 @@ public sealed partial class ExploreManager : MonoBehaviour
         MapNodeInfo startNode = stageReplacer.GetReplacedNodeInfo(0);
 
         if (startNode != null)
+        {
             startNode.isCleared = true;
+        }
 
         SaveExploreMap();
         ChangeState(ExploreState.READY);
@@ -375,7 +473,11 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public void ClearStage(bool isWin)
     {
-        if (RunStatus == RunStatus.ChapterCleared || RunStatus == RunStatus.FinalRunCleared) return;
+        if (RunStatus == RunStatus.ChapterCleared || RunStatus == RunStatus.FinalRunCleared)
+        {
+            return;
+        }
+
         if (isWin == false)
         {
             ChangeState(ExploreState.ON_EXPLORE);
@@ -387,11 +489,13 @@ public sealed partial class ExploreManager : MonoBehaviour
         MapNodeInfo currentNodeInfo = GetReplacedNodeInfo();
 
         if (currentNodeInfo != null)
+        {
             currentNodeInfo.isCleared = true;
+        }
 
         bool bIsFianl = stageReplacer.IsFinalNode(MapNodeID);
 
-        // 챕터 마지막 보스 
+        // 챕터 마지막 보스
         if (bIsFianl)
         {
             RunStatus = RunStatus.ChapterCleared;
@@ -403,14 +507,20 @@ public sealed partial class ExploreManager : MonoBehaviour
         // 일반 스테이지 클리어
         ChangeState(ExploreState.STAGE_CLEAR);
 
-        SaveExploreMap(); 
+        SaveExploreMap();
     }
 
     public void CompleteChapterReward(int clearedChapter)
     {
-        if (RunStatus != RunStatus.ChapterCleared || Chapter != clearedChapter) return;
+        if (RunStatus != RunStatus.ChapterCleared || Chapter != clearedChapter)
+        {
+            return;
+        }
+
         if (TryAdvanceChapter())
+        {
             ChangeState(ExploreState.ON_EXPLORE);
+        }
         else
         {
             bAllCleared = true;
@@ -433,15 +543,32 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public bool CanEnableNode(int targetNodeId, bool bCheat = false)
     {
-        if (RunStatus == RunStatus.ChapterCleared || RunStatus == RunStatus.FinalRunCleared) return false;
-        if (bCheat) return true;
-        if (RunStatus == RunStatus.MidRun && stageReplacer.IsBossUnlockedForCheat(targetNodeId)) return true;
-        if (targetNodeId == MapNodeID && GetReplacedNodeInfo()?.type == StageType.Shop) return true;
+        if (RunStatus == RunStatus.ChapterCleared || RunStatus == RunStatus.FinalRunCleared)
+        {
+            return false;
+        }
 
-        // 1. 현재 노드를 아직 못 깼다면? 
+        if (bCheat)
+        {
+            return true;
+        }
+
+        if (RunStatus == RunStatus.MidRun && stageReplacer.IsBossUnlockedForCheat(targetNodeId))
+        {
+            return true;
+        }
+
+        if (targetNodeId == MapNodeID && GetReplacedNodeInfo()?.type == StageType.Shop)
+        {
+            return true;
+        }
+
+        // 1. 현재 노드를 아직 못 깼다면?
         // 오직 "지금 그 노드"만 다시 들어갈 수 있음 (이어하기/재도전)
         if (IsCurrentNodeCleared == false)
+        {
             return MapNodeID == targetNodeId;
+        }
 
         // 2. 현재 노드를 깼다면?
         // "현재 노드"와 연결된 "다음 노드들"만 클릭 가능
@@ -454,7 +581,11 @@ public sealed partial class ExploreManager : MonoBehaviour
         // 1. 플레이어가 서 있는 바로 그곳
         if (MapNodeID == targetNodeId)
         {
-            if (GetReplacedNodeInfo()?.type == StageType.Shop) return MapNodeState.Current;
+            if (GetReplacedNodeInfo()?.type == StageType.Shop)
+            {
+                return MapNodeState.Current;
+            }
+
             return IsCurrentNodeCleared ? MapNodeState.Cleared : MapNodeState.Current;
         }
 
@@ -479,7 +610,10 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public void EnterStageByNode(MapNode node)
     {
-        if (node == null || !CanEnableNode(node.id)) return;
+        if (node == null || CanEnableNode(node.id) == false)
+        {
+            return;
+        }
 
         MapNodeID = node.id;
 
@@ -494,7 +628,7 @@ public sealed partial class ExploreManager : MonoBehaviour
         }
     }
 
-    // 전투 이벤트 스테이지로 바로 가게 만드는 로직 
+    // 전투 이벤트 스테이지로 바로 가게 만드는 로직
     public void StartEventCombat(EventActionType actionType, EventActionParam actionParam, int actionValue)
     {
         if (actionParam == EventActionParam.STAGE)
@@ -506,13 +640,22 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public void StartEventCombat(EventChoice choice)
     {
-        if (choice == null) return;
+        if (choice == null)
+        {
+            return;
+        }
 
         if (choice.ActionType != EventActionType.STAGE_COMBAT)
+        {
             return;
+        }
 
         if (choice.ActionParam != EventActionParam.STAGE || IsEventCombat ||
-            GameManager.Instance == null || SceneLoadingController.IsLoading) return;
+            GameManager.Instance == null || SceneLoadingController.IsLoading)
+        {
+            return;
+        }
+
         StageInfo combatData = AppManager.Instance.GetStageInfo(choice.ActionValue);
         if (combatData == null)
         {
@@ -526,13 +669,21 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public void CompleteEventCombat(bool isSuccess)
     {
-        if (eventCombatChoice == null) return;
+        if (eventCombatChoice == null)
+        {
+            return;
+        }
+
         var choice = eventCombatChoice;
         eventCombatChoice = null;
         if (isSuccess)
         {
             var node = GetReplacedNodeInfo();
-            if (node != null) node.isCleared = true;
+            if (node != null)
+            {
+                node.isCleared = true;
+            }
+
             pendingEventCombatReward = choice;
         }
         SaveExploreMap();
@@ -540,7 +691,10 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public void ChangeState(ExploreState newState, int stageID = -1)
     {
-        if (CurrentState == newState) return;
+        if (CurrentState == newState)
+        {
+            return;
+        }
 
         CurrentState = newState;
 
@@ -594,7 +748,11 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public void OnReturnedStageSelectScene()
     {
-        if (RunStatus == RunStatus.ChapterCleared || RunStatus == RunStatus.FinalRunCleared) return;
+        if (RunStatus == RunStatus.ChapterCleared || RunStatus == RunStatus.FinalRunCleared)
+        {
+            return;
+        }
+
         ChangeState(ExploreState.ON_EXPLORE);
         if (pendingEventCombatReward != null)
         {
@@ -605,7 +763,7 @@ public sealed partial class ExploreManager : MonoBehaviour
         }
     }
 
-    // 유령 재저장을 막기 위해 메모리 데이터까지 폭파하는 함수 
+    // 유령 재저장을 막기 위해 메모리 데이터까지 폭파하는 함수
     public void PurgeCurrentRun()
     {
         Debug.Log("[ExploreManager] 런 종료 완료. 세이브 파일 파기 및 메모리 데이터를 초기화합니다.");
@@ -623,7 +781,11 @@ public sealed partial class ExploreManager : MonoBehaviour
     // UI에서 '다음'버튼을 누를 때 임시저장
     public void SaveSetupProgress(ExplorationSetupData currentSetup)
     {
-        if (currentSetup == null) return;
+        if (currentSetup == null)
+        {
+            return;
+        }
+
         Init(false);
         CurrentSetupData = new ExplorationSetupData
         {

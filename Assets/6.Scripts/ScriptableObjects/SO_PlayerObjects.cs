@@ -16,7 +16,10 @@ public class SO_PlayerObjects : SO_CharacterObjects
     public CharacterInfo GetPlayerInfo(int id)
     {
         if (charTable.TryGetValue(id, out CharacterInfo pc))
+        {
             return pc;
+        }
+
         return null;
     }
 }

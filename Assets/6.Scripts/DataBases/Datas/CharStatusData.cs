@@ -61,7 +61,9 @@ public class CharStatusData : ScriptableObject
     public bool CanUseJob(int jobId)
     {
         if (jobId <= 0 || jobId > 32)
+        {
             return false;
+        }
 
         int jobBit = 1 << (jobId - 1);
         return ((int)availableJobs & jobBit) != 0;

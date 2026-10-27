@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface IPatternable 
+public interface IPatternable
 {
     void DefinePatterns();
 }

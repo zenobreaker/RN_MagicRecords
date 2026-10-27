@@ -31,7 +31,10 @@ public sealed class AIBehaviourComponent : MonoBehaviour
 
         state.OnStateTypeChanged += OnStateTypeChanged;
 
-        if (bgAgent == null) return;
+        if (bgAgent == null)
+        {
+            return;
+        }
 
         bgAgent.SetVariableValue<AIController>(AIControllerName, GetComponent<AIController>());
         bgAgent.SetVariableValue<PerceptionComponent>(PerceptionName, GetComponent<PerceptionComponent>());
@@ -41,53 +44,121 @@ public sealed class AIBehaviourComponent : MonoBehaviour
     private void OnDestroy()
     {
         if (state != null)
+        {
             state.OnStateTypeChanged -= OnStateTypeChanged;
+        }
     }
 
-    public bool WaitMode { get => aiState == AIState.WAIT; }
-    public bool PatrolMode { get => aiState == AIState.PATROL; }
-    public bool ApproachMode { get => aiState == AIState.APPROACH; }
-    public bool ActionMode { get => aiState == AIState.ACTION; }
-    public bool DamagedMode { get => aiState == AIState.DAMAGED; }
-    public bool DeadMode { get => aiState == AIState.DEAD; }
+    public bool WaitMode
+    {
+        get
+        {
+            return aiState == AIState.WAIT;
+        }
+    }
+    public bool PatrolMode
+    {
+        get
+        {
+            return aiState == AIState.PATROL;
+        }
+    }
+    public bool ApproachMode
+    {
+        get
+        {
+            return aiState == AIState.APPROACH;
+        }
+    }
+    public bool ActionMode
+    {
+        get
+        {
+            return aiState == AIState.ACTION;
+        }
+    }
+    public bool DamagedMode
+    {
+        get
+        {
+            return aiState == AIState.DAMAGED;
+        }
+    }
+    public bool DeadMode
+    {
+        get
+        {
+            return aiState == AIState.DEAD;
+        }
+    }
 
-    public void SetWaitMode() => ChangedState(AIState.WAIT);
-    public void SetPatrolMode() => ChangedState(AIState.PATROL);
-    public void SetApproachMode() => ChangedState(AIState.APPROACH);
-    public void SetActionMode() => ChangedState(AIState.ACTION);
-    public void SetDamagedMode() => ChangedState(AIState.DAMAGED);
-    public void SetDeadMode() => ChangedState(AIState.DEAD);
+    public void SetWaitMode()
+    {
+        ChangedState(AIState.WAIT);
+    }
+    public void SetPatrolMode()
+    {
+        ChangedState(AIState.PATROL);
+    }
+    public void SetApproachMode()
+    {
+        ChangedState(AIState.APPROACH);
+    }
+    public void SetActionMode()
+    {
+        ChangedState(AIState.ACTION);
+    }
+    public void SetDamagedMode()
+    {
+        ChangedState(AIState.DAMAGED);
+    }
+    public void SetDeadMode()
+    {
+        ChangedState(AIState.DEAD);
+    }
 
 
     public bool GetCanMove()
     {
         if (bgAgent.GetVariable<bool>(CanMoveName, out BlackboardVariable<bool> result))
+        {
             return result.Value;
+        }
 
         return true;
     }
     public void SetCanMove(bool canMove)
     {
         if (bgAgent != null)
+        {
             bgAgent.SetVariableValue<bool>(CanMoveName, canMove);
+        }
     }
     public GameObject GetTarget()
     {
         if (bgAgent.GetVariable<GameObject>(TargetName, out BlackboardVariable<GameObject> target))
+        {
             return target.Value;
+        }
+
         return null;
     }
 
     public void SetTarget(GameObject target)
     {
         if (bgAgent != null)
+        {
             bgAgent.SetVariableValue<GameObject>(TargetName, target);
+        }
     }
 
 
     private void ChangedState(AIState state)
     {
-        if (aiState == state || bgAgent == null) return;
+        if (aiState == state || bgAgent == null)
+        {
+            return;
+        }
 
         aiState = state;
         bgAgent.SetVariableValue<AIState>(AIStateTypeName, state);
@@ -95,7 +166,10 @@ public sealed class AIBehaviourComponent : MonoBehaviour
 
     public void SetAttackDistance(float value)
     {
-        if (bgAgent == null) return;
+        if (bgAgent == null)
+        {
+            return;
+        }
 
         bgAgent.SetVariableValue(AttackDistanceName, value);
 
@@ -106,14 +180,31 @@ public sealed class AIBehaviourComponent : MonoBehaviour
         bool bCanMove = false;
         switch (newType)
         {
-            case StateType.Idle: SetWaitMode(); bCanMove = true; break;
-            case StateType.Action: SetActionMode(); bCanMove = false; break;
-            case StateType.Damaged: SetDamagedMode(); bCanMove = false; break;
-            case StateType.Dead: SetDeadMode(); bCanMove = false; break;
-            case StateType.Stop: SetWaitMode(); bCanMove = false; break;
+            case StateType.Idle:
+                SetWaitMode();
+                bCanMove = true;
+                break;
+            case StateType.Action:
+                SetActionMode();
+                bCanMove = false;
+                break;
+            case StateType.Damaged:
+                SetDamagedMode();
+                bCanMove = false;
+                break;
+            case StateType.Dead:
+                SetDeadMode();
+                bCanMove = false;
+                break;
+            case StateType.Stop:
+                SetWaitMode();
+                bCanMove = false;
+                break;
         }
 
         if (oldType != newType)
+        {
             SetCanMove(bCanMove);
+        }
     }
 }

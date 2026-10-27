@@ -11,6 +11,6 @@ public class PatternEntryData
 
     public ActiveSkill CreateSkill()
     {
-        return (ActiveSkill)activeSkillData?.CreateSkill(); 
+        return (ActiveSkill)activeSkillData?.CreateSkill();
     }
 }

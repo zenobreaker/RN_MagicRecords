@@ -46,8 +46,15 @@ public class PassiveSkillEditorWindow : EditorWindow
         serializedSkill = null;
     }
 
-    private void OnLostFocus() => draggingCanvas = false;
-    private void OnProjectChanged() { RefreshSkillList(); Repaint(); }
+    private void OnLostFocus()
+    {
+        draggingCanvas = false;
+    }
+    private void OnProjectChanged()
+    {
+        RefreshSkillList();
+        Repaint();
+    }
     private void OnUndoRedo()
     {
         // Undo can replace or reorder managed references; return to the complete list.
@@ -59,7 +66,10 @@ public class PassiveSkillEditorWindow : EditorWindow
     private void RefreshSkillList()
     {
         skills.Clear();
-        skills.AddRange(AssetDatabase.FindAssets("t:SO_PassiveSkillData", new[] { "Assets" })
+        skills.AddRange(AssetDatabase.FindAssets("t:SO_PassiveSkillData", new[]
+        {
+            "Assets"
+        })
             .Select(guid => AssetDatabase.LoadAssetAtPath<SO_PassiveSkillData>(AssetDatabase.GUIDToAssetPath(guid)))
             .Where(skill => skill != null).OrderBy(skill => skill.id).ThenBy(skill => skill.name));
     }
@@ -91,11 +101,16 @@ public class PassiveSkillEditorWindow : EditorWindow
                 }
                 serializedSkill.Update();
                 if (selectedModuleIndex >= serializedSkill.FindProperty("Modules").arraySize)
+                {
                     selectedModuleIndex = -1;
+                }
             }
             DrawDetails();
             DrawCanvas();
-            if (selectedSkill != null) serializedSkill.ApplyModifiedProperties();
+            if (selectedSkill != null)
+            {
+                serializedSkill.ApplyModifiedProperties();
+            }
         }
     }
 
@@ -104,30 +119,57 @@ public class PassiveSkillEditorWindow : EditorWindow
         using (new EditorGUILayout.VerticalScope("box", GUILayout.Width(280f), GUILayout.ExpandHeight(true)))
         {
             EditorGUILayout.LabelField("Passive Skills", EditorStyles.boldLabel);
-            if (GUILayout.Button("새로고침", EditorStyles.miniButton)) RefreshSkillList();
-            if (GUILayout.Button("+ 새 Passive Skill 만들기", GUILayout.Height(30f))) CreateNewSkill();
+            if (GUILayout.Button("새로고침", EditorStyles.miniButton))
+            {
+                RefreshSkillList();
+            }
+
+            if (GUILayout.Button("+ 새 Passive Skill 만들기", GUILayout.Height(30f)))
+            {
+                CreateNewSkill();
+            }
+
             search = EditorGUILayout.TextField("검색 (이름 / ID)", search);
             leftScroll = EditorGUILayout.BeginScrollView(leftScroll);
             var style = new GUIStyle(GUI.skin.button)
             {
-                alignment = TextAnchor.MiddleLeft, fixedHeight = 40f, fontSize = 11,
+                alignment = TextAnchor.MiddleLeft,
+                fixedHeight = 40f,
+                fontSize = 11,
                 clipping = TextClipping.Clip
             };
             foreach (var skill in skills)
             {
-                if (skill == null) continue;
-                string title = $"[{skill.id}] {TheWheeler.Editor.EditorLocalization.Resolve(string.IsNullOrEmpty(skill.skillName) ? skill.name : skill.skillName)}";
-                if (!TheWheeler.Editor.EditorLocalization.Matches(search, skill.id, skill.skillName, skill.name))
+                if (skill == null)
+                {
                     continue;
+                }
+
+                string title = $"[{skill.id}] {TheWheeler.Editor.EditorLocalization.Resolve(string.IsNullOrEmpty(skill.skillName) ? skill.name : skill.skillName)}";
+                if (TheWheeler.Editor.EditorLocalization.Matches(search, skill.id, skill.skillName, skill.name) == false)
+                {
+                    continue;
+                }
+
                 Color previous = GUI.backgroundColor;
-                if (skill == selectedSkill) GUI.backgroundColor = new Color(0.3f, 0.6f, 0.9f);
+                if (skill == selectedSkill)
+                {
+                    GUI.backgroundColor = new Color(0.3f, 0.6f, 0.9f);
+                }
+
                 var icon = skill.skillImage != null ? AssetPreview.GetAssetPreview(skill.skillImage) : null;
                 if (GUILayout.Button(new GUIContent(title, icon, skill.skillName + "\n" + AssetDatabase.GetAssetPath(skill)), style))
+                {
                     SelectSkill(skill);
+                }
+
                 GUI.backgroundColor = previous;
             }
             EditorGUILayout.EndScrollView();
-            if (skills.Count == 0) EditorGUILayout.HelpBox("패시브 스킬 에셋을 만들어 모듈을 추가하세요.", MessageType.Info);
+            if (skills.Count == 0)
+            {
+                EditorGUILayout.HelpBox("패시브 스킬 에셋을 만들어 모듈을 추가하세요.", MessageType.Info);
+            }
         }
     }
 
@@ -142,8 +184,16 @@ public class PassiveSkillEditorWindow : EditorWindow
             }
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
-                if (GUILayout.Button("기본 정보 / 모듈 목록", EditorStyles.toolbarButton)) selectedModuleIndex = -1;
-                if (GUILayout.Button("에셋 찾기", EditorStyles.toolbarButton)) EditorGUIUtility.PingObject(selectedSkill);
+                if (GUILayout.Button("기본 정보 / 모듈 목록", EditorStyles.toolbarButton))
+                {
+                    selectedModuleIndex = -1;
+                }
+
+                if (GUILayout.Button("에셋 찾기", EditorStyles.toolbarButton))
+                {
+                    EditorGUIUtility.PingObject(selectedSkill);
+                }
+
                 if (GUILayout.Button("저장", EditorStyles.toolbarButton))
                 {
                     serializedSkill.ApplyModifiedProperties();
@@ -151,8 +201,8 @@ public class PassiveSkillEditorWindow : EditorWindow
                 }
             }
             centerScroll = EditorGUILayout.BeginScrollView(centerScroll);
-                TheWheeler.Editor.EditorLocalization.DrawPreview(serializedSkill);
-                var modules = serializedSkill.FindProperty("Modules");
+            TheWheeler.Editor.EditorLocalization.DrawPreview(serializedSkill);
+            var modules = serializedSkill.FindProperty("Modules");
             if (selectedModuleIndex < 0)
             {
                 EditorGUILayout.LabelField("Base Properties", EditorStyles.boldLabel);
@@ -162,7 +212,11 @@ public class PassiveSkillEditorWindow : EditorWindow
                 while (property.NextVisible(enterChildren))
                 {
                     enterChildren = false;
-                    if (property.name == "m_Script" || property.name == "Modules") continue;
+                    if (property.name == "m_Script" || property.name == "Modules")
+                    {
+                        continue;
+                    }
+
                     EditorGUILayout.PropertyField(property, true);
                 }
                 EditorGUILayout.Space(10f);
@@ -175,23 +229,39 @@ public class PassiveSkillEditorWindow : EditorWindow
                 EditorGUILayout.LabelField(GetModuleName(module), EditorStyles.wordWrappedLabel);
                 EditorGUILayout.Space(8f);
                 if (module.managedReferenceValue == null)
+                {
                     EditorGUILayout.HelpBox("비어 있거나 타입을 찾을 수 없는 모듈입니다. 삭제 후 모듈을 추가해주세요.", MessageType.Warning);
+                }
                 else
                 {
                     // Draw children directly so the existing PassiveModule drawer is not re-entered.
                     var child = module.Copy();
                     var end = child.GetEndProperty();
                     if (child.NextVisible(true))
+                    {
                         do
                         {
-                            if (SerializedProperty.EqualContents(child, end)) break;
+                            if (SerializedProperty.EqualContents(child, end))
+                            {
+                                break;
+                            }
+
                             EditorGUILayout.PropertyField(child, true);
                         } while (child.NextVisible(false));
+                    }
+
                     DrawTriggerNotice(module);
                 }
                 EditorGUILayout.Space(10f);
-                if (GUILayout.Button("모듈 삭제")) DeleteModule(modules, selectedModuleIndex);
-                if (GUILayout.Button("◀ 기본 정보 / 모듈 목록으로 돌아가기", GUILayout.Height(30f))) selectedModuleIndex = -1;
+                if (GUILayout.Button("모듈 삭제"))
+                {
+                    DeleteModule(modules, selectedModuleIndex);
+                }
+
+                if (GUILayout.Button("◀ 기본 정보 / 모듈 목록으로 돌아가기", GUILayout.Height(30f)))
+                {
+                    selectedModuleIndex = -1;
+                }
             }
             EditorGUILayout.EndScrollView();
         }
@@ -211,17 +281,38 @@ public class PassiveSkillEditorWindow : EditorWindow
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     if (GUILayout.Button(new GUIContent($"[{i}] {GetModuleName(module)}", GetModuleName(module)), EditorStyles.miniButton))
+                    {
                         SelectModule(i);
+                    }
+
                     using (new EditorGUI.DisabledScope(i == 0))
-                        if (GUILayout.Button("▲", GUILayout.Width(25))) { MoveModule(modules, i, i - 1); changed = true; }
+                        if (GUILayout.Button("▲", GUILayout.Width(25)))
+                        {
+                            MoveModule(modules, i, i - 1);
+                            changed = true;
+                        }
                     using (new EditorGUI.DisabledScope(i == modules.arraySize - 1))
-                        if (GUILayout.Button("▼", GUILayout.Width(25))) { MoveModule(modules, i, i + 1); changed = true; }
-                    if (GUILayout.Button("X", GUILayout.Width(25))) { DeleteModule(modules, i); changed = true; }
+                        if (GUILayout.Button("▼", GUILayout.Width(25)))
+                        {
+                            MoveModule(modules, i, i + 1);
+                            changed = true;
+                        }
+                    if (GUILayout.Button("X", GUILayout.Width(25)))
+                    {
+                        DeleteModule(modules, i);
+                        changed = true;
+                    }
                 }
             }
-            if (changed) break;
+            if (changed)
+            {
+                break;
+            }
         }
-        if (GUILayout.Button("+ 모듈 추가 (카테고리별)", GUILayout.Height(30f))) ShowModuleMenu();
+        if (GUILayout.Button("+ 모듈 추가 (카테고리별)", GUILayout.Height(30f)))
+        {
+            ShowModuleMenu();
+        }
     }
 
     private void SelectModule(int index)
@@ -235,16 +326,30 @@ public class PassiveSkillEditorWindow : EditorWindow
     private void MoveModule(SerializedProperty modules, int from, int to)
     {
         modules.MoveArrayElement(from, to);
-        if (selectedModuleIndex == from) selectedModuleIndex = to;
-        else if (selectedModuleIndex == to) selectedModuleIndex = from;
+        if (selectedModuleIndex == from)
+        {
+            selectedModuleIndex = to;
+        }
+        else if (selectedModuleIndex == to)
+        {
+            selectedModuleIndex = from;
+        }
+
         GUI.FocusControl(null);
     }
 
     private void DeleteModule(SerializedProperty modules, int index)
     {
         modules.DeleteArrayElementAtIndex(index);
-        if (selectedModuleIndex == index) selectedModuleIndex = -1;
-        else if (selectedModuleIndex > index) selectedModuleIndex--;
+        if (selectedModuleIndex == index)
+        {
+            selectedModuleIndex = -1;
+        }
+        else if (selectedModuleIndex > index)
+        {
+            selectedModuleIndex--;
+        }
+
         GUI.FocusControl(null);
     }
 
@@ -256,7 +361,11 @@ public class PassiveSkillEditorWindow : EditorWindow
         var menu = new GenericMenu();
         PassiveModuleMenu.AddItems(menu, instance =>
         {
-            if (target == null) return;
+            if (target == null)
+            {
+                return;
+            }
+
             using (var data = new SerializedObject(target))
             {
                 data.Update();
@@ -264,7 +373,10 @@ public class PassiveSkillEditorWindow : EditorWindow
                 int index = modules.arraySize++;
                 modules.GetArrayElementAtIndex(index).managedReferenceValue = instance;
                 data.ApplyModifiedProperties();
-                if (selectedSkill == target) SelectModule(index);
+                if (selectedSkill == target)
+                {
+                    SelectModule(index);
+                }
             }
             Repaint();
         });
@@ -273,7 +385,11 @@ public class PassiveSkillEditorWindow : EditorWindow
 
     private static string GetModuleName(SerializedProperty module)
     {
-        if (module.managedReferenceValue == null) return "Empty / Missing Module";
+        if (module.managedReferenceValue == null)
+        {
+            return "Empty / Missing Module";
+        }
+
         if (module.managedReferenceValue is Module_Passive_StatBonus)
         {
             var stat = module.FindPropertyRelative("targetStat");
@@ -293,10 +409,16 @@ public class PassiveSkillEditorWindow : EditorWindow
     private static void DrawTriggerNotice(SerializedProperty module)
     {
         var trigger = module.FindPropertyRelative("triggerTime");
-        if (trigger == null) return;
+        if (trigger == null)
+        {
+            return;
+        }
+
         var timing = (PassiveTriggerTime)trigger.intValue;
         if (timing == PassiveTriggerTime.OnDamaged)
+        {
             EditorGUILayout.HelpBox("현재 OnDamaged는 GenericPassiveSkill의 모듈 호출에 연결되어 있지 않습니다.", MessageType.Warning);
+        }
     }
 
     private void DrawCanvas()
@@ -306,14 +428,25 @@ public class PassiveSkillEditorWindow : EditorWindow
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
                 GUILayout.Label("Trigger Canvas (우클릭 드래그로 이동)", EditorStyles.boldLabel);
-                if (GUILayout.Button("뷰 초기화", EditorStyles.toolbarButton, GUILayout.Width(75))) nodePanOffset = Vector2.zero;
+                if (GUILayout.Button("뷰 초기화", EditorStyles.toolbarButton, GUILayout.Width(75)))
+                {
+                    nodePanOffset = Vector2.zero;
+                }
+
                 using (new EditorGUI.DisabledScope(selectedSkill == null))
-                    if (GUILayout.Button("+ 모듈 추가", EditorStyles.toolbarButton, GUILayout.Width(90))) ShowModuleMenu();
+                    if (GUILayout.Button("+ 모듈 추가", EditorStyles.toolbarButton, GUILayout.Width(90)))
+                    {
+                        ShowModuleMenu();
+                    }
             }
             EditorGUILayout.LabelField("발동 시점별 그룹 · 각 그룹은 해당 이벤트가 발생할 때 실행", EditorStyles.miniLabel);
             Rect canvas = GUILayoutUtility.GetRect(100, 100, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
             GUI.Box(canvas, GUIContent.none, EditorStyles.helpBox);
-            if (selectedSkill == null) return;
+            if (selectedSkill == null)
+            {
+                return;
+            }
+
             HandleCanvasPan(canvas);
             GUI.BeginGroup(canvas);
             DrawTriggerNodes(serializedSkill.FindProperty("Modules"));
@@ -325,12 +458,25 @@ public class PassiveSkillEditorWindow : EditorWindow
     {
         var evt = Event.current;
         if (evt.type == EventType.MouseDown && evt.button == 1 && canvas.Contains(evt.mousePosition))
-        { draggingCanvas = true; evt.Use(); }
+        {
+            draggingCanvas = true;
+            evt.Use();
+        }
         else if (evt.type == EventType.MouseDrag && draggingCanvas)
-        { nodePanOffset += evt.delta; evt.Use(); Repaint(); }
+        {
+            nodePanOffset += evt.delta;
+            evt.Use();
+            Repaint();
+        }
         else if (evt.rawType == EventType.MouseUp && draggingCanvas)
-        { draggingCanvas = false; Repaint(); }
-        if (evt.type == EventType.ContextClick && canvas.Contains(evt.mousePosition)) evt.Use();
+        {
+            draggingCanvas = false;
+            Repaint();
+        }
+        if (evt.type == EventType.ContextClick && canvas.Contains(evt.mousePosition))
+        {
+            evt.Use();
+        }
     }
 
     private void DrawTriggerNodes(SerializedProperty modules)
@@ -359,10 +505,17 @@ public class PassiveSkillEditorWindow : EditorWindow
                 {
                     var module = modules.GetArrayElementAtIndex(index);
                     Color previous = GUI.backgroundColor;
-                    if (selectedModuleIndex == index) GUI.backgroundColor = new Color(0.6f, 0.9f, 0.6f);
+                    if (selectedModuleIndex == index)
+                    {
+                        GUI.backgroundColor = new Color(0.6f, 0.9f, 0.6f);
+                    }
+
                     string title = $"[{index}] {GetModuleName(module)}";
                     if (GUI.Button(new Rect(node.x + 8, moduleY, 234, 24), new GUIContent(title, title), EditorStyles.miniButton))
+                    {
                         SelectModule(index);
+                    }
+
                     GUI.backgroundColor = previous;
                     moduleY += 29;
                 }
@@ -373,21 +526,35 @@ public class PassiveSkillEditorWindow : EditorWindow
 
     private void CreateNewSkill()
     {
-        var usedIds = new HashSet<int>(AssetDatabase.FindAssets("t:SO_SkillData", new[] { "Assets" })
+        var usedIds = new HashSet<int>(AssetDatabase.FindAssets("t:SO_SkillData", new[]
+        {
+            "Assets"
+        })
             .Select(guid => AssetDatabase.LoadAssetAtPath<SO_SkillData>(AssetDatabase.GUIDToAssetPath(guid)))
             .Where(skill => skill != null).Select(skill => skill.id));
         int id = 2000;
-        while (usedIds.Contains(id)) id++;
+        while (usedIds.Contains(id))
+        {
+            id++;
+        }
+
         string path = EditorUtility.SaveFilePanelInProject("새 패시브 스킬 저장", $"NewPassiveSkill_{id}", "asset",
-            "패시브 스킬 데이터를 저장할 위치와 이름을 지정하세요.", AssetDatabase.IsValidFolder(SkillFolder) ? SkillFolder : "Assets");
-        if (string.IsNullOrEmpty(path)) return;
+                    "패시브 스킬 데이터를 저장할 위치와 이름을 지정하세요.", AssetDatabase.IsValidFolder(SkillFolder) ? SkillFolder : "Assets");
+        if (string.IsNullOrEmpty(path))
+        {
+            return;
+        }
+
         var skill = CreateInstance<SO_PassiveSkillData>();
         skill.id = id;
         skill.skillName = "New Passive Skill";
         skill.maxLevel = 1;
         skill.skillUpgradeCost = Array.Empty<int>();
         skill.leadingSkillList = new List<int>();
-        skill.levelDatas = new List<SkillLevelData> { new SkillLevelData() };
+        skill.levelDatas = new List<SkillLevelData>
+        {
+            new SkillLevelData()
+        };
         AssetDatabase.CreateAsset(skill, AssetDatabase.GenerateUniqueAssetPath(path));
         AssetDatabase.SaveAssetIfDirty(skill);
         RefreshSkillList();

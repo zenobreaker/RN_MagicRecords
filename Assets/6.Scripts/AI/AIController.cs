@@ -17,7 +17,7 @@ public class AIController : MonoBehaviour
     [SerializeField] private float defaultStopRange = 1.5f;
 
     [SerializeField] protected List<PatternEntry> patternEntries = new();
-    
+
     protected AIContext context;
 
     protected BehaviorGraphAgent bgAgent;
@@ -29,7 +29,13 @@ public class AIController : MonoBehaviour
 
     private PatternEntry currentPattern;
 
-    public StateComponent State => state;
+    public StateComponent State
+    {
+        get
+        {
+            return state;
+        }
+    }
 
     protected virtual void Awake()
     {
@@ -46,7 +52,9 @@ public class AIController : MonoBehaviour
     protected void Start()
     {
         foreach (PatternEntry entry in patternEntries)
+        {
             AddPattern(entry);
+        }
 
         if (skill != null)
         {
@@ -62,7 +70,11 @@ public class AIController : MonoBehaviour
 
     public void Update()
     {
-        if (SceneLoadingController.IsLoading || ObjectPooler.IsPrewarming) return;
+        if (SceneLoadingController.IsLoading || ObjectPooler.IsPrewarming)
+        {
+            return;
+        }
+
         UpdateContext();
 
         if (aiBehaivour != null)
@@ -77,10 +89,15 @@ public class AIController : MonoBehaviour
             pattern.Update(Time.deltaTime, context);
         }
 
-        if (perception == null || aiBehaivour == null) return;
+        if (perception == null || aiBehaivour == null)
+        {
+            return;
+        }
 
         if (aiBehaivour.GetCanMove() == false)
+        {
             return;
+        }
 
         if (aiBehaivour.GetTarget() == null)
         {
@@ -91,7 +108,10 @@ public class AIController : MonoBehaviour
 
     private void ExecutePattern(PatternEntry patternEntry)
     {
-        if (patternEntry == null) return;
+        if (patternEntry == null)
+        {
+            return;
+        }
 
         currentPattern = patternEntry;
         currentPattern?.UsePattern();
@@ -101,14 +121,22 @@ public class AIController : MonoBehaviour
 
     public void DoAction()
     {
-        if (SceneLoadingController.IsLoading || ObjectPooler.IsPrewarming) return;
+        if (SceneLoadingController.IsLoading || ObjectPooler.IsPrewarming)
+        {
+            return;
+        }
         // 상태가 Idle이 아니면 실행 불가 (기절, 피격 등 방어)
-        if (state != null && state.IdleMode == false) return;
+        if (state != null && state.IdleMode == false)
+        {
+            return;
+        }
 
         // 이미 평타를 치고 있거나 스킬을 쓰는 중(InAction)이라면,
         // 새로운 패턴을 찾거나 덮어쓰지 않고 즉시 리턴합니다!
         if (skill == null || skill.InAction)
+        {
             return;
+        }
 
         UpdateContext();
         foreach (var pattern in patternEntries)
@@ -133,8 +161,15 @@ public class AIController : MonoBehaviour
 
     private void AddPattern(PatternEntry entry)
     {
-        if (skill == null) return;
-        if (entry == null) return;
+        if (skill == null)
+        {
+            return;
+        }
+
+        if (entry == null)
+        {
+            return;
+        }
 
         entry.InitiaizePattern();
         skill.SetActiveSkill(entry.slotName.ToUpper(), entry.GetActiveSkill());
@@ -150,7 +185,10 @@ public class AIController : MonoBehaviour
         for (int i = 0; i < equippedSkills.Count; i++)
         {
             var equippedSkill = equippedSkills[i];
-            if (equippedSkill == null) continue;
+            if (equippedSkill == null)
+            {
+                continue;
+            }
 
             // 새로운 패턴 껍데기 생성
             PatternEntry dynamicPattern = new PatternEntry();
@@ -183,7 +221,7 @@ public class AIController : MonoBehaviour
         // BT가 이 동적으로 변한 사거리를 읽어갈 수 있도록 갱신
         if (bgAgent != null)
         {
-            aiBehaivour.SetAttackDistance(GetCurrentReadyAttackRange());    
+            aiBehaivour.SetAttackDistance(GetCurrentReadyAttackRange());
         }
     }
 
@@ -209,7 +247,10 @@ public class AIController : MonoBehaviour
         foreach (var pattern in patternEntries)
         {
             float range = pattern.GetAttackRange();
-            if (range > maxRange) maxRange = range;
+            if (range > maxRange)
+            {
+                maxRange = range;
+            }
         }
         return maxRange;
     }

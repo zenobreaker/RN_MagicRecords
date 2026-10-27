@@ -12,8 +12,10 @@ public partial class CheckPeceptTargetCondition : Condition
     public override bool IsTrue()
     {
         if (Target == null || Target.Value == null)
-            return false; 
-        
+        {
+            return false;
+        }
+
         return Target.Value != null;
     }
 }

@@ -21,7 +21,7 @@ public class SO_ChapterData : ScriptableObject
     [SerializeField]
     private List<ChapterData> chapters = new();
 
-    private Dictionary<string, SO_Theme> themeDict = new(); 
+    private Dictionary<string, SO_Theme> themeDict = new();
 
     public void Init()
     {
@@ -29,7 +29,11 @@ public class SO_ChapterData : ScriptableObject
         {
             foreach (var theme in chapter.possibleThemes)
             {
-                if (theme == null) continue; 
+                if (theme == null)
+                {
+                    continue;
+                }
+
                 themeDict.TryAdd(theme.GetThemeName, theme);
             }
         }
@@ -73,13 +77,15 @@ public class SO_ChapterData : ScriptableObject
         List<SO_Theme> theme = GetPossibleThemes(chapter);
 
         if (theme == null || theme.Count == 0)
+        {
             return null;
+        }
 
         return theme[UnityEngine.Random.Range(0, theme.Count)];
     }
 
     /// <summary>
-    /// 해당 테마의 room obj 반환 
+    /// 해당 테마의 room obj 반환
     /// </summary>
     /// <param name="themeName"></param>
     /// <param name="idx"></param>
@@ -87,14 +93,16 @@ public class SO_ChapterData : ScriptableObject
     public GameObject GetTargetThemeObj(string themeName, int idx)
     {
         if (themeDict.ContainsKey(themeName))
+        {
             return themeDict[themeName].GetRoom(idx);
+        }
 
         return null;
     }
 
     public GameObject GetTargetThemeRandObj(string themeName)
     {
-        if(themeDict.ContainsKey(themeName))
+        if (themeDict.ContainsKey(themeName))
         {
             int maxCount = themeDict[themeName].GetPossiblePrefabs.Count;
 
@@ -112,7 +120,7 @@ public class SO_ChapterData : ScriptableObject
     /// <returns></returns>
     public Sprite GetThemeSprite(string themeName)
     {
-        if(themeDict.TryGetValue(themeName, out var theme))
+        if (themeDict.TryGetValue(themeName, out var theme))
         {
             return theme.GetThemeSprite;
         }

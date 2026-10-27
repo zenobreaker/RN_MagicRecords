@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-public interface IStoppable 
+public interface IStoppable
 {
-    void Regist_MovableStopper(); // MovableStopper에 등록 
+    void Regist_MovableStopper(); // MovableStopper에 등록
     UniTask Start_FrameDelay(int frame, CancellationToken token);
 }

@@ -41,7 +41,8 @@ public class SkillModuleDrawer : PropertyDrawer
     {
         GenericMenu menu = new GenericMenu();
 
-        menu.AddItem(new GUIContent("None / Clear"), false, () => {
+        menu.AddItem(new GUIContent("None / Clear"), false, () =>
+        {
             property.serializedObject.Update();
             property.managedReferenceValue = null;
             property.serializedObject.ApplyModifiedProperties();
@@ -50,7 +51,7 @@ public class SkillModuleDrawer : PropertyDrawer
         menu.AddSeparator("");
 
         var types = TypeCache.GetTypesDerivedFrom<SkillModule>()
-            .Where(t => !t.IsAbstract && !t.IsInterface && t.IsVisible);
+            .Where(t => t.IsAbstract == false && t.IsInterface == false && t.IsVisible);
 
         foreach (var type in types)
         {
@@ -68,7 +69,7 @@ public class SkillModuleDrawer : PropertyDrawer
                     if (pathProperty != null)
                     {
                         string pathValue = pathProperty.GetValue(attr) as string;
-                        if (!string.IsNullOrEmpty(pathValue))
+                        if (string.IsNullOrEmpty(pathValue) == false)
                         {
                             menuPath = pathValue;
                         }
@@ -77,7 +78,8 @@ public class SkillModuleDrawer : PropertyDrawer
                 }
             }
 
-            menu.AddItem(new GUIContent(menuPath), false, () => {
+            menu.AddItem(new GUIContent(menuPath), false, () =>
+            {
                 property.serializedObject.Update();
                 property.managedReferenceValue = Activator.CreateInstance(type);
                 property.serializedObject.ApplyModifiedProperties();

@@ -5,7 +5,13 @@ using UnityEngine;
 public class Weapon_Combo : Weapon
 {
     [SerializeField] protected SO_Combo so_Combo;
-    public SO_Combo ComboData { get => so_Combo; }
+    public SO_Combo ComboData
+    {
+        get
+        {
+            return so_Combo;
+        }
+    }
     protected int currentComboCount = 0;
 
 
@@ -20,7 +26,7 @@ public class Weapon_Combo : Weapon
 
     protected int index;
     protected bool bEnable;
-    protected bool bExist; 
+    protected bool bExist;
 
     protected override void Awake()
     {
@@ -36,42 +42,42 @@ public class Weapon_Combo : Weapon
 
         brain = Camera.main.GetComponent<CinemachineBrain>();
         impulse = GetComponent<CinemachineImpulseSource>();
-        if(brain != null)
+        if (brain != null)
         {
             listener = brain.GetComponent<CinemachineImpulseListener>();
         }
     }
 
-//    public override void DoAction(int index)
-//    {
-//        base.DoAction(index);
+    //    public override void DoAction(int index)
+    //    {
+    //        base.DoAction(index);
 
-//        this.index = index % so_Combo.MaxComboIndex();
+    //        this.index = index % so_Combo.MaxComboIndex();
 
-//        if(this.index == so_Combo.MaxComboIndex() -1)
-//        {
-//            InvokeLastAttackEvent();
-//        }
+    //        if(this.index == so_Combo.MaxComboIndex() -1)
+    //        {
+    //            InvokeLastAttackEvent();
+    //        }
 
-//        Debug.Assert(so_Combo.comboDatas.Count > 0);
-//        Debug.Assert(so_Combo.comboDatas[this.index] != null);
+    //        Debug.Assert(so_Combo.comboDatas.Count > 0);
+    //        Debug.Assert(so_Combo.comboDatas[this.index] != null);
 
-  
-////        // Play Animation 
-////        {
-////            if (ownerCharacter != null)
-////            {
-////                ownerCharacter.PlayAction(actionDatas[this.index]);
-////            }
-////            if(weaponController != null)
-////                weaponController.DoAction(actionDatas[this.index].WeaponActionName);
 
-////#if UNITY_EDITOR
-////            if (bDebug)
-////                Debug.Log($"Combo Play: {this.index} {actionDatas[this.index].StateName}");
-////#endif
-////        }
-//    }
+    ////        // Play Animation
+    ////        {
+    ////            if (ownerCharacter != null)
+    ////            {
+    ////                ownerCharacter.PlayAction(actionDatas[this.index]);
+    ////            }
+    ////            if(weaponController != null)
+    ////                weaponController.DoAction(actionDatas[this.index].WeaponActionName);
+
+    ////#if UNITY_EDITOR
+    ////            if (bDebug)
+    ////                Debug.Log($"Combo Play: {this.index} {actionDatas[this.index].StateName}");
+    ////#endif
+    ////        }
+    //    }
 
     //public override void Begin_JudgeAttack(AnimationEvent e)
     //{
@@ -83,9 +89,20 @@ public class Weapon_Combo : Weapon
 
     protected virtual void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject == rootObject) return;
-        if (other.gameObject.CompareTag(rootObject.tag)) return;
-        if (hitList.Contains(other.gameObject)) return;
+        if (other.gameObject == rootObject)
+        {
+            return;
+        }
+
+        if (other.gameObject.CompareTag(rootObject.tag))
+        {
+            return;
+        }
+
+        if (hitList.Contains(other.gameObject))
+        {
+            return;
+        }
 
         hitList.Add(other.gameObject);
 
@@ -94,14 +111,14 @@ public class Weapon_Combo : Weapon
 
     protected virtual void OnDamage(Collider other)
     {
-      //  damageDatas[this.index].PlayHitSound(); 
+        //  damageDatas[this.index].PlayHitSound();
 
         //if(other.TryGetComponent<IDamagable>(out IDamagable damage))
         //{
         //    Vector3 hitPoint = colliders[this.index].ClosestPoint(other.transform.position);
         //    hitPoint = other.transform.InverseTransformPoint(hitPoint);
         //    damage.OnDamage(rootObject, this, hitPoint,
-        //        damageDatas[this.index].GetMyDamageEvent(ownerCharacter.Status)); 
+        //        damageDatas[this.index].GetMyDamageEvent(ownerCharacter.Status));
         //}
     }
 }

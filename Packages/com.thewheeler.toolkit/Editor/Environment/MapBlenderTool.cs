@@ -111,27 +111,27 @@ public class MapBlenderTool : EditorWindow
             baseTexture,
             typeof(Texture2D),
             false);
-        
+
         EditorGUILayout.Space();
-        
+
         materialBaseTiling = EditorGUILayout.FloatField(
         "BaseTiling",
         materialBaseTiling);
-        
+
         EditorGUILayout.Space();
-        
+
         layer1Texture = (Texture2D)EditorGUILayout.ObjectField(
             "Layer 1 (주요 지형)",
             layer1Texture,
             typeof(Texture2D),
             false);
-        
+
         EditorGUILayout.Space();
-        
+
         materialLayer1Tiling = EditorGUILayout.FloatField(
          "Layer1Tiling",
          materialLayer1Tiling);
-        
+
         EditorGUILayout.Space();
 
         layer2Texture = (Texture2D)EditorGUILayout.ObjectField(
@@ -141,7 +141,7 @@ public class MapBlenderTool : EditorWindow
             false);
 
         EditorGUILayout.Space();
-        
+
         materialLayer2Tiling = EditorGUILayout.FloatField(
          "Layer2Tiling",
          materialLayer2Tiling);
@@ -281,7 +281,9 @@ public class MapBlenderTool : EditorWindow
     private void GenerateSplatMap()
     {
         if (targetPlane == null)
+        {
             return;
+        }
 
         if (generatedSplatMap != null)
         {
@@ -377,17 +379,23 @@ public class MapBlenderTool : EditorWindow
     private void ApplyPreviewToMaterial()
     {
         if (targetPlane == null)
+        {
             return;
+        }
 
         MeshRenderer renderer =
             targetPlane.GetComponent<MeshRenderer>();
 
         if (renderer == null)
+        {
             return;
+        }
 
         // 기존 Material이 없으면 Preview하지 않음
         if (renderer.sharedMaterial == null)
+        {
             return;
+        }
 
         Material material =
             renderer.sharedMaterial;
@@ -450,9 +458,11 @@ public class MapBlenderTool : EditorWindow
         }
 
         if (generatedSplatMap == null)
+        {
             return null;
+        }
 
-        if (!Directory.Exists(BaseFolder))
+        if (Directory.Exists(BaseFolder) == false)
         {
             Directory.CreateDirectory(BaseFolder);
         }
@@ -515,7 +525,9 @@ public class MapBlenderTool : EditorWindow
             SaveSplatMapToPNG();
 
         if (string.IsNullOrEmpty(splatPath))
+        {
             return;
+        }
 
         Texture2D savedSplatTex =
             AssetDatabase.LoadAssetAtPath<Texture2D>(
@@ -564,7 +576,7 @@ public class MapBlenderTool : EditorWindow
         // 5. 폴더 생성
         // ------------------------------------------
 
-        if (!Directory.Exists(MaterialFolder))
+        if (Directory.Exists(MaterialFolder) == false)
         {
             Directory.CreateDirectory(
                 MaterialFolder);
@@ -688,7 +700,7 @@ public class MapBlenderTool : EditorWindow
 
     private string GetMaterialName()
     {
-        if (!string.IsNullOrWhiteSpace(materialName))
+        if (string.IsNullOrWhiteSpace(materialName) == false)
         {
             return SanitizeFileName(
                 materialName.Trim());

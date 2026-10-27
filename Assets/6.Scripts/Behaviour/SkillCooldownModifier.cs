@@ -14,7 +14,9 @@ public partial class SkillCooldownModifier : Modifier
     protected override Status OnStart()
     {
         if (SkillComponent == null || SkillComponent.Value == null || SkillKey == null)
+        {
             return Status.Failure;
+        }
 
         return Status.Running;
     }
@@ -23,7 +25,9 @@ public partial class SkillCooldownModifier : Modifier
     {
         bool bCanSkill = SkillComponent.Value.CanUseSkill(SkillKey.Value);
         if (bCanSkill == false)
+        {
             return Status.Failure;
+        }
 
         return Child.CurrentStatus switch
         {

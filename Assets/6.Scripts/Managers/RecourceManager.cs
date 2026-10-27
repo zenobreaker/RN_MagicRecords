@@ -9,7 +9,9 @@ public class ResourceManager
     public Sprite GetSprite(string address)
     {
         if (spriteCache.TryGetValue(address, out var sprite))
+        {
             return sprite;
+        }
 
         sprite = Resources.Load<Sprite>(address);
 

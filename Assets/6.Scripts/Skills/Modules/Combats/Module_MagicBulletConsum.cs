@@ -23,29 +23,42 @@ public class Module_MagicBulletConsum : SkillModule
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (owner == null || skill?.Runtime?.Combat == null) return;
+        if (owner == null || skill?.Runtime?.Combat == null)
+        {
+            return;
+        }
+
         if (requireLastAttackPassive && owner.GetComponent<SkillComponent>()
-            .SafeInvoke(component => component.GetCapability<Module_Passive_LastAttackMagicBullet>()) == null) return;
+                    .SafeInvoke(component => component.GetCapability<Module_Passive_LastAttackMagicBullet>()) == null)
+        {
+            return;
+        }
 
         // 장착 후 패시브를 얻거나 잃을 수 있으므로 공급자는 실행 시 조회합니다.
         var provider = owner.GetComponent<SkillComponent>().SafeInvoke(component => component.GetCapability<IMagicBulletProvider>());
         if (consumePerPhase)
         {
-            if (!skill.IsActive || !skill.IsPhaseRunning || skill.IsEnding) return;
+            if (skill.IsActive == false || skill.IsPhaseRunning == false || skill.IsEnding)
+            {
+                return;
+            }
+
             skill.Runtime.Combat.ConsumeMagicBulletsForPhase(provider, maxConsumeCount, applyMode, skill.PhaseVersion);
         }
         else
+        {
             skill.Runtime.Combat.ConsumeMagicBullets(provider, maxConsumeCount, applyMode);
+        }
     }
 }
 
 ///// <summary>
 ///// 강화 마탄 - 전방으로 여러 효과가 내장된 강화된 마탄을 발사한다.
 ///// </summary>
-//public class ReinforcedMagicBullet 
+//public class ReinforcedMagicBullet
 //    : ActiveSkill
 //{
-  
+
 //    public ReinforcedMagicBullet(SO_SkillData skillData)
 //        : base(skillData)
 //    {
@@ -53,7 +66,7 @@ public class Module_MagicBulletConsum : SkillModule
 
 //    protected override void ApplyEffects()
 //    {
-        
+
 //    }
 
 //    protected override void ExecutePhase(int phaseIndex)
@@ -74,7 +87,7 @@ public class Module_MagicBulletConsum : SkillModule
 //        phaseSkill = null;
 //    }
 
-//    public override void Begin_JudgeAttack(AnimationEvent e) 
+//    public override void Begin_JudgeAttack(AnimationEvent e)
 //    {
 //        if (phaseSkill == null) return;
 
@@ -90,7 +103,7 @@ public class Module_MagicBulletConsum : SkillModule
 //            provider.TryConsumBullet(out isCrit);
 //        }
 
-//        // 2. 마탄 오브젝트 생성 
+//        // 2. 마탄 오브젝트 생성
 //        //Vector3 localOffset = phaseSkill.spawnPosition; // 스폰 위치(로컬 기준)
 //        //Vector3 position = ownerObject.transform.TransformPoint(localOffset); // 로컬 -> 월드 좌표로 변경
 //        //Quaternion rotation = ownerObject.transform.rotation * phaseSkill.ValidSpawnQuaternion;

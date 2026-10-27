@@ -8,10 +8,16 @@ public class InventoryManager
     : Singleton<InventoryManager>
 {
     private Dictionary<ItemCategory, Inventory> inventories = new();
-    private Dictionary<string, ItemData> uniqueIdLookup = new();    // key : unique id 
+    private Dictionary<string, ItemData> uniqueIdLookup = new();    // key : unique id
 
     private bool isDirty = false;
-    public bool IsDirty => isDirty;
+    public bool IsDirty
+    {
+        get
+        {
+            return isDirty;
+        }
+    }
     public Action OnDataChanged;
     public event Action OnInitialized; // Added: event to notify when initialization is finished
 
@@ -20,7 +26,10 @@ public class InventoryManager
     {
         base.Awake();
 
-        if (IsDuplicate) return;
+        if (IsDuplicate)
+        {
+            return;
+        }
     }
 
     public void OnInit()
@@ -30,7 +39,7 @@ public class InventoryManager
         inventories.Add(ItemCategory.INGREDIANT, new StackableInventory());
         inventories.Add(ItemCategory.CURRENCY, new CurrencyInventory());
 
-        foreach(var pair in inventories)
+        foreach (var pair in inventories)
         {
             pair.Value.OnInventoryChanged += (inventory) =>
             {
@@ -49,12 +58,18 @@ public class InventoryManager
         foreach (var info in loadData.itemInfoList)
         {
             var item = AppManager.Instance.GetItemData(info.itemId, info.itemCategoy);
-            if (item == null) continue;
+            if (item == null)
+            {
+                continue;
+            }
+
             item.uniqueID = info.uniqueId;
             item.SetCount(info.itemCount);
 
             if (item is EquipmentItem equipment)
+            {
                 equipment.EnhanceItem(info.enhanceLevel);
+            }
 
             uniqueIdLookup[item.uniqueID] = item;
 
@@ -98,12 +113,17 @@ public class InventoryManager
     public void AddItems(List<ItemData> items)
     {
         foreach (ItemData item in items)
+        {
             AddItem(item);
+        }
     }
 
     public void AddItem(ItemData item)
     {
-        if (item == null) return;
+        if (item == null)
+        {
+            return;
+        }
 
         inventories[item.category].AddItem(item);
         uniqueIdLookup[item.uniqueID] = item;
@@ -123,36 +143,50 @@ public class InventoryManager
 
     public bool RemoveItem(int itemID, int itemCount)
     {
-        foreach(var pair in inventories)
+        foreach (var pair in inventories)
         {
             var inventory = pair.Value;
             var item = inventory.GetItem(itemID);
 
-            if(item != null)
-              return inventory.RemoveItem(itemID, itemCount);
+            if (item != null)
+            {
+                return inventory.RemoveItem(itemID, itemCount);
+            }
         }
 
-        return false; 
+        return false;
     }
 
     public ItemData FindItem(string uniqueId)
     {
-        if (string.IsNullOrEmpty(uniqueId)) return null;
+        if (string.IsNullOrEmpty(uniqueId))
+        {
+            return null;
+        }
+
         return uniqueIdLookup.TryGetValue(uniqueId, out ItemData value) ? value : null;
     }
 
     public List<ItemData> GetItems(ItemCategory category)
     {
         if (inventories.TryGetValue(category, out var value))
+        {
             return (List<ItemData>)value.GetItems();
+        }
+
         return null;
     }
 
     public int GetItemCount(int itemID)
     {
         if (inventories.TryGetValue(ItemCategory.INGREDIANT, out var value))
+        {
             if (value is StackableInventory stack)
+            {
                 return stack.GetItemCount(itemID);
+            }
+        }
+
         return 0;
     }
 
@@ -160,13 +194,18 @@ public class InventoryManager
 
     public void EquipItem(int charid, CharEquipmentData equip)
     {
-        if (equip == null) return;
+        if (equip == null)
+        {
+            return;
+        }
 
         // 플레이어매니저랑 통신하는데 이이템 데이터가 들어오기도 전에 호출되서 정상적으로
-        // 아이템을 장착 정보를 갱신할 수 없다. 
+        // 아이템을 장착 정보를 갱신할 수 없다.
 
         foreach (string uid in equip.GetEquippedItemIDs())
+        {
             EquipItem(charid, uid);
+        }
     }
 
     public void EquipItem(int charid, string equipmentUID)
@@ -180,11 +219,21 @@ public class InventoryManager
 
     public void EquipItem(int charid, EquipmentItem equipment)
     {
-        if (PlayerManager.Instance == null || equipment == null) return;
+        if (PlayerManager.Instance == null || equipment == null)
+        {
+            return;
+        }
 
         var charEquipment = PlayerManager.Instance.GetCharEquipmentData(charid);
-        if (charEquipment == null) return;
-        if (equipment.Eqeuipped) return;
+        if (charEquipment == null)
+        {
+            return;
+        }
+
+        if (equipment.Eqeuipped)
+        {
+            return;
+        }
 
         equipment.Eqeuipped = true;
         equipment.owner = charid;
@@ -196,10 +245,16 @@ public class InventoryManager
 
     public void UnequipItem(int charid, EquipmentItem equipment)
     {
-        if (PlayerManager.Instance == null || equipment == null) return;
+        if (PlayerManager.Instance == null || equipment == null)
+        {
+            return;
+        }
 
         var charEquipment = PlayerManager.Instance.GetCharEquipmentData(charid);
-        if (charEquipment == null) return;
+        if (charEquipment == null)
+        {
+            return;
+        }
 
         equipment.Eqeuipped = false;
         equipment.owner = 0;
@@ -215,11 +270,14 @@ public class InventoryManager
 
     public void SaveIfDirty()
     {
-        if (isDirty == false) return;
+        if (isDirty == false)
+        {
+            return;
+        }
 
         ItemInfoListData listData = new();
-        
-        foreach(KeyValuePair<ItemCategory, Inventory> pair in inventories)
+
+        foreach (KeyValuePair<ItemCategory, Inventory> pair in inventories)
         {
             var items = pair.Value.GetItems();
             foreach (var item in items)
@@ -234,9 +292,9 @@ public class InventoryManager
                 listData.itemInfoList.Add(save);
             }
         }
-        
+
         SaveManager.SaveInvetoryData(listData);
-        isDirty = false; 
+        isDirty = false;
     }
 
     public Inventory GetInvetory(ItemCategory category)

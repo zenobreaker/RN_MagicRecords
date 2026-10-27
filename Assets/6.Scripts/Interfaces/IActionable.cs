@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface IActionable 
+public interface IActionable
 {
     void SetActionComponent(ActionComponent action);
     ActionComponent GetCurrentAction();

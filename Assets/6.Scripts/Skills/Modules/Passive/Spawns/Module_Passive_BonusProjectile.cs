@@ -9,7 +9,13 @@ public class Module_Passive_BonusProjectile : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (0이면 조건 없이 발동)")]
     public int targetSkillID = 0;
-    public override int TargetSkillID => targetSkillID;
+    public override int TargetSkillID
+    {
+        get
+        {
+            return targetSkillID;
+        }
+    }
 
     [Header("Bonus Projectile")]
     [Tooltip("한 번의 발사에 추가할 프로젝타일 개수 (기본 1발에 이 값만큼 더해집니다)")]
@@ -34,13 +40,17 @@ public class Module_Passive_BonusProjectile : PassiveModule
     {
         // 타겟 스킬 검사
         if (targetSkillID != 0 && evt.SkillID != targetSkillID)
+        {
             return;
+        }
 
         //CombatContext의 보너스 수치를 조작하여 런타임 프로퍼티에 반영되게 합니다.
         context.Combat.PatternCountBonus += bonusCount;
         context.Combat.PatternAngleBonus += bonusAngle;
-        
-        if(!string.IsNullOrEmpty(bonusPrefabName))
-        context.Spawn.OverridePrefabName = bonusPrefabName;
+
+        if (string.IsNullOrEmpty(bonusPrefabName) == false)
+        {
+            context.Spawn.OverridePrefabName = bonusPrefabName;
+        }
     }
 }

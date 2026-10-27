@@ -20,22 +20,38 @@ public class SkillSlotUI : MonoBehaviour
 
     public void RefreshKeyLabel()
     {
-        if (txt_Key == null) return;
+        if (txt_Key == null)
+        {
+            return;
+        }
+
         int index = GetSlotIndex();
         txt_Key.text = string.Empty;
-        if ((index < 0 && mySlot != SkillSlot.SubAction) || inputActions == null) return;
+        if ((index < 0 && mySlot != SkillSlot.SubAction) || inputActions == null)
+        {
+            return;
+        }
+
         string actionName = mySlot == SkillSlot.SubAction ? "Player/Dash" : $"Player/SkillAction{index + 1}";
         var action = inputActions.FindAction(actionName, false);
-        if (action == null) return;
+        if (action == null)
+        {
+            return;
+        }
+
         foreach (var player in PlayerInput.all)
         {
             var liveAction = player.actions?.FindAction(action.id);
-            if (liveAction != null) { action = liveAction; break; }
+            if (liveAction != null)
+            {
+                action = liveAction;
+                break;
+            }
         }
         for (int i = 0; i < action.bindings.Count; i++)
         {
             var binding = action.bindings[i];
-            if (!binding.isComposite && !string.IsNullOrEmpty(binding.effectivePath) &&
+            if (binding.isComposite == false && string.IsNullOrEmpty(binding.effectivePath) == false &&
                 binding.effectivePath.StartsWith("<Keyboard>/", System.StringComparison.OrdinalIgnoreCase))
             {
                 txt_Key.text = action.GetBindingDisplayString(i).ToUpperInvariant();
@@ -46,10 +62,16 @@ public class SkillSlotUI : MonoBehaviour
 
     private void OnInputActionChange(object source, InputActionChange change)
     {
-        if (change == InputActionChange.BoundControlsChanged) RefreshKeyLabel();
+        if (change == InputActionChange.BoundControlsChanged)
+        {
+            RefreshKeyLabel();
+        }
     }
 
-    private void OnValidate() => RefreshKeyLabel();
+    private void OnValidate()
+    {
+        RefreshKeyLabel();
+    }
 
     [Header("Character")]
     [SerializeField] private int characterId = 1;
@@ -84,8 +106,10 @@ public class SkillSlotUI : MonoBehaviour
 
     private void OnSkillManagerReady(SkillManager manager)
     {
-        if (!isActiveAndEnabled)
+        if (isActiveAndEnabled == false)
+        {
             return;
+        }
 
         BindSkillManager(manager);
         RefreshSkillUI();
@@ -94,7 +118,9 @@ public class SkillSlotUI : MonoBehaviour
     private void BindSkillManager(SkillManager manager)
     {
         if (skillManager == manager)
+        {
             return;
+        }
 
         UnbindSkillManager();
         skillManager = manager;
@@ -122,7 +148,9 @@ public class SkillSlotUI : MonoBehaviour
     private void UnbindSkillManager()
     {
         if (skillManager != null)
+        {
             skillManager.OnDataChanged -= RefreshSkillUI;
+        }
 
         if (skillEventHandler != null)
         {
@@ -145,9 +173,14 @@ public class SkillSlotUI : MonoBehaviour
         {
             var skills = skillEventHandler?.CurrentActiveSkills;
             if (skills != null && (int)mySlot < skills.Length)
+            {
                 OnDrawSkill(mySlot, skills[(int)mySlot]);
+            }
             else
+            {
                 ClearSkill();
+            }
+
             return;
         }
 
@@ -188,7 +221,9 @@ public class SkillSlotUI : MonoBehaviour
         {
             ActiveSkill activeSkill = skillEventHandler.CurrentActiveSkills[enumIndex];
             if (activeSkill != null)
+            {
                 OnDrawSkill(mySlot, activeSkill);
+            }
         }
     }
 
@@ -205,7 +240,9 @@ public class SkillSlotUI : MonoBehaviour
             (int)mySlot - (int)SkillSlot.SLOT1;
 
         if (slotIndex < 0 || slotIndex >= 4)
+        {
             return -1;
+        }
 
         return slotIndex;
     }
@@ -215,7 +252,9 @@ public class SkillSlotUI : MonoBehaviour
         ActiveSkill activeSkill)
     {
         if (slot != mySlot)
+        {
             return;
+        }
 
         if (activeSkill == null)
         {
@@ -228,7 +267,10 @@ public class SkillSlotUI : MonoBehaviour
         float remaining = activeSkill.CurrentCooldown;
         float duration = activeSkill.MaxCooldown;
         if (activeSkill.Owner != null && activeSkill.Owner.TryGetComponent<SkillComponent>(out var skills))
+        {
             skills.GetDisplayedCooldown(mySlot, activeSkill, out remaining, out duration);
+        }
+
         OnIsCooldown(mySlot, remaining > 0f);
         // Restore the cancel countdown too when the HUD opens after the dash has finished.
         OnSkillCoolDown(mySlot, remaining, duration);
@@ -236,7 +278,11 @@ public class SkillSlotUI : MonoBehaviour
 
     private void SetSkillIcon(Sprite sprite)
     {
-        if (img_Skill == null) return;
+        if (img_Skill == null)
+        {
+            return;
+        }
+
         img_Skill.sprite = sprite;
         img_Skill.enabled = sprite != null;
     }
@@ -272,17 +318,23 @@ public class SkillSlotUI : MonoBehaviour
         float maxCooldown)
     {
         if (slot != mySlot)
+        {
             return;
+        }
 
         currCooldown = cooldown;
 
         if (img_Cooldown != null)
         {
             if (maxCooldown > 0f)
+            {
                 img_Cooldown.fillAmount =
-                    currCooldown / maxCooldown;
+                currCooldown / maxCooldown;
+            }
             else
+            {
                 img_Cooldown.fillAmount = 0f;
+            }
         }
 
         if (txt_Cooldown != null)
@@ -304,15 +356,23 @@ public class SkillSlotUI : MonoBehaviour
         bool isCooldown)
     {
         if (slot != mySlot)
+        {
             return;
+        }
 
-        if (!isCooldown)
+        if (isCooldown == false)
+        {
             currCooldown = 0f;
+        }
 
         if (img_Cooldown != null)
+        {
             img_Cooldown.gameObject.SetActive(isCooldown);
+        }
 
         if (txt_Cooldown != null)
+        {
             txt_Cooldown.gameObject.SetActive(isCooldown);
+        }
     }
 }

@@ -9,56 +9,62 @@ public class StatusValue
 {
     public float baseValue;
     private readonly List<StatModifier> modifiers = new();
-    private float finalValue; 
-    private bool isDirty = true; 
+    private float finalValue;
+    private bool isDirty = true;
 
     public float FinalValue
     {
         get
         {
             if (isDirty)
+            {
                 Recalculate();
-            
-            return finalValue; 
+            }
+
+            return finalValue;
         }
     }
 
     public void Set(float baseVal = 0.0f)
     {
         baseValue = baseVal;
-        isDirty = true; 
+        isDirty = true;
     }
 
     public void AddModifier(StatModifier modifier)
     {
         modifiers.Add(modifier);
-        isDirty = true; 
+        isDirty = true;
     }
 
     public void RemoveModifier(StatModifier modifier)
     {
         modifiers.Remove(modifier);
-        isDirty = true; 
+        isDirty = true;
     }
 
     private void Recalculate()
     {
-        float result = baseValue; 
+        float result = baseValue;
 
         foreach (var mod in modifiers)
         {
             if (mod.valueType == ModifierValueType.FIXED)
+            {
                 result += mod.value;
+            }
         }
 
         foreach (var mod in modifiers)
         {
             if (mod.valueType == ModifierValueType.PERCENT)
+            {
                 result *= (1 + mod.value);
+            }
         }
 
         finalValue = result;
-        isDirty = false; 
+        isDirty = false;
     }
 }
 
@@ -72,31 +78,42 @@ public class StatusEntry
 [System.Serializable]
 public class Status
 {
-    public List<StatusEntry> statusEntries = new List<StatusEntry>(); 
+    public List<StatusEntry> statusEntries = new List<StatusEntry>();
 
     private Dictionary<StatusType, StatusValue> statusValueTable;
-    private bool isInitialized = false; 
+    private bool isInitialized = false;
 
     public void Init()
     {
-        if (isInitialized) return; 
+        if (isInitialized)
+        {
+            return;
+        }
 
         statusValueTable = new Dictionary<StatusType, StatusValue>();
-        
-        // 에디터에서 넣은 기본값만 초기 테이블에 등록 
+
+        // 에디터에서 넣은 기본값만 초기 테이블에 등록
         foreach (var entry in statusEntries)
+        {
             statusValueTable[entry.type] = entry.value;
+        }
 
         isInitialized = true;
     }
 
     public StatusValue Get(StatusType type)
     {
-        if (statusValueTable == null) return null; 
+        if (statusValueTable == null)
+        {
+            return null;
+        }
 
-        if (isInitialized == false) Init();
+        if (isInitialized == false)
+        {
+            Init();
+        }
 
-        if(statusValueTable.TryGetValue(type, out var val) == false)
+        if (statusValueTable.TryGetValue(type, out var val) == false)
         {
             val = new StatusValue();
             statusValueTable[type] = val;
@@ -107,7 +124,7 @@ public class Status
 
     public void Set(StatusType type, float value)
     {
-        Get(type)?.Set(value); 
+        Get(type)?.Set(value);
     }
 
     public void ApplyBuff(StatModifier modifier)
@@ -122,9 +139,12 @@ public class Status
     }
     public void RemoveBuff(StatModifier modifier)
     {
-        if (modifier == null) return; 
+        if (modifier == null)
+        {
+            return;
+        }
 
-        Get(modifier.type)?.RemoveModifier(modifier); 
+        Get(modifier.type)?.RemoveModifier(modifier);
     }
 }
 
@@ -133,23 +153,37 @@ public class StatusComponent : MonoBehaviour
     private readonly Dictionary<object, float> cooldownReductions = new();
     public void SetCooldownReduction(object source, float amount)
     {
-        if (source != null && !float.IsNaN(amount) && !float.IsInfinity(amount)) cooldownReductions[source] = Mathf.Clamp01(amount);
+        if (source != null && float.IsNaN(amount) == false && float.IsInfinity(amount) == false)
+        {
+            cooldownReductions[source] = Mathf.Clamp01(amount);
+        }
     }
     public void RemoveCooldownReduction(object source)
     {
-        if (source != null) cooldownReductions.Remove(source);
+        if (source != null)
+        {
+            cooldownReductions.Remove(source);
+        }
     }
     public float GetCooldownMultiplier()
     {
         float reduction = 0;
-        foreach (float value in cooldownReductions.Values) reduction += value;
+        foreach (float value in cooldownReductions.Values)
+        {
+            reduction += value;
+        }
+
         return 1f - Mathf.Clamp(reduction, 0, .95f);
     }
     [SerializeField] private Status status;
-    
-    
+
+
     public Action<float> OnSetHealth;
-    public TargetFilterType FilterType { get; private set; }
+    public TargetFilterType FilterType
+    {
+        get;
+        private set;
+    }
 
     private HealthPointComponent healthPointComponent;
     private TargetFilterType filterType;
@@ -157,12 +191,14 @@ public class StatusComponent : MonoBehaviour
 
     private void Awake()
     {
-        if(status == null)
+        if (status == null)
+        {
             status = new Status();
+        }
 
         healthPointComponent = GetComponent<HealthPointComponent>();
 
-        //TODO : 임시적으로 특정 필터로 적용 
+        //TODO : 임시적으로 특정 필터로 적용
         filterType = TargetFilterType.Shooter;
 
         FilterType = filterType;
@@ -181,8 +217,10 @@ public class StatusComponent : MonoBehaviour
     public void ApplyBuff(StatModifier modifier)
     {
         if (modifier == null)
+        {
             return;
-        
+        }
+
         status?.ApplyBuff(modifier);
     }
 
@@ -192,18 +230,25 @@ public class StatusComponent : MonoBehaviour
     }
 
     //-------------------------------------------------------------------------
-    // 직접 스탯을 변경하고 싶을 때 
+    // 직접 스탯을 변경하고 싶을 때
     //-------------------------------------------------------------------------
 
     public void SetStatusValue(StatusType type, float value)
     {
-        if (status == null) return;
+        if (status == null)
+        {
+            return;
+        }
+
         status.Set(type, value);
     }
 
     public float GetStatusValue(StatusType type)
     {
-        if (status == null) return 0;
+        if (status == null)
+        {
+            return 0;
+        }
 
         var value = status.Get(type);
 
@@ -227,7 +272,10 @@ public class StatusComponent : MonoBehaviour
 
     public void SetStatusData(CharStatusData data)
     {
-        if (data == null) return; 
+        if (data == null)
+        {
+            return;
+        }
 
         SetStatusValue(StatusType.ATTACK, data.GetStatusValue(StatusType.ATTACK));
         SetStatusValue(StatusType.ATTACKSPEED, data.GetStatusValue(StatusType.ATTACKSPEED));
@@ -241,9 +289,9 @@ public class StatusComponent : MonoBehaviour
 
     public void RefreshAllStatus()
     {
-        foreach( StatusType type in System.Enum.GetValues(typeof(StatusType)))
+        foreach (StatusType type in System.Enum.GetValues(typeof(StatusType)))
         {
-            var val = GetStatusValue(type); 
+            var val = GetStatusValue(type);
         }
     }
 
@@ -251,10 +299,16 @@ public class StatusComponent : MonoBehaviour
     // 직업군 관련
     public bool IsSameJob(TargetFilterType? filter = null)
     {
-        if(filter == null) return false;
+        if (filter == null)
+        {
+            return false;
+        }
 
-        if(filter == TargetFilterType.ALL) return true;
-        
+        if (filter == TargetFilterType.ALL)
+        {
+            return true;
+        }
+
         return filterType == (TargetFilterType)filter;
     }
 }

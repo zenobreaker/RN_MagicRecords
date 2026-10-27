@@ -11,7 +11,7 @@ public class JumpPress
     private bool isSoaring = false;
 
     private float fallSpeed = 10.0f;
-    private bool isFalling = false; 
+    private bool isFalling = false;
     private float groundCheckDistance = 0.2f;
     private LayerMask groundMask;
 
@@ -21,11 +21,11 @@ public class JumpPress
     private CharacterVisual visual;
     private NavMeshAgent agent;
 
-    private GameObject targetObject; 
+    private GameObject targetObject;
 
 
     public JumpPress(SO_SkillData skillData)
-        :base(skillData) 
+        : base(skillData)
     {
         groundMask = 1 << LayerMask.NameToLayer("Default");
     }
@@ -39,19 +39,22 @@ public class JumpPress
 
     protected override void ApplyEffects()
     {
-        
+
     }
 
     public override void Update(float deltaTime)
     {
         base.Update(deltaTime);
-        if (!IsActive || IsEnding) return;
-
-        if (phaseIndex == 0  && isSoaring)
+        if (IsActive == false || IsEnding)
         {
-            Soaring(deltaTime); 
+            return;
         }
-        else if(phaseIndex == 1 && isFalling)
+
+        if (phaseIndex == 0 && isSoaring)
+        {
+            Soaring(deltaTime);
+        }
+        else if (phaseIndex == 1 && isFalling)
         {
             Press(deltaTime);
         }
@@ -61,12 +64,18 @@ public class JumpPress
     {
         SetCurrentPhaseSkill(phaseIndex);
         if (phaseSkill == null || actionData == null)
+        {
             return;
+        }
 
         if (phaseIndex == 0)
+        {
             ExecutePhase_0();
+        }
         else if (phaseIndex == 1)
+        {
             ExecutePhase_1();
+        }
 
         if (string.IsNullOrEmpty(actionData?.StateName) == false)
         {
@@ -85,11 +94,13 @@ public class JumpPress
             if (targetObject == null)
             {
                 var ai = ownerObject.GetComponent<AIBehaviourComponent>();
-                if(ai != null) 
-                    targetObject = ai.GetTarget(); 
+                if (ai != null)
+                {
+                    targetObject = ai.GetTarget();
+                }
             }
 
-            return; 
+            return;
         }
         Debug.Log("No Percep");
     }
@@ -103,7 +114,7 @@ public class JumpPress
             WarningSign sign = ObjectPooler.DeferredSpawnFromPool<WarningSign>("WarningSign_Circle", targetObject.transform.position);
             sign.SetData(0.5f, 2.0f);
             ObjectPooler.FinishSpawn(sign.gameObject);
-            return; 
+            return;
         }
 
         Debug.Log("No Target");
@@ -114,7 +125,7 @@ public class JumpPress
         if (ownerObject.transform.position.y >= maxSoar)
         {
             visual?.HideModel();
-            isFalling = true; 
+            isFalling = true;
             ChangePhase(phaseIndex + 1);
         }
         else
@@ -130,8 +141,8 @@ public class JumpPress
             ownerObject.transform.position += Vector3.down * deltaTime * fallSpeed;
             return;
         }
-        
-        isFalling = false; 
+
+        isFalling = false;
         ChangePhase(phaseIndex + 1);
     }
 
@@ -141,17 +152,21 @@ public class JumpPress
         wasGrounded = isGrounded;
         isGrounded = Physics.CheckSphere(ownerObject.transform.position, groundCheckDistance, groundMask);
 
-        return !wasGrounded && isGrounded;
+        return wasGrounded == false && isGrounded;
     }
 
     private bool IsCurrentlyOnGround()
     {
         Collider[] hits = Physics.OverlapSphere(ownerObject.transform.position, groundCheckDistance, groundMask);
 
-        foreach(var hit in hits)
+        foreach (var hit in hits)
         {
-            if (hit.gameObject == ownerObject 
-                || hit.gameObject.transform.root == ownerObject.transform) continue;
+            if (hit.gameObject == ownerObject
+                || hit.gameObject.transform.root == ownerObject.transform)
+            {
+                continue;
+            }
+
             return true;
         }
 
@@ -162,18 +177,24 @@ public class JumpPress
     {
         if (phaseIndex == 0)
         {
-            isGrounded = true; 
+            isGrounded = true;
             isSoaring = true;
-            
-            if(agent != null)
+
+            if (agent != null)
+            {
                 agent.enabled = false;
+            }
         }
     }
 
     public override void End_DoAction()
     {
         // The ascent/descent owns its phase lifecycle; an animation ending is not cancellation.
-        if (IsActive && phaseIndex < MaxPhaseCount - 1) return;
+        if (IsActive && phaseIndex < MaxPhaseCount - 1)
+        {
+            return;
+        }
+
         base.End_DoAction();
     }
 
@@ -182,7 +203,11 @@ public class JumpPress
         isSoaring = false;
         isFalling = false;
         visual?.ShowModel();
-        if (agent != null && ownerObject != null && ownerObject.activeInHierarchy) agent.enabled = true;
+        if (agent != null && ownerObject != null && ownerObject.activeInHierarchy)
+        {
+            agent.enabled = true;
+        }
+
         base.OnSkillEnding();
     }
     public override void Begin_JudgeAttack(AnimationEvent e)
@@ -194,7 +219,9 @@ public class JumpPress
         {
             var other = collider.gameObject;
             if (TeamUtility.IsSameTeam(other, ownerObject))
+            {
                 continue;
+            }
 
             if (other.TryGetComponent<IDamagable>(out var damage))
             {

@@ -7,7 +7,10 @@ public class CustomLine : MonoBehaviour
 
     public void DrawLine(Vector2 start, Vector2 end)
     {
-        if (rect == null) return;
+        if (rect == null)
+        {
+            return;
+        }
 
         // 시작노드에서 끝 노드를 바라보드는 방향 벡ㅌㅓ
         Vector2 dir = end - start;
@@ -25,6 +28,6 @@ public class CustomLine : MonoBehaviour
         rect.sizeDelta = new Vector2(distance, rect.sizeDelta.y);
 
         // 선의 회전
-        rect.rotation = Quaternion.Euler(0, 0, angle); 
+        rect.rotation = Quaternion.Euler(0, 0, angle);
     }
 }

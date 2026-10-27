@@ -8,16 +8,19 @@ public static class SkillFactory
 
     public static Skill CreateSkill(SO_SkillData data)
     {
-        if(data == null || data.isDevelopmentLocked) return null;
+        if (data == null || data.isDevelopmentLocked)
+        {
+            return null;
+        }
 
-        // 1. 패시브 데이터 인 경우 (기존 방식) 
-        if( data is SO_PassiveSkillData passiveData)
+        // 1. 패시브 데이터 인 경우 (기존 방식)
+        if (data is SO_PassiveSkillData passiveData)
         {
             return CreatePassive(passiveData);
         }
 
-        // 2. 액티브 데이터인 경우 (제네릭 통합, 특별한 경우에 그 아이디 값으로) 
-        if( data is SO_ActiveSkillData activeData)
+        // 2. 액티브 데이터인 경우 (제네릭 통합, 특별한 경우에 그 아이디 값으로)
+        if (data is SO_ActiveSkillData activeData)
         {
             return activeData.id switch
             {
@@ -25,7 +28,7 @@ public static class SkillFactory
                 //1001 => new JumpPress(activeData),
                 //1002 => new SpikeShot(activeData),
                 _ => new GenericActiveSkill(activeData)
-            }; 
+            };
         }
 
         return null;

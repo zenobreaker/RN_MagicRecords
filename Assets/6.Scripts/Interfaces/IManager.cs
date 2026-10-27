@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface IManager 
+public interface IManager
 {
     void OnInit();
 }

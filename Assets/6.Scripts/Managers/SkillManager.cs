@@ -10,7 +10,13 @@ public class SkillManager : Singleton<SkillManager>
     private SO_SkillEventHandler skillEventHandler;
 
     // UI와 HUD는 Resources.Load 대신 이 단일 진입점으로 이벤트 채널을 받습니다.
-    public SO_SkillEventHandler SkillEventHandler => skillEventHandler;
+    public SO_SkillEventHandler SkillEventHandler
+    {
+        get
+        {
+            return skillEventHandler;
+        }
+    }
 
     private const int SKILL_SLOT_MAX_COUNT = 4;
 
@@ -27,7 +33,9 @@ public class SkillManager : Singleton<SkillManager>
         base.Awake();
 
         if (IsDuplicate)
+        {
             return;
+        }
 
         ResetRunTimeData();
     }
@@ -44,7 +52,11 @@ public class SkillManager : Singleton<SkillManager>
         int slot,
         SkillRuntimeData skill)
     {
-        if (skill != null && skill.IsDevelopmentLocked) return;
+        if (skill != null && skill.IsDevelopmentLocked)
+        {
+            return;
+        }
+
         var equippedSkills = EnsureSlots(charId);
 
         if (slot < 0 || slot >= SKILL_SLOT_MAX_COUNT)
@@ -106,9 +118,9 @@ public class SkillManager : Singleton<SkillManager>
         int charId,
         int slot)
     {
-        if (!equippedActiveSkills.TryGetValue(
+        if (equippedActiveSkills.TryGetValue(
                 charId,
-                out var equippedSkills))
+                out var equippedSkills) == false)
         {
             return null;
         }
@@ -129,7 +141,9 @@ public class SkillManager : Singleton<SkillManager>
         SkillComponent skillComp)
     {
         if (skillComp == null)
+        {
             return;
+        }
 
         var equippedSkills = EnsureSlots(charId);
 
@@ -142,7 +156,7 @@ public class SkillManager : Singleton<SkillManager>
 
             ActiveSkill activeSkill = null;
 
-            if (skillData?.template is SO_ActiveSkillData skillDataAsset && !skillData.IsDevelopmentLocked)
+            if (skillData?.template is SO_ActiveSkillData skillDataAsset && skillData.IsDevelopmentLocked == false)
             {
                 Skill skill = skillDataAsset.CreateSkill();
                 activeSkill = skill as ActiveSkill;
@@ -173,7 +187,7 @@ public class SkillManager : Singleton<SkillManager>
 
     public IEnumerable<SkillRuntimeData> GetRunSkills(int characterID, int jobID)
     {
-        if (!runSkills.TryGetValue(characterID, out var state))
+        if (runSkills.TryGetValue(characterID, out var state) == false)
         {
             state = new ExploreSkillState(jobID, SkillTreeManager.Instance.GetAvailableSkills(jobID), EnsureSlots(characterID));
             runSkills.Add(characterID, state);
@@ -181,26 +195,45 @@ public class SkillManager : Singleton<SkillManager>
         return state.Skills;
     }
 
-    public List<ExploreActiveSkillSaveData> CaptureRunSkills() =>
-        runSkills.Select(pair => pair.Value.Capture(pair.Key)).ToList();
+    public List<ExploreActiveSkillSaveData> CaptureRunSkills()
+    {
+        return runSkills.Select(pair => pair.Value.Capture(pair.Key)).ToList();
+    }
 
-    public bool HasRunSkills(int characterID) => runSkills.ContainsKey(characterID);
+    public bool HasRunSkills(int characterID)
+    {
+        return runSkills.ContainsKey(characterID);
+    }
 
     public List<ExploreActiveSkillSaveData> CaptureRunSkills(int characterID, int jobID)
     {
-        if (characterID <= 0 || jobID <= 0) return new();
+        if (characterID <= 0 || jobID <= 0)
+        {
+            return new();
+        }
         // Preparation equips slots before the shop ever creates an ExploreSkillState.
         GetRunSkills(characterID, jobID);
-        return new List<ExploreActiveSkillSaveData> { runSkills[characterID].Capture(characterID) };
+        return new List<ExploreActiveSkillSaveData>
+        {
+            runSkills[characterID].Capture(characterID)
+        };
     }
 
     public bool GainSkillForCheat(Player player, SO_ActiveSkillData template, int slot, int level)
     {
         if (player == null || template == null || template.isDevelopmentLocked || template.maxLevel < 1 || player.CharID <= 0 || player.JobID <= 0 ||
             slot < 0 || slot >= SKILL_SLOT_MAX_COUNT || level < 1 || SkillTreeManager.Instance == null ||
-            !player.TryGetComponent<SkillComponent>(out var component)) return false;
+            player.TryGetComponent<SkillComponent>(out var component) == false)
+        {
+            return false;
+        }
+
         var activeSkill = template.CreateSkill() as ActiveSkill;
-        if (activeSkill == null) return false;
+        if (activeSkill == null)
+        {
+            return false;
+        }
+
         GetRunSkills(player.CharID, player.JobID);
         var skill = runSkills[player.CharID].GetOrAddSkill(template);
         var slots = EnsureSlots(player.CharID);
@@ -210,7 +243,10 @@ public class SkillManager : Singleton<SkillManager>
         activeSkill.SetLevel(skill.currentLevel);
         EquipActiveSkill(player.CharID, slot, skill);
         if (oldSlot >= 0 && oldSlot != slot)
+        {
             component.SetActiveSkill((SkillSlot)((int)SkillSlot.SLOT1 + oldSlot), null);
+        }
+
         component.SetActiveSkill((SkillSlot)((int)SkillSlot.SLOT1 + slot), activeSkill);
         return true;
     }
@@ -220,7 +256,11 @@ public class SkillManager : Singleton<SkillManager>
         runSkills.Clear();
         foreach (var data in saved ?? new())
         {
-            if (data == null || data.characterID <= 0 || data.jobID <= 0) continue;
+            if (data == null || data.characterID <= 0 || data.jobID <= 0)
+            {
+                continue;
+            }
+
             GetRunSkills(data.characterID, data.jobID);
             runSkills[data.characterID].Restore(data);
         }
@@ -228,13 +268,19 @@ public class SkillManager : Singleton<SkillManager>
 
     private List<SkillRuntimeData> EnsureSlots(int charId)
     {
-        if (!equippedActiveSkills.TryGetValue(charId, out var slots))
+        if (equippedActiveSkills.TryGetValue(charId, out var slots) == false)
         {
             slots = Enumerable.Repeat<SkillRuntimeData>(null, SKILL_SLOT_MAX_COUNT).ToList();
             equippedActiveSkills.Add(charId, slots);
         }
         for (int i = 0; i < slots.Count; i++)
-            if (slots[i] != null && slots[i].IsDevelopmentLocked) slots[i] = null;
+        {
+            if (slots[i] != null && slots[i].IsDevelopmentLocked)
+            {
+                slots[i] = null;
+            }
+        }
+
         return slots;
     }
 

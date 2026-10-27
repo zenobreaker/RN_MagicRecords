@@ -7,7 +7,7 @@ public class ShopJsonData
     public int id;
     public int itemID;
     public int price;
-    public int currencyType; 
+    public int currencyType;
 }
 
 [System.Serializable]
@@ -23,7 +23,11 @@ public class ShopJsonAllData
 
 public class ShopDataBase : DataBase
 {
-    public ShopJsonAllData ExplorePolicy { get; private set; }
+    public ShopJsonAllData ExplorePolicy
+    {
+        get;
+        private set;
+    }
     // key : id
     [SerializeField] private Dictionary<int, ShopItem> shopItems = new();
 
@@ -31,7 +35,11 @@ public class ShopDataBase : DataBase
 
     public override void Initialize()
     {
-        if (jsonAsset == null) return;
+        if (jsonAsset == null)
+        {
+            return;
+        }
+
         ExplorePolicy = JsonUtility.FromJson<ShopJsonAllData>(jsonAsset.text);
 
         Debug.Log("Shop DataBase Init");
@@ -43,12 +51,12 @@ public class ShopDataBase : DataBase
 
                json =>
                {
-                   var data = new ShopItem(json.id, json.itemID, null, 
+                   var data = new ShopItem(json.id, json.itemID, null,
                        json.price, (CurrencyType)json.currencyType);
                    return data;
                },
 
-               shopItem=>
+               shopItem =>
                {
                    shopItems.Add(shopItem.id, shopItem);
                }
@@ -60,7 +68,10 @@ public class ShopDataBase : DataBase
 
     public void Initialize_Lookup(ItemDataBase database)
     {
-        if (database == null) return;
+        if (database == null)
+        {
+            return;
+        }
 
         lookupItems.Add(ItemCategory.CURRENCY, new List<ItemData>());
         lookupItems.Add(ItemCategory.EQUIPMENT, new List<ItemData>());
@@ -78,7 +89,7 @@ public class ShopDataBase : DataBase
                 continue;
             }
 
-            ShopItem refreshData  = new ShopItem(itemData);
+            ShopItem refreshData = new ShopItem(itemData);
             refreshData.SetShopData(shopItem);
             refreshData.ResolveTargetItem(database);
             lookupItems[refreshData.category].Unique(refreshData);

@@ -40,8 +40,10 @@ public class SkillTestWindow : EditorWindow
         // Unity's transition Inspector can retain a preview without destination
         // state data after the Animator window loses focus. Inspect the owning
         // controller when entering the tester instead of retaining that preview.
-        if (!(Selection.activeObject is AnimatorTransitionBase transition))
+        if ((Selection.activeObject is AnimatorTransitionBase transition) == false)
+        {
             return;
+        }
 
         string path = AssetDatabase.GetAssetPath(transition);
         Selection.activeObject = string.IsNullOrEmpty(path)
@@ -52,11 +54,16 @@ public class SkillTestWindow : EditorWindow
     private void RefreshSkills()
     {
         skills.Clear();
-        foreach (string guid in AssetDatabase.FindAssets("t:SO_SkillData", new[] { SkillFolder }))
+        foreach (string guid in AssetDatabase.FindAssets("t:SO_SkillData", new[]
+        {
+            SkillFolder
+        }))
         {
             SO_SkillData skill = AssetDatabase.LoadAssetAtPath<SO_SkillData>(AssetDatabase.GUIDToAssetPath(guid));
             if (skill != null)
+            {
                 skills.Add(skill);
+            }
         }
         skills.Sort((left, right) => left.id.CompareTo(right.id));
     }
@@ -94,21 +101,32 @@ public class SkillTestWindow : EditorWindow
             EditorGUILayout.LabelField("테스트용 스킬 레벨");
             testSkillLevel = EditorGUILayout.IntSlider(testSkillLevel, 1, Mathf.Max(1, selectedSkill.maxLevel));
             if (GUILayout.Button("스킬 선택 해제"))
+            {
                 selectedSkill = null;
+            }
         }
 
         EditorGUILayout.Space(12f);
         EditorGUILayout.LabelField("스킬 슬롯", EditorStyles.boldLabel);
         DrawSlotButtons();
         EditorGUILayout.Space(8f);
-        EditorGUI.BeginDisabledGroup(selectedSkill == null || !Application.isPlaying);
+        EditorGUI.BeginDisabledGroup(selectedSkill == null || Application.isPlaying == false);
         if (GUILayout.Button("스킬 장착", GUILayout.Height(28f)))
+        {
             SendSkillTestCommand(selectedSkill);
+        }
+
         if (GUILayout.Button("선택 스킬 해제"))
+        {
             SkillTestInvoker.UndoSkill(selectedSlot, selectedSkill);
+        }
+
         EditorGUI.EndDisabledGroup();
-        if (!Application.isPlaying)
+        if (Application.isPlaying == false)
+        {
             EditorGUILayout.HelpBox("스킬 장착과 해제는 플레이 모드에서만 가능합니다.", MessageType.Warning);
+        }
+
         EditorGUILayout.EndVertical();
     }
 
@@ -137,11 +155,20 @@ public class SkillTestWindow : EditorWindow
         try
         {
             if (slot == selectedSlot)
+            {
                 GUI.backgroundColor = new Color(0.45f, 0.75f, 1f);
+            }
+
             if (GUILayout.Button(slot.ToString(), GUILayout.Height(28f)))
+            {
                 selectedSlot = slot;
+            }
         }
-        finally { GUI.backgroundColor = previousColor; }
+        finally
+        {
+            GUI.backgroundColor = previousColor;
+
+        }
     }
 
     private void DrawSkillList()
@@ -150,7 +177,10 @@ public class SkillTestWindow : EditorWindow
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField($"스킬 목록 ({skills.Count})", EditorStyles.boldLabel);
         if (GUILayout.Button("새로고침", GUILayout.Width(70f)))
+        {
             RefreshSkills();
+        }
+
         EditorGUILayout.EndHorizontal();
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
         int columns = Mathf.Max(1, Mathf.FloorToInt((position.width - LeftPanelWidth - 40f) / GridItemWidth));
@@ -158,12 +188,18 @@ public class SkillTestWindow : EditorWindow
         foreach (SO_SkillData skill in skills)
         {
             if (index % columns == 0)
+            {
                 EditorGUILayout.BeginHorizontal();
+            }
+
             EditorGUILayout.BeginVertical(GUILayout.Width(GridItemWidth - 4f));
             Texture2D icon = skill.skillImage != null ? skill.skillImage.texture : null;
             Color previousColor = GUI.backgroundColor;
             if (skill == selectedSkill)
+            {
                 GUI.backgroundColor = new Color(0.45f, 0.75f, 1f);
+            }
+
             if (GUILayout.Button(icon, GUILayout.Width(64f), GUILayout.Height(64f)))
             {
                 selectedSkill = skill;
@@ -174,10 +210,15 @@ public class SkillTestWindow : EditorWindow
             EditorGUILayout.EndVertical();
             index++;
             if (index % columns == 0)
+            {
                 EditorGUILayout.EndHorizontal();
+            }
         }
         if (index % columns != 0)
+        {
             EditorGUILayout.EndHorizontal();
+        }
+
         EditorGUILayout.EndScrollView();
         EditorGUILayout.EndVertical();
     }

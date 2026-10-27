@@ -5,7 +5,7 @@ public abstract class DoTStatusEffect
 {
     protected float tickInterval;
 
-    protected StatusComponent appliersStatus; 
+    protected StatusComponent appliersStatus;
 
     public DoTStatusEffect(string id, string desc, float duration, float tick = 0.0f)
         : base(id, desc, duration)
@@ -18,6 +18,8 @@ public abstract class DoTStatusEffect
         base.OnApply(owner, appliedBy);
 
         if (appliedBy != null && appliedBy.TryGetComponent<StatusComponent>(out var status))
+        {
             appliersStatus = status;
+        }
     }
 }

@@ -31,7 +31,7 @@ public interface ISpawnActivationHandler
 public partial class ObjectPooler : MonoBehaviour
 {
     public static ObjectPooler Instance;
- 
+
 
     [Serializable]
     public class Pool
@@ -57,9 +57,23 @@ public partial class ObjectPooler : MonoBehaviour
     private Dictionary<string, Transform> parentDictionary = new Dictionary<string, Transform>();
     public static event Action OnPoolInitialized;
     private bool bComplete = false;
-    public bool IsInitialized => bComplete;
-    public Exception InitializationError { get; private set; }
-    public static bool IsPrewarming { get; private set; }
+    public bool IsInitialized
+    {
+        get
+        {
+            return bComplete;
+        }
+    }
+    public Exception InitializationError
+    {
+        get;
+        private set;
+    }
+    public static bool IsPrewarming
+    {
+        get;
+        private set;
+    }
     [SerializeField, Min(1)] private int prewarmBatchSize = 24;
     [SerializeField, Min(0.1f)] private float prewarmFrameBudgetMs = 4f;
 
@@ -69,7 +83,7 @@ public partial class ObjectPooler : MonoBehaviour
         public Vector3 pos;
         public Quaternion rot;
         public bool isDeferred;
-        public Action<GameObject> callback; 
+        public Action<GameObject> callback;
     }
 
     private Queue<SpawnCommand> commandQueue = new Queue<SpawnCommand>();
@@ -81,26 +95,49 @@ public partial class ObjectPooler : MonoBehaviour
         spawnObjects = new List<GameObject>();
         poolDictionary = new Dictionary<string, Queue<GameObject>>();
         parentDictionary = new Dictionary<string, Transform>(); // 이 부분도 초기화 필요
-        commandQueue.Clear(); 
+        commandQueue.Clear();
     }
 
     private IEnumerator Start()
     {
         bComplete = false;
-        
+
         try
         {
-            if (npcObjectSo != null) CreatePoolsFromScriptableObject(npcObjectSo, false);
+            if (npcObjectSo != null)
+            {
+                CreatePoolsFromScriptableObject(npcObjectSo, false);
+            }
         }
-        catch (Exception error) { InitializationError = error; Debug.LogException(error, this); yield break; }
+        catch (Exception error)
+        {
+            InitializationError = error;
+            Debug.LogException(error, this);
+            yield break;
+
+        }
 
 
         var work = Start_CreatePoolHierachy();
         while (true)
         {
             object current;
-            try { if (!work.MoveNext()) break; current = work.Current; }
-            catch (Exception error) { InitializationError = error; Debug.LogException(error, this); yield break; }
+            try
+            {
+                if (work.MoveNext() == false)
+                {
+                    break;
+                }
+
+                current = work.Current;
+            }
+            catch (Exception error)
+            {
+                InitializationError = error;
+                Debug.LogException(error, this);
+                yield break;
+
+            }
             yield return current;
         }
 
@@ -132,12 +169,17 @@ public partial class ObjectPooler : MonoBehaviour
     private void OnDestroy()
     {
         if (creationRoot != null)
+        {
             Destroy(creationRoot.gameObject);
+        }
+
         if (Instance == this)
+        {
             Instance = null;
+        }
     }
 
-    public static void SpawnFormPoolWithCallback(string tag, Transform tr, 
+    public static void SpawnFormPoolWithCallback(string tag, Transform tr,
         Action<GameObject> callback)
     {
         Instance._SpawnWithCallback(tag, tr.position, tr.rotation, callback, false);
@@ -151,10 +193,17 @@ public partial class ObjectPooler : MonoBehaviour
     // 내부 실제 로직
     private void _SpawnWithCallback(string tag, Vector3 pos, Quaternion rot, Action<GameObject> callback, bool isDeferred)
     {
-        if (!bComplete)
+        if (bComplete == false)
         {
             // 준비 안됐으면 큐에 정보와 콜백을 저장
-            commandQueue.Enqueue(new SpawnCommand { tag = tag, pos = pos, rot = rot, callback = callback, isDeferred = isDeferred });
+            commandQueue.Enqueue(new SpawnCommand
+            {
+                tag = tag,
+                pos = pos,
+                rot = rot,
+                callback = callback,
+                isDeferred = isDeferred
+            });
             Debug.LogWarning($"[Pooler] {tag} 예약됨. 초기화 후 콜백 실행 예정.");
             return;
         }
@@ -165,20 +214,28 @@ public partial class ObjectPooler : MonoBehaviour
     }
 
     #region SpawnFromPool
-    public static GameObject SpawnFromPool(string tag, Transform trasnform) =>
-        Instance._SpawnFromPool(tag, trasnform.position, trasnform.rotation);
+    public static GameObject SpawnFromPool(string tag, Transform trasnform)
+    {
+        return Instance._SpawnFromPool(tag, trasnform.position, trasnform.rotation);
+    }
 
-    public static GameObject SpawnFromPool(string tag, Vector3 position) =>
-        Instance._SpawnFromPool(tag, position, Quaternion.identity);
+    public static GameObject SpawnFromPool(string tag, Vector3 position)
+    {
+        return Instance._SpawnFromPool(tag, position, Quaternion.identity);
+    }
 
-    public static GameObject SpawnFromPool(string tag, Vector3 position, Quaternion rotation) =>
-        Instance._SpawnFromPool(tag, position, rotation);
+    public static GameObject SpawnFromPool(string tag, Vector3 position, Quaternion rotation)
+    {
+        return Instance._SpawnFromPool(tag, position, rotation);
+    }
 
     public static T SpawnFromPool<T>(string tag, Vector3 position) where T : Component
     {
         GameObject obj = Instance._SpawnFromPool(tag, position, Quaternion.identity);
         if (obj.TryGetComponent(out T component))
+        {
             return component;
+        }
         else
         {
             obj.SetActive(false);
@@ -190,7 +247,9 @@ public partial class ObjectPooler : MonoBehaviour
     {
         GameObject obj = Instance._SpawnFromPool(tag, position, rotation);
         if (obj.TryGetComponent(out T component))
+        {
             return component;
+        }
         else
         {
             obj.SetActive(false);
@@ -202,7 +261,9 @@ public partial class ObjectPooler : MonoBehaviour
     {
         GameObject obj = Instance._SpawnFromPool(tag, trasnform.position, trasnform.rotation);
         if (obj.TryGetComponent(out T component))
+        {
             return component;
+        }
         else
         {
             obj.SetActive(false);
@@ -212,20 +273,28 @@ public partial class ObjectPooler : MonoBehaviour
     #endregion
 
     #region DeferredSpawn
-    public static GameObject DeferredSpawnFromPool(string tag, Transform trasnform) =>
-       Instance._DeferredSpawnFromPool(tag, trasnform.position, trasnform.rotation);
+    public static GameObject DeferredSpawnFromPool(string tag, Transform trasnform)
+    {
+        return Instance._DeferredSpawnFromPool(tag, trasnform.position, trasnform.rotation);
+    }
 
-    public static GameObject DeferredSpawnFromPool(string tag, Vector3 position) =>
-        Instance._DeferredSpawnFromPool(tag, position, Quaternion.identity);
+    public static GameObject DeferredSpawnFromPool(string tag, Vector3 position)
+    {
+        return Instance._DeferredSpawnFromPool(tag, position, Quaternion.identity);
+    }
 
-    public static GameObject DeferredSpawnFromPool(string tag, Vector3 position, Quaternion rotation) =>
-        Instance._DeferredSpawnFromPool(tag, position, rotation);
+    public static GameObject DeferredSpawnFromPool(string tag, Vector3 position, Quaternion rotation)
+    {
+        return Instance._DeferredSpawnFromPool(tag, position, rotation);
+    }
 
     public static T DeferredSpawnFromPool<T>(string tag, Vector3 position) where T : Component
     {
         GameObject obj = Instance._DeferredSpawnFromPool(tag, position, Quaternion.identity);
         if (obj.TryGetComponent(out T component))
+        {
             return component;
+        }
         else
         {
             obj.SetActive(false);
@@ -237,7 +306,9 @@ public partial class ObjectPooler : MonoBehaviour
     {
         GameObject obj = Instance._DeferredSpawnFromPool(tag, position, rotation);
         if (obj.TryGetComponent(out T component))
+        {
             return component;
+        }
         else
         {
             obj.SetActive(false);
@@ -249,7 +320,9 @@ public partial class ObjectPooler : MonoBehaviour
     {
         GameObject obj = Instance._DeferredSpawnFromPool(tag, trasnform.position, trasnform.rotation);
         if (obj.TryGetComponent(out T component))
+        {
             return component;
+        }
         else
         {
             obj.SetActive(false);
@@ -261,8 +334,10 @@ public partial class ObjectPooler : MonoBehaviour
     #region GetAllPools
     public static List<GameObject> GetAllPools(string tag)
     {
-        if (!Instance.poolDictionary.ContainsKey(tag))
+        if (Instance.poolDictionary.ContainsKey(tag) == false)
+        {
             throw new Exception($"Pool with tag {tag} doesn't exist.");
+        }
 
         return Instance.spawnObjects.FindAll(x => x.name == tag);
     }
@@ -271,8 +346,10 @@ public partial class ObjectPooler : MonoBehaviour
     {
         List<GameObject> objects = GetAllPools(tag);
 
-        if (!objects[0].TryGetComponent(out T component))
+        if (objects[0].TryGetComponent(out T component) == false)
+        {
             throw new Exception("Component not found");
+        }
 
         return objects.ConvertAll(x => x.GetComponent<T>());
     }
@@ -281,15 +358,17 @@ public partial class ObjectPooler : MonoBehaviour
 
     public static void ReturnToPool(GameObject obj)
     {
-        if (obj == null || Instance == null || !Instance.poolDictionary.ContainsKey(obj.name))
+        if (obj == null || Instance == null || Instance.poolDictionary.ContainsKey(obj.name) == false)
         {
             //throw new Exception($"Pool with tag {obj.name} doesn't exist.");
             return;
         }
 
         var queue = Instance.poolDictionary[obj.name];
-        if (!queue.Contains(obj))
+        if (queue.Contains(obj) == false)
+        {
             queue.Enqueue(obj);
+        }
     }
 
     [ContextMenu("GetSpawnObjectsInfo")]
@@ -304,7 +383,7 @@ public partial class ObjectPooler : MonoBehaviour
 
     private GameObject _SpawnFromPool(string tag, Vector3 position, Quaternion rotation)
     {
-    
+
         // 1. 유효한 객체 확보 (공통 로직 호출)
         GameObject objectToSpawn = GetOrCreateValidObject(tag);
 
@@ -325,8 +404,10 @@ public partial class ObjectPooler : MonoBehaviour
         // 1. 유효한 객체 확보 (공통 로직 호출)
         GameObject objectToSpawn = GetOrCreateValidObject(tag, true);
         if (objectToSpawn == null)
+        {
             return null;
-        
+        }
+
         // 2. 위치/회전만 설정 (Peek 상태 유지)
         objectToSpawn.transform.SetPositionAndRotation(position, rotation);
 
@@ -338,11 +419,11 @@ public partial class ObjectPooler : MonoBehaviour
     /// </summary>
     private GameObject GetOrCreateValidObject(string tag, bool deferred = false)
     {
-        if (!poolDictionary.ContainsKey(tag) && deferred == false)
+        if (poolDictionary.ContainsKey(tag) == false && deferred == false)
         {
             throw new Exception($"Pool with tag {tag} doesn't exist.");
         }
-        else if(!poolDictionary.ContainsKey(tag) && deferred)
+        else if (poolDictionary.ContainsKey(tag) == false && deferred)
         {
             return null;
         }
@@ -373,13 +454,13 @@ public partial class ObjectPooler : MonoBehaviour
         }
 
         // 💡 3. [Auto-Expand] 큐를 다 뒤졌는데도 전부 날아가고 있거나 비어있다면 새로 만듭니다!
-        if (!foundInactive || poolQueue.Count <= 0)
+        if (foundInactive == false || poolQueue.Count <= 0)
         {
             Pool pool = pools.Find(x => x.tag == tag) ?? throw new Exception($"Pool settings for {tag} not found.");
             GameObject newObj = CreateNewObjectSetParent(pool.tag, pool.prefab, pool.parentTransform);
             newObj.SetActive(false); // 혹시 켜져서 나올까 봐 확실히 꺼둠
             ArrangePool(pool.parentTransform, tag, newObj);
-            
+
             // CreatePooledObject has already registered this object once.
 
             // ArrangePool이 새 객체를 큐 맨 뒤에 넣었을 테니, 맨 앞으로 가져옵니다.
@@ -395,26 +476,37 @@ public partial class ObjectPooler : MonoBehaviour
 
     public static void NotifySpawnActivated(GameObject obj)
     {
-        if (obj == null || !obj.activeInHierarchy) return;
+        if (obj == null || obj.activeInHierarchy == false)
+        {
+            return;
+        }
+
         foreach (var component in obj.GetComponentsInChildren<MonoBehaviour>())
         {
             if (component != null && component.isActiveAndEnabled &&
                 component is ISpawnActivationHandler handler)
+            {
                 handler.OnSpawnActivated();
+            }
         }
     }
 
     public static void FinishSpawn(GameObject obj)
     {
-        if (obj == null) return; 
+        if (obj == null)
+        {
+            return;
+        }
 
         FinishSpawn(obj.name);
     }
 
     public static void FinishSpawn(string tag)
     {
-        if (!Instance.poolDictionary.ContainsKey(tag))
+        if (Instance.poolDictionary.ContainsKey(tag) == false)
+        {
             throw new Exception($"Pool with tag {tag} doesn't exist.");
+        }
 
         Queue<GameObject> poolQueue = Instance.poolDictionary[tag];
         GameObject objectToSpawn = poolQueue.Dequeue();
@@ -429,9 +521,15 @@ public partial class ObjectPooler : MonoBehaviour
         {
             string tag = $"NPC_{co.id}";
             if (bIsPlayer)
+            {
                 tag = $"PC_{co.id}";
+            }
 
-            if (pools.Exists(p => p != null && p.tag == tag)) continue;
+            if (pools.Exists(p => p != null && p.tag == tag))
+            {
+                continue;
+            }
+
             Pool pool = new();
             pool.tag = tag;
             pool.prefab = co.obj;
@@ -455,9 +553,13 @@ public partial class ObjectPooler : MonoBehaviour
 
             // OnDisable에 ReturnToPool 구현여부와 중복구현 검사
             if (poolDictionary[pool.tag].Count <= 0)
+            {
                 Debug.LogError($"{pool.tag}{INFO}");
+            }
             else if (poolDictionary[pool.tag].Count != pool.size)
+            {
                 Debug.LogError($"{pool.tag}에 ReturnToPool이 중복됩니다");
+            }
         }
     }
 
@@ -479,7 +581,9 @@ public partial class ObjectPooler : MonoBehaviour
                 break;
             }
             else if (transform.GetChild(i).name == obj.name)
+            {
                 isFind = true;
+            }
             else if (isFind)
             {
                 obj.transform.SetSiblingIndex(i);

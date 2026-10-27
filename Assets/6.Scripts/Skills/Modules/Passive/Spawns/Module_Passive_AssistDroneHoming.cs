@@ -20,11 +20,15 @@ public sealed class Module_Passive_AssistDroneHoming : PassiveModule
 
     public override void OnAssistDroneNormalProjectile(ISkillEffect spawnedObject, Character owner)
     {
-        if (!(spawnedObject is BaseProjectile projectile))
+        if ((spawnedObject is BaseProjectile projectile) == false)
+        {
             return;
+        }
 
-        if (!projectile.gameObject.TryGetComponent<RuntimeHomingBehaviour>(out var homingBehaviour))
+        if (projectile.gameObject.TryGetComponent<RuntimeHomingBehaviour>(out var homingBehaviour) == false)
+        {
             homingBehaviour = projectile.gameObject.AddComponent<RuntimeHomingBehaviour>();
+        }
 
         homingBehaviour.Setup(searchRadius, turnSpeed, enemyLayer, projectile.Ignores);
     }

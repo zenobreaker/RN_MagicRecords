@@ -8,8 +8,18 @@ using UnityEngine.UI;
 // Lives on the persistent AppManager prefab; stage readiness is signalled by StageManager.
 public sealed class SceneLoadingController : MonoBehaviour
 {
-    public static SceneLoadingController Instance { get; private set; }
-    public static bool IsLoading => Instance != null && Instance.loading;
+    public static SceneLoadingController Instance
+    {
+        get;
+        private set;
+    }
+    public static bool IsLoading
+    {
+        get
+        {
+            return Instance != null && Instance.loading;
+        }
+    }
 
     [SerializeField] private Sprite spinnerSprite;
     [SerializeField, Min(0f)] private float fadeDuration = .25f;
@@ -25,7 +35,11 @@ public sealed class SceneLoadingController : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this) { Destroy(this); return; }
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            return;
+        }
         Instance = this;
         var root = new GameObject("Scene Loading", typeof(RectTransform), typeof(Canvas),
             typeof(CanvasGroup), typeof(CanvasScaler), typeof(GraphicRaycaster));
@@ -61,12 +75,18 @@ public sealed class SceneLoadingController : MonoBehaviour
     private void Update()
     {
         if (loading && spinner.gameObject.activeSelf)
+        {
             spinner.Rotate(0, 0, -rotationSpeed * Time.unscaledDeltaTime);
+        }
     }
 
     public static bool LoadScene(string sceneName, bool waitForStage = false)
     {
-        if (IsLoading) return false;
+        if (IsLoading)
+        {
+            return false;
+        }
+
         if (Instance == null)
         {
             Debug.LogError("SceneLoadingController is missing from AppManager_Instance.");
@@ -96,20 +116,40 @@ public sealed class SceneLoadingController : MonoBehaviour
             spinner.gameObject.SetActive(true);
             await UniTask.NextFrame(cancellationToken: token);
             var operation = SceneManager.LoadSceneAsync(sceneName);
-            if (operation == null) throw new InvalidOperationException($"Cannot load {sceneName}.");
+            if (operation == null)
+            {
+                throw new InvalidOperationException($"Cannot load {sceneName}.");
+            }
+
             await operation.ToUniTask(cancellationToken: token);
             // Allow scene Start methods and UI setup to finish before revealing it.
             await UniTask.NextFrame(cancellationToken: token);
-            if (stageReady != null) await stageReady.Task.AttachExternalCancellation(token);
+            if (stageReady != null)
+            {
+                await stageReady.Task.AttachExternalCancellation(token);
+            }
         }
-        catch (OperationCanceledException) { }
-        catch (Exception error) { Debug.LogException(error, this); }
-        finally { await Reveal(token); }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception error)
+        {
+            Debug.LogException(error, this);
+
+        }
+        finally
+        {
+            await Reveal(token);
+
+        }
     }
 
     public static void BeginStagePreparation()
     {
-        if (Instance == null || IsLoading) return;
+        if (Instance == null || IsLoading)
+        {
+            return;
+        }
         // Also supports opening Stage directly in the editor.
         Instance.Claim(true);
         Instance.overlay.alpha = 1f;
@@ -120,16 +160,33 @@ public sealed class SceneLoadingController : MonoBehaviour
     private async UniTask WaitForStageAsync()
     {
         var token = this.GetCancellationTokenOnDestroy();
-        try { await stageReady.Task.AttachExternalCancellation(token); }
-        catch (OperationCanceledException) { }
-        catch (Exception error) { Debug.LogException(error, this); }
-        finally { await Reveal(token); }
+        try
+        {
+            await stageReady.Task.AttachExternalCancellation(token);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception error)
+        {
+            Debug.LogException(error, this);
+
+        }
+        finally
+        {
+            await Reveal(token);
+
+        }
     }
 
     public static async UniTask CompleteStagePreparationAsync(CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
-        if (!IsLoading || Instance.stageReady == null) return;
+        if (IsLoading == false || Instance.stageReady == null)
+        {
+            return;
+        }
+
         var finished = Instance.completed;
         Instance.stageReady.TrySetResult();
         await finished.Task.AttachExternalCancellation(token);
@@ -137,25 +194,38 @@ public sealed class SceneLoadingController : MonoBehaviour
 
     public static void FailStagePreparation(Exception error)
     {
-        if (IsLoading) Instance.stageReady?.TrySetException(error);
+        if (IsLoading)
+        {
+            Instance.stageReady?.TrySetException(error);
+        }
     }
 
     private async UniTask Reveal(CancellationToken token)
     {
         try
         {
-            if (!token.IsCancellationRequested)
+            if (token.IsCancellationRequested == false)
             {
                 spinner.gameObject.SetActive(false);
                 await Fade(0f, token);
             }
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+        }
         finally
         {
-            if (overlay != null) { overlay.alpha = 0f; overlay.blocksRaycasts = false; }
+            if (overlay != null)
+            {
+                overlay.alpha = 0f;
+                overlay.blocksRaycasts = false;
+            }
             loading = false;
-            if (pauseHeld) { pauseHeld = false; PauseManager.RequestResume(); }
+            if (pauseHeld)
+            {
+                pauseHeld = false;
+                PauseManager.RequestResume();
+            }
             completed?.TrySetResult();
         }
     }
@@ -173,11 +243,23 @@ public sealed class SceneLoadingController : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (Instance != this) return;
+        if (Instance != this)
+        {
+            return;
+        }
+
         stageReady?.TrySetCanceled();
         completed?.TrySetCanceled();
-        if (pauseHeld) { pauseHeld = false; PauseManager.RequestResume(); }
-        if (overlay != null) Destroy(overlay.gameObject);
+        if (pauseHeld)
+        {
+            pauseHeld = false;
+            PauseManager.RequestResume();
+        }
+        if (overlay != null)
+        {
+            Destroy(overlay.gameObject);
+        }
+
         Instance = null;
     }
 }

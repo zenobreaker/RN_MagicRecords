@@ -11,13 +11,18 @@ public partial class SkillAction : Action
 
     [SerializeReference] public BlackboardVariable<SkillComponent> SkillComponent;
     [SerializeReference] public BlackboardVariable<string> SkillKey;
-    
+
     protected override Status OnStart()
     {
-        if (SkillComponent == null || SkillComponent.Value == null) return Status.Failure;
-        
-        if (SkillComponent.Value.CanUseSkill(SkillKey.Value) == false)
+        if (SkillComponent == null || SkillComponent.Value == null)
+        {
             return Status.Failure;
+        }
+
+        if (SkillComponent.Value.CanUseSkill(SkillKey.Value) == false)
+        {
+            return Status.Failure;
+        }
 
         SkillComponent.Value.UseSkill(SkillKey.Value);
 
@@ -27,7 +32,9 @@ public partial class SkillAction : Action
     protected override Status OnUpdate()
     {
         if (SkillComponent.Value.InAction)
+        {
             return Status.Running;
+        }
 
         return Status.Success;
     }

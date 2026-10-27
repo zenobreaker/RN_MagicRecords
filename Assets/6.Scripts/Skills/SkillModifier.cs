@@ -69,7 +69,13 @@ public sealed class CastContext
 {
     public bool IsActionCancel;
     public bool SuppressDefensiveBenefits;
-    public bool AllowsDefensiveBenefits => !IsActionCancel && !SuppressDefensiveBenefits;
+    public bool AllowsDefensiveBenefits
+    {
+        get
+        {
+            return IsActionCancel == false && SuppressDefensiveBenefits == false;
+        }
+    }
     public float RecoveryDelayOverride = -1f;
     public Character Caster;
     public Character Target;
@@ -82,10 +88,10 @@ public sealed class CastContext
     public float ChargedTime;
     public float ChargeSpeedMultiplier = 1f;
 
-    public float MaxCastingTime; 
-    public float MaxChargeTime;        
-    public bool AutoFireOnMaxCharge = false;  
-    public bool IsInstantCast = false;        
+    public float MaxCastingTime;
+    public float MaxChargeTime;
+    public bool AutoFireOnMaxCharge = false;
+    public bool IsInstantCast = false;
 
     public Quaternion Direction;
 }
@@ -122,7 +128,7 @@ public sealed class SpawnContext
 
     // 어디서 생성?
     public List<SpawnPointData> SpawnPoints = new();
-    
+
     // 이번 스킬에서 사용할 총구 인덱스
     public int SelectedSpawnPointIndex;
     public List<int> SelectedSpawnPointIndices = new();
@@ -161,10 +167,30 @@ public sealed class CombatContext
 
     public bool IsCritical;
 
-    public IReadOnlyList<BulletData> ConsumedBullets { get; private set; } = Array.Empty<BulletData>();
-    public BulletEffectApplyMode BulletApplyMode { get; private set; }
-    public int ConsumedBulletCount => ConsumedBullets.Count;
-    public bool HasConsumedBullets => ConsumedBulletCount > 0;
+    public IReadOnlyList<BulletData> ConsumedBullets
+    {
+        get;
+        private set;
+    } = Array.Empty<BulletData>();
+    public BulletEffectApplyMode BulletApplyMode
+    {
+        get;
+        private set;
+    }
+    public int ConsumedBulletCount
+    {
+        get
+        {
+            return ConsumedBullets.Count;
+        }
+    }
+    public bool HasConsumedBullets
+    {
+        get
+        {
+            return ConsumedBulletCount > 0;
+        }
+    }
     private bool magicBulletsConsumed;
     private int nextBulletAttack;
     private int magicBulletPhaseVersion = -1;
@@ -172,7 +198,11 @@ public sealed class CombatContext
     public void ConsumeMagicBulletsForPhase(IMagicBulletProvider provider, int maxCount,
         BulletEffectApplyMode mode, int phaseVersion)
     {
-        if (magicBulletPhaseVersion == phaseVersion) return;
+        if (magicBulletPhaseVersion == phaseVersion)
+        {
+            return;
+        }
+
         magicBulletPhaseVersion = phaseVersion;
         // A new shot must not reuse the previous shot's payload, even when the magazine is empty.
         ConsumedBullets = Array.Empty<BulletData>();
@@ -185,11 +215,18 @@ public sealed class CombatContext
     {
         // One consumption per cast, even with repeated phases/events.
         // ActiveSkill creates a fresh CombatContext for every cast.
-        if (magicBulletsConsumed) return;
+        if (magicBulletsConsumed)
+        {
+            return;
+        }
+
         magicBulletsConsumed = true;
         BulletApplyMode = mode;
         int count = Math.Min(Math.Max(0, provider?.CurrentBulletCount ?? 0), Math.Max(0, maxCount));
-        if (count == 0) return;
+        if (count == 0)
+        {
+            return;
+        }
 
         var consumed = new List<BulletData>(count);
         for (int i = 0; i < count; i++)
@@ -197,12 +234,19 @@ public sealed class CombatContext
             BulletData bullet;
             if (provider is IMagicBulletDataProvider dataProvider)
             {
-                if (!dataProvider.TryConsumeBullet(out bullet)) break;
+                if (dataProvider.TryConsumeBullet(out bullet) == false)
+                {
+                    break;
+                }
             }
             else
             {
                 // Compatibility with existing bool-only providers.
-                if (!provider.TryConsumBullet(out bool isCrit)) break;
+                if (provider.TryConsumBullet(out bool isCrit) == false)
+                {
+                    break;
+                }
+
                 bullet = new BulletData(isCrit);
             }
             consumed.Add(bullet);
@@ -213,13 +257,20 @@ public sealed class CombatContext
     // Each simultaneous volley (including multiple muzzles/pellets) is one attack.
     public IReadOnlyList<BulletData> TakeBulletsForAttack()
     {
-        if (ConsumedBullets.Count == 0) return Array.Empty<BulletData>();
+        if (ConsumedBullets.Count == 0)
+        {
+            return Array.Empty<BulletData>();
+        }
+
         int attackIndex = nextBulletAttack++;
         switch (BulletApplyMode)
         {
             case BulletEffectApplyMode.PerAttack:
                 return attackIndex < ConsumedBullets.Count
-                    ? Array.AsReadOnly(new[] { ConsumedBullets[attackIndex] })
+                    ? Array.AsReadOnly(new[]
+                    {
+                        ConsumedBullets[attackIndex]
+                    })
                     : Array.Empty<BulletData>();
             case BulletEffectApplyMode.AllAttack:
                 return ConsumedBullets;
@@ -235,47 +286,60 @@ public sealed class CombatContext
 [Serializable]
 public sealed class HitContext
 {
-    public HashSet<GameObject> HitTargets { get; } = new();
-    public HashSet<GameObject> Ignores { get; } = new();
+    public HashSet<GameObject> HitTargets
+    {
+        get;
+    } = new();
+    public HashSet<GameObject> Ignores
+    {
+        get;
+    } = new();
 
-    public bool IsDectecting { get; set; }
+    public bool IsDectecting
+    {
+        get;
+        set;
+    }
 
     public void Begin()
     {
-        IsDectecting = true; 
-        HitTargets.Clear(); 
+        IsDectecting = true;
+        HitTargets.Clear();
     }
 
     public void End()
     {
-        IsDectecting = false; 
+        IsDectecting = false;
     }
 
     public void AddIgnore(GameObject target)
     {
         if (target != null)
-            Ignores.Add(target); 
+        {
+            Ignores.Add(target);
+        }
     }
 
     public bool HasHit(GameObject target)
-    { 
+    {
         return target != null && HitTargets.Contains(target);
     }
 
     public bool TryAddTarget(GameObject target)
     {
-        return target != null && HitTargets.Add(target); 
+        return target != null && HitTargets.Add(target);
     }
 
     public void ClearTargets()
     {
-        HitTargets.Clear(); 
+        HitTargets.Clear();
     }
 
     public void Reset()
     {
-        IsDectecting = false; 
-        HitTargets.Clear(); Ignores.Clear();
+        IsDectecting = false;
+        HitTargets.Clear();
+        Ignores.Clear();
     }
 }
 
@@ -293,7 +357,10 @@ public sealed class SkillChainContext
 public sealed class SkillRuntimeContext
 {
     private readonly HashSet<SkillModule> executedOnceModules = new();
-    public bool TryExecuteOnce(SkillModule module) => module != null && executedOnceModules.Add(module);
+    public bool TryExecuteOnce(SkillModule module)
+    {
+        return module != null && executedOnceModules.Add(module);
+    }
 
     private readonly Dictionary<string, int> phaseLoopCounts = new();
     internal Module_PhaseLoop ActivePhaseLoop;
@@ -301,12 +368,18 @@ public sealed class SkillRuntimeContext
     internal int PhaseLoopTargetIndex;
     internal int PhaseLoopLastVersion = -1;
 
-    public int GetPhaseLoopCount(string key) =>
-        !string.IsNullOrEmpty(key) && phaseLoopCounts.TryGetValue(key, out int count) ? count : 0;
+    public int GetPhaseLoopCount(string key)
+    {
+        return string.IsNullOrEmpty(key) == false && phaseLoopCounts.TryGetValue(key, out int count) ? count : 0;
+    }
 
     public int IncrementPhaseLoopCount(string key)
     {
-        if (string.IsNullOrEmpty(key)) return 0;
+        if (string.IsNullOrEmpty(key))
+        {
+            return 0;
+        }
+
         int count = GetPhaseLoopCount(key) + 1;
         phaseLoopCounts[key] = count;
         return count;
@@ -314,7 +387,10 @@ public sealed class SkillRuntimeContext
 
     public void ResetPhaseLoopCount(string key)
     {
-        if (!string.IsNullOrEmpty(key)) phaseLoopCounts.Remove(key);
+        if (string.IsNullOrEmpty(key) == false)
+        {
+            phaseLoopCounts.Remove(key);
+        }
     }
 
     public void ResetPhaseLoopCounts()

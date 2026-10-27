@@ -29,19 +29,29 @@ public class LocalizationManager : Singleton<LocalizationManager>
     protected override void Awake()
     {
         base.Awake();
-        if (IsDuplicate) return;
+        if (IsDuplicate)
+        {
+            return;
+        }
 
         InitializeStringData();
     }
 
     public void InitializeStringData()
     {
-        if (stringJson == null) return;
+        if (stringJson == null)
+        {
+            return;
+        }
+
         textTable.Clear();
 
         // 💡 개발자님이 쓰시던 JsonLoader 스타일 (또는 직관적인 파싱)
         var rootData = JsonUtility.FromJson<StringDataAllData>(stringJson.text);
-        if (rootData == null || rootData.stringData == null) return;
+        if (rootData == null || rootData.stringData == null)
+        {
+            return;
+        }
 
         foreach (var data in rootData.stringData)
         {
@@ -49,8 +59,14 @@ public class LocalizationManager : Singleton<LocalizationManager>
 
             // 데이터가 비어있으면 키값을 그대로 노출해서 버그 찾기 쉽게 함
             if (string.IsNullOrWhiteSpace(value))
+            {
                 value = currentLanguage == LanguageType.KR ? data.en : data.kr;
-            if (string.IsNullOrWhiteSpace(value)) value = $"[{data.key}]";
+            }
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                value = $"[{data.key}]";
+            }
 
             textTable.TryAdd(data.key, value);
         }
@@ -61,10 +77,15 @@ public class LocalizationManager : Singleton<LocalizationManager>
     // 💡 다른 스크립트에서 번역이 필요할 때 호출하는 핵심 함수
     public string GetText(string key)
     {
-        if (string.IsNullOrEmpty(key)) return "";
+        if (string.IsNullOrEmpty(key))
+        {
+            return "";
+        }
 
         if (textTable.TryGetValue(key, out string result))
+        {
             return result;
+        }
 
         return key; // 딕셔너리에 없으면 name_어쩌고를 그대로 리턴
     }

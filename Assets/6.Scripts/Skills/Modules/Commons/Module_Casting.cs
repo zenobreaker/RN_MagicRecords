@@ -19,8 +19,10 @@ public sealed class Module_Casting : SkillModule
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (skill == null || !overrideCastingTime)
+        if (skill == null || overrideCastingTime == false)
+        {
             return;
+        }
 
         skill.Runtime.Cast.CastingTime = castingTime;
     }

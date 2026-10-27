@@ -11,7 +11,25 @@ public class Module_StartWeaponVFX : Module_SpawnWeaponVFX
     [Tooltip("생성된 이펙트가 무기의 생성 지점을 따라갑니다.")]
     public bool followEffectSpawnPoint = true;
 
-    protected override string EffectId => effectId;
-    protected override bool FollowEffectSpawnPoint => followEffectSpawnPoint;
-    protected override bool ReplaceExistingEffects => true;
+    protected override string EffectId
+    {
+        get
+        {
+            return effectId;
+        }
+    }
+    protected override bool FollowEffectSpawnPoint
+    {
+        get
+        {
+            return followEffectSpawnPoint;
+        }
+    }
+    protected override bool ReplaceExistingEffects
+    {
+        get
+        {
+            return true;
+        }
+    }
 }

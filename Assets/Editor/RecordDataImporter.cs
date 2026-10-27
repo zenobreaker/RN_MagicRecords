@@ -13,6 +13,9 @@ namespace UserEditor
     public class RecordDataImporter : EditorWindow
     {
         [MenuItem("Tools/Record Data Importer")]
-        public static void OpenWindow() => TheWheeler.Editor.RecordJsonImportWindow.Open();
+        public static void OpenWindow()
+        {
+            TheWheeler.Editor.RecordJsonImportWindow.Open();
+        }
     }
 }

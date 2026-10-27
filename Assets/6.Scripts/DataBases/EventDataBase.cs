@@ -47,7 +47,7 @@ public class EventChoice
 [System.Serializable]
 public class EventInfoJsonRoot
 {
-    public List<EventInfoJson> eventList; 
+    public List<EventInfoJson> eventList;
 }
 
 [System.Serializable]
@@ -94,7 +94,7 @@ public class EventInfoJson : InfoJson
 [System.Serializable]
 public class EventInfo : InfoBase
 {
-    public int chapter;    
+    public int chapter;
     public string nameKey;
     public string descriptionKey;
     public string imageKey;
@@ -147,8 +147,11 @@ public sealed class EventDataBase : DataBase
 
                     if (newEvent.isActive)
                     {
-                        if (!chapterEventTable.ContainsKey(newEvent.chapter))
+                        if (chapterEventTable.ContainsKey(newEvent.chapter) == false)
+                        {
                             chapterEventTable[newEvent.chapter] = new List<int>();
+                        }
+
                         chapterEventTable[newEvent.chapter].Add(currentEventId);
                     }
                 }
@@ -165,21 +168,36 @@ public sealed class EventDataBase : DataBase
 
                     // 💡 Cost 파싱
                     if (Enum.TryParse(row.costtype, out EventCostType parsedCost))
+                    {
                         newChoice.CostType = parsedCost;
+                    }
+
                     if (Enum.TryParse(row.costparam, out EventCostParam parsedCostParam))
+                    {
                         newChoice.CostParam = parsedCostParam;
+                    }
+
                     newChoice.CostValue = row.costvalue;
 
                     // 💡 Action 파싱 (추가됨)
                     if (Enum.TryParse(row.actiontype, out EventActionType parsedAction))
+                    {
                         newChoice.ActionType = parsedAction;
+                    }
+
                     if (Enum.TryParse(row.actionparam, out EventActionParam parsedActionParam))
+                    {
                         newChoice.ActionParam = parsedActionParam;
+                    }
+
                     newChoice.ActionValue = row.actionvalue;
 
                     // 💡 Reward 파싱
                     if (Enum.TryParse(row.rewardtype, out EventRewardType parsedReward))
+                    {
                         newChoice.RewardType = parsedReward;
+                    }
+
                     newChoice.RewardParam = row.rewardparam; // Enum 없음 (string 보관)
                     newChoice.RewardValue = row.rewardvalue;
 
@@ -192,13 +210,21 @@ public sealed class EventDataBase : DataBase
 
                     // 💡 Fail Action 파싱 (추가됨)
                     if (Enum.TryParse(row.failactiontype, out EventActionType parsedFailAction))
+                    {
                         newChoice.FailActionType = parsedFailAction;
+                    }
+
                     if (Enum.TryParse(row.failactionparam, out EventActionParam parsedFailActionParam))
+                    {
                         newChoice.FailActionParam = parsedFailActionParam;
+                    }
 
                     // 💡 Fail Reward/Damage 파싱
                     if (Enum.TryParse(row.failtype, out EventRewardType parsedFailType))
+                    {
                         newChoice.FailType = parsedFailType;
+                    }
+
                     newChoice.FailParam = row.failparam; // Enum 없음 (string 보관)
                     newChoice.FailValue = row.failvalue;
 
@@ -220,12 +246,19 @@ public sealed class EventDataBase : DataBase
     }
 
 #if UNITY_EDITOR
-    public IEnumerable<EventInfo> GetTestEvents() => eventInfos.Values.Where(info => info.isActive);
+    public IEnumerable<EventInfo> GetTestEvents()
+    {
+        return eventInfos.Values.Where(info => info.isActive);
+    }
 
     // Editor scenarios replace only the in-memory copy, never the JSON asset.
     public void SetTestEvent(EventInfo info)
     {
-        if (info == null || info.id <= 0) throw new ArgumentException("A positive event ID is required.");
+        if (info == null || info.id <= 0)
+        {
+            throw new ArgumentException("A positive event ID is required.");
+        }
+
         eventInfos[info.id] = JsonUtility.FromJson<EventInfo>(JsonUtility.ToJson(info));
     }
 #endif

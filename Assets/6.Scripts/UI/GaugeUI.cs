@@ -17,8 +17,10 @@ public abstract class GaugeUI : MonoBehaviour
 
     protected virtual void Awake()
     {
-        if(handler == null)
+        if (handler == null)
+        {
             handler = Resources.Load<SO_HUDHandler>(path);
+        }
 
         SetHUDHandler(handler);
     }
@@ -40,10 +42,10 @@ public abstract class GaugeUI : MonoBehaviour
     {
         if (img_ForegroundGauge != null)
         {
-            img_ForegroundGauge.fillAmount = 1.0f; 
+            img_ForegroundGauge.fillAmount = 1.0f;
         }
 
-        if(txt_GaugeText != null)
+        if (txt_GaugeText != null)
         {
             txt_GaugeText.text = gaugeValue.ToString("f0");
         }

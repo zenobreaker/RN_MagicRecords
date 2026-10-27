@@ -8,7 +8,13 @@ public sealed class Module_Passive_IncreaseBeamRadius : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (예: 1013 = 과충전)")]
     public int targetSkillID = 1013;
-    public override int TargetSkillID => targetSkillID;
+    public override int TargetSkillID
+    {
+        get
+        {
+            return targetSkillID;
+        }
+    }
 
     [Header("Beam Settings")]
     [Tooltip("증가시킬 빔의 두께 (반지름)")]
@@ -22,7 +28,9 @@ public sealed class Module_Passive_IncreaseBeamRadius : PassiveModule
     public override void OnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill)
     {
         if (targetSkillID != 0 && casterSkill.SkillID != targetSkillID)
+        {
             return;
+        }
 
         // 💡 생성된 오브젝트가 빔 프로젝타일이라면 두께를 늘려줍니다!
         if (spawnedObject is BeamProjectile beam)

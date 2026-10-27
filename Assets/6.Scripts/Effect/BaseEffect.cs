@@ -11,33 +11,95 @@ public interface IEffectTrigger
 // 효과 액션 인터페이스
 public interface IEffectAction
 {
-    void Execute(GameObject target,GameObject caster, int stackCount);
+    void Execute(GameObject target, GameObject caster, int stackCount);
 }
 
 
 public abstract class BaseEffect
 {
-    public string ID { get; private set; }
-    public string Name { get; protected set; } = string.Empty;
-    public string Description { get; private set; }
+    public string ID
+    {
+        get;
+        private set;
+    }
+    public string Name
+    {
+        get;
+        protected set;
+    } = string.Empty;
+    public string Description
+    {
+        get;
+        private set;
+    }
 
-    public float Duration { get; private set; }
-    public float RemainingTime { get; private set; }
+    public float Duration
+    {
+        get;
+        private set;
+    }
+    public float RemainingTime
+    {
+        get;
+        private set;
+    }
 
-    public int StackCount { get; private set; } = 1;
-    public virtual int MaxStack => 1;
-    public virtual BuffStackPolicy StackPolicy => BuffStackPolicy.REFRESH_ONLY;
-    public virtual bool ShowSingleStack => false;
+    public int StackCount
+    {
+        get;
+        private set;
+    } = 1;
+    public virtual int MaxStack
+    {
+        get
+        {
+            return 1;
+        }
+    }
+    public virtual BuffStackPolicy StackPolicy
+    {
+        get
+        {
+            return BuffStackPolicy.REFRESH_ONLY;
+        }
+    }
+    public virtual bool ShowSingleStack
+    {
+        get
+        {
+            return false;
+        }
+    }
 
-    public List<IEffectTrigger> Triggers { get; private set; } = new();
-    public List<IEffectAction> Actions { get; private set; } = new();
+    public List<IEffectTrigger> Triggers
+    {
+        get;
+        private set;
+    } = new();
+    public List<IEffectAction> Actions
+    {
+        get;
+        private set;
+    } = new();
 
-    public EffectType Type { get; protected set; } = EffectType.NONE;
+    public EffectType Type
+    {
+        get;
+        protected set;
+    } = EffectType.NONE;
 
     protected GameObject owner;
     protected GameObject appliedBy;
-    public GameObject FxObject { get; set; }
-    public Sprite FxIcon { get; set; }
+    public GameObject FxObject
+    {
+        get;
+        set;
+    }
+    public Sprite FxIcon
+    {
+        get;
+        set;
+    }
 
     public event Action<BaseEffect> OnRemovedUI;
 
@@ -57,7 +119,9 @@ public abstract class BaseEffect
 
         // 즉시형 or 지속형
         foreach (IEffectAction action in Actions)
+        {
             action.Execute(owner, appliedBy, StackCount);
+        }
     }
 
     public virtual void OnRemove()
@@ -73,18 +137,32 @@ public abstract class BaseEffect
     public virtual void AddStack()
     {
         if (StackCount < MaxStack)
+        {
             StackCount++;
+        }
 
-        if (StackPolicy == BuffStackPolicy.REFRESH_ONLY || 
+        if (StackPolicy == BuffStackPolicy.REFRESH_ONLY ||
             StackPolicy == BuffStackPolicy.STACKABLE)
+        {
             ResetDuration();
+        }
     }
 
-    public bool IsExpired => Duration > 0 && RemainingTime <= 0;
+    public bool IsExpired
+    {
+        get
+        {
+            return Duration > 0 && RemainingTime <= 0;
+        }
+    }
 
     public bool TryConsumeStacks(int amount)
     {
-        if (amount <= 0 || StackCount < amount) return false;
+        if (amount <= 0 || StackCount < amount)
+        {
+            return false;
+        }
+
         StackCount -= amount;
         return true;
     }
@@ -92,7 +170,9 @@ public abstract class BaseEffect
     public virtual void Update(float deltaTime)
     {
         if (Duration > 0)
+        {
             RemainingTime -= deltaTime;
+        }
 
         // 트리거에 의한 실행
         foreach (IEffectTrigger trigger in Triggers)
@@ -100,7 +180,9 @@ public abstract class BaseEffect
             if (trigger.CheckTrigger(owner))
             {
                 foreach (IEffectAction action in Actions)
+                {
                     action.Execute(owner, appliedBy, StackCount);
+                }
             }
         }
     }

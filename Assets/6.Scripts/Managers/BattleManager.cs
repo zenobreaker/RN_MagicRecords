@@ -9,8 +9,20 @@ public class BattleManager
     public event Action<GameObject, GameObject, DamageEvent> OnAnyAttackHit;
     public event Action<GameObject, GameObject, float> OnAnyAttackHitFinish;
     public event Action OnBattleStarted;
-    public bool IsInBattle => bInBattle;
-    public IReadOnlyList<Character> CurrentEnemies => enemies.AsReadOnly();
+    public bool IsInBattle
+    {
+        get
+        {
+            return bInBattle;
+        }
+    }
+    public IReadOnlyList<Character> CurrentEnemies
+    {
+        get
+        {
+            return enemies.AsReadOnly();
+        }
+    }
 
     private event Action OnFinishBeginBattle;
 
@@ -23,14 +35,17 @@ public class BattleManager
     {
         base.Awake();
 
-        if (IsDuplicate) return;
+        if (IsDuplicate)
+        {
+            return;
+        }
     }
 
     protected override void Start()
     {
         battleTable = new Dictionary<Character, List<Character>>();
-        
-        base.Start(); 
+
+        base.Start();
     }
 
     protected override void SyncDataFromSingleton()
@@ -67,19 +82,30 @@ public class BattleManager
     {
         enemies.Unique(character);
 
-        // 이미 전투 중인 상태라면 등록하자마자 공격할 타겟을 지정한다. 
+        // 이미 전투 중인 상태라면 등록하자마자 공격할 타겟을 지정한다.
         if (bInBattle)
+        {
             TryAiToJoinBattle(character);
+        }
     }
 
-    public void UnreistEnemy(Character character) => enemies.Remove(character);
+    public void UnreistEnemy(Character character)
+    {
+        enemies.Remove(character);
+    }
 
     public int KillCurrentEnemiesForCheat()
     {
         int count = 0;
         // Death callbacks can unregister enemies while we are iterating.
         foreach (var character in enemies.ToArray())
-            if (character is Enemy enemy && enemy.KillForCheat()) count++;
+        {
+            if (character is Enemy enemy && enemy.KillForCheat())
+            {
+                count++;
+            }
+        }
+
         return count;
     }
 
@@ -88,7 +114,10 @@ public class BattleManager
         players.Unique(character);
     }
 
-    public void UnreistPlayer(Character character) => players.Remove(character);
+    public void UnreistPlayer(Character character)
+    {
+        players.Remove(character);
+    }
 
     public bool JoinBattle(Character player, Character enemy)
     {
@@ -118,7 +147,7 @@ public class BattleManager
     {
         battleTable?.Clear();
 
-        bInBattle = false; 
+        bInBattle = false;
     }
 
 
@@ -129,7 +158,7 @@ public class BattleManager
 
     public void OnBattle()
     {
-        bool starting = !bInBattle;
+        bool starting = bInBattle == false;
         foreach (var p in players)
         {
             Debug.Log($"Player = {p}");
@@ -138,8 +167,14 @@ public class BattleManager
         bInBattle = true;
 
         foreach (var enemy in enemies)
+        {
             TryAiToJoinBattle(enemy);
-        if (starting) OnBattleStarted?.Invoke();
+        }
+
+        if (starting)
+        {
+            OnBattleStarted?.Invoke();
+        }
     }
 
 
@@ -151,14 +186,17 @@ public class BattleManager
 
             Character player = GetPrioritizedPlayer();
             if (player == null)
+            {
                 return;
+            }
 
             ai.SetTarget(player.gameObject);
             // 성공적으로 등록했으면 처리
             bool bResult = JoinBattle(player, target);
             if (bResult)
+            {
                 ai.SetCanMove(true);
-
+            }
         }
     }
 

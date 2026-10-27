@@ -144,7 +144,10 @@ public class AoEProjectile : BaseProjectile
 
     private void UpdateLifeTime()
     {
-        if (visualRoot == null || aoeParticle ==  null) return; 
+        if (visualRoot == null || aoeParticle == null)
+        {
+            return;
+        }
 
         var main = aoeParticle.main;
         main.startLifetime = lifeTime;
@@ -198,7 +201,9 @@ public class AoEProjectile : BaseProjectile
     private void ExplodeHit()
     {
         if (currentRadius <= 0f)
+        {
             return;
+        }
 
         Collider[] hits = Physics.OverlapSphere(
             transform.position,
@@ -209,24 +214,34 @@ public class AoEProjectile : BaseProjectile
         foreach (Collider hitCollider in hits)
         {
             if (hitCollider == null)
+            {
                 continue;
+            }
 
             if (IsFriendlyFire(hitCollider.gameObject))
+            {
                 continue;
+            }
 
             if (ownerObject != null &&
                 hitCollider.transform.IsChildOf(ownerObject.transform))
+            {
                 continue;
+            }
 
             // 실제 공격 대상 루트 찾기
             GameObject targetObject = GetDamageTarget(hitCollider);
 
             if (targetObject == null)
+            {
                 continue;
+            }
 
             // 단일 피격이면 한 대상당 1회
-            if (!isMultiHit && hitTargets.Contains(targetObject))
+            if (isMultiHit == false && hitTargets.Contains(targetObject))
+            {
                 continue;
+            }
 
             // -----------------------------------------------------
             // 부채꼴 판정
@@ -241,7 +256,9 @@ public class AoEProjectile : BaseProjectile
                 dirToTarget.y = 0f;
 
                 if (dirToTarget.sqrMagnitude <= 0.0001f)
+                {
                     continue;
+                }
 
                 Vector3 forward = transform.forward;
                 forward.y = 0f;
@@ -254,7 +271,9 @@ public class AoEProjectile : BaseProjectile
                     );
 
                 if (angleToTarget > coneAngle * 0.5f)
+                {
                     continue;
+                }
             }
 
             // -----------------------------------------------------
@@ -269,8 +288,10 @@ public class AoEProjectile : BaseProjectile
                 hitPoint
             );
 
-            if (!isMultiHit)
+            if (isMultiHit == false)
+            {
                 hitTargets.Add(targetObject);
+            }
         }
     }
 
@@ -280,16 +301,22 @@ public class AoEProjectile : BaseProjectile
     private GameObject GetDamageTarget(Collider collider)
     {
         if (collider == null)
+        {
             return null;
+        }
 
         if (collider.TryGetComponent<Character>(out Character character))
+        {
             return character.gameObject;
+        }
 
         Character parentCharacter =
             collider.GetComponentInParent<Character>();
 
         if (parentCharacter != null)
+        {
             return parentCharacter.gameObject;
+        }
 
         // Character가 없는 일반 대상이면 Collider 자체를 사용
         return collider.gameObject;
@@ -302,7 +329,9 @@ public class AoEProjectile : BaseProjectile
         explosionRadius = newRadius;
 
         if (newConeAngle > 0f)
+        {
             coneAngle = newConeAngle;
+        }
 
         currentRadius = 0f;
         expandTimer = 0f;
@@ -321,7 +350,7 @@ public class AoEProjectile : BaseProjectile
                 ? currentRadius
                 : explosionRadius;
 
-        if (!useConeShape)
+        if (useConeShape == false)
         {
             Gizmos.DrawWireSphere(origin, radius);
             return;

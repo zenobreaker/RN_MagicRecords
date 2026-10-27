@@ -24,7 +24,11 @@ public class Module_MovementControl : SkillModule
     /// <summary>Restore movement when the locking phase finishes or is cancelled.</summary>
     public override void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase)
     {
-        if (!unlockOnPhaseExit || controlType != MovementControlType.LockMovement || owner == null) return;
+        if (unlockOnPhaseExit == false || controlType != MovementControlType.LockMovement || owner == null)
+        {
+            return;
+        }
+
         owner.GetComponent<MovementComponent>()?.Move();
         var agent = owner.GetComponent<NavMeshAgent>();
         if (agent != null && agent.isActiveAndEnabled)

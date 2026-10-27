@@ -33,7 +33,10 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
     private int confirmationVersion;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void ResetSessionPreference() => skipUpgradeConfirmation = false;
+    private static void ResetSessionPreference()
+    {
+        skipUpgradeConfirmation = false;
+    }
 
     public static string Text(string key, string fallback)
     {
@@ -55,7 +58,19 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
     {
         base.Awake();
         upgradeButton.onClick.AddListener(RequestUpgrade);
-        replaceButton.onClick.AddListener(() => { if (shopMode) Unequip(); else Replace(); });
+        replaceButton.onClick.AddListener(() =>
+        {
+            if (shopMode)
+            {
+                Unequip();
+
+            }
+            else
+            {
+                Replace();
+
+            }
+        });
         closeButton.onClick.AddListener(RequestApplyOrClose);
         for (int i = 0; i < slotButtons.Length; i++)
         {
@@ -64,10 +79,14 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
         }
     }
     public void SetData(EventChoice choice)
-        => InitializeSession(choice, 0, null, null);
+    {
+        InitializeSession(choice, 0, null, null);
+    }
 
     public void SetShopData(EventChoice choice, int price, System.Func<int, bool> pay, System.Action onCommitted)
-        => InitializeSession(choice, price, pay, onCommitted);
+    {
+        InitializeSession(choice, price, pay, onCommitted);
+    }
 
     private void InitializeSession(EventChoice choice, int price, System.Func<int, bool> pay, System.Action onCommitted)
     {
@@ -81,16 +100,19 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
         var currency = CurrencyManager.Instance;
         var slots = setup == null ? null : app.GetEquippedActiveSkillListByCharID(setup.SelectedCharacterId);
 
-        if (setup == null || !setup.HasCharacter || !setup.HasClass || manager == null ||
+        if (setup == null || setup.HasCharacter == false || setup.HasClass == false || manager == null ||
             SkillTreeManager.Instance == null || currency == null || slots == null)
         {
             UIManager.Instance.SafeInvoke(v => v.ShowToast(Text("ui_skill_event_unavailable", "현재 탐사 스킬 정보를 불러올 수 없습니다.")));
-            base.CloseUI(); return;
+            base.CloseUI();
+            return;
         }
 
         int character = setup.SelectedCharacterId;
         if (currencyManager != null)
+        {
             currencyManager.OnUpdatedCurrency -= RefreshUI;
+        }
 
         currencyManager = currency;
         currencyManager.OnUpdatedCurrency += RefreshUI;
@@ -104,10 +126,12 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
             (slot, data) => app.EquipActiveSkill(character, slot, data));
 
         if (shopMode)
+        {
             session.SetReplacementCost(price);
+        }
 
         draftMode = choice?.ActionParam == EventActionParam.DRAFT_3;
-        candidates = session.Skills.Where(s => s.template is SO_ActiveSkillData && !session.Slots.Contains(s.GetSkillID()) &&
+        candidates = session.Skills.Where(s => s.template is SO_ActiveSkillData && session.Slots.Contains(s.GetSkillID()) == false &&
             (draftMode || s.isUnlocked || s.currentLevel > 0))
             .OrderBy(_ => Random.value).Take(draftMode ? (choice.ActionValue > 0 ? choice.ActionValue : 3) : int.MaxValue)
             .Select(s => s.GetSkillID()).ToHashSet();
@@ -115,13 +139,17 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
         if (shopMode)
         {
             foreach (int id in candidates)
+            {
                 session.PrepareCandidate(id);
+            }
         }
 
         selectedSlot = shopMode ? -1 : System.Array.FindIndex(session.Slots, id => id != 0);
 
-        if (!shopMode && selectedSlot < 0)
+        if (shopMode == false && selectedSlot < 0)
+        {
             selectedSlot = 0;
+        }
 
         selectedSkill = shopMode ? 0 : session.Slots.FirstOrDefault(id => id != 0);
         slotChosen = skillChosen = false;
@@ -134,7 +162,13 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
 
     private void BuildEntries()
     {
-        foreach (var entry in entries) { if (entry != null) Destroy(entry.gameObject); }
+        foreach (var entry in entries)
+        {
+            if (entry != null)
+            {
+                Destroy(entry.gameObject);
+            }
+        }
         entries.Clear();
         foreach (var data in session.Skills.Where(s => candidates.Contains(s.GetSkillID()) || session.Slots.Contains(s.GetSkillID())).OrderBy(s => s.GetSkillID()))
         {
@@ -153,40 +187,61 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
             button.name = id.ToString();
         }
     }
-    protected override void DrawPopUp() => RefreshUI();
+    protected override void DrawPopUp()
+    {
+        RefreshUI();
+    }
     private void SelectSlot(int slot)
     {
-        if (confirmationPending) return;
+        if (confirmationPending)
+        {
+            return;
+        }
+
         selectedSlot = slot;
         slotChosen = true;
         shopFeedback = null;
         if (shopMode)
+        {
             Replace();
+        }
         else
+        {
             RefreshUI();
+        }
     }
 
     private void SelectSkill(int id)
     {
-        if (confirmationPending) return;
+        if (confirmationPending)
+        {
+            return;
+        }
+
         selectedSkill = id;
         skillChosen = true;
         shopFeedback = null;
 
         if (shopMode)
+        {
             Replace();
+        }
         else
+        {
             RefreshUI();
+        }
     }
 
     public override void RefreshUI()
     {
         if (session == null)
+        {
             return;
+        }
 
         currencyText.text = $"{Text("ui_skill_event_currency", "탐사 재화")} : {currencyManager?.GetCurrency(CurrencyType.EXPOLORE_COIN) ?? session.AvailableCurrency + session.PendingCost}" +
             (session.PendingCost > 0 ? $"  (적용 시 사용: {session.PendingCost})" : "");
-        
+
         foreach (var button in entries)
         {
             var data = session.GetSkill(int.Parse(button.name));
@@ -195,7 +250,7 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
             button.GetComponentInChildren<TMP_Text>().text = SkillEntryText(data, equippedSlot);
             button.image.color = data.GetSkillID() == selectedSkill ? new Color(.6f, .9f, 1f) : Color.white;
         }
-        
+
         for (int i = 0; i < slotButtons.Length; i++)
         {
             var data = i < session.Slots.Length ? session.GetSkill(session.Slots[i]) : null;
@@ -203,11 +258,11 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
             slotButtons[i].image.color = i == selectedSlot ? new Color(.6f, .9f, 1f) : Color.white;
             slotButtons[i].interactable = i < session.Slots.Length;
         }
-        
+
         var selected = session.GetSkill(selectedSkill);
         detailText.text = selected == null ? Text("ui_skill_event_select", "스킬을 선택하세요.") :
             $"{Text(selected.GetSkillName(), selected.GetSkillName())}  Lv.{selected.currentLevel} (Max {selected.GetMaxSkillLevel()})\n\n{Text(selected.GetSkillDesc(), selected.GetSkillDesc())}";
-        
+
         upgradeButton.GetComponentInChildren<TMP_Text>().text = $"{Text("ui_skill_event_upgrade", "레벨 업")} ({session.UpgradeCost(selectedSkill)})";
         upgradeButton.gameObject.SetActive(true);
         upgradeButton.interactable = session.CanUpgrade(selectedSkill);
@@ -216,64 +271,108 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
         replaceButton.GetComponentInChildren<TMP_Text>().text = shopMode ? "선택 슬롯 스킬 해제" : "선택 슬롯에 교체";
         replaceButton.interactable = shopMode ? selectedSlot >= 0 && selectedSlot < session.Slots.Length && session.Slots[selectedSlot] != 0 :
             selected != null && candidates.Contains(selectedSkill) &&
-            selectedSlot >= 0 && selectedSlot < session.Slots.Length && !session.Slots.Contains(selectedSkill) &&
-            (!draftMode || (session.Slots[selectedSlot] != 0 && session.ReplacementCount < replacementLimit));
-        
+            selectedSlot >= 0 && selectedSlot < session.Slots.Length && session.Slots.Contains(selectedSkill) == false &&
+            (draftMode == false || (session.Slots[selectedSlot] != 0 && session.ReplacementCount < replacementLimit));
+
         statusText.text = session.HasChanges ? Text("ui_skill_event_pending", "변경사항은 적용 후 닫기를 눌러 확정합니다.") :
             Text("ui_skill_event_hint", "교체할 슬롯과 스킬을 선택하세요. 재화로 스킬을 성장시킬 수 있습니다.");
-     
+
         if (shopMode)
         {
-            if (!string.IsNullOrEmpty(shopFeedback)) statusText.text = shopFeedback;
-            else if (!skillChosen && !slotChosen)
+            if (string.IsNullOrEmpty(shopFeedback) == false)
+            {
+                statusText.text = shopFeedback;
+            }
+            else if (skillChosen == false && slotChosen == false)
+            {
                 statusText.text = "슬롯과 스킬을 고르면 장착·이동됩니다. 선택 슬롯의 스킬 해제도 가능합니다.";
-            else if (!skillChosen)
+            }
+            else if (skillChosen == false)
+            {
                 statusText.text = $"{selectedSlot + 1}번 슬롯 선택됨 · 장착할 스킬을 고르세요.";
-            else if (!slotChosen)
+            }
+            else if (slotChosen == false)
+            {
                 statusText.text = "스킬 선택됨 · 아래 장착할 슬롯을 고르세요. 레벨 업도 가능합니다.";
+            }
         }
     }
 
     private void RequestUpgrade()
     {
-        if (confirmationPending || session == null || !session.CanUpgrade(selectedSkill)) return;
-        int id = selectedSkill; var current = session;
-        if (skipUpgradeConfirmation) { session.TryUpgrade(id); RefreshUI(); return; }
+        if (confirmationPending || session == null || session.CanUpgrade(selectedSkill) == false)
+        {
+            return;
+        }
+
+        int id = selectedSkill;
+        var current = session;
+        if (skipUpgradeConfirmation)
+        {
+            session.TryUpgrade(id);
+            RefreshUI();
+            return;
+        }
         RequestConfirmation(Text("ui_skill_event_upgrade", "레벨 업"),
             string.Format(Text("ui_skill_event_upgrade_confirm", "탐사 재화 {0}을 사용해 레벨을 올리시겠습니까?"), session.UpgradeCost(id)), true,
             skip =>
             {
-                if (!isActiveAndEnabled || session != current)
+                if (isActiveAndEnabled == false || session != current)
+                {
                     return;
-                if (session.TryUpgrade(id)) 
+                }
+
+                if (session.TryUpgrade(id))
+                {
                     skipUpgradeConfirmation = skip;
+                }
+
                 RefreshUI();
             });
     }
 
     private void RequestConfirmation(string title, string message, bool showCheckbox, System.Action<bool> confirmed)
     {
-        if (confirmationPending || UIManager.Instance == null) return;
+        if (confirmationPending || UIManager.Instance == null)
+        {
+            return;
+        }
+
         int version = ++confirmationVersion;
         confirmationPending = true;
         UIManager.Instance.OpenSkillEventConfirmation(title, message, showCheckbox, skip =>
         {
-            if (!isActiveAndEnabled || !confirmationPending || version != confirmationVersion) return;
+            if (isActiveAndEnabled == false || confirmationPending == false || version != confirmationVersion)
+            {
+                return;
+            }
+
             confirmationPending = false;
             ++confirmationVersion;
             confirmed(skip);
         }, () =>
         {
-            if (version != confirmationVersion) return;
+            if (version != confirmationVersion)
+            {
+                return;
+            }
+
             confirmationPending = false;
             ++confirmationVersion; // Invalidate even a delayed callback from the canceled dialog.
-            if (isActiveAndEnabled) RefreshUI();
+            if (isActiveAndEnabled)
+            {
+                RefreshUI();
+            }
         });
     }
 
     private void Replace()
     {
-        if (confirmationPending) return;
+        if (confirmationPending)
+        {
+            return;
+        }
+
         if (shopMode)
         {
             if (session != null && slotChosen && skillChosen && selectedSlot >= 0 && selectedSlot < session.Slots.Length)
@@ -284,28 +383,48 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
                     slotChosen = skillChosen = false;
                     shopFeedback = $"{selectedSlot + 1}번 슬롯에 장착됨 · 이동·해제 후 ‘적용 후 닫기’로 확정하세요.";
                 }
-                else shopFeedback = "장착에 필요한 탐사 재화가 부족합니다.";
+                else
+                {
+                    shopFeedback = "장착에 필요한 탐사 재화가 부족합니다.";
+                }
             }
             RefreshUI();
             return;
         }
 
         if (session == null || selectedSlot < 0 || selectedSlot >= session.Slots.Length ||
-            !candidates.Contains(selectedSkill) || (draftMode && session.ReplacementCount >= replacementLimit)) return;
-       
-        if (draftMode && session.Slots[selectedSlot] == 0) return;
+            candidates.Contains(selectedSkill) == false || (draftMode && session.ReplacementCount >= replacementLimit))
+        {
+            return;
+        }
+
+        if (draftMode && session.Slots[selectedSlot] == 0)
+        {
+            return;
+        }
+
         session.TryReplace(selectedSlot, selectedSkill, draftMode);
         RefreshUI();
     }
 
-    private bool TryEquipShopSkill() => session.CanRearrangeSkill(selectedSkill)
+    private bool TryEquipShopSkill()
+    {
+        return session.CanRearrangeSkill(selectedSkill)
         ? session.TryEquipOwned(selectedSlot, selectedSkill)
         : candidates.Contains(selectedSkill) && session.TryReplace(selectedSlot, selectedSkill, true);
+    }
 
     private void Unequip()
     {
-        if (confirmationPending) return;
-        if (session == null || !session.TryUnequip(selectedSlot)) return;
+        if (confirmationPending)
+        {
+            return;
+        }
+
+        if (session == null || session.TryUnequip(selectedSlot) == false)
+        {
+            return;
+        }
         // Consume the prior pair so choosing a slot for removal cannot move a stale skill.
         slotChosen = skillChosen = false;
         shopFeedback = $"{selectedSlot + 1}번 슬롯 해제됨 · ‘적용 후 닫기’로 확정하세요.";
@@ -315,22 +434,31 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
     public override void CloseUI()
     {
         // Esc / backdrop cancels a shop draft without spending or equipping.
-        if (shopMode) { base.CloseUI(); return; }
+        if (shopMode)
+        {
+            base.CloseUI();
+            return;
+        }
         RequestApplyOrClose();
     }
 
     private void RequestApplyOrClose()
     {
-        if (confirmationPending) return;
-        if (session == null)
-        { 
-            base.CloseUI(); 
-            return; 
+        if (confirmationPending)
+        {
+            return;
         }
 
-        if (shopMode && !session.HasChanges) 
+        if (session == null)
         {
-            base.CloseUI(); return; 
+            base.CloseUI();
+            return;
+        }
+
+        if (shopMode && session.HasChanges == false)
+        {
+            base.CloseUI();
+            return;
         }
 
         var current = session;
@@ -338,11 +466,24 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
             Text("ui_skill_event_close_confirm", "변경된 스킬과 재화 사용 내역을 적용하고 닫으시겠습니까?"), false,
             _ =>
             {
-                if (!isActiveAndEnabled || session != current) return;
-                if (!session.Commit()) { statusText.text = Text("ui_skill_event_commit_failed", "재화 또는 스킬 정보가 변경됐습니다. 다시 확인해주세요."); return; }
-                if (session.PendingCost > 0 || session.ReplacementCount > 0) shopCommitted?.Invoke();
+                if (isActiveAndEnabled == false || session != current)
+                {
+                    return;
+                }
+
+                if (session.Commit() == false)
+                {
+                    statusText.text = Text("ui_skill_event_commit_failed", "재화 또는 스킬 정보가 변경됐습니다. 다시 확인해주세요.");
+                    return;
+                }
+                if (session.PendingCost > 0 || session.ReplacementCount > 0)
+                {
+                    shopCommitted?.Invoke();
+                }
+
                 AppManager.Instance.SafeInvoke(value => value.SaveIfDirty());
-                session = null; base.CloseUI();
+                session = null;
+                base.CloseUI();
             });
     }
 
@@ -350,7 +491,11 @@ public sealed class UIRecordSkillUpPopUp : UIPopUp
     {
         confirmationPending = false;
         ++confirmationVersion;
-        if (currencyManager != null) currencyManager.OnUpdatedCurrency -= RefreshUI;
+        if (currencyManager != null)
+        {
+            currencyManager.OnUpdatedCurrency -= RefreshUI;
+        }
+
         currencyManager = null;
         session = null;
         shopCommitted = null;

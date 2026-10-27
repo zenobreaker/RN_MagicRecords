@@ -29,14 +29,16 @@ public class EnhanceUI : UiBase
     protected override void OnDisable()
     {
         base.OnDisable();
-      
+
         if (enhanceUI_EquipmentList != null)
         {
             enhanceUI_EquipmentList.OnClicked -= OnClickedItem;
         }
 
         if (enhanceUI_Enhancement != null)
+        {
             enhanceUI_Enhancement.OnEnhanced -= RefreshUI;
+        }
     }
 
     public override void RefreshUI()
@@ -51,10 +53,14 @@ public class EnhanceUI : UiBase
     public void Init(InventoryManager inventory)
     {
         if (inventory == null)
+        {
             return;
+        }
 
-        if(enhanceUI_Enhancement != null)
+        if (enhanceUI_Enhancement != null)
+        {
             enhanceUI_Enhancement.OnEnhanced += RefreshUI;
+        }
 
         if (enhanceUI_EquipmentList != null)
         {
@@ -62,12 +68,12 @@ public class EnhanceUI : UiBase
             enhanceUI_EquipmentList.Init(inventory.GetItems(ItemCategory.EQUIPMENT));
         }
 
-        if(enhanceUI_UpgradeTarget != null)
+        if (enhanceUI_UpgradeTarget != null)
         {
             enhanceUI_UpgradeTarget.Init();
         }
 
-        if(enhanceUI_EquipmentOption != null)
+        if (enhanceUI_EquipmentOption != null)
         {
             enhanceUI_EquipmentOption.Init();
         }
@@ -85,6 +91,6 @@ public class EnhanceUI : UiBase
         enhanceUI_UpgradeTarget?.SetSelectItem(item);
         enhanceUI_EquipmentOption?.SetSelectItem(item);
 
-        RefreshUI(); 
+        RefreshUI();
     }
 }

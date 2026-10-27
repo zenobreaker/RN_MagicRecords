@@ -8,9 +8,9 @@ public class StageInfo
     public int chapter;
     public StageType type;
     public string theme;
-    public string battleBGM; 
+    public string battleBGM;
 
-    // 등장할 적 
+    // 등장할 적
     public List<int> groupIds = new List<int>();
 
     // 등장할 보상
@@ -32,7 +32,9 @@ public class StageInfo
         battleBGM = other.battleBGM;
     }
 
-    public StageInfo() { }
+    public StageInfo()
+    {
+    }
 
     public StageInfo Copy()
     {

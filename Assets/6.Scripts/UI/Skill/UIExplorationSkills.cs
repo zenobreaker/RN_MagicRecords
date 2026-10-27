@@ -21,8 +21,14 @@ public sealed class UIExplorationSkills : UiBase
     private int selectedSlot = -1;
     private bool skillChosen, slotChosen;
 
-    public bool IsReady => context != null && context.HasCharacter && context.HasClass &&
+    public bool IsReady
+    {
+        get
+        {
+            return context != null && context.HasCharacter && context.HasClass &&
         AppManager.Instance?.GetEquippedActiveSkillListByCharID(context.SelectedCharacterId) != null;
+        }
+    }
 
     protected override void Awake()
     {
@@ -40,18 +46,28 @@ public sealed class UIExplorationSkills : UiBase
         skillChosen = slotChosen = false;
         availableSkills.Clear();
         if (context != null && SkillTreeManager.Instance != null)
+        {
             availableSkills.AddRange(SkillTreeManager.Instance.GetAvailableSkills(context.SelectedClassId)
-                .Where(IsLearnedActive).OrderBy(s => s.GetSkillID()));
+            .Where(IsLearnedActive).OrderBy(s => s.GetSkillID()));
+        }
+
         BuildEntries();
         var group = GetComponent<CanvasGroup>();
-        if (group != null) { group.alpha = 1; group.blocksRaycasts = true; group.interactable = true; }
+        if (group != null)
+        {
+            group.alpha = 1;
+            group.blocksRaycasts = true;
+            group.interactable = true;
+        }
         RefreshUI();
         Canvas.ForceUpdateCanvases();
         skillScroll.verticalNormalizedPosition = 1;
     }
 
     private static bool IsLearnedActive(SkillRuntimeData data)
-        => data?.template is SO_ActiveSkillData && data.currentLevel >= 1;
+    {
+        return data?.template is SO_ActiveSkillData && data.currentLevel >= 1;
+    }
 
     private void BuildEntries()
     {
@@ -65,22 +81,33 @@ public sealed class UIExplorationSkills : UiBase
             var button = entries[i];
             button.onClick.RemoveAllListeners();
             button.gameObject.SetActive(i < availableSkills.Count);
-            if (i >= availableSkills.Count) continue;
+            if (i >= availableSkills.Count)
+            {
+                continue;
+            }
+
             var data = availableSkills[i];
             button.name = "LearnedSkill_" + data.GetSkillID();
             button.onClick.AddListener(() => SelectSkill(data));
             var icon = button.transform.Find("Icon")?.GetComponent<Image>();
-            if (icon != null) { icon.sprite = data.template.skillImage; icon.enabled = icon.sprite != null; }
+            if (icon != null)
+            {
+                icon.sprite = data.template.skillImage;
+                icon.enabled = icon.sprite != null;
+            }
         }
     }
 
-    private static string Local(string key) => UIRecordSkillUpPopUp.Text(key, key);
+    private static string Local(string key)
+    {
+        return UIRecordSkillUpPopUp.Text(key, key);
+    }
 
     private void SelectSlot(int slot)
     {
         selectedSlot = slot;
         slotChosen = true;
-        if (!skillChosen)
+        if (skillChosen == false)
         {
             var slots = AppManager.Instance?.GetEquippedActiveSkillListByCharID(context.SelectedCharacterId);
             selectedSkill = slots != null && slot >= 0 && slot < slots.Count ? slots[slot] : null;
@@ -118,10 +145,18 @@ public sealed class UIExplorationSkills : UiBase
 
     private void Unequip()
     {
-        if (!IsReady) return;
+        if (IsReady == false)
+        {
+            return;
+        }
+
         var app = AppManager.Instance;
         var slots = app.GetEquippedActiveSkillListByCharID(context.SelectedCharacterId);
-        if (selectedSlot < 0 || selectedSlot >= slots.Count || slots[selectedSlot] == null) return;
+        if (selectedSlot < 0 || selectedSlot >= slots.Count || slots[selectedSlot] == null)
+        {
+            return;
+        }
+
         app.UnequipActiveSkill(context.SelectedCharacterId, selectedSlot);
         app.SaveIfDirty();
         selectedSkill = null;
@@ -132,7 +167,11 @@ public sealed class UIExplorationSkills : UiBase
     public override void RefreshUI()
     {
         var slots = IsReady ? AppManager.Instance.GetEquippedActiveSkillListByCharID(context.SelectedCharacterId) : null;
-        if (context != null) equippedSlots.DrawSlots(context.SelectedCharacterId);
+        if (context != null)
+        {
+            equippedSlots.DrawSlots(context.SelectedCharacterId);
+        }
+
         equippedSlots.SetSelectedSlot(selectedSlot);
         unequipButton.interactable = slots != null && selectedSlot >= 0 && selectedSlot < slots.Count && slots[selectedSlot] != null;
         skillNameText.text = selectedSkill == null ? "" : Local(selectedSkill.GetSkillName());
@@ -144,7 +183,7 @@ public sealed class UIExplorationSkills : UiBase
             entries[i].GetComponentInChildren<TMP_Text>().text = UIRecordSkillUpPopUp.SkillEntryText(availableSkills[i], equippedSlot);
             entries[i].image.color = availableSkills[i] == selectedSkill ? new Color(.6f, .9f, 1f) : Color.white;
         }
-        statusText.text = !IsReady ? "캐릭터와 직업을 선택해주세요." : availableSkills.Count == 0 ?
+        statusText.text = (IsReady == false) ? "캐릭터와 직업을 선택해주세요." : availableSkills.Count == 0 ?
             "배운 액티브 스킬이 없습니다. 스킬 화면에서 레벨 1 이상을 배우세요." :
             skillChosen ? "장착할 슬롯을 선택하세요. 변경 즉시 저장됩니다." :
             slotChosen ? $"{selectedSlot + 1}번 슬롯 선택됨 · 장착할 스킬을 고르세요." :

@@ -40,9 +40,9 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private InputActionReference cancelAction;
     [SerializeField] private InputActionReference submitAction;
 
-    public event Action OnJoinedLobby;                  // 로비 
+    public event Action OnJoinedLobby;                  // 로비
     //public event Action OnJoinedStage;                  // 스테이지 입장
-    public event Action OnReturnedStageSelect;     // 스테이지 선택 씬 
+    public event Action OnReturnedStageSelect;     // 스테이지 선택 씬
 
     // 💡 [수정] 팝업 큐를 삭제하고 오직 하나의 스택(openedUIs)으로 모든 UI와 팝업을 관리합니다.
     private Stack<UiBase> openedUIs = new Stack<UiBase>();
@@ -52,15 +52,24 @@ public class UIManager : Singleton<UIManager>
 
     [Header("Toast Settings")]
     [SerializeField] private UIToast toastPrefab;
-    [SerializeField] private int maxToastCount = 3; // 화면에 띄울 최대 토스트 개수 
+    [SerializeField] private int maxToastCount = 3; // 화면에 띄울 최대 토스트 개수
 
     private GameObject toastCanvasObj;
     private UIToast[] toastPool;
-    private int currentToastIndex = 0; 
+    private int currentToastIndex = 0;
 
-    public bool IsLTitle() => currLocate == GameLocate.TITLE;
-    public bool IsLobby() => currLocate == GameLocate.LOBBY;
-    public bool IsInGame() => currLocate == GameLocate.IN_GAME;
+    public bool IsLTitle()
+    {
+        return currLocate == GameLocate.TITLE;
+    }
+    public bool IsLobby()
+    {
+        return currLocate == GameLocate.LOBBY;
+    }
+    public bool IsInGame()
+    {
+        return currLocate == GameLocate.IN_GAME;
+    }
 
     protected override void Awake()
     {
@@ -82,7 +91,7 @@ public class UIManager : Singleton<UIManager>
 
         Debug.Assert(submitAction != null);
         submitAction.action.performed += OnSubmitPressed;
-        submitAction.action.Enable(); 
+        submitAction.action.Enable();
     }
 
     private void OnDisable()
@@ -107,7 +116,10 @@ public class UIManager : Singleton<UIManager>
 
     private void InitToastPool()
     {
-        if (toastPrefab == null) return;
+        if (toastPrefab == null)
+        {
+            return;
+        }
 
         toastPool = new UIToast[maxToastCount];
 
@@ -115,7 +127,7 @@ public class UIManager : Singleton<UIManager>
         toastCanvasObj = new GameObject("GlobalToastCanvas");
 
         // UIManager가 DontDestroyOnLoad라면, 토스트 캔버스도 씬 전환 시 파괴되지 않게 묶어줍니다.
-        // (만약 UIManager의 자식으로 넣는다면 UIManager.transform을 부모로 설정해도 되지만, 
+        // (만약 UIManager의 자식으로 넣는다면 UIManager.transform을 부모로 설정해도 되지만,
         // 캔버스는 보통 Root에 두는 것이 렌더링에 안전합니다.)
         DontDestroyOnLoad(toastCanvasObj);
 
@@ -144,10 +156,15 @@ public class UIManager : Singleton<UIManager>
     // 💡 어디서든 UIManager.Instance.ShowToast("돈이 부족합니다!"); 로 호출!
     public void ShowToast(string message)
     {
-        if (toastPool == null || toastPool.Length == 0) return;
+        if (toastPool == null || toastPool.Length == 0)
+        {
+            return;
+        }
 
         if (toastCanvasObj == null)
-            InitToastPool(); 
+        {
+            InitToastPool();
+        }
 
         // 현재 인덱스의 토스트를 꺼내서 메시지를 띄움
         UIToast toast = toastPool[currentToastIndex];
@@ -166,13 +183,28 @@ public class UIManager : Singleton<UIManager>
     /// <summary>Esc 입력을 한 프레임에 한 번 처리합니다.</summary>
     public void HandleCancelInput()
     {
-        if (CheatConsoleUI.CapturesInput) return;
-        if (SceneLoadingController.IsLoading) return;
-        if (lastCancelFrame == Time.frameCount) return;
+        if (CheatConsoleUI.CapturesInput)
+        {
+            return;
+        }
+
+        if (SceneLoadingController.IsLoading)
+        {
+            return;
+        }
+
+        if (lastCancelFrame == Time.frameCount)
+        {
+            return;
+        }
+
         lastCancelFrame = Time.frameCount;
         while (openedUIs.Count > 0 &&
-            (openedUIs.Peek() == null || !openedUIs.Peek().gameObject.activeSelf))
+            (openedUIs.Peek() == null || openedUIs.Peek().gameObject.activeSelf == false))
+        {
             openedUIs.Pop();
+        }
+
         if (openedUIs.Count > 0)
         {
             CloseTopUI();
@@ -180,17 +212,28 @@ public class UIManager : Singleton<UIManager>
         else
         {
             if (currLocate == GameLocate.STAGE_SELCT)
+            {
                 OpenReturnToLobbyConfirmation();
+            }
             else if (IsLTitle() || IsLobby() || IsInGame())
+            {
                 OpenOptionPopUp();
+            }
         }
     }
 
     // 💡 엔터/스페이스를 눌렀을 때
     private void OnSubmitPressed(InputAction.CallbackContext context)
     {
-        if (CheatConsoleUI.CapturesInput) return;
-        if (SceneLoadingController.IsLoading) return;
+        if (CheatConsoleUI.CapturesInput)
+        {
+            return;
+        }
+
+        if (SceneLoadingController.IsLoading)
+        {
+            return;
+        }
         // 최상단에 열려있는 팝업이나 UI가 있다면
         if (openedUIs.Count > 0)
         {
@@ -206,7 +249,10 @@ public class UIManager : Singleton<UIManager>
     {
         openedUIs.Clear();
         if (scene.name == "Title" || scene.name == "TitleScene")
+        {
             currLocate = GameLocate.TITLE;
+        }
+
         if (scene.name == "Stage" || scene.name == "UnitTest")
         {
             currLocate = GameLocate.IN_GAME;
@@ -227,10 +273,13 @@ public class UIManager : Singleton<UIManager>
     // 💡 매개변수에 isPopup 플래그 추가 (기본값 false)
     public void OpenUI(UiBase ui, bool isPopup = false)
     {
-        if (ui == null) return;
+        if (ui == null)
+        {
+            return;
+        }
 
         // 💡 팝업이 아닌 일반 UI가 새로 열릴 경우, 기존에 열려있던 모든 UI/팝업을 닫습니다.
-        if (!isPopup)
+        if (isPopup == false)
         {
             CloseAllOpenedUI();
         }
@@ -243,19 +292,23 @@ public class UIManager : Singleton<UIManager>
     public T OpenUI<T>(bool isPopup = false) where T : UiBase
     {
         // 💡 팝업이 아닌 일반 UI가 새로 열릴 경우, 스택을 모두 비워줍니다.
-        if (!isPopup)
+        if (isPopup == false)
         {
             CloseAllOpenedUI();
         }
 
         Type uiType = typeof(T);
 
-        // 켜져 있는지 확인 
+        // 켜져 있는지 확인
         if (uiInstances.TryGetValue(uiType, out UiBase existingUI) && existingUI != null)
         {
-            if (openedUIs.Contains(existingUI) && existingUI.gameObject.activeSelf) return existingUI as T;
+            if (openedUIs.Contains(existingUI) && existingUI.gameObject.activeSelf)
+            {
+                return existingUI as T;
+            }
+
             existingUI.gameObject.SetActive(true);
-            
+
             existingUI.transform.SetAsLastSibling();
 
             openedUIs.Push(existingUI);
@@ -263,14 +316,16 @@ public class UIManager : Singleton<UIManager>
             return existingUI as T;
         }
 
-        // DB에서 프리팹 찾기 
+        // DB에서 프리팹 찾기
         UiBase prefab = uiDB.GetPrefab<T>();
         if (prefab != null)
         {
             IUIContainer container = UIRegistry.Get<IUIContainer>();
             Transform parent = container?.PopUpParent ?? null;
             if (parent == null)
+            {
                 return null;
+            }
 
             T newUI = Instantiate(prefab.gameObject, parent).GetComponent<T>();
             uiInstances[uiType] = newUI;
@@ -285,12 +340,22 @@ public class UIManager : Singleton<UIManager>
 
     public void CloseTopUI()
     {
-        while (openedUIs.Count > 0 && openedUIs.Peek() == null) openedUIs.Pop();
-        if (openedUIs.Count == 0) return;
+        while (openedUIs.Count > 0 && openedUIs.Peek() == null)
+        {
+            openedUIs.Pop();
+        }
+
+        if (openedUIs.Count == 0)
+        {
+            return;
+        }
+
         var top = openedUIs.Peek();
         top.CloseUI(); // Allow transactional popups to ask before closing on Esc.
-        if (top == null || !top.gameObject.activeSelf)
+        if (top == null || top.gameObject.activeSelf == false)
+        {
             CloseSpecificUI(top);
+        }
     }
 
     public void CloseAllOpenedUI()
@@ -298,7 +363,7 @@ public class UIManager : Singleton<UIManager>
         while (openedUIs.Count > 0)
         {
             var top = openedUIs.Pop();
-            top.gameObject.SetActive(false); // 또는 top.CloseUI(); 
+            top.gameObject.SetActive(false); // 또는 top.CloseUI();
         }
     }
 
@@ -311,38 +376,57 @@ public class UIManager : Singleton<UIManager>
         remaining.RemoveAll(ui => ui == null || ui == targetUI);
         remaining.Reverse();
         openedUIs = new Stack<UiBase>(remaining);
-        if (targetUI != null) targetUI.gameObject.SetActive(false);
+        if (targetUI != null)
+        {
+            targetUI.gameObject.SetActive(false);
+        }
     }
 
     public void OpenRecordSkillUpPopUp(EventChoice choice)
     {
         var ui = OpenUI<UIRecordSkillUpPopUp>(true);
-        if (ui != null) ui.SetData(choice);
+        if (ui != null)
+        {
+            ui.SetData(choice);
+        }
     }
 
     public void OpenSkillEventConfirmation(string title, string message, bool showCheckbox, Action<bool> onConfirm, Action onCancel = null)
     {
         var ui = OpenUI<UISkillEventConfirmation>(true);
-        if (ui != null) ui.SetData(title, message, showCheckbox, onConfirm, onCancel);
-        else onCancel?.Invoke();
+        if (ui != null)
+        {
+            ui.SetData(title, message, showCheckbox, onConfirm, onCancel);
+        }
+        else
+        {
+            onCancel?.Invoke();
+        }
     }
 
     private void SetStageUserInterface()
     {
         GameObject currentObject = null;
         if (UnityEngine.Application.isMobilePlatform == false)
+        {
             currentObject = pcUIGroup;
+        }
         else
+        {
             currentObject = mobileUIGroup;
+        }
 
         currentUIGroup = currentObject;
-        if (currentObject == null) return;
+        if (currentObject == null)
+        {
+            return;
+        }
 
         var go = Instantiate<GameObject>(currentObject);
         go.SafeInvoke(v => v.SetActive(true));
     }
 
-    private T GetCurrentOpenedUI<T>()  where T : UiBase
+    private T GetCurrentOpenedUI<T>() where T : UiBase
     {
         return openedUIs.Peek() as T;
     }
@@ -370,9 +454,15 @@ public class UIManager : Singleton<UIManager>
     #endregion
 
     #region Sound 
-    public void ToggleSoundUI() { }
-    public void ShowSoundControlUI() { }
-    public void HidSoundControlUI() { }
+    public void ToggleSoundUI()
+    {
+    }
+    public void ShowSoundControlUI()
+    {
+    }
+    public void HidSoundControlUI()
+    {
+    }
     #endregion
 
     // 💡 여기서부터 팝업들은 명시적으로 isPopup = true 를 전달합니다.
@@ -380,14 +470,18 @@ public class UIManager : Singleton<UIManager>
     {
         var ui = OpenUI<UIStageInfo>(false); // 스테이지 인포는 메인 UI라면 false
         if (ui != null && ui.TryGetComponent<UIStageInfo>(out var target))
+        {
             target.SetStageData(node, mapNodeInfo);
+        }
     }
 
     public void OpenRewardPopUp(ItemData[] itemDatas)
     {
         var ui = OpenUI<UIPopUpRewards>(true); // 팝업이므로 true
         if (ui != null && ui.TryGetComponent<UIPopUpRewards>(out var target))
+        {
             target.SetData(itemDatas);
+        }
     }
 
     public void OpenRewardPopUp(List<ItemData> itemDatas)
@@ -397,10 +491,10 @@ public class UIManager : Singleton<UIManager>
 
     public void OpenRewardCardPopUp(List<IReward> rewards)
     {
-        var ui = OpenUI<UIRewardCardPopUp>(true); 
-        if(ui != null && ui.TryGetComponent<UIRewardCardPopUp>(out var target))
+        var ui = OpenUI<UIRewardCardPopUp>(true);
+        if (ui != null && ui.TryGetComponent<UIRewardCardPopUp>(out var target))
         {
-            target.SetData(rewards); 
+            target.SetData(rewards);
         }
     }
 
@@ -417,7 +511,10 @@ public class UIManager : Singleton<UIManager>
     public void OpenExploreShop(MapNodeInfo node)
     {
         var ui = OpenUI<ShopUI>(true);
-        if (ui != null) ui.SetExploreShop(node);
+        if (ui != null)
+        {
+            ui.SetExploreShop(node);
+        }
     }
 
     public void OpenItemPopUp(ItemData itemData)
@@ -426,13 +523,17 @@ public class UIManager : Singleton<UIManager>
         {
             var ui = OpenUI<UIPopUpEquipment>(true); // 팝업이므로 true
             if (ui != null && ui.TryGetComponent<UIPopUpEquipment>(out var target))
+            {
                 target.SetData(itemData);
+            }
         }
         else
         {
             var ui = OpenUI<UIPopUpItem>(true); // 팝업이므로 true
             if (ui != null && ui.TryGetComponent<UIPopUpItem>(out var target))
+            {
                 target.SetData(itemData);
+            }
         }
     }
 
@@ -467,7 +568,11 @@ public class UIManager : Singleton<UIManager>
     public void OpenBuildEntryInfoPopUp(BuildEntryViewData entry)
     {
         var ui = OpenUI<UIRecordInfo>(true);
-        if (ui == null) return;
+        if (ui == null)
+        {
+            return;
+        }
+
         ui.SetBuildEntry(entry);
         ui.RefreshUI();
     }
@@ -481,7 +586,7 @@ public class UIManager : Singleton<UIManager>
     public void OpenRecordSelectPopUp(List<RecordData> records, bool canReroll, RecordUIMode mode)
     {
         var ui = OpenUI<RecordUI>(true);
-        if(ui != null && ui.TryGetComponent<RecordUI>(out var target))
+        if (ui != null && ui.TryGetComponent<RecordUI>(out var target))
         {
             target.SetData(records, canReroll, mode);
         }
@@ -490,9 +595,13 @@ public class UIManager : Singleton<UIManager>
     public void RefreshRecordSelectPopUp(List<RecordData> records)
     {
         RecordUI currentPopup = GetCurrentOpenedUI<RecordUI>();
-        if (currentPopup == null) return;
+        if (currentPopup == null)
+        {
+            return;
+        }
+
         currentPopup.SetData(records, true);
-        currentPopup.RefreshUI(); 
+        currentPopup.RefreshUI();
     }
 
     public void OpenExploreResultPopUp()
@@ -502,8 +611,8 @@ public class UIManager : Singleton<UIManager>
 
     public void OpenExploreEventPopup(EventInfo eventInfo)
     {
-        var ui = OpenUI<UIPopupEventScreen>(true);  
-        if(ui!= null && ui.TryGetComponent<UIPopupEventScreen>(out var target))
+        var ui = OpenUI<UIPopupEventScreen>(true);
+        if (ui != null && ui.TryGetComponent<UIPopupEventScreen>(out var target))
         {
             target.SetData(eventInfo);
         }
@@ -512,7 +621,7 @@ public class UIManager : Singleton<UIManager>
     public void OpenOptionPopUp()
     {
         UIPopUpOption ui = OpenUI<UIPopUpOption>(true);
-        if(ui != null && ui.TryGetComponent<UIPopUpOption>(out UIPopUpOption target))
+        if (ui != null && ui.TryGetComponent<UIPopUpOption>(out UIPopUpOption target))
         {
 
         }
@@ -523,7 +632,7 @@ public class UIManager : Singleton<UIManager>
         UIExplorationSetup ui = OpenUI<UIExplorationSetup>(true);
         if (ui != null && ui.TryGetComponent<UIExplorationSetup>(out UIExplorationSetup target))
         {
-            onAction?.Invoke(target); 
+            onAction?.Invoke(target);
         }
     }
 
@@ -531,13 +640,17 @@ public class UIManager : Singleton<UIManager>
     /// <summary>스테이지 선택 화면에서 로비로 돌아가기 전에 확인합니다.</summary>
     public void OpenReturnToLobbyConfirmation()
     {
-        if (SceneLoadingController.IsLoading) return;
+        if (SceneLoadingController.IsLoading)
+        {
+            return;
+        }
+
         OpenTwoButtonPopUp("로비로 돌아가기", "정말 로비로 돌아가겠습니까?", "예", "아니오",
-            () => AppManager.Instance.SafeInvoke(app =>
-            {
-                app.SaveIfDirty();
-                app.ReturnToLobbyScene();
-            }), null);
+                    () => AppManager.Instance.SafeInvoke(app =>
+                    {
+                        app.SaveIfDirty();
+                        app.ReturnToLobbyScene();
+                    }), null);
     }
 
     public void OpenTwoButtonPopUp(string title, string message, string confirmText, string cancelText,
@@ -545,7 +658,9 @@ public class UIManager : Singleton<UIManager>
     {
         UIPopUpTwoButton ui = OpenUI<UIPopUpTwoButton>(true);
         if (ui != null && ui.TryGetComponent<UIPopUpTwoButton>(out UIPopUpTwoButton target))
-            target.SetData(title, message, confirmText, cancelText, onConfirm, onCancel); 
+        {
+            target.SetData(title, message, confirmText, cancelText, onConfirm, onCancel);
+        }
     }
 
     //--------------------------------------------------------------------------

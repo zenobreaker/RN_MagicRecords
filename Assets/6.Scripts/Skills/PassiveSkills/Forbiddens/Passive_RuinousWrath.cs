@@ -3,8 +3,8 @@ using UnityEngine;
 
 /// <summary>
 /// 패시브 금기-파멸하는 격노
-/// 치명타 피해량 증가 
-/// 대상이 가진 상태이상/디버프 수 만큼 피해량 증가 
+/// 치명타 피해량 증가
+/// 대상이 가진 상태이상/디버프 수 만큼 피해량 증가
 /// </summary>
 public class Passive_RuinousWrath : PassiveSkill
 {
@@ -28,7 +28,10 @@ public class Passive_RuinousWrath : PassiveSkill
         this.owner = owner;
 
         CalcLevel();
-        if (BattleManager.Instance == null) return;
+        if (BattleManager.Instance == null)
+        {
+            return;
+        }
 
         BattleManager.Instance.OnAnyAttackHit -= OnTargetHit;
         BattleManager.Instance.OnAnyAttackHit += OnTargetHit;
@@ -52,12 +55,19 @@ public class Passive_RuinousWrath : PassiveSkill
 
     private void OnTargetHit(GameObject attacker, GameObject target, DamageEvent evt)
     {
-        if (target == null) return; 
-        if (attacker == null) return;
-
-        if (target.TryGetComponent<EffectComponent>(out var effect)) 
+        if (target == null)
         {
-            // 대상이 가진 디버프/상태이상의 개수 가져오기 
+            return;
+        }
+
+        if (attacker == null)
+        {
+            return;
+        }
+
+        if (target.TryGetComponent<EffectComponent>(out var effect))
+        {
+            // 대상이 가진 디버프/상태이상의 개수 가져오기
             int debuffCount = effect.DebuffCount;
 
             evt.DamageAmp = 1.0f + (debuffCount * damageAmpPerEffect);

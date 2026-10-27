@@ -122,12 +122,20 @@ public class SO_RecordData : ScriptableObject
 
     public PassiveSkill CreatePassiveSkill()
     {
-        if (Modules != null && Modules.Count > 0) return new RecordPassive(this);
+        if (Modules != null && Modules.Count > 0)
+        {
+            return new RecordPassive(this);
+        }
+
         int currentClassID = 0;
         if (targetFilter == TargetFilterType.ALL)
+        {
             currentClassID = 0;
+        }
         else
+        {
             currentClassID = (int)targetFilter;
+        }
 
         // 1. 스킬트리 매니저에서 이 레코드에 연결된 패시브 스킬 템플릿을 찾습니다.
         SkillRuntimeData runtimeData = SkillTreeManager.Instance.GetSkillRuntimeData(currentClassID, linkedPassiveSkillID);

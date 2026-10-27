@@ -7,7 +7,11 @@ public class Gun : Weapon_Combo, IAttackOriginProvider
 {
 
     [SerializeField] private GameObject muzzleFlashPrefab;
-    [SerializeField] private string[] muzzle_names = { "Gun_Muzzle" };
+    [SerializeField]
+    private string[] muzzle_names =
+    {
+        "Gun_Muzzle"
+    };
     [SerializeField] private string bulletName = "Bullet";
 
 
@@ -39,7 +43,9 @@ public class Gun : Weapon_Combo, IAttackOriginProvider
         base.Begin_Equip();
 
         if (rootObject == null)
+        {
             return;
+        }
 
         muzzleTransforms.Clear();
 
@@ -68,7 +74,7 @@ public class Gun : Weapon_Combo, IAttackOriginProvider
     //{
     //    base.Begin_JudgeAttack(e);
 
-        
+
     //    if(fireSimultaneously)
     //    {
     //        foreach(Transform muzzle in muzzleTransforms)
@@ -77,7 +83,7 @@ public class Gun : Weapon_Combo, IAttackOriginProvider
     //    else
     //    {
     //        Transform muzzle = muzzleTransforms[currentMuzzleIndex];
-    //        FireBulletFromMuzzle(muzzle); 
+    //        FireBulletFromMuzzle(muzzle);
 
     //        currentMuzzleIndex = (currentMuzzleIndex + 1) % muzzleTransforms.Count;
     //    }
@@ -86,16 +92,16 @@ public class Gun : Weapon_Combo, IAttackOriginProvider
 
     private void FireBulletFromMuzzle(Transform muzzle)
     {
-        if(muzzleFlashPrefab != null)
+        if (muzzleFlashPrefab != null)
         {
-            Instantiate<GameObject>(muzzleFlashPrefab, muzzle); 
+            Instantiate<GameObject>(muzzleFlashPrefab, muzzle);
         }
 
 
         GameObject obj = ObjectPooler.SpawnFromPool(bulletName, muzzle.position, muzzle.rotation);
         if (obj.TryGetComponent<Projectile>(out var projectile))
         {
-           // projectile.SetDamageInfo(ownerCharacter, damageDatas[index]);
+            // projectile.SetDamageInfo(ownerCharacter, damageDatas[index]);
             projectile.AddIgnore(rootObject);
             projectile.OnProjectileHit -= OnProjectileHit;
             projectile.OnProjectileHit += OnProjectileHit;

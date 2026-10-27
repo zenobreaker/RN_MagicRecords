@@ -7,7 +7,9 @@ public class WarningSign_Circle : WarningSign
         base.Setup(data, duration);
 
         if (data == null)
+        {
             return;
+        }
 
         float scale = (data.Radius * 2f) / 10f;
 

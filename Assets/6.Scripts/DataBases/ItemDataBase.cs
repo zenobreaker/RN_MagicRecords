@@ -77,7 +77,10 @@ public class ItemDataBase : DataBase
 
     public void InitializeEquipmentItemData()
     {
-        if (equipmentItemJson == null) return;
+        if (equipmentItemJson == null)
+        {
+            return;
+        }
 
         Debug.Log("Equipment Database Init");
 
@@ -108,15 +111,17 @@ public class ItemDataBase : DataBase
                 }
             );
 
-        // Complete Message 
+        // Complete Message
         Debug.Log("===================================================");
         Debug.Log($"Complete Message => equipmentItems : {equipmentItems.Count}");
     }
 
     public void InitializeIngredientItemData()
     {
-        if (ingredientItemJson == null) return;
-
+        if (ingredientItemJson == null)
+        {
+            return;
+        }
 
         JsonLoader.LoadJsonList<IngredientItemDataJsonAllData, IngredientItemDataJson, IngredientItem>
             (
@@ -146,8 +151,10 @@ public class ItemDataBase : DataBase
 
     public void InitializeCurrencyItemData()
     {
-        if (currencyItemJson == null) return;
-
+        if (currencyItemJson == null)
+        {
+            return;
+        }
 
         JsonLoader.LoadJsonList<CurrencyItemDataJsonAllData, CurrencyItemDataJson, CurrencyItem>
             (
@@ -158,9 +165,9 @@ public class ItemDataBase : DataBase
                 {
                     var data = new CurrencyItem(
                         (int)json.id
-                        
+
                         , (json.imagePath)
-                        , (CurrencyType)json.type, 
+                        , (CurrencyType)json.type,
                         json.name, json.description
                         );
                     return data;
@@ -180,9 +187,14 @@ public class ItemDataBase : DataBase
     {
         ItemData item = GetEquipmentItemData(id);
         if (item == null)
+        {
             item = GetIngredientItemData(id);
+        }
+
         if (item == null)
+        {
             item = GetCurrencyItemData(id);
+        }
 
         return item;
     }

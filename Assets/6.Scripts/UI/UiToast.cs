@@ -9,7 +9,7 @@ using DG.Tweening;
 public class UIToast : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI messageText;
-    [SerializeField] private float showTime = 1.5f; // 떠있는 시간 
+    [SerializeField] private float showTime = 1.5f; // 떠있는 시간
 
     [Header("Animation Settings")]
     [SerializeField] private float fadeDuration = 0.3f; // 나타나고 사라지는 속도
@@ -36,7 +36,7 @@ public class UIToast : MonoBehaviour
     {
         Debug.Assert(LocalizationManager.Instance != null);
 
-        // 기존에 실행 중이던 연출이 있다면 취소 
+        // 기존에 실행 중이던 연출이 있다면 취소
         if (cts != null)
         {
             cts.Cancel();

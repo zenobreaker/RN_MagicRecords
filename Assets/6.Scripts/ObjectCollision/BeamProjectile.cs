@@ -12,7 +12,7 @@ public class BeamProjectile
     // 💡 추가된 부분: 파티클 연출과 데미지 타이밍을 맞추기 위한 딜레이!
     [Header("Timing Settings")]
     [SerializeField] private float hitDelay = 0.2f; //초 뒤에 실제 데미지 판정 시작
-    [SerializeField] private float lifeTime = 0.2f; // 이펙트가 켜져 있는 총 시간 
+    [SerializeField] private float lifeTime = 0.2f; // 이펙트가 켜져 있는 총 시간
 
     [Header("Hit Settings")]
     [SerializeField] private bool isMultiHit = false; // 체크 끄면 단발, 켜면 다단히트
@@ -37,10 +37,16 @@ public class BeamProjectile
     // =========================================================
     public float BeamRadius
     {
-        get => beamRadius;
+        get
+        {
+            return beamRadius;
+        }
         set
         {
-            if (beamRadius <= 0) return; // 0 나누기 방지
+            if (beamRadius <= 0)
+            {
+                return; // 0 나누기 방지
+            }
 
             // 기존 두께 대비 얼마나 커졌는지 비율 계산 (예: 1.5 -> 3.0 이면 2배)
             float ratio = value / beamRadius;
@@ -73,7 +79,7 @@ public class BeamProjectile
         hitTargets.Clear();
         tickTimer = 0f;
         isBeamActive = false;
-        // 타이머 초기화 
+        // 타이머 초기화
         currentDelayTimer = hitDelay;
         currentLifeTimer = lifeTime;
 
@@ -81,7 +87,11 @@ public class BeamProjectile
 
     public void OnSpawnActivated()
     {
-        if (spawnActivated || !isActiveAndEnabled) return;
+        if (spawnActivated || isActiveAndEnabled == false)
+        {
+            return;
+        }
+
         spawnActivated = true;
         base.OnEnable();
         // 실제 스폰이 완료된 후에만 타격 및 효과음을 실행합니다.
@@ -95,18 +105,22 @@ public class BeamProjectile
     {
         spawnActivated = false;
         base.OnDisable();
-        ObjectPooler.ReturnToPool(gameObject);    // 한 객체에 한번만 
+        ObjectPooler.ReturnToPool(gameObject);    // 한 객체에 한번만
 
         // 💡 4. 풀에서 넣을 때, 이전 생애(다른 스킬)에서 커졌던 크기를 원래대로 세탁합니다.
         beamRadius = baseBeamRadius;
         transform.localScale = baseScale;
 
-        CancelInvoke();    // Monobehaviour에 Invoke가 있다면 
+        CancelInvoke();    // Monobehaviour에 Invoke가 있다면
     }
 
     protected override void Update()
     {
-        if (!spawnActivated) return;
+        if (spawnActivated == false)
+        {
+            return;
+        }
+
         base.Update();
 
         // 1. 수명 관리
@@ -120,8 +134,8 @@ public class BeamProjectile
             }
         }
 
-        // 2. 딜레이 관리 
-        if (!isBeamActive)
+        // 2. 딜레이 관리
+        if (isBeamActive == false)
         {
             currentDelayTimer -= Time.deltaTime;
             if (currentDelayTimer <= 0f)
@@ -129,7 +143,7 @@ public class BeamProjectile
                 ActivateBeam();
             }
         }
-        // 3. 빔이 활성화된 상태 
+        // 3. 빔이 활성화된 상태
         else if (isMultiHit)
         {
             tickTimer -= Time.deltaTime;
@@ -145,7 +159,7 @@ public class BeamProjectile
     {
         isBeamActive = true;
 
-        if (!isMultiHit)
+        if (isMultiHit == false)
         {
             FireBeamCast();
         }
@@ -170,11 +184,15 @@ public class BeamProjectile
         foreach (RaycastHit hit in hits)
         {
             if (IsFriendlyFire(hit.collider.gameObject))
+            {
                 continue;
+            }
 
             // 단발 모드일 때 이미 때린 적이면 무시 (다단히트는 무시 안 함)
-            if (!isMultiHit && hitTargets.Contains(hit.collider))
+            if (isMultiHit == false && hitTargets.Contains(hit.collider))
+            {
                 continue;
+            }
 
             // Play Sound
             {
@@ -186,7 +204,7 @@ public class BeamProjectile
             DealDamage(hit.collider.gameObject, localHitPoint);
 
             // 단발용: 맞은 적 기록
-            if (!isMultiHit)
+            if (isMultiHit == false)
             {
                 hitTargets.Add(hit.collider);
             }

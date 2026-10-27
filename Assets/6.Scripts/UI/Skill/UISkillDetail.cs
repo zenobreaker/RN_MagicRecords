@@ -12,7 +12,7 @@ public class UISkillDetail : UiBase
     [SerializeField] private TextMeshProUGUI skillDescText;
     [FormerlySerializedAs("upButton")]
     [SerializeField] private Button learnButton;
-    [SerializeField] private Button equipButton; 
+    [SerializeField] private Button equipButton;
 
     private SkillRuntimeData selectedSkillData;
 
@@ -26,7 +26,10 @@ public class UISkillDetail : UiBase
         RefreshLearnButton();
     }
 
-    private void OnDestroy() => learnButton?.onClick.RemoveListener(OnLearnSkill);
+    private void OnDestroy()
+    {
+        learnButton?.onClick.RemoveListener(OnLearnSkill);
+    }
 
     public void HideDetail()
     {
@@ -35,10 +38,14 @@ public class UISkillDetail : UiBase
 
     public void OnDrawSkillDetail(SkillRuntimeData data)
     {
-        if (data == null) return;
+        if (data == null)
+        {
+            return;
+        }
+
         selectedSkillData = data;
         OnSelectedSkillRunTimeData?.Invoke(data);
-        
+
         gameObject.SetActive(true);
 
         DrawSkillAcquisition(data);
@@ -49,24 +56,37 @@ public class UISkillDetail : UiBase
         RefreshLearnButton();
 
         if (data.template is SO_PassiveSkillData)
+        {
             equipButton?.gameObject.SetActive(false);
-        else if(data.template is SO_ActiveSkillData)
+        }
+        else if (data.template is SO_ActiveSkillData)
+        {
             equipButton?.gameObject.SetActive(true);
+        }
 
-        if (equipButton != null) equipButton.interactable = !data.IsDevelopmentLocked;
-
+        if (equipButton != null)
+        {
+            equipButton.interactable = (data.IsDevelopmentLocked == false);
+        }
     }
 
     private void DrawSkillAcquisition(SkillRuntimeData data)
     {
-        if (data == null || skillLevelText == null) return;
+        if (data == null || skillLevelText == null)
+        {
+            return;
+        }
 
         skillLevelText.text = data.IsDevelopmentLocked ? "미구현 · 잠금" : data.currentLevel > 0 ? "습득됨" : "습득 안됨";
     }
 
     private void DrawSkillDesc(SkillRuntimeData data)
     {
-        if (data == null || skillDescText == null) return;
+        if (data == null || skillDescText == null)
+        {
+            return;
+        }
+
         Debug.Assert(LocalizationManager.Instance != null);
 
         skillDescText.text = LocalizationManager.Instance.GetText(data?.GetSkillDesc());
@@ -74,8 +94,12 @@ public class UISkillDetail : UiBase
 
     private void DrawSkillName(SkillRuntimeData data)
     {
-        if (data == null || skillNameText == null) return;
-        Debug.Assert(LocalizationManager.Instance != null); 
+        if (data == null || skillNameText == null)
+        {
+            return;
+        }
+
+        Debug.Assert(LocalizationManager.Instance != null);
 
         skillNameText.text = LocalizationManager.Instance.GetText(data?.GetSkillName());
     }
@@ -83,7 +107,11 @@ public class UISkillDetail : UiBase
     public void OnLearnSkill()
     {
         var data = selectedSkillData;
-        if (data?.template == null || data.IsDevelopmentLocked || data.template.maxLevel < 1 || data.currentLevel > 0) return;
+        if (data?.template == null || data.IsDevelopmentLocked || data.template.maxLevel < 1 || data.currentLevel > 0)
+        {
+            return;
+        }
+
         data.currentLevel = 1;
         data.isUnlocked = true;
         data.OnDataChanged?.Invoke(data);
@@ -93,10 +121,14 @@ public class UISkillDetail : UiBase
 
     private void RefreshLearnButton()
     {
-        if (learnButton == null) return;
+        if (learnButton == null)
+        {
+            return;
+        }
+
         bool learned = selectedSkillData != null && selectedSkillData.currentLevel > 0;
         learnButton.interactable = selectedSkillData?.template != null &&
-            !selectedSkillData.IsDevelopmentLocked && selectedSkillData.template.maxLevel >= 1 && !learned;
+            selectedSkillData.IsDevelopmentLocked == false && selectedSkillData.template.maxLevel >= 1 && learned == false;
         var label = learnButton.GetComponentInChildren<TMP_Text>(true);
         if (label != null)
         {
@@ -106,7 +138,7 @@ public class UISkillDetail : UiBase
                 return;
             }
             string text = learned ? "ui_text_learned" : "ui_text_learn";
-            label.text  = LocalizationManager.Instance.SafeInvoke(v => v.GetText(text));
+            label.text = LocalizationManager.Instance.SafeInvoke(v => v.GetText(text));
         }
     }
 

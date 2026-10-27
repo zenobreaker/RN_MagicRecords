@@ -12,15 +12,38 @@ public sealed class SkillComponent : ActionComponent
     [SerializeField, Min(0f)] private float subActionCancelCooldown = 7f;
 
     private float subActionCancelCooldownRemaining;
-    public float SubActionCancelCooldownRemaining => subActionCancelCooldownRemaining;
-    public float SubActionCancelCooldownDuration => subActionCancelCooldown;
-    public bool IsSubActionCancelOnCooldown => subActionCancelCooldownRemaining > 0f;
+    public float SubActionCancelCooldownRemaining
+    {
+        get
+        {
+            return subActionCancelCooldownRemaining;
+        }
+    }
+    public float SubActionCancelCooldownDuration
+    {
+        get
+        {
+            return subActionCancelCooldown;
+        }
+    }
+    public bool IsSubActionCancelOnCooldown
+    {
+        get
+        {
+            return subActionCancelCooldownRemaining > 0f;
+        }
+    }
 
     // Guard and other defensive modules can share the same per-cast restriction.
-    public bool AllowsDefensiveBenefits =>
-        string.IsNullOrEmpty(currentSlotName) || skillSlotTable == null ||
-        !skillSlotTable.TryGetValue(currentSlotName, out var active) ||
-        active == null || !active.IsActive || active.Runtime.Cast.AllowsDefensiveBenefits;
+    public bool AllowsDefensiveBenefits
+    {
+        get
+        {
+            return string.IsNullOrEmpty(currentSlotName) || skillSlotTable == null ||
+                    skillSlotTable.TryGetValue(currentSlotName, out var active) == false ||
+                    active == null || active.IsActive == false || active.Runtime.Cast.AllowsDefensiveBenefits;
+        }
+    }
 
     // 장착 스킬 정보
     private Dictionary<string, ActiveSkill> skillSlotTable;
@@ -47,13 +70,25 @@ public sealed class SkillComponent : ActionComponent
     {
         skillSlotTable ??= new Dictionary<string, ActiveSkill>
         {
-            { "DEFAULT", null },
+            {
+                "DEFAULT", null
+            },
 
-            { "SLOT1", null },
-            { "SLOT2", null },
-            { "SLOT3", null },
-            { "SLOT4", null },
-            { nameof(SkillSlot.SubAction), null },
+            {
+                "SLOT1", null
+            },
+            {
+                "SLOT2", null
+            },
+            {
+                "SLOT3", null
+            },
+            {
+                "SLOT4", null
+            },
+            {
+                nameof(SkillSlot.SubAction), null
+            },
         };
     }
 
@@ -61,7 +96,13 @@ public sealed class SkillComponent : ActionComponent
     protected override void OnDisable()
     {
         if (skillSlotTable != null)
-            foreach (var skill in skillSlotTable.Values) skill?.EndSkill(false);
+        {
+            foreach (var skill in skillSlotTable.Values)
+            {
+                skill?.EndSkill(false);
+            }
+        }
+
         currentSlotName = string.Empty;
         subActionCancelCooldownRemaining = 0f;
         base.EndDoAction();
@@ -71,28 +112,44 @@ public sealed class SkillComponent : ActionComponent
     public void CancelCurrentSkill()
     {
         if (skillSlotTable != null && skillSlotTable.TryGetValue(currentSlotName, out var skill))
+        {
             skill?.EndSkill();
+        }
     }
 
     public void CompleteSkillAction(ActiveSkill completedSkill)
     {
         if (string.IsNullOrEmpty(currentSlotName) ||
-            !skillSlotTable.TryGetValue(currentSlotName, out var current) ||
-            !ReferenceEquals(current, completedSkill)) return;
+            skillSlotTable.TryGetValue(currentSlotName, out var current) == false ||
+            ReferenceEquals(current, completedSkill) == false)
+        {
+            return;
+        }
+
         var character = rootObject != null ? rootObject.GetComponent<Character>() : null;
-        if (character != null && InAction) character.End_DoAction();
-        else EndDoAction();
+        if (character != null && InAction)
+        {
+            character.End_DoAction();
+        }
+        else
+        {
+            EndDoAction();
+        }
     }
 
     private void FixedUpdate()
     {
         if (skillSlotTable == null)
+        {
             return;
+        }
 
         foreach (KeyValuePair<string, ActiveSkill> pair in skillSlotTable)
         {
             if (pair.Value == null)
+            {
                 continue;
+            }
 
             pair.Value.FixedUpdate(Time.fixedDeltaTime);
         }
@@ -103,7 +160,9 @@ public sealed class SkillComponent : ActionComponent
     {
         subActionCancelCooldownRemaining = Mathf.Max(0f, subActionCancelCooldownRemaining - Time.deltaTime);
         if (skillSlotTable == null)
+        {
             return;
+        }
 
         foreach (KeyValuePair<string, ActiveSkill> pair in skillSlotTable)
         {
@@ -111,11 +170,15 @@ public sealed class SkillComponent : ActionComponent
 
             // 스킬이 비어있으면 처리하지 않음
             if (skill == null)
+            {
                 continue;
+            }
 
             // Dictionary Key를 SkillSlot으로 변환
-            if (!Enum.TryParse(pair.Key, out SkillSlot currentSlot))
+            if (Enum.TryParse(pair.Key, out SkillSlot currentSlot) == false)
+            {
                 continue;
+            }
 
             // 스킬 로직 업데이트
             skill.Update(Time.deltaTime);
@@ -123,7 +186,10 @@ public sealed class SkillComponent : ActionComponent
             skill.Update_Cooldown(Time.deltaTime);
             GetDisplayedCooldown(currentSlot, skill, out float remaining, out _);
             NotifyCooldownState(currentSlot, skill, remaining > 0f);
-            if (remaining > 0f) NotifyCooldownProgress(currentSlot, skill);
+            if (remaining > 0f)
+            {
+                NotifyCooldownProgress(currentSlot, skill);
+            }
         }
     }
 
@@ -134,37 +200,49 @@ public sealed class SkillComponent : ActionComponent
         bool notifyProgressImmediately = false)
     {
         if (skill == null)
+        {
             return;
+        }
 
         GetDisplayedCooldown(slot, skill, out float remaining, out _);
         bool value = isCooldown ?? remaining > 0f;
 
         // The shared HUD channel has no owner key. AI slots must stay local.
         if (isPlayerOwner)
+        {
             SkillManager.Instance.SafeInvoke(v =>
-                v.NotifySkillCooldownState(slot, value));
+            v.NotifySkillCooldownState(slot, value));
+        }
 
         OnActiveSkillCooldownChanged?.Invoke(slot, value);
 
         if (value && notifyProgressImmediately)
+        {
             NotifyCooldownProgress(slot, skill);
+        }
     }
 
     private void NotifyCooldownState(string slotName, ActiveSkill skill)
     {
         if (Enum.TryParse(slotName, out SkillSlot slot))
+        {
             NotifyCooldownState(slot, skill, notifyProgressImmediately: true);
+        }
     }
 
     private void NotifyCooldownProgress(SkillSlot slot, ActiveSkill skill)
     {
         if (skill == null)
+        {
             return;
+        }
 
         GetDisplayedCooldown(slot, skill, out float remaining, out float duration);
         if (isPlayerOwner)
+        {
             SkillManager.Instance.SafeInvoke(v =>
-                v.NotifySkillCooldown(slot, remaining, duration));
+            v.NotifySkillCooldown(slot, remaining, duration));
+        }
 
         OnActiveSkillCooldownUpdated?.Invoke(slot, remaining, duration);
     }
@@ -240,7 +318,9 @@ public sealed class SkillComponent : ActionComponent
     public void ReleaseSkill(string slot)
     {
         if (currentSlotName != slot)
+        {
             return;
+        }
 
         if (skillSlotTable.TryGetValue(
                 slot,
@@ -261,9 +341,9 @@ public sealed class SkillComponent : ActionComponent
             BeginDoAction();
 
             if (string.IsNullOrEmpty(currentSlotName) ||
-                !skillSlotTable.TryGetValue(
+                skillSlotTable.TryGetValue(
                     currentSlotName,
-                    out ActiveSkill currentSkill) ||
+                    out ActiveSkill currentSkill) == false ||
                 currentSkill == null)
             {
                 EndDoAction();
@@ -281,7 +361,11 @@ public sealed class SkillComponent : ActionComponent
 
             while (true)
             {
-                if (!currentSkill.IsActive) break;
+                if (currentSkill.IsActive == false)
+                {
+                    break;
+                }
+
                 int phaseVersion = currentSkill.PhaseVersion;
                 int phaseIndex =
                     currentSkill.PhaseIndex;
@@ -308,11 +392,22 @@ public sealed class SkillComponent : ActionComponent
 
 
                 // A timer/loop may have restarted the same index during the await.
-                if (!currentSkill.IsCurrentPhase(phaseVersion)) continue;
+                if (currentSkill.IsCurrentPhase(phaseVersion) == false)
+                {
+                    continue;
+                }
+
                 BeginJudgeAttack(null);
-                if (!currentSkill.IsCurrentPhase(phaseVersion)) continue;
+                if (currentSkill.IsCurrentPhase(phaseVersion) == false)
+                {
+                    continue;
+                }
+
                 EndJudgeAttack(null);
-                if (!currentSkill.IsCurrentPhase(phaseVersion)) continue;
+                if (currentSkill.IsCurrentPhase(phaseVersion) == false)
+                {
+                    continue;
+                }
 
 
                 // 현재 Phase가 스스로 종료되는지 확인
@@ -349,7 +444,10 @@ public sealed class SkillComponent : ActionComponent
                 }
 
 
-                if (!currentSkill.IsCurrentPhase(phaseVersion)) continue;
+                if (currentSkill.IsCurrentPhase(phaseVersion) == false)
+                {
+                    continue;
+                }
 
                 // 현재 Phase가 마지막인지 확인
                 if (currentSkill.PhaseIndex >=
@@ -385,15 +483,27 @@ public sealed class SkillComponent : ActionComponent
 
     private bool CanUseSlot(string slotName)
     {
-        if (ObjectPooler.IsPrewarming || SceneLoadingController.IsLoading) return false;
-        if (slotName != nameof(SkillSlot.SubAction)) return true;
-        if (!isActiveAndEnabled) return false;
+        if (ObjectPooler.IsPrewarming || SceneLoadingController.IsLoading)
+        {
+            return false;
+        }
+
+        if (slotName != nameof(SkillSlot.SubAction))
+        {
+            return true;
+        }
+
+        if (isActiveAndEnabled == false)
+        {
+            return false;
+        }
+
         var character = rootObject != null ? rootObject.GetComponent<Character>() : null;
         var state = rootObject != null ? rootObject.GetComponent<StateComponent>() : null;
         return character != null && character.isActiveAndEnabled &&
                state != null && (state.IdleMode || state.ActionMode) &&
                currentSlotName != nameof(SkillSlot.SubAction) &&
-               !(rootObject.GetComponent<LaunchComponent>()?.IsLaunching ?? false);
+               (rootObject.GetComponent<LaunchComponent>()?.IsLaunching ?? false) == false;
     }
 
     public bool CanUseSkill(string skillName)
@@ -403,8 +513,8 @@ public sealed class SkillComponent : ActionComponent
                 out var skill))
         {
             return skill != null &&
-                   skill.IsOnCooldown == false && !skill.IsActive && !skill.IsCasting && !skill.IsEnding &&
-                   (!InAction || (skillName == nameof(SkillSlot.SubAction) && !IsSubActionCancelOnCooldown));
+                   skill.IsOnCooldown == false && skill.IsActive == false && skill.IsCasting == false && skill.IsEnding == false &&
+                   (InAction == false || (skillName == nameof(SkillSlot.SubAction) && IsSubActionCancelOnCooldown == false));
         }
 
         return false;
@@ -428,10 +538,12 @@ public sealed class SkillComponent : ActionComponent
 
         // Only the player's registration belongs in the shared HUD cache.
         if (isPlayerOwner)
+        {
             SkillManager.Instance?
-                .NotifyActiveSkillChanged(
-                    slot,
-                    skill);
+            .NotifyActiveSkillChanged(
+                slot,
+                skill);
+        }
     }
 
 
@@ -467,8 +579,10 @@ public sealed class SkillComponent : ActionComponent
             Debug.LogError("[SkillComponent] Character owner is missing.", this);
             return;
         }
-        if (skillSlotTable.TryGetValue(slotName, out var previousSkill) && !ReferenceEquals(previousSkill, skill))
+        if (skillSlotTable.TryGetValue(slotName, out var previousSkill) && ReferenceEquals(previousSkill, skill) == false)
+        {
             previousSkill?.EndSkill();
+        }
 
         if (skillSlotTable.ContainsKey(slotName))
         {
@@ -508,9 +622,9 @@ public sealed class SkillComponent : ActionComponent
         string slotName,
         int phaseIndex = -1)
     {
-        if (!CanUseSlot(slotName) || skillSlotTable == null || !skillSlotTable.TryGetValue(
+        if (CanUseSlot(slotName) == false || skillSlotTable == null || skillSlotTable.TryGetValue(
                 slotName,
-                out var skill) ||
+                out var skill) == false ||
             skill == null)
         {
             return;
@@ -519,14 +633,18 @@ public sealed class SkillComponent : ActionComponent
 
         int startPhaseIndex = phaseIndex < 0 ? 0 : phaseIndex;
         if (startPhaseIndex >= skill.MaxPhaseCount)
+        {
             return;
+        }
 
 
         // 동시 사용 가능 스킬
         if (skill.isConcurrentSkill)
         {
             if (skill.IsOnCooldown || skill.IsActive || skill.IsCasting || skill.IsEnding)
+            {
                 return;
+            }
 
             skill.Cast(startPhaseIndex);
             NotifyCooldownState(slotName, skill);
@@ -551,8 +669,15 @@ public sealed class SkillComponent : ActionComponent
         {
             // Clear buffered attacks before cancellation can publish its end event.
             rootObject.GetComponent<ComboComponent>()?.CancelForSubAction();
-            if (isActionCancel) CancelCurrentSkill();
-            if (InAction) return;
+            if (isActionCancel)
+            {
+                CancelCurrentSkill();
+            }
+
+            if (InAction)
+            {
+                return;
+            }
         }
 
         currentSlotName = slotName;
@@ -564,12 +689,15 @@ public sealed class SkillComponent : ActionComponent
         skill.Cast(startPhaseIndex, isActionCancel);
         // Movement and defense retain their normal reuse rules; only action cancellation waits seven seconds.
         if (isActionCancel && skill.IsActive)
+        {
             subActionCancelCooldownRemaining = Mathf.Max(0f, subActionCancelCooldown);
+        }
+
         NotifyCooldownState(slotName, skill);
 
 
-        if (useAnimationEvents && !skill.HasActionData(
-                skill.PhaseIndex))
+        if (useAnimationEvents && skill.HasActionData(
+                skill.PhaseIndex) == false)
         {
             SimulateAnimationEventsAsync(
                 skill).Forget();
@@ -579,58 +707,112 @@ public sealed class SkillComponent : ActionComponent
 
     private async UniTaskVoid SimulateAnimationEventsAsync(ActiveSkill skill)
     {
-        if (skill == null || !skill.IsActive) return;
+        if (skill == null || skill.IsActive == false)
+        {
+            return;
+        }
+
         CancellationToken lifetime = skill.SkillToken;
         try
         {
             while (skill.IsCasting)
+            {
                 await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: lifetime);
-            if (!skill.IsActive || lifetime.IsCancellationRequested || skill.DoesPhaseControlItself(skill.PhaseIndex)) return;
+            }
+
+            if (skill.IsActive == false || lifetime.IsCancellationRequested || skill.DoesPhaseControlItself(skill.PhaseIndex))
+            {
+                return;
+            }
+
             int version = skill.PhaseVersion;
             CancellationToken phaseToken = skill.PhaseToken;
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: phaseToken);
-            if (!skill.IsCurrentPhase(version)) return;
+            if (skill.IsCurrentPhase(version) == false)
+            {
+                return;
+            }
+
             skill.Begin_JudgeAttack(null);
             await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: phaseToken);
-            if (!skill.IsCurrentPhase(version)) return;
+            if (skill.IsCurrentPhase(version) == false)
+            {
+                return;
+            }
+
             skill.End_JudgeAttack(null);
             await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: phaseToken);
-            if (skill.IsCurrentPhase(version)) EndDoAction();
+            if (skill.IsCurrentPhase(version))
+            {
+                EndDoAction();
+            }
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+        }
         catch (Exception error)
         {
             Debug.LogException(error);
-            if (!lifetime.IsCancellationRequested) skill.EndSkill();
+            if (lifetime.IsCancellationRequested == false)
+            {
+                skill.EndSkill();
+            }
         }
     }
 
     private async UniTaskVoid ExecuteConcurrentSkillAsync(ActiveSkill skill)
     {
-        if (skill == null || !skill.IsActive) return;
+        if (skill == null || skill.IsActive == false)
+        {
+            return;
+        }
+
         CancellationToken lifetime = skill.SkillToken;
         try
         {
             while (skill.IsCasting)
-                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: lifetime);
-            while (skill.IsActive && !lifetime.IsCancellationRequested)
             {
-                if (skill.DoesPhaseControlItself(skill.PhaseIndex)) return;
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: lifetime);
+            }
+
+            while (skill.IsActive && lifetime.IsCancellationRequested == false)
+            {
+                if (skill.DoesPhaseControlItself(skill.PhaseIndex))
+                {
+                    return;
+                }
+
                 int version = skill.PhaseVersion;
                 CancellationToken phaseToken = skill.PhaseToken;
                 skill.Begin_JudgeAttack(null);
-                if (!skill.IsCurrentPhase(version)) continue;
+                if (skill.IsCurrentPhase(version) == false)
+                {
+                    continue;
+                }
+
                 skill.End_JudgeAttack(null);
-                if (!skill.IsCurrentPhase(version)) continue;
+                if (skill.IsCurrentPhase(version) == false)
+                {
+                    continue;
+                }
+
                 await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: phaseToken);
-                if (skill.IsCurrentPhase(version)) skill.EndPhaseAndNext();
+                if (skill.IsCurrentPhase(version))
+                {
+                    skill.EndPhaseAndNext();
+                }
             }
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+        }
         catch (Exception error)
         {
             Debug.LogException(error);
-            if (!lifetime.IsCancellationRequested) skill.EndSkill(false);
+            if (lifetime.IsCancellationRequested == false)
+            {
+                skill.EndSkill(false);
+            }
         }
     }
     #endregion
@@ -642,7 +824,9 @@ public sealed class SkillComponent : ActionComponent
     public override void StartAction()
     {
         if (string.IsNullOrEmpty(currentSlotName))
+        {
             return;
+        }
 
         base.StartAction();
 
@@ -654,7 +838,9 @@ public sealed class SkillComponent : ActionComponent
     public override void BeginDoAction()
     {
         if (string.IsNullOrEmpty(currentSlotName))
+        {
             return;
+        }
 
         base.BeginDoAction();
 
@@ -672,14 +858,19 @@ public sealed class SkillComponent : ActionComponent
     public override void EndDoAction()
     {
         if (string.IsNullOrEmpty(currentSlotName))
+        {
             return;
+        }
 
         ActiveSkill skill =
             skillSlotTable[currentSlotName];
 
         skill?.End_DoAction();
 
-        if (string.IsNullOrEmpty(currentSlotName)) return;
+        if (string.IsNullOrEmpty(currentSlotName))
+        {
+            return;
+        }
 
         if (skill != null &&
             skill.IsActive)
@@ -703,7 +894,9 @@ public sealed class SkillComponent : ActionComponent
         AnimationEvent e)
     {
         if (string.IsNullOrEmpty(currentSlotName))
+        {
             return;
+        }
 
         base.BeginJudgeAttack(e);
 
@@ -716,7 +909,9 @@ public sealed class SkillComponent : ActionComponent
         AnimationEvent e)
     {
         if (string.IsNullOrEmpty(currentSlotName))
+        {
             return;
+        }
 
         base.EndJudgeAttack(e);
 
@@ -728,7 +923,9 @@ public sealed class SkillComponent : ActionComponent
     public override void PlaySound()
     {
         if (string.IsNullOrEmpty(currentSlotName))
+        {
             return;
+        }
 
         base.PlaySound();
 
@@ -740,7 +937,9 @@ public sealed class SkillComponent : ActionComponent
     public override void PlayCameraShake()
     {
         if (string.IsNullOrEmpty(currentSlotName))
+        {
             return;
+        }
 
         base.PlayCameraShake();
 
@@ -756,17 +955,17 @@ public sealed class SkillComponent : ActionComponent
 
     public void NotifyBulletInit(int bulletCount)
     {
-        SkillManager.Instance.SafeInvoke(v=>
+        SkillManager.Instance.SafeInvoke(v =>
         v.NotifyMagicBulletLoad(
-                bulletCount)); 
-            
+                bulletCount));
+
     }
 
 
     public void NotifyMagicBulletChanged(
         Queue<BulletData> bullets)
     {
-        SkillManager.Instance.SafeInvoke(v => 
+        SkillManager.Instance.SafeInvoke(v =>
         v.NotifyMagicBulletChanged(
                 bullets));
     }

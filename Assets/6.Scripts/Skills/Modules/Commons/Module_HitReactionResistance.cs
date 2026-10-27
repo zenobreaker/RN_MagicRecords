@@ -9,11 +9,17 @@ public class Module_HitReactionResistance : SkillModule
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (owner != null) owner.GetComponent<StateComponent>()?.SetReactionResistance(this, resistance);
+        if (owner != null)
+        {
+            owner.GetComponent<StateComponent>()?.SetReactionResistance(this, resistance);
+        }
     }
 
     public override void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase)
     {
-        if (owner != null) owner.GetComponent<StateComponent>()?.RemoveReactionResistance(this);
+        if (owner != null)
+        {
+            owner.GetComponent<StateComponent>()?.RemoveReactionResistance(this);
+        }
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class UIPopUpEquipment : UIPopUpItem
 {
     [SerializeField] protected Button equipButton;
-    [SerializeField] private Button enhanceButton; 
+    [SerializeField] private Button enhanceButton;
 
     protected override void Awake()
     {
@@ -15,16 +15,30 @@ public class UIPopUpEquipment : UIPopUpItem
         {
             equipButton.onClick.AddListener(() =>
             {
-                if (item == null) return;
-                if (InventoryManager.Instance == null) return;
+                if (item == null)
+                {
+                    return;
+                }
+
+                if (InventoryManager.Instance == null)
+                {
+                    return;
+                }
 
                 var equipment = item as EquipmentItem;
-                if (equipment == null) return;
+                if (equipment == null)
+                {
+                    return;
+                }
 
                 if (equipment.Eqeuipped == false)
+                {
                     InventoryManager.Instance.EquipItem(1, equipment);
+                }
                 else
+                {
                     InventoryManager.Instance.UnequipItem(1, equipment);
+                }
 
                 DrawPopUp();
             });
@@ -34,9 +48,16 @@ public class UIPopUpEquipment : UIPopUpItem
         {
             enhanceButton.onClick.AddListener(() =>
             {
-                if (item == null) return;
+                if (item == null)
+                {
+                    return;
+                }
+
                 var equipment = item as EquipmentItem;
-                if (equipment == null) return;
+                if (equipment == null)
+                {
+                    return;
+                }
 
                 UIManager.Instance.CloseTopUI();
                 UIManager.Instance.OpenUI<EnhanceUI>();
@@ -50,9 +71,17 @@ public class UIPopUpEquipment : UIPopUpItem
 
         DrawEquipButton();
 
-        if (item == null) return;
+        if (item == null)
+        {
+            return;
+        }
+
         var equipment = item as EquipmentItem;
-        if (equipment == null) return;
+        if (equipment == null)
+        {
+            return;
+        }
+
         if (enhanceButton != null)
         {
             enhanceButton.gameObject.SetActive(true);
@@ -61,16 +90,27 @@ public class UIPopUpEquipment : UIPopUpItem
 
     private void DrawEquipButton()
     {
-        if (item == null) return;
+        if (item == null)
+        {
+            return;
+        }
 
         if (item is EquipmentItem equipment)
         {
             TextMeshProUGUI tm = equipButton.GetComponentInChildren<TextMeshProUGUI>();
-            if (tm == null) return;
+            if (tm == null)
+            {
+                return;
+            }
+
             if (equipment.Eqeuipped)
+            {
                 tm.text = LocalizationManager.Instance.GetText("ui_inventory_unequip");
+            }
             else
+            {
                 tm.text = LocalizationManager.Instance.GetText("ui_inventory_equip");
+            }
         }
     }
 }

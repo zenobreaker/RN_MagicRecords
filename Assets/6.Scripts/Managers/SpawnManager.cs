@@ -32,16 +32,32 @@ public sealed class SpawnManager : MonoBehaviour
     public event Action OnAllEnemiesDead;
 
     // 💡 StageManager가 대기할 때 사용할 프로퍼티 추가
-    public int ActivePlayerCount => spawnedPlayers.Count;
-    public int ActiveEnemyCount => spawnedEnemies.Count;
+    public int ActivePlayerCount
+    {
+        get
+        {
+            return spawnedPlayers.Count;
+        }
+    }
+    public int ActiveEnemyCount
+    {
+        get
+        {
+            return spawnedEnemies.Count;
+        }
+    }
 
     private void Awake()
     {
         if (soPlayerObject != null)
+        {
             soPlayerObject.Init();
+        }
 
         if (soNpcObject != null)
+        {
             soNpcObject.Init();
+        }
     }
 
     // 플레이어 스폰 비동기 래퍼
@@ -74,9 +90,11 @@ public sealed class SpawnManager : MonoBehaviour
 
             // Connect Camera
             if (Camera.main != null && Camera.main.TryGetComponent<CinemachineCamera>(out var cc))
+            {
                 cc.Target.TrackingTarget = playerGO.transform;
+            }
 
-            if(playerGO.TryGetComponent<Player>(out var player))
+            if (playerGO.TryGetComponent<Player>(out var player))
             {
                 // Char ID
                 player.CharID = id;
@@ -99,11 +117,11 @@ public sealed class SpawnManager : MonoBehaviour
                 AppManager.Instance.SafeInvoke(v => v.OnAcquire(Constants.GLOBAL_RECORD_JOB_ID, player));
 
                 // Setting Passive Status
-                AppManager.Instance.SafeInvoke(v=> v.OnApplyStaticEffct(jobID, player));
+                AppManager.Instance.SafeInvoke(v => v.OnApplyStaticEffct(jobID, player));
                 AppManager.Instance.SafeInvoke(v => v.OnApplyStaticEffct(Constants.GLOBAL_RECORD_JOB_ID, player));
 
                 // Recalculate Status
-                if(player.TryGetComponent<StatusComponent>(out var status))
+                if (player.TryGetComponent<StatusComponent>(out var status))
                 {
                     status.RefreshAllStatus();
                 }
@@ -124,11 +142,20 @@ public sealed class SpawnManager : MonoBehaviour
     {
         token.ThrowIfCancellationRequested();
         if (spawnPoints == null || spawnPoints.Count <= 0)
+        {
             throw new InvalidOperationException("NPC spawn points are missing.");
+        }
 
         MonsterGroupData data = AppManager.Instance.GetGroupData(groupID);
-        if (data == null) throw new InvalidOperationException($"Monster group {groupID} is missing.");
-        if (data.monsterIDs.Count == 0) return;
+        if (data == null)
+        {
+            throw new InvalidOperationException($"Monster group {groupID} is missing.");
+        }
+
+        if (data.monsterIDs.Count == 0)
+        {
+            return;
+        }
 
         var tcs = new UniTaskCompletionSource();
         int totalToSpawn = data.monsterIDs.Count;
@@ -145,10 +172,16 @@ public sealed class SpawnManager : MonoBehaviour
                 try
                 {
                     token.ThrowIfCancellationRequested();
-                    if (npc == null) throw new InvalidOperationException($"Pool {tag} returned no NPC.");
+                    if (npc == null)
+                    {
+                        throw new InvalidOperationException($"Pool {tag} returned no NPC.");
+                    }
+
                     int enemyLayer = LayerMask.NameToLayer("Enemy");
                     if (enemyLayer != -1 && isEnemy)
+                    {
                         SetLayerRecursively(npc, enemyLayer);
+                    }
 
                     MonsterStatData statData = AppManager.Instance.SafeInvoke(v => v.GetMonsterStatData(id));
                     if (npc.TryGetComponent<Enemy>(out Enemy enemy))
@@ -156,20 +189,23 @@ public sealed class SpawnManager : MonoBehaviour
                         spawnedEnemies.Add(enemy);
                         enemy.SetStatData(statData);
 
-                        if(AppManager.Instance != null)
-                            enemy.SetGrade(AppManager.Instance.SafeInvoke(v=>v.GetMonsterData(id)));
+                        if (AppManager.Instance != null)
+                        {
+                            enemy.SetGrade(AppManager.Instance.SafeInvoke(v => v.GetMonsterData(id)));
+                        }
 
                         enemy.OnDead += OnEnemyDead;
 
                         if (enemy.TryGetComponent<NavMeshAgent>(out var agent))
+                        {
                             agent.enabled = true;
-
+                        }
 
                         BattleManager.Instance.SafeInvoke(v => v.ResistEnemy(enemy));
 
                     }
 
-                    if(npc.TryGetComponent<StateComponent>(out StateComponent component))
+                    if (npc.TryGetComponent<StateComponent>(out StateComponent component))
                     {
                         component.SetIdleMode();
                     }
@@ -182,8 +218,16 @@ public sealed class SpawnManager : MonoBehaviour
                         tcs.TrySetResult(); // 스폰 완료!
                     }
                 }
-                catch (OperationCanceledException) { tcs.TrySetCanceled(token); }
-                catch (Exception error) { tcs.TrySetException(error); }
+                catch (OperationCanceledException)
+                {
+                    tcs.TrySetCanceled(token);
+
+                }
+                catch (Exception error)
+                {
+                    tcs.TrySetException(error);
+
+                }
             });
         }
 
@@ -193,21 +237,37 @@ public sealed class SpawnManager : MonoBehaviour
     public void ResetStageSpawns()
     {
         foreach (var player in spawnedPlayers)
-            if (player != null) player.OnDead -= OnPlayerDead;
+        {
+            if (player != null)
+            {
+                player.OnDead -= OnPlayerDead;
+            }
+        }
+
         foreach (var enemy in spawnedEnemies)
-            if (enemy != null) enemy.OnDead -= OnEnemyDead;
+        {
+            if (enemy != null)
+            {
+                enemy.OnDead -= OnEnemyDead;
+            }
+        }
+
         spawnedPlayers.Clear();
         spawnedEnemies.Clear();
     }
 
-    public void OnEndSpawn() { }
+    public void OnEndSpawn()
+    {
+    }
 
     private void OnPlayerDead(Character player)
     {
         spawnedPlayers.Remove(player);
 
         if (spawnedPlayers.Count == 0)
+        {
             OnAllPlayersDead?.Invoke();
+        }
     }
 
     private void OnEnemyDead(Character enemy)
@@ -215,13 +275,18 @@ public sealed class SpawnManager : MonoBehaviour
         spawnedEnemies.Remove(enemy);
 
         if (spawnedEnemies.Count == 0)
+        {
             OnAllEnemiesDead?.Invoke();
+        }
     }
 
     // 자식 오브젝트들까지 모조리 레이어를 바꿔주는 마법의 헬퍼 함수
     private void SetLayerRecursively(GameObject obj, int newLayer)
     {
-        if (obj == null) return;
+        if (obj == null)
+        {
+            return;
+        }
 
         obj.layer = newLayer;
         foreach (Transform child in obj.transform)

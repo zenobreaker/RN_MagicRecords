@@ -65,7 +65,7 @@ public class UIPopupEventScreen : UIPopUp
 
     private async UniTaskVoid DrawPopUpAsync()
     {
-        if (eventImagePalette != null && !string.IsNullOrEmpty(currentEvent.imageKey))
+        if (eventImagePalette != null && string.IsNullOrEmpty(currentEvent.imageKey) == false)
         {
             Sprite evSprite = eventImagePalette.GetImage(currentEvent.imageKey);
             if (evSprite != null)
@@ -101,12 +101,16 @@ public class UIPopupEventScreen : UIPopUp
     private void PrepareChoices()
     {
         foreach (Transform child in choiceContainer)
+        {
             Destroy(child.gameObject);
+        }
 
         foreach (EventChoice choice in currentEvent.eventChoices)
         {
             if (choice.ChoiceIsActive == false)
+            {
                 continue;
+            }
 
             UIEventChoiceButton btn = Instantiate(choicePrefab, choiceContainer);
             btn.Setup(choice, OnChoiceSelected);
@@ -191,12 +195,18 @@ public class UIPopupEventScreen : UIPopUp
 
     private void OnChoiceSelected(EventChoice choice)
     {
-        if (isProcessingChoice || isClosing) return;
+        if (isProcessingChoice || isClosing)
+        {
+            return;
+        }
+
         currentResult =
-            EventChoiceExecutor.Execute(choice);
+                    EventChoiceExecutor.Execute(choice);
 
         if (currentResult == null)
+        {
             return;
+        }
 
         isProcessingChoice = true;
         ProcessRewardAndResult(currentResult);
@@ -228,10 +238,10 @@ public class UIPopupEventScreen : UIPopUp
         string resultText =
             LocalizationManager.Instance.GetText(resultKey);
 
-        ShowResultPhaseAsync(resultText, 
+        ShowResultPhaseAsync(resultText,
             result.Choice.ResultButtonTextKey).Forget();
 
-        if (!result.NeedCombat)
+        if (result.NeedCombat == false)
         {
             if (result.IsSuccess)
             {
@@ -244,24 +254,37 @@ public class UIPopupEventScreen : UIPopUp
 
     private void OpenTargetRarityRecord(string rarityParam)
     {
-        if (recordManager == null) return;
+        if (recordManager == null)
+        {
+            return;
+        }
 
         List<RecordData> records = new List<RecordData>();
 
         // 문자열 파라미터를 RecordRarity Enum으로 변환하여 해당 등급의 리스트를 요청합니다.
         if (Enum.TryParse(rarityParam, out RecordRarity targetRarity))
         {
-            // 💡 RecordManager에 GetUnpossessedRecordDatas(RecordRarity) 같은 함수가 
+            // 💡 RecordManager에 GetUnpossessedRecordDatas(RecordRarity) 같은 함수가
             // public으로 열려있다고 가정하고 사용합니다.
             // 만약 없다면, switch문으로 GetRareRecordDatas() 등을 직접 연결하셔도 됩니다.
 
             switch (targetRarity)
             {
-                case RecordRarity.NORMAL: records = recordManager.GetNormalRecordDatas(); break;
-                case RecordRarity.RARE: records = recordManager.GetRareRecordDatas(); break;
-                case RecordRarity.UNIQUE: records = recordManager.GetUniqueRecordDatas(); break;
-                case RecordRarity.LEGENDARY: records = recordManager.GetLengdaryRecordDatas(); break;
-                case RecordRarity.MYTH: records = recordManager.GetMythRecordDatas(); break;
+                case RecordRarity.NORMAL:
+                    records = recordManager.GetNormalRecordDatas();
+                    break;
+                case RecordRarity.RARE:
+                    records = recordManager.GetRareRecordDatas();
+                    break;
+                case RecordRarity.UNIQUE:
+                    records = recordManager.GetUniqueRecordDatas();
+                    break;
+                case RecordRarity.LEGENDARY:
+                    records = recordManager.GetLengdaryRecordDatas();
+                    break;
+                case RecordRarity.MYTH:
+                    records = recordManager.GetMythRecordDatas();
+                    break;
             }
         }
         else
@@ -273,7 +296,10 @@ public class UIPopupEventScreen : UIPopUp
         if (records == null || records.Count == 0)
         {
             Debug.LogWarning($"[{rarityParam}] 등급의 레코드가 없거나 모두 소진되었습니다.");
-            records = new List<RecordData> { recordManager.GetEmptyRecord() };
+            records = new List<RecordData>
+            {
+                recordManager.GetEmptyRecord()
+            };
         }
 
         // 특정 등급의 레코드 창을 띄울 때 몇 개를 띄울지는 기획에 따라 조절하세요 (현재는 리스트 전체를 넘김)
@@ -287,10 +313,16 @@ public class UIPopupEventScreen : UIPopUp
         choiceContainer.gameObject.SetActive(false);
 
         foreach (Transform child in choiceContainer)
+        {
             Destroy(child.gameObject);
+        }
 
         UIEventChoiceButton closeBtn = Instantiate(choicePrefab, choiceContainer);
-        EventChoice closeChoice = new EventChoice() { TextKey = buttonTextKey, CostType = EventCostType.NONE };
+        EventChoice closeChoice = new EventChoice()
+        {
+            TextKey = buttonTextKey,
+            CostType = EventCostType.NONE
+        };
         closeBtn.Setup(closeChoice, _ => ClosePopup());
 
         CancelTypingTask();
@@ -303,7 +335,10 @@ public class UIPopupEventScreen : UIPopUp
     private void ClosePopup()
     {
         // "닫기(떠난다)" 버튼 연타 방어
-        if (isClosing) return;
+        if (isClosing)
+        {
+            return;
+        }
 
         if (isTyping)
         {
@@ -335,7 +370,7 @@ public class UIPopupEventScreen : UIPopUp
     {
         CancelTypingTask();
 
-        if (!isStageCleared && currentResult?.NeedCombat != true && AppManager.Instance != null)
+        if (isStageCleared == false && currentResult?.NeedCombat != true && AppManager.Instance != null)
         {
             isStageCleared = true; // 중복 실행 방지
 
@@ -357,7 +392,10 @@ public class UIPopupEventScreen : UIPopUp
 
     private void OpenArchiveRecordUI()
     {
-        if (recordManager == null) return;
+        if (recordManager == null)
+        {
+            return;
+        }
 
         List<RecordData> myRecords = recordManager.GetPossesRecord();
 
@@ -368,14 +406,17 @@ public class UIPopupEventScreen : UIPopUp
         else
         {
             Debug.LogWarning("보관할(가진) 레코드가 하나도 없습니다!");
-            // ❌ [치명적 버그 수정] 여기서 ClearStage(true)를 지웠습니다! 
+            // ❌ [치명적 버그 수정] 여기서 ClearStage(true)를 지웠습니다!
             // 유저는 어차피 결과 화면의 "떠난다" 버튼을 눌러야 하므로, 클리어 처리는 ClosePopup()이 담당하게 둡니다.
         }
     }
 
     private void OpenLastSavedRecordUI()
     {
-        if (recordManager == null) return;
+        if (recordManager == null)
+        {
+            return;
+        }
 
         List<RecordData> transferedDatas = recordManager.GetTransferedRecordIDs();
 

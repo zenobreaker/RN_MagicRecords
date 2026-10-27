@@ -3,7 +3,11 @@ using UnityEngine;
 
 public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
-    protected bool IsDuplicate { get; private set; }
+    protected bool IsDuplicate
+    {
+        get;
+        private set;
+    }
 
 
     private static T instance;
@@ -12,7 +16,10 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         get
         {
             if (instance == null)
+            {
                 instance = FindFirstObjectByType<T>();
+            }
+
             return instance;
         }
         protected set
@@ -22,7 +29,13 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     }
 
     private static bool bInitialized = false;
-    public static bool IsInitialized { get => bInitialized; }
+    public static bool IsInitialized
+    {
+        get
+        {
+            return bInitialized;
+        }
+    }
 
     protected virtual void Awake()
     {
@@ -33,12 +46,12 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
         else if (instance != this)
         {
-            IsDuplicate = true; 
+            IsDuplicate = true;
 
             // 데이터 동기화가 필요한 것이 아니라면 파괴 후 아무 것도 안함
             SyncDataFromSingleton();
             Destroy(gameObject);
-            return; 
+            return;
         }
     }
 
@@ -50,6 +63,6 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     protected virtual void SyncDataFromSingleton()
     {
-        
+
     }
 }

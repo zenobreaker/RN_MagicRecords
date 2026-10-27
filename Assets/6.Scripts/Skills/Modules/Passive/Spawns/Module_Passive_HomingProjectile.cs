@@ -8,7 +8,13 @@ public sealed class Module_Passive_HomingProjectile : PassiveModule
     [Header("Target Filter")]
     [Tooltip("어떤 스킬(ID)에만 적용할 것인가? (0이면 조건 없이 발동)")]
     public int targetSkillID = 0;
-    public override int TargetSkillID => targetSkillID;
+    public override int TargetSkillID
+    {
+        get
+        {
+            return targetSkillID;
+        }
+    }
 
     [Header("Homing Settings")]
     [Tooltip("적을 탐지할 반경")]
@@ -27,12 +33,14 @@ public sealed class Module_Passive_HomingProjectile : PassiveModule
     {
         // 필터링 검사
         if (targetSkillID != 0 && casterSkill.SkillID != targetSkillID)
+        {
             return;
+        }
 
         if (spawnedObject is BaseProjectile proj)
         {
             // 💡 1. 이미 컴포넌트가 붙어있는지 확인 (TryGetComponent는 성능이 매우 빠름)
-            if (!proj.gameObject.TryGetComponent<RuntimeHomingBehaviour>(out var homingScript))
+            if (proj.gameObject.TryGetComponent<RuntimeHomingBehaviour>(out var homingScript) == false)
             {
                 // 없으면 새로 달아줍니다. (최초 1회만 실행됨)
                 homingScript = proj.gameObject.AddComponent<RuntimeHomingBehaviour>();

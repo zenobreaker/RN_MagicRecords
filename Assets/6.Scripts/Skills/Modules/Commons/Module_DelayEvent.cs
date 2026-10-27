@@ -14,10 +14,10 @@ public enum SkillEventType
 public class Module_DelayEvent : SkillModule
 {
     [Header("발동할 이벤트")]
-    [Tooltip("모듈이 동작할 이벤트 형태")] 
+    [Tooltip("모듈이 동작할 이벤트 형태")]
     public SkillEventType eventType;
 
-    [Tooltip("모듈이 동작할 지연 시간 ")] 
+    [Tooltip("모듈이 동작할 지연 시간 ")]
     public float delay = 0f;
 
     [Header("애니메이션 이벤트 객체 데이터 ")]
@@ -30,7 +30,11 @@ public class Module_DelayEvent : SkillModule
 
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (skill == null || !skill.IsPhaseRunning || skill.IsEnding) return;
+        if (skill == null || skill.IsPhaseRunning == false || skill.IsEnding)
+        {
+            return;
+        }
+
         CancelDelay();
 
         delayCts = CancellationTokenSource.CreateLinkedTokenSource(skill.PhaseToken);
@@ -38,24 +42,26 @@ public class Module_DelayEvent : SkillModule
         ExecuteAsync(owner, skill, skill.PhaseVersion, delayCts.Token).Forget();
     }
 
-   private async UniTaskVoid ExecuteAsync(Character owner, 
-       ActiveSkill skill, int phaseVersion, CancellationToken token)
+    private async UniTaskVoid ExecuteAsync(Character owner,
+        ActiveSkill skill, int phaseVersion, CancellationToken token)
     {
         bool canceled = await UniTask.Delay(
-            TimeSpan.FromSeconds(delay), 
-            cancellationToken : token).SuppressCancellationThrow();
+            TimeSpan.FromSeconds(delay),
+            cancellationToken: token).SuppressCancellationThrow();
 
-        if (canceled || token.IsCancellationRequested || !skill.IsCurrentPhase(phaseVersion))
+        if (canceled || token.IsCancellationRequested || skill.IsCurrentPhase(phaseVersion) == false)
+        {
             return;
+        }
 
         AnimationEvent eventData = new();
 
         eventData.objectReferenceParameter = objectValue;
         eventData.floatParameter = floatValue;
         eventData.intParameter = intValue;
-        eventData.stringParameter = stringValue; 
+        eventData.stringParameter = stringValue;
 
-        switch(eventType)
+        switch (eventType)
         {
 
             case SkillEventType.BeginJudgeAttack:
@@ -67,12 +73,17 @@ public class Module_DelayEvent : SkillModule
                 break;
         }
     }
-    public override void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase) => CancelDelay();
+    public override void OnPhaseExit(Character owner, ActiveSkill skill, PhaseSkill phase)
+    {
+        CancelDelay();
+    }
 
     private void CancelDelay()
     {
         if (delayCts == null)
+        {
             return;
+        }
 
         delayCts.Cancel();
         delayCts.Dispose();

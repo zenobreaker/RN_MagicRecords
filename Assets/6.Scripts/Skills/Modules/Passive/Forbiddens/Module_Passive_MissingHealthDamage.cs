@@ -7,13 +7,20 @@ public sealed class Module_Passive_MissingHealthDamage : PassiveContextModule
 {
     [Min(0f)] public float missingHealthRatio = 0.02f;
 
-    public Module_Passive_MissingHealthDamage() => triggerTime = PassiveTriggerTime.OnHit;
+    public Module_Passive_MissingHealthDamage()
+    {
+        triggerTime = PassiveTriggerTime.OnHit;
+    }
 
     public override void OnAttackHit(GameObject attacker, GameObject target, DamageEvent damageEvent)
     {
         // 직접 피해를 가하지 않고 기존 DamageCalculator가 적용할 비율을 설정합니다.
         if (owner == null || attacker != owner || target == null || target == owner ||
-            damageEvent == null || damageEvent.IsDOTEffect()) return;
+            damageEvent == null || damageEvent.IsDOTEffect())
+        {
+            return;
+        }
+
         damageEvent.MissingHPRatio = missingHealthRatio;
     }
 }

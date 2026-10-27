@@ -6,7 +6,13 @@ using UnityEngine;
 public sealed class Module_Passive_LaserEnergyGain : PassiveModule
 {
     public int targetSkillID;
-    public override int TargetSkillID => targetSkillID;
+    public override int TargetSkillID
+    {
+        get
+        {
+            return targetSkillID;
+        }
+    }
 
     [Min(0)] public int bonusGain = 5;
 
@@ -18,7 +24,10 @@ public sealed class Module_Passive_LaserEnergyGain : PassiveModule
     public override void OnSkillCast(SkillUseEvent evt, SkillRuntimeContext context)
     {
         if (evt == null || context?.Combat == null ||
-            (targetSkillID != 0 && evt.SkillID != targetSkillID)) return;
+            (targetSkillID != 0 && evt.SkillID != targetSkillID))
+        {
+            return;
+        }
 
         context.Combat.LaserEnergyGainBonus += Math.Max(0, bonusGain);
     }

@@ -17,27 +17,29 @@ public class AudioMixerUI : UiBase
 
     protected override void Awake()
     {
-        base.Awake(); 
+        base.Awake();
 
         slider_Master.onValueChanged.AddListener(SetMaterVolume);
         slider_BGM.onValueChanged.AddListener(SetBGMVolume);
         slider_SFX.onValueChanged.AddListener(SetSFXVolume);
 
         UIOpend += OnUIOpend;
-        UIClosed += OnUIClosed; 
+        UIClosed += OnUIClosed;
     }
 
-    private void Start ()
+    private void Start()
     {
         foreach (var group in audioMixer.FindMatchingGroups("Master"))
+        {
             Debug.Log($"{group.name}");
+        }
     }
 
-    private void OnUIOpend ()
+    private void OnUIOpend()
     {
-        slider_Master.value  = PlayerPrefs.GetFloat("Master_Volume");
-        slider_BGM.value  = PlayerPrefs.GetFloat("BGM_Volume");
-        slider_SFX.value  = PlayerPrefs.GetFloat("SFX_Volume");
+        slider_Master.value = PlayerPrefs.GetFloat("Master_Volume");
+        slider_BGM.value = PlayerPrefs.GetFloat("BGM_Volume");
+        slider_SFX.value = PlayerPrefs.GetFloat("SFX_Volume");
     }
 
     private void OnUIClosed()

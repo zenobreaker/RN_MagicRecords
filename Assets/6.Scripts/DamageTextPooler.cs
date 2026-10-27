@@ -12,17 +12,17 @@ public class DamageTextPooler : Singleton<DamageTextPooler>
     {
         base.Awake();
 
-        textPools = new DamageText[poolSize];   
+        textPools = new DamageText[poolSize];
 
         // 시작할 때 전부 하위 캔버스에 미리 만들어놓기
-        for(int i = 0; i < poolSize; i++)
+        for (int i = 0; i < poolSize; i++)
         {
             textPools[i] = Instantiate(damageTextPrefab, transform);
-            textPools[i].gameObject.SetActive(false); 
+            textPools[i].gameObject.SetActive(false);
         }
     }
 
-    public void ShowDamage(Vector3 worldPos, float damage, DamageEvent damgeEvent )
+    public void ShowDamage(Vector3 worldPos, float damage, DamageEvent damgeEvent)
     {
         // 1. 현재 인덱스의 텍스트를 가져옵니다. (사용 중이든 아니든 무조건 가져옵니다)
         DamageText dt = textPools[currentIndex];
@@ -34,7 +34,7 @@ public class DamageTextPooler : Singleton<DamageTextPooler>
         Vector3 jitter = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(0f, 0.5f), 0f);
 
         // 4. 값 세팅 및 켜기
-        Vector3 finalPos =  worldPos + jitter;
+        Vector3 finalPos = worldPos + jitter;
         dt.gameObject.SetActive(true);
         dt.DrawDamage(finalPos, damage, damgeEvent);
 

@@ -15,12 +15,19 @@ public class Module_Passive_StatBonus : PassiveModule
     [NonSerialized] private StatusComponent cachedStatus;
     [NonSerialized] private StatModifier appliedModifier;
 
-    public Module_Passive_StatBonus() => triggerTime = PassiveTriggerTime.OnApplyStaticEffect;
+    public Module_Passive_StatBonus()
+    {
+        triggerTime = PassiveTriggerTime.OnApplyStaticEffect;
+    }
 
     public override void OnApplyStaticEffect(StatusComponent status)
     {
         OnLose();
-        if (status == null) return;
+        if (status == null)
+        {
+            return;
+        }
+
         cachedStatus = status;
         appliedModifier = ModifierFactory.CreateStatModifier(targetStat, value, valueType);
         cachedStatus.ApplyBuff(appliedModifier);
@@ -29,7 +36,10 @@ public class Module_Passive_StatBonus : PassiveModule
     public override void OnLose()
     {
         if (cachedStatus != null && appliedModifier != null)
+        {
             cachedStatus.RemoveBuff(appliedModifier);
+        }
+
         appliedModifier = null;
         cachedStatus = null;
     }

@@ -7,12 +7,18 @@ public enum StateType
 }
 
 /// <summary>
-/// 상태 결정 컴포넌트 
+/// 상태 결정 컴포넌트
 /// </summary>
 public partial class StateComponent : MonoBehaviour
 {
     private StateType type = StateType.Idle;
-    public StateType Type { get => type; }
+    public StateType Type
+    {
+        get
+        {
+            return type;
+        }
+    }
 
     public event Action<StateType, StateType> OnStateTypeChanged;
 
@@ -28,7 +34,11 @@ public partial class StateComponent : MonoBehaviour
         statusEffect = GetComponent<StatusEffectComponent>();
         Debug.Assert(statusEffect != null);
 
-        if (statusEffect != null) statusEffect.OnStatusEffectChanged += OnStatusEffectChanged;
+        if (statusEffect != null)
+        {
+            statusEffect.OnStatusEffectChanged += OnStatusEffectChanged;
+        }
+
         launch = GetComponent<LaunchComponent>();
         skills = GetComponent<SkillComponent>();
     }
@@ -36,28 +46,94 @@ public partial class StateComponent : MonoBehaviour
     private void OnDestroy()
     {
         if (statusEffect != null)
+        {
             statusEffect.OnStatusEffectChanged -= OnStatusEffectChanged;
+        }
     }
 
-    public bool IdleMode { get => type == StateType.Idle; }
-    public bool EquipMode { get => type == StateType.Equip; }
-    public bool ActionMode { get => type == StateType.Action; }
-    public bool EvadeMode { get => type == StateType.Evade; }
-    public bool DamagedMode { get => type == StateType.Damaged; }
-    public bool DeadMode { get => type == StateType.Dead; }
-    public bool StopMode { get => type == StateType.Stop; }
+    public bool IdleMode
+    {
+        get
+        {
+            return type == StateType.Idle;
+        }
+    }
+    public bool EquipMode
+    {
+        get
+        {
+            return type == StateType.Equip;
+        }
+    }
+    public bool ActionMode
+    {
+        get
+        {
+            return type == StateType.Action;
+        }
+    }
+    public bool EvadeMode
+    {
+        get
+        {
+            return type == StateType.Evade;
+        }
+    }
+    public bool DamagedMode
+    {
+        get
+        {
+            return type == StateType.Damaged;
+        }
+    }
+    public bool DeadMode
+    {
+        get
+        {
+            return type == StateType.Dead;
+        }
+    }
+    public bool StopMode
+    {
+        get
+        {
+            return type == StateType.Stop;
+        }
+    }
 
-    public void SetIdleMode() => ChangeType(StateType.Idle);
-    public void SetEquipMode() => ChangeType(StateType.Equip);
-    public void SetActionMode() => ChangeType(StateType.Action);
-    public void SetEvadeMode() => ChangeType(StateType.Evade);
-    public void SetDeadMode() => ChangeType(StateType.Dead);
-    public void SetStopMode() => ChangeType(StateType.Stop);
+    public void SetIdleMode()
+    {
+        ChangeType(StateType.Idle);
+    }
+    public void SetEquipMode()
+    {
+        ChangeType(StateType.Equip);
+    }
+    public void SetActionMode()
+    {
+        ChangeType(StateType.Action);
+    }
+    public void SetEvadeMode()
+    {
+        ChangeType(StateType.Evade);
+    }
+    public void SetDeadMode()
+    {
+        ChangeType(StateType.Dead);
+    }
+    public void SetStopMode()
+    {
+        ChangeType(StateType.Stop);
+    }
 
     // Compatibility entry point for existing callers without a DamageEvent.
     public void SetDamagedMode(HitData hitData = null)
     {
-        if (DeadMode || StopMode) return;
+        if (DeadMode || StopMode)
+        {
+            return;
+        }
+
         legacyDamageAnimation = true;
         ChangeType(StateType.Damaged);
 
@@ -71,25 +147,40 @@ public partial class StateComponent : MonoBehaviour
     private void ChangeType(StateType type)
     {
         if (this.type == type)
+        {
             return;
+        }
         //Debug.Log($"{character.name} State Change {type}");
         StateType prevType = this.type;
         this.type = type;
 
         if (type == StateType.Dead || type == StateType.Stop)
+        {
             CancelHitReaction();
+        }
+
         if (type == StateType.Damaged || type == StateType.Stop || type == StateType.Dead)
+        {
             skills?.CancelCurrentSkill();
+        }
 
         OnStateTypeChanged?.Invoke(prevType, type);
     }
 
     private void OnStatusEffectChanged(StatusEffectType oldSE, StatusEffectType newSE)
     {
-        if (statusEffect == null || DeadMode) return;
-        if (!statusEffect.GetMovableCondition())
+        if (statusEffect == null || DeadMode)
+        {
+            return;
+        }
+
+        if (statusEffect.GetMovableCondition() == false)
+        {
             SetStopMode();
+        }
         else if (StopMode)
+        {
             SetIdleMode();
+        }
     }
 }

@@ -8,12 +8,20 @@ public class MovableCameraShaker : MonoBehaviour
     private void Awake()
     {
         if (instance == null)
+        {
             instance = this;
+        }
 
         DontDestroyOnLoad(gameObject);
     }
 
-    public static MovableCameraShaker Instance { get => instance;  }
+    public static MovableCameraShaker Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
 
     private CinemachineImpulseSource impulse;
     private CinemachineImpulseListener listener;
@@ -32,14 +40,19 @@ public class MovableCameraShaker : MonoBehaviour
     public virtual void Play_Impulse(ActionData data)
     {
         if (impulse == null || data == null || data.csp == null)
+        {
             return;
+        }
 
         Play_Impulse(data.csp.settings);
     }
 
     public void Play_Impulse(NoiseSettings settings)
     {
-        if (settings == null) return;
+        if (settings == null)
+        {
+            return;
+        }
 
         listener.ReactionSettings.m_SecondaryNoise = settings;
         impulse.GenerateImpulse();

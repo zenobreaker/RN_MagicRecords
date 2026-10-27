@@ -6,16 +6,30 @@ public sealed class RecordManager : MonoBehaviour
 {
     [SerializeField] private List<SO_RecordData> records = new List<SO_RecordData>();
 
-    public List<RecordData> CurrentOptions { get; private set; } = new();
+    public List<RecordData> CurrentOptions
+    {
+        get;
+        private set;
+    } = new();
 
-    public List<RecordData> SelectedRecords { get; private set; } = new();
-    public event System.Action OnCostPaidSuccess; // 코스트 지불 성공 알림 이벤트 
+    public List<RecordData> SelectedRecords
+    {
+        get;
+        private set;
+    } = new();
+    public event System.Action OnCostPaidSuccess; // 코스트 지불 성공 알림 이벤트
 
     private Dictionary<int, SO_RecordData> recordsDict = new();
     private readonly Dictionary<string, PassiveSkill> recordPassives = new();
     private int generateCount = 3;
     private int rerollCount;
-    public int RerollCount => rerollCount;
+    public int RerollCount
+    {
+        get
+        {
+            return rerollCount;
+        }
+    }
     private int maxRerollCount = 3;
 
     private int max_selectCount = 1;
@@ -26,12 +40,18 @@ public sealed class RecordManager : MonoBehaviour
 
     private bool isDirty = false;
 
-    public void SetReceiveRecordFlag() => isReceived = true;
+    public void SetReceiveRecordFlag()
+    {
+        isReceived = true;
+    }
 
     public void ResetRecordFlowData()
     {
         foreach (var passive in recordPassives.Values)
+        {
             AppManager.Instance?.GetPassiveSystem()?.Remove(Constants.GLOBAL_RECORD_JOB_ID, passive);
+        }
+
         recordPassives.Clear();
         isReceived = false;
         filterStartingSkills = false;
@@ -62,25 +82,38 @@ public sealed class RecordManager : MonoBehaviour
             recordsDict.Add(record.id, record);
         }
 
-        // 인벤토리에 변동이 생길 때마다 자동으로 세이브 플레그 ON 
-        recordInventory.OnInventoryChanged += (inv) => { isDirty = true; };
-        transferInventory.OnInventoryChanged += (inv) => { isDirty = true; };
+        // 인벤토리에 변동이 생길 때마다 자동으로 세이브 플레그 ON
+        recordInventory.OnInventoryChanged += (inv) =>
+        {
+            isDirty = true;
+
+        };
+        transferInventory.OnInventoryChanged += (inv) =>
+        {
+            isDirty = true;
+
+        };
 
         RecordSaveListData saveData = SaveManager.LoadRecordData();
         if (saveData != null)
+        {
             ApplySavedRecords(saveData);
+        }
     }
 
     private void ApplySavedRecords(RecordSaveListData saveData)
     {
-        if (saveData == null) return;
+        if (saveData == null)
+        {
+            return;
+        }
 
         // 혹시 모를 찌꺼기 데이터 초기화
         recordInventory.ClearAll();
         transferInventory.ClearAll();
 
 
-        // 소지 중인 레코드 복구 
+        // 소지 중인 레코드 복구
         foreach (RecordSaveData savedInfo in saveData.recordIDs)
         {
             recordInventory.AddRecord(RestoreRecord(savedInfo));
@@ -97,36 +130,64 @@ public sealed class RecordManager : MonoBehaviour
 
     private RecordData RestoreRecord(RecordSaveData saved)
     {
-        if (saved == null) return null;
+        if (saved == null)
+        {
+            return null;
+        }
+
         var record = saved.recordID == RecordDataBase.EmptyRecordId ? GetEmptyRecord() :
-            recordsDict.TryGetValue(saved.recordID, out var template) ? template.GetRecordData() : null;
-        if (record != null) record.uniqueID = saved.uniqueID;
+                    recordsDict.TryGetValue(saved.recordID, out var template) ? template.GetRecordData() : null;
+        if (record != null)
+        {
+            record.uniqueID = saved.uniqueID;
+        }
+
         return record;
     }
 
-    public List<RecordData> GetPossesRecord() => recordInventory.Records.ToList();
+    public List<RecordData> GetPossesRecord()
+    {
+        return recordInventory.Records.ToList();
+    }
 
     // Inventory restoration happens during AppManager.Awake, before PassiveSystem.OnInit.
     // Rebuild effects afterwards so resumed records keep their gameplay effects too.
     public void RestoreOwnedPassives()
     {
         var passives = AppManager.Instance?.GetPassiveSystem();
-        if (passives == null) return;
+        if (passives == null)
+        {
+            return;
+        }
+
         passives.ResetRecordPassives();
         recordPassives.Clear();
         foreach (var record in recordInventory.Records)
-            if (record.id != RecordDataBase.EmptyRecordId && !IsRuntimePassiveRecord(record))
+        {
+            if (record.id != RecordDataBase.EmptyRecordId && IsRuntimePassiveRecord(record) == false)
+            {
                 RegisterRecordPassive(record);
+            }
+        }
     }
-    public List<RecordData> GetTransferedRecordIDs() => transferInventory.Records.ToList();
+    public List<RecordData> GetTransferedRecordIDs()
+    {
+        return transferInventory.Records.ToList();
+    }
 
-    // 특정 레코드를 다음 회차에 사용할 수 있도록 보내는 함수 
+    // 특정 레코드를 다음 회차에 사용할 수 있도록 보내는 함수
     public void SetTranferRecord(RecordData target)
     {
-        if (target == null) return;
+        if (target == null)
+        {
+            return;
+        }
 
         var find = recordInventory.GetRecord(target.uniqueID);
-        if (find == null) return; // 없는 대상은 실패 TODO: 토스트 문자 띄우기 
+        if (find == null)
+        {
+            return; // 없는 대상은 실패 TODO: 토스트 문자 띄우기
+        }
 
         RemoveOwnedRecord(find);
         transferInventory.AddRecord(find);
@@ -136,10 +197,16 @@ public sealed class RecordManager : MonoBehaviour
 
     private List<RecordData> GetAllEnrichedRecordData()
     {
-        if (AppManager.Instance == null) return null;
+        if (AppManager.Instance == null)
+        {
+            return null;
+        }
 
         DataBaseManager db = AppManager.Instance.GetDataBaseManager();
-        if (db == null) return null;
+        if (db == null)
+        {
+            return null;
+        }
 
         List<RecordData> rawRecords = db.GetAllRecordData();
         List<RecordData> enrichedRecords = new List<RecordData>();
@@ -157,8 +224,13 @@ public sealed class RecordManager : MonoBehaviour
         }
         // 에셋으로 추가한 기본 패시브 강화 레코드도 JSON 재생성 없이 추첨에 포함합니다.
         foreach (var template in recordsDict.Values)
-            if (template != null && template.isImplemented && template.type == RecordType.PASSIVE && !enrichedRecords.Any(r => r.id == template.id))
+        {
+            if (template != null && template.isImplemented && template.type == RecordType.PASSIVE && enrichedRecords.Any(r => r.id == template.id) == false)
+            {
                 enrichedRecords.Add(template.GetRecordData());
+            }
+        }
+
         return enrichedRecords;
     }
 
@@ -167,9 +239,16 @@ public sealed class RecordManager : MonoBehaviour
     public void GenerateChapterStartRecords(int count = 3, bool canReroll = true)
     {
         // 이미 이번 스테이지에서 기본 보상을 받았다면 무시
-        if (isReceived || AppManager.Instance == null) return;
+        if (isReceived || AppManager.Instance == null)
+        {
+            return;
+        }
+
         var explore = AppManager.Instance.GetExploreManager();
-        if (explore == null || !explore.InitialRecordRewardPending || explore.Chapter != 1 || explore.MapNodeID != 0) return;
+        if (explore == null || explore.InitialRecordRewardPending == false || explore.Chapter != 1 || explore.MapNodeID != 0)
+        {
+            return;
+        }
 
         GenerateDraftRecords(count, canReroll, true);
     }
@@ -177,7 +256,10 @@ public sealed class RecordManager : MonoBehaviour
     // 💡 2. 이벤트 보상 시 호출 (중복 방지 플래그 검사 X - 무조건 지급)
     public void GenerateRewardRecords(int count = 3, bool canReroll = true)
     {
-        if (AppManager.Instance == null) return;
+        if (AppManager.Instance == null)
+        {
+            return;
+        }
 
         // 플래그를 무시하고 즉시 레코드 선택창을 띄웁니다.
         GenerateDraftRecords(count, canReroll);
@@ -187,19 +269,22 @@ public sealed class RecordManager : MonoBehaviour
     private void GenerateDraftRecords(int count, bool canReroll, bool startingSkillsOnly = false)
     {
         DataBaseManager db = AppManager.Instance.GetDataBaseManager();
-        if (db == null) return;
+        if (db == null)
+        {
+            return;
+        }
 
         filterStartingSkills = startingSkillsOnly;
         generateCount = Mathf.Max(1, count);
         SelectedRecords = new List<RecordData>();
 
-        // 1. 전체 데이터에서 랜덤 추출 
+        // 1. 전체 데이터에서 랜덤 추출
         List<RecordData> allRecord = GetAllEnrichedRecordData();
 
-        // 2. 현재 가지고 있는 레코드들이 있다면 제외 
+        // 2. 현재 가지고 있는 레코드들이 있다면 제외
         if (recordInventory.Records.Count > 0)
         {
-            allRecord.RemoveAll(data => !IsRewardCandidate(data));
+            allRecord.RemoveAll(data => (IsRewardCandidate(data) == false));
         }
 
         CurrentOptions = FilterDraftCandidates(allRecord, startingSkillsOnly)
@@ -207,13 +292,19 @@ public sealed class RecordManager : MonoBehaviour
         if (CurrentOptions.Count == 0)
         {
             var empty = db.GetEmptyRecord();
-            if (empty != null) CurrentOptions.Add(empty);
+            if (empty != null)
+            {
+                CurrentOptions.Add(empty);
+            }
         }
 
         // 5. AppManager를 통해 UI 오픈 이벤트 발행
         PauseManager.RequestPause();
         UIManager.Instance.OpenRecordSelectPopUp(CurrentOptions, canReroll, RecordUIMode.DRAFT);
-        if (startingSkillsOnly) AppManager.Instance.GetExploreManager()?.ConsumeInitialRecordReward();
+        if (startingSkillsOnly)
+        {
+            AppManager.Instance.GetExploreManager()?.ConsumeInitialRecordReward();
+        }
     }
 
     private List<RecordData> FilterDraftCandidates(IEnumerable<RecordData> source, bool startingOnly)
@@ -225,26 +316,44 @@ public sealed class RecordManager : MonoBehaviour
         return (source ?? Enumerable.Empty<RecordData>()).Where(r => r != null &&
             (r.targetFilter == TargetFilterType.ALL || r.IsTarget(job)) &&
             IsRewardCandidate(r) &&
-            (!startingOnly || IsStartingRecordEligible(r, equipped))).ToList();
+            (startingOnly == false || IsStartingRecordEligible(r, equipped))).ToList();
     }
 
     public bool IsStartingRecordEligible(RecordData record, ISet<int> equipped)
     {
-        if (record == null || equipped == null) return false;
+        if (record == null || equipped == null)
+        {
+            return false;
+        }
+
         var targets = new HashSet<int>((record.Skills ?? new List<RecordSkillData>())
-            .Where(s => s != null && s.SkillID > 0).Select(s => s.SkillID));
-        if (!recordsDict.TryGetValue(record.id, out var so) || so == null)
+                    .Where(s => s != null && s.SkillID > 0).Select(s => s.SkillID));
+        if (recordsDict.TryGetValue(record.id, out var so) == false || so == null)
+        {
             return targets.Count == 0 || targets.Overlaps(equipped);
+        }
+
         var passive = SkillTreeManager.Instance?.GetSkillRuntimeData(
-            so.targetFilter == TargetFilterType.ALL ? 0 : (int)so.targetFilter,
-            so.linkedPassiveSkillID)?.template as SO_PassiveSkillData;
+                    so.targetFilter == TargetFilterType.ALL ? 0 : (int)so.targetFilter,
+                    so.linkedPassiveSkillID)?.template as SO_PassiveSkillData;
         if (passive?.Modules != null)
+        {
             foreach (var module in passive.Modules)
-                if (module != null && module.TargetSkillID > 0) targets.Add(module.TargetSkillID);
+            {
+                if (module != null && module.TargetSkillID > 0)
+                {
+                    targets.Add(module.TargetSkillID);
+                }
+            }
+        }
         // Stats and general passives have no particular skill target.
         // An unresolved skill modifier must not bypass the equipment filter.
         if (targets.Count == 0 && passive == null && so.linkedPassiveSkillID > 0 &&
-            (record.type == RecordType.AUGMENT || record.type == RecordType.MODIFY)) return false;
+            (record.type == RecordType.AUGMENT || record.type == RecordType.MODIFY))
+        {
+            return false;
+        }
+
         return targets.Count == 0 || targets.Overlaps(equipped);
     }
 
@@ -253,7 +362,10 @@ public sealed class RecordManager : MonoBehaviour
         Debug.Assert(AppManager.Instance != null);
 
         DataBaseManager db = AppManager.Instance.GetDataBaseManager();
-        if (db == null) return null;
+        if (db == null)
+        {
+            return null;
+        }
 
         return db.GetEmptyRecord();
     }
@@ -307,7 +419,11 @@ public sealed class RecordManager : MonoBehaviour
 
     public void SelectedRecord(RecordData data)
     {
-        if (data == null) return;
+        if (data == null)
+        {
+            return;
+        }
+
         if (SelectedRecords.Contains(data) == false)
         {
             if (SelectedRecords.Count >= max_selectCount)
@@ -318,14 +434,17 @@ public sealed class RecordManager : MonoBehaviour
             Debug.Log($"Record Select : {data.recordName}");
         }
         else
+        {
             SelectedRecords.Remove(data);
-
+        }
     }
 
     public PassiveSkill GetRecordPassive(int id)
     {
         if (recordsDict.ContainsKey(id))
+        {
             return recordsDict[id].CreatePassiveSkill();
+        }
 
         return null;
     }
@@ -336,16 +455,25 @@ public sealed class RecordManager : MonoBehaviour
     }
 
     public void AddRecord(RecordData recordData)
-        => GrantRecord(recordData);
+    {
+        GrantRecord(recordData);
+    }
 
     // AUGMENT/MODIFY도 PassiveSkill로 구현되므로 연결 데이터만으로 강화형을 판정하지 않습니다.
-    private bool IsRuntimePassiveRecord(RecordData record) => record != null && record.type == RecordType.PASSIVE &&
+    private bool IsRuntimePassiveRecord(RecordData record)
+    {
+        return record != null && record.type == RecordType.PASSIVE &&
         recordsDict.TryGetValue(record.id, out var template) && template != null && template.type == RecordType.PASSIVE &&
         template.linkedPassiveSkillID > 0;
+    }
 
     private SO_PassiveSkillData ResolveRecordPassiveTemplate(RecordData record)
     {
-        if (!IsRuntimePassiveRecord(record)) return null;
+        if (IsRuntimePassiveRecord(record) == false)
+        {
+            return null;
+        }
+
         var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
         return explore.SafeInvoke(manager => manager.ResolvePassiveTemplate(recordsDict[record.id].linkedPassiveSkillID));
     }
@@ -353,29 +481,45 @@ public sealed class RecordManager : MonoBehaviour
     public bool IsRewardCandidate(RecordData record)
     {
         if (record == null || record.id == RecordDataBase.EmptyRecordId ||
-            HasConflictingRecord(record)) return false;
-        if (recordsDict.TryGetValue(record.id, out var definition) && !definition.isImplemented) return false;
+            HasConflictingRecord(record))
+        {
+            return false;
+        }
+
+        if (recordsDict.TryGetValue(record.id, out var definition) && definition.isImplemented == false)
+        {
+            return false;
+        }
+
         if (IsRuntimePassiveRecord(record))
         {
             var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
             return explore.SafeInvoke(manager => manager.CanUpgradePassive(ResolveRecordPassiveTemplate(record)));
         }
-        return !recordInventory.Records.Any(owned => owned.id == record.id);
+        return recordInventory.Records.Any(owned => owned.id == record.id) == false;
     }
 
     private bool HasConflictingRecord(RecordData record)
     {
-        if (!recordsDict.TryGetValue(record.id, out var candidate) || candidate == null ||
-            string.IsNullOrEmpty(candidate.mutualExclusionGroup)) return false;
+        if (recordsDict.TryGetValue(record.id, out var candidate) == false || candidate == null ||
+            string.IsNullOrEmpty(candidate.mutualExclusionGroup))
+        {
+            return false;
+        }
+
         return recordInventory.Records.Any(owned => owned.id != record.id &&
-            recordsDict.TryGetValue(owned.id, out var template) && template != null &&
-            template.mutualExclusionGroup == candidate.mutualExclusionGroup);
+                    recordsDict.TryGetValue(owned.id, out var template) && template != null &&
+                    template.mutualExclusionGroup == candidate.mutualExclusionGroup);
     }
 
     private void RegisterRecordPassive(RecordData record)
     {
         var passive = GetRecordPassive(record.id);
-        if (passive == null) return;
+        if (passive == null)
+        {
+            return;
+        }
+
         recordPassives[record.uniqueID] = passive;
         AppManager.Instance?.GetPassiveSystem()?.Add(Constants.GLOBAL_RECORD_JOB_ID, passive);
     }
@@ -383,7 +527,11 @@ public sealed class RecordManager : MonoBehaviour
     public bool RemoveOwnedRecord(RecordData record)
     {
         var owned = record == null ? null : recordInventory.GetRecord(record.uniqueID);
-        if (owned == null) return false;
+        if (owned == null)
+        {
+            return false;
+        }
+
         recordInventory.RemoveRecord(owned);
         if (recordPassives.TryGetValue(owned.uniqueID, out var passive))
         {
@@ -397,12 +545,19 @@ public sealed class RecordManager : MonoBehaviour
     // Return the actual item so result UI and passive registration cannot use a duplicate's original data.
     public RecordData GrantRecord(RecordData recordData)
     {
-        if (recordData == null || HasConflictingRecord(recordData)) return null;
+        if (recordData == null || HasConflictingRecord(recordData))
+        {
+            return null;
+        }
+
         if (IsRuntimePassiveRecord(recordData))
         {
             var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
             var template = ResolveRecordPassiveTemplate(recordData);
-            if (explore == null || !explore.GrantPassiveRecord(template)) return null;
+            if (explore == null || explore.GrantPassiveRecord(template) == false)
+            {
+                return null;
+            }
             // 강화 레코드는 한 장만 보관하며 중복 획득은 빈 레코드 대신 레벨로 반영합니다.
             var owned = recordInventory.Records.FirstOrDefault(r => r.id == recordData.id);
             var result = owned ?? recordInventory.AddRecord(recordData);
@@ -413,11 +568,18 @@ public sealed class RecordManager : MonoBehaviour
             return result;
         }
         var granted = recordInventory.AddRecord(recordData);
-        if (granted == null) return null;
+        if (granted == null)
+        {
+            return null;
+        }
+
         isReceived = true;
         isDirty = true;
         if (granted.id != RecordDataBase.EmptyRecordId)
+        {
             RegisterRecordPassive(granted);
+        }
+
         SaveIfDirty();
         return granted;
     }
@@ -430,11 +592,16 @@ public sealed class RecordManager : MonoBehaviour
             .GroupBy(r => r.id).Select(g => g.First()).ToList();
     }
 
-    public List<RecordData> GetRewardCandidates() =>
-        FilterDraftCandidates(GetAllEnrichedRecordData(), false);
+    public List<RecordData> GetRewardCandidates()
+    {
+        return FilterDraftCandidates(GetAllEnrichedRecordData(), false);
+    }
 
-    public RecordData GetShopRecord(int id) => recordsDict.TryGetValue(id, out var record) && record != null
+    public RecordData GetShopRecord(int id)
+    {
+        return recordsDict.TryGetValue(id, out var record) && record != null
         ? record.GetRecordData() : null;
+    }
 
     public void RemoveTransferedRecord(RecordData target)
     {
@@ -445,10 +612,13 @@ public sealed class RecordManager : MonoBehaviour
     public List<RecordData> RerollAllCurrentRecords()
     {
         DataBaseManager db = DataBaseManager.Instance;
-        if (db == null) return null;
+        if (db == null)
+        {
+            return null;
+        }
 
         // 1. 후보군 생성 (전체 - 이미 영구 보유 중인 것들)
-        // 현재 떠 있는 것(CurrentOptions)은 제외하지 않습니다. 
+        // 현재 떠 있는 것(CurrentOptions)은 제외하지 않습니다.
         // 그래야 리롤 시점에 다시 나올 기회를 얻어 '빈 레코드'가 성급하게 뜨지 않습니다.
         var allRecord = GetAllEnrichedRecordData();
         var candidates = FilterDraftCandidates(allRecord, filterStartingSkills)
@@ -493,7 +663,10 @@ public sealed class RecordManager : MonoBehaviour
         if (newOptions.Count == 0)
         {
             var emptyRecord = db.GetEmptyRecord();
-            if (emptyRecord != null) newOptions.Add(emptyRecord);
+            if (emptyRecord != null)
+            {
+                newOptions.Add(emptyRecord);
+            }
         }
 
         // 성공적으로 리롤이 수행된 경우에만 카운트 차감
@@ -519,7 +692,7 @@ public sealed class RecordManager : MonoBehaviour
     //    if (db == null) return;
 
     //    // 1. 후보군 생성 (전체 - 이미 영구 보유 중인 것들)
-    //    // 현재 떠 있는 것(CurrentOptions)은 제외하지 않습니다. 
+    //    // 현재 떠 있는 것(CurrentOptions)은 제외하지 않습니다.
     //    // 그래야 리롤 시점에 다시 나올 기회를 얻어 '빈 레코드'가 성급하게 뜨지 않습니다.
     //    var allRecord = GetAllEnrichedRecordData();
     //    var candidates = allRecord
@@ -571,14 +744,17 @@ public sealed class RecordManager : MonoBehaviour
     //    // 4. 데이터 갱신 및 UI 트리거
     //    CurrentOptions = newOptions;
 
-    //    UIManager.Instance.SafeInvoke(v => v.RefreshRecordSelectPopUp(CurrentOptions)); 
+    //    UIManager.Instance.SafeInvoke(v => v.RefreshRecordSelectPopUp(CurrentOptions));
     //}
 
 
     // 레코드를 비용(Cost)으로 지불하고 완료하는 함수
     public bool OnCompleteCostDiscard()
     {
-        if (SelectedRecords == null || SelectedRecords.Count <= 0) return false;
+        if (SelectedRecords == null || SelectedRecords.Count <= 0)
+        {
+            return false;
+        }
 
         foreach (RecordData data in SelectedRecords)
         {
@@ -605,10 +781,15 @@ public sealed class RecordManager : MonoBehaviour
     {
         List<RecordData> selectedRecords = SelectedRecords;
         if (selectedRecords.Count <= 0)
+        {
             return false;
+        }
 
         var ps = AppManager.Instance.GetPassiveSystem();
-        if (ps == null) return false;
+        if (ps == null)
+        {
+            return false;
+        }
 
         foreach (RecordData data in selectedRecords)
         {
@@ -623,7 +804,10 @@ public sealed class RecordManager : MonoBehaviour
     public bool OnCompleteArchiveRecord()
     {
         List<RecordData> selectedRecords = SelectedRecords;
-        if (selectedRecords == null || selectedRecords.Count <= 0) return false;
+        if (selectedRecords == null || selectedRecords.Count <= 0)
+        {
+            return false;
+        }
 
         foreach (RecordData data in selectedRecords)
         {
@@ -641,15 +825,25 @@ public sealed class RecordManager : MonoBehaviour
     public bool OnCompleteInheritReward()
     {
         List<RecordData> selectedRecords = SelectedRecords;
-        if (selectedRecords == null || selectedRecords.Count <= 0) return false;
+        if (selectedRecords == null || selectedRecords.Count <= 0)
+        {
+            return false;
+        }
 
         var ps = AppManager.Instance.GetPassiveSystem();
-        if (ps == null) return false;
+        if (ps == null)
+        {
+            return false;
+        }
 
         foreach (RecordData data in selectedRecords)
         {
             var granted = GrantRecord(data);
-            if (granted == null) continue;
+            if (granted == null)
+            {
+                continue;
+            }
+
             RemoveTransferedRecord(data);
         }
 
@@ -661,7 +855,10 @@ public sealed class RecordManager : MonoBehaviour
 
     public void SaveIfDirty()
     {
-        if (isDirty == false) return;
+        if (isDirty == false)
+        {
+            return;
+        }
 
         RecordSaveListData save = new RecordSaveListData();
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 [System.Serializable]
-public class EnhanceJsonData 
+public class EnhanceJsonData
 {
     public int id;
     public int rank;
@@ -12,10 +12,10 @@ public class EnhanceJsonData
     public int max;
     public int usegold;
     public string requires;
-    public string trycost; 
+    public string trycost;
 }
 
-[System.Serializable]   
+[System.Serializable]
 public class EnhanceJosnAllData
 {
     public List<EnhanceJsonData> enhanceLevel;
@@ -27,7 +27,7 @@ public class EnhanceStatJsonData
     public int id;
     public int rank;
     public int level;
-    public int flat; 
+    public int flat;
     public float percent;
 }
 
@@ -48,20 +48,20 @@ public class EnhanceStatData
 
 public class EnhanceLevelData
 {
-    public int id; 
+    public int id;
     public int rank;
     public int min;
     public int max;
     public bool usegold;
     public List<int> requires;
-    public List<int> costs; 
+    public List<int> costs;
 }
 
 public class EnhanceDataBase : DataBase
 {
     [SerializeField] private TextAsset enhanceStatJson;
 
-    private Dictionary<int, EnhanceLevelData> enhanceLevelDatas = new(); // key : id 
+    private Dictionary<int, EnhanceLevelData> enhanceLevelDatas = new(); // key : id
     private Dictionary<int, List<int>> enhanceIDsByRank = new(); // key : rank value : id
 
     private Dictionary<int, List<EnhanceStatData>> enhanceStatDatasByRank = new(); // key : rank value : enhanceStatData list
@@ -112,7 +112,7 @@ public class EnhanceDataBase : DataBase
             jsonAsset,
             root => root.enhanceLevel,
 
-            enhanceJsonData => 
+            enhanceJsonData =>
             {
                 EnhanceLevelData enhanceInfo = new EnhanceLevelData();
                 enhanceInfo.id = enhanceJsonData.id;
@@ -122,7 +122,7 @@ public class EnhanceDataBase : DataBase
                 enhanceInfo.usegold = enhanceJsonData.usegold > 0;
                 // Parse requires
                 enhanceInfo.requires = new List<int>();
-                if (!string.IsNullOrEmpty(enhanceJsonData.requires))
+                if (string.IsNullOrEmpty(enhanceJsonData.requires) == false)
                 {
                     string[] requiresStr = enhanceJsonData.requires.Split(',');
                     foreach (var req in requiresStr)
@@ -135,7 +135,7 @@ public class EnhanceDataBase : DataBase
                 }
                 // Parse costs
                 enhanceInfo.costs = new List<int>();
-                if (!string.IsNullOrEmpty(enhanceJsonData.trycost))
+                if (string.IsNullOrEmpty(enhanceJsonData.trycost) == false)
                 {
                     string[] costsStr = enhanceJsonData.trycost.Split(',');
                     foreach (var cost in costsStr)
@@ -149,7 +149,7 @@ public class EnhanceDataBase : DataBase
                 return enhanceInfo;
             },
 
-            enhanceInfo => 
+            enhanceInfo =>
             {
                 enhanceIDsByRank.TryGetValue(enhanceInfo.rank, out List<int> ids);
                 if (ids == null)
@@ -163,19 +163,21 @@ public class EnhanceDataBase : DataBase
             }
         );
 
-        // Complete Message 
+        // Complete Message
         Debug.Log("===================================================");
         Debug.Log($"Complete Message => enhanceLevelDatas : {enhanceLevelDatas.Count}");
     }
 
-   
+
     public EnhanceLevelData GetEnhanceLevelData(int rank, int enhanceLevel)
     {
 
         if (enhanceIDsByRank.TryGetValue(rank, out List<int> ids) == false)
-            return null; 
+        {
+            return null;
+        }
 
-        foreach(var id in ids)
+        foreach (var id in ids)
         {
             if (enhanceLevelDatas[id].min <= enhanceLevel && enhanceLevelDatas[id].max >= enhanceLevel)
             {
@@ -191,11 +193,13 @@ public class EnhanceDataBase : DataBase
         enhanceStatDatasByRank.TryGetValue(rank, out List<EnhanceStatData> statList);
 
         if (statList == null)
-            return null;
-
-        foreach(var stat in statList)
         {
-            if(stat.level == level)
+            return null;
+        }
+
+        foreach (var stat in statList)
+        {
+            if (stat.level == level)
             {
                 return stat;
             }
@@ -208,7 +212,10 @@ public class EnhanceDataBase : DataBase
     {
         enhanceStatDatasByRank.TryGetValue(rank, out List<EnhanceStatData> statList);
         if (statList == null)
+        {
             return null;
-        return statList; 
+        }
+
+        return statList;
     }
 }

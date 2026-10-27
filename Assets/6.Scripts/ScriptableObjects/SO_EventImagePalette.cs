@@ -21,12 +21,15 @@ public class SO_EventImagePalette : ScriptableObject
 
     public void Initialize()
     {
-        if (imageDict != null) return;
+        if (imageDict != null)
+        {
+            return;
+        }
 
         imageDict = new Dictionary<string, Sprite>();
         foreach (var item in eventImages)
         {
-            if (!string.IsNullOrEmpty(item.imageKey) && !imageDict.ContainsKey(item.imageKey))
+            if (string.IsNullOrEmpty(item.imageKey) == false && imageDict.ContainsKey(item.imageKey) == false)
             {
                 imageDict.Add(item.imageKey, item.imageSprite);
             }
@@ -36,9 +39,15 @@ public class SO_EventImagePalette : ScriptableObject
     // 외부에서 키값으로 이미지를 요청할 때 사용할 함수
     public Sprite GetImage(string key)
     {
-        if (string.IsNullOrEmpty(key)) return null;
+        if (string.IsNullOrEmpty(key))
+        {
+            return null;
+        }
 
-        if (imageDict == null) Initialize();
+        if (imageDict == null)
+        {
+            Initialize();
+        }
 
         if (imageDict.TryGetValue(key, out Sprite sprite))
         {

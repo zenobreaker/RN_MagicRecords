@@ -12,14 +12,28 @@ public abstract class ActionComponent : MonoBehaviour
     public Action OnDoAction;
     public Action OnBeginDoAction;
     public Action OnEndDoAction;
-    protected bool bDirtyMove = false; 
+    protected bool bDirtyMove = false;
 
     protected GameObject rootObject;
     protected bool bInAction;
-    public bool InAction { get => bInAction; protected set => bInAction = value; }
+    public bool InAction
+    {
+        get
+        {
+            return bInAction;
+        }
+        protected set
+        {
+            bInAction = value;
+        }
+    }
 
     public event Action<GameObject, DamageEvent> OnAttackHit;
-    public int Priority { get; set; }
+    public int Priority
+    {
+        get;
+        set;
+    }
 
     // 가짜 타이머(애니메이션 대체) 관리용 토큰
     protected CancellationTokenSource actionCts;
@@ -27,7 +41,10 @@ public abstract class ActionComponent : MonoBehaviour
     // 공통 실행부: 행동 시작 및 가짜 타이머 자동화
     public virtual void DoAction()
     {
-        if (bInAction) return;
+        if (bInAction)
+        {
+            return;
+        }
 
         bInAction = true;
         OnDoAction?.Invoke();
@@ -53,7 +70,10 @@ public abstract class ActionComponent : MonoBehaviour
             await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: token);
             EndDoAction(); // 여기서 자동으로 InAction = false 가 됩니다.
         }
-        catch (OperationCanceledException) { /* 캔슬 시 무시 */ }
+        catch (OperationCanceledException)
+        {
+            /* 캔슬 시 무시 */
+        }
     }
 
     public void CancelManualAction()
@@ -66,8 +86,12 @@ public abstract class ActionComponent : MonoBehaviour
         }
     }
 
-    public virtual void StartAction() { }
-    public virtual void BeginDoAction() { }
+    public virtual void StartAction()
+    {
+    }
+    public virtual void BeginDoAction()
+    {
+    }
 
     public virtual void EndDoAction()
     {
@@ -75,10 +99,18 @@ public abstract class ActionComponent : MonoBehaviour
         CancelManualAction(); // 종료 시 타이머도 확실히 끔
     }
 
-    public virtual void BeginJudgeAttack(AnimationEvent e) { }
-    public virtual void EndJudgeAttack(AnimationEvent e) { }
-    public virtual void PlaySound() { }
-    public virtual void PlayCameraShake() { }
+    public virtual void BeginJudgeAttack(AnimationEvent e)
+    {
+    }
+    public virtual void EndJudgeAttack(AnimationEvent e)
+    {
+    }
+    public virtual void PlaySound()
+    {
+    }
+    public virtual void PlayCameraShake()
+    {
+    }
 
     public void NotifyAttackHit(GameObject target, DamageEvent evt)
     {

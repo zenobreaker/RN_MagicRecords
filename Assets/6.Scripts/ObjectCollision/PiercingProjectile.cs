@@ -22,8 +22,16 @@ public sealed class PiercingProjectile : AbstractProjectile, IProjectile
     /// </summary>
     public int PierceCount
     {
-        get { InitializePierce(); return currentPierceCount; }
-        set { InitializePierce(); currentPierceCount = value; }
+        get
+        {
+            InitializePierce();
+            return currentPierceCount;
+        }
+        set
+        {
+            InitializePierce();
+            currentPierceCount = value;
+        }
     }
 
     /// <summary>
@@ -31,7 +39,10 @@ public sealed class PiercingProjectile : AbstractProjectile, IProjectile
     /// </summary>
     public int BasePierceCount
     {
-        get => basePierceCount;
+        get
+        {
+            return basePierceCount;
+        }
         set
         {
             InitializePierce();
@@ -48,7 +59,11 @@ public sealed class PiercingProjectile : AbstractProjectile, IProjectile
 
     private void InitializePierce()
     {
-        if (pierceInitialized) return;
+        if (pierceInitialized)
+        {
+            return;
+        }
+
         pierceInitialized = true;
         defaultPierceCount = basePierceCount;
         currentPierceCount = basePierceCount;
@@ -73,20 +88,28 @@ public sealed class PiercingProjectile : AbstractProjectile, IProjectile
     protected override void ProcessHit(Collider other)
     {
         if (other == null)
+        {
             return;
+        }
 
         // 이미 맞은 대상이면 무시
         GameObject target = GetDamageTarget(other);
 
         if (target == null)
+        {
             return;
+        }
 
         if (hitTargets.Contains(target))
+        {
             return;
+        }
 
         // 자신/아군 판정
         if (IsFriendlyFire(target))
+        {
             return;
+        }
 
         // --------------------------------------------------
         // 1. 피격 처리
@@ -106,7 +129,9 @@ public sealed class PiercingProjectile : AbstractProjectile, IProjectile
 
         // -1 = 무한 관통
         if (currentPierceCount == -1)
+        {
             return;
+        }
 
         // 0 = 관통 불가
         // 이미 데미지를 줬으므로 여기서 소멸
@@ -127,7 +152,9 @@ public sealed class PiercingProjectile : AbstractProjectile, IProjectile
     private GameObject GetDamageTarget(Collider targetCollider)
     {
         if (targetCollider == null)
+        {
             return null;
+        }
 
         if (targetCollider.TryGetComponent<Character>(
                 out Character character))
@@ -139,7 +166,9 @@ public sealed class PiercingProjectile : AbstractProjectile, IProjectile
             targetCollider.GetComponentInParent<Character>();
 
         if (parentCharacter != null)
+        {
             return parentCharacter.gameObject;
+        }
 
         // 일반 오브젝트라면 Collider 자신을 대상 취급
         return targetCollider.gameObject;

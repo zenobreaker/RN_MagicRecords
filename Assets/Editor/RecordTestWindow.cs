@@ -34,11 +34,16 @@ public class RecordTestWindow : EditorWindow
     private void RefreshRecords()
     {
         records.Clear();
-        foreach (string guid in AssetDatabase.FindAssets("t:SO_RecordData", new[] { RecordFolder }))
+        foreach (string guid in AssetDatabase.FindAssets("t:SO_RecordData", new[]
+        {
+            RecordFolder
+        }))
         {
             SO_RecordData record = AssetDatabase.LoadAssetAtPath<SO_RecordData>(AssetDatabase.GUIDToAssetPath(guid));
             if (record != null)
+            {
                 records.Add(record);
+            }
         }
         records.Sort((left, right) => left.id.CompareTo(right.id));
     }
@@ -78,24 +83,32 @@ public class RecordTestWindow : EditorWindow
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space(6f);
-            EditorGUI.BeginDisabledGroup(!Application.isPlaying);
+            EditorGUI.BeginDisabledGroup(Application.isPlaying == false);
             if (GUILayout.Button("선택 레코드 지급", GUILayout.Height(28f)))
+            {
                 GrantRecord(selectedRecord);
+            }
+
             EditorGUI.EndDisabledGroup();
             if (GUILayout.Button("레코드 선택 해제"))
+            {
                 selectedRecord = null;
+            }
         }
 
         EditorGUILayout.Space(8f);
-        EditorGUI.BeginDisabledGroup(!Application.isPlaying);
+        EditorGUI.BeginDisabledGroup(Application.isPlaying == false);
         if (GUILayout.Button("UI 강제 호출 (랜덤 3개)", GUILayout.Height(28f)))
         {
             AppManager.Instance.GenerateRecord_Test(3);
             GameManager.Instance.OnPrecessBattle();
         }
         EditorGUI.EndDisabledGroup();
-        if (!Application.isPlaying)
+        if (Application.isPlaying == false)
+        {
             EditorGUILayout.HelpBox("레코드 지급은 플레이 모드에서만 가능합니다.", MessageType.Warning);
+        }
+
         EditorGUILayout.EndVertical();
     }
 
@@ -112,7 +125,10 @@ public class RecordTestWindow : EditorWindow
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField($"레코드 목록 ({filteredRecords.Count()})", EditorStyles.boldLabel);
         if (GUILayout.Button("새로고침", GUILayout.Width(70f)))
+        {
             RefreshRecords();
+        }
+
         EditorGUILayout.EndHorizontal();
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
         int columns = Mathf.Max(1, Mathf.FloorToInt((position.width - LeftPanelWidth - 40f) / GridItemWidth));
@@ -120,24 +136,38 @@ public class RecordTestWindow : EditorWindow
         foreach (SO_RecordData record in filteredRecords)
         {
             if (index % columns == 0)
+            {
                 EditorGUILayout.BeginHorizontal();
+            }
+
             EditorGUILayout.BeginVertical(GUILayout.Width(GridItemWidth - 4f));
             Texture2D icon = record.icon != null ? record.icon.texture : null;
             Color previousColor = GUI.backgroundColor;
             if (record == selectedRecord)
+            {
                 GUI.backgroundColor = new Color(0.45f, 0.75f, 1f);
+            }
+
             if (GUILayout.Button(icon, GUILayout.Width(64f), GUILayout.Height(64f)))
+            {
                 selectedRecord = record;
+            }
+
             GUI.backgroundColor = previousColor;
             EditorGUILayout.LabelField(new GUIContent(TheWheeler.Editor.EditorLocalization.Resolve(record.recordName), record.recordName), EditorStyles.miniLabel, GUILayout.Width(GridItemWidth - 4f));
             EditorGUILayout.LabelField($"[{record.id}] {record.targetFilter}", EditorStyles.miniLabel, GUILayout.Width(GridItemWidth - 4f));
             EditorGUILayout.EndVertical();
             index++;
             if (index % columns == 0)
+            {
                 EditorGUILayout.EndHorizontal();
+            }
         }
         if (index % columns != 0)
+        {
             EditorGUILayout.EndHorizontal();
+        }
+
         EditorGUILayout.EndScrollView();
         EditorGUILayout.EndVertical();
     }

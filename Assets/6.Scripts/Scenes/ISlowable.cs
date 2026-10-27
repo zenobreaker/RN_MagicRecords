@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-public interface ISlowable 
+public interface ISlowable
 {
     void ApplySlow(float duration, float slowFactor);
     void ResetSpeed();

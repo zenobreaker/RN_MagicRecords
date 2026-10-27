@@ -31,8 +31,20 @@ public class SoundSliderGroup : MonoBehaviour
     private bool isMute = false;
     private float volume = 0.0f;
 
-    public float CurrentVolume => this.volume;
-    public bool CurrentMute => this.isMute;
+    public float CurrentVolume
+    {
+        get
+        {
+            return this.volume;
+        }
+    }
+    public bool CurrentMute
+    {
+        get
+        {
+            return this.isMute;
+        }
+    }
 
     private void Awake()
     {
@@ -40,7 +52,7 @@ public class SoundSliderGroup : MonoBehaviour
 
         audioValueSlider.onValueChanged.AddListener(SetVolume);
 
-        if(audioButton != null)
+        if (audioButton != null)
         {
             audioButton.onClick.AddListener(OnMuteButton);
         }
@@ -68,15 +80,15 @@ public class SoundSliderGroup : MonoBehaviour
     {
         this.category = category;
         isMute = mute;
-        this.volume = volume; 
+        this.volume = volume;
         DrawUI();
     }
 
     private void OnMuteButton()
     {
-        isMute = !isMute;
+        isMute = (isMute == false);
 
-        if (!isMute && this.volume <= 0.001f)
+        if (isMute == false && this.volume <= 0.001f)
         {
             this.volume = 0.5f;
         }
@@ -87,7 +99,10 @@ public class SoundSliderGroup : MonoBehaviour
 
     private void ApplyVolumeToMixer()
     {
-        if (SoundManager.Instance == null) return;
+        if (SoundManager.Instance == null)
+        {
+            return;
+        }
 
         // 음소거 상태면 무조건 0 전달, 아니면 현재 들고 있는 볼륨(0~10 스케일) 전달
         float targetValue = isMute ? 0f : (this.volume);
@@ -119,9 +134,13 @@ public class SoundSliderGroup : MonoBehaviour
         if (audioButtonImage != null)
         {
             if (isMute)
+            {
                 audioButtonImage.sprite = muteImage;
+            }
             else
+            {
                 audioButtonImage.sprite = unmuteImage;
+            }
         }
 
         if (valueText != null)
@@ -132,8 +151,10 @@ public class SoundSliderGroup : MonoBehaviour
 
     private void DrawNameText()
     {
-        if (nameText == null) return;
-
+        if (nameText == null)
+        {
+            return;
+        }
 
         switch (category)
         {

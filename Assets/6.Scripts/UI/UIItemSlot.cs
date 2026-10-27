@@ -16,7 +16,7 @@ public abstract class UISlot<T> : MonoBehaviour
 
     public virtual void OnClick()
     {
-        
+
     }
 }
 
@@ -25,7 +25,7 @@ public class UIItemSlot : UISlot<ItemData>
 {
     [SerializeField] private Sprite noDataIcon;
     protected Image itemImage;
-    
+
     protected ItemData itemData;
 
     public virtual void SetItemData(ItemData itemData)
@@ -38,12 +38,14 @@ public class UIItemSlot : UISlot<ItemData>
     public override void Refresh()
     {
         if (itemImage == null)
-            return; 
+        {
+            return;
+        }
 
-        if(itemData == null)
+        if (itemData == null)
         {
             itemImage.sprite = noDataIcon;
-            return; 
+            return;
         }
 
         itemImage.sprite = itemData.Icon;

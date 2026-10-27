@@ -14,7 +14,11 @@ namespace TheWheeler.Tests
         [Test]
         public void AssembliesDoNotDependOnTheGame()
         {
-            foreach (var assembly in new[] { typeof(UIRegistry).Assembly, typeof(AnimationEventEditor).Assembly })
+            foreach (var assembly in new[]
+            {
+                typeof(UIRegistry).Assembly,
+                typeof(AnimationEventEditor).Assembly
+            })
             {
                 Assert.That(assembly.GetName().Name, Does.StartWith("TheWheeler."));
                 Assert.That(assembly.GetReferencedAssemblies().Any(a => a.Name.StartsWith("Assembly-CSharp")), Is.False);
@@ -34,7 +38,11 @@ namespace TheWheeler.Tests
                 Assert.That(root.transform.FindChildByNameDeeper("Leaf"), Is.EqualTo(leaf.transform));
                 Assert.That(root.transform.FindChildByNameDeeper("Missing"), Is.Null);
             }
-            finally { Object.DestroyImmediate(root); }
+            finally
+            {
+                Object.DestroyImmediate(root);
+
+            }
         }
 
         [Test]
@@ -43,7 +51,11 @@ namespace TheWheeler.Tests
             var target = new GameObject("Destroyed");
             Object.DestroyImmediate(target);
             var called = false;
-            target.SafeInvoke(_ => { called = true; });
+            target.SafeInvoke(_ =>
+            {
+                called = true;
+
+            });
             Assert.That(called, Is.False);
             Assert.That(target.SafeInvoke(_ => 12, 42), Is.EqualTo(42));
         }
@@ -56,14 +68,35 @@ namespace TheWheeler.Tests
             {
                 var results = new List<int>();
                 JsonLoader.LoadJsonList<TestRoot, TestData, int>(asset, r => r.items, d => d.value * 2, results.Add);
-                CollectionAssert.AreEqual(new[] { 6, 14 }, results);
-                CollectionAssert.AreEqual(new[] { 1, 2, 3 }, JsonLoader.ParseIntList("1, 2,3"));
+                CollectionAssert.AreEqual(new[]
+                {
+                    6,
+                    14
+                }, results);
+                CollectionAssert.AreEqual(new[]
+                {
+                    1,
+                    2,
+                    3
+                }, JsonLoader.ParseIntList("1, 2,3"));
             }
-            finally { Object.DestroyImmediate(asset); }
+            finally
+            {
+                Object.DestroyImmediate(asset);
+
+            }
         }
 
-        [Serializable] public class TestRoot { public List<TestData> items; }
-        [Serializable] public class TestData { public int value; }
+        [Serializable]
+        public class TestRoot
+        {
+            public List<TestData> items;
+        }
+        [Serializable]
+        public class TestData
+        {
+            public int value;
+        }
 
         [Test]
         public void UiSlotsReuseInstancesAndKeepTemplateHidden()
@@ -74,18 +107,29 @@ namespace TheWheeler.Tests
                 var template = new GameObject("Template", typeof(RectTransform));
                 template.transform.SetParent(root.transform);
                 var first = new List<RectTransform>();
-                UIListDrawer.DrawListToTarget<RectTransform, int>(root.transform, template, new List<int> { 1, 2 },
+                UIListDrawer.DrawListToTarget<RectTransform, int>(root.transform, template, new List<int>
+                {
+                    1,
+                    2
+                },
                     (slot, data, index) => first.Add(slot));
                 Assert.That(template.activeSelf, Is.False);
                 Assert.That(first.Count, Is.EqualTo(2));
                 RectTransform reused = null;
-                UIListDrawer.DrawListToTarget<RectTransform, int>(root.transform, template, new List<int> { 3 },
+                UIListDrawer.DrawListToTarget<RectTransform, int>(root.transform, template, new List<int>
+                {
+                    3
+                },
                     (slot, data, index) => reused = slot);
                 Assert.That(reused, Is.SameAs(first[0]));
                 Assert.That(first[1].gameObject.activeSelf, Is.False);
                 Assert.That(root.transform.childCount, Is.EqualTo(3));
             }
-            finally { Object.DestroyImmediate(root); }
+            finally
+            {
+                Object.DestroyImmediate(root);
+
+            }
         }
 
         [Test]
@@ -104,7 +148,12 @@ namespace TheWheeler.Tests
                 PauseManager.RequestResume();
                 Assert.That(Time.timeScale, Is.EqualTo(1));
             }
-            finally { PauseManager.Reset(); Time.timeScale = previous; }
+            finally
+            {
+                PauseManager.Reset();
+                Time.timeScale = previous;
+
+            }
         }
 
         [Test]
@@ -118,7 +167,12 @@ namespace TheWheeler.Tests
                 Assert.That(TeamUtility.IsSameTeam(a, b), Is.False);
                 Assert.That(TeamUtility.IsEnemy(a, b), Is.False);
             }
-            finally { Object.DestroyImmediate(a); Object.DestroyImmediate(b); }
+            finally
+            {
+                Object.DestroyImmediate(a);
+                Object.DestroyImmediate(b);
+
+            }
         }
 
         [Test]
@@ -130,12 +184,24 @@ namespace TheWheeler.Tests
             {
                 var clip = new AnimationClip();
                 AssetDatabase.CreateAsset(clip, path);
-                var ev = new AnimationEvent { functionName = "OnCustomFootstep", time = 0.25f, intParameter = 7 };
-                AnimationUtility.SetAnimationEvents(clip, new[] { ev });
+                var ev = new AnimationEvent
+                {
+                    functionName = "OnCustomFootstep",
+                    time = 0.25f,
+                    intParameter = 7
+                };
+                AnimationUtility.SetAnimationEvents(clip, new[]
+                {
+                    ev
+                });
                 var type = typeof(AnimationEventEditor);
                 const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
                 type.GetField("targetClip", flags).SetValue(window, clip);
-                type.GetMethod("SelectEventForEdit", flags).Invoke(window, new object[] { 0, ev });
+                type.GetMethod("SelectEventForEdit", flags).Invoke(window, new object[]
+                {
+                    0,
+                    ev
+                });
                 type.GetMethod("ApplyEventChanges", flags).Invoke(window, null);
                 var saved = AnimationUtility.GetAnimationEvents(clip);
                 Assert.That(saved.Single().functionName, Is.EqualTo("OnCustomFootstep"));
@@ -144,7 +210,12 @@ namespace TheWheeler.Tests
                 type.GetMethod("AddEvent", flags).Invoke(window, null);
                 Assert.That(AnimationUtility.GetAnimationEvents(clip).Any(e => e.functionName == "OnCustomAttack"), Is.True);
             }
-            finally { Object.DestroyImmediate(window); AssetDatabase.DeleteAsset(path); }
+            finally
+            {
+                Object.DestroyImmediate(window);
+                AssetDatabase.DeleteAsset(path);
+
+            }
         }
 
         [Test]

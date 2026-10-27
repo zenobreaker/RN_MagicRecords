@@ -21,8 +21,17 @@ public class AnimationEventEditor : EditorWindow
     private Vector2 clipListScrollPos;
     private Vector2 assetListScrollPos;
 
-    private string[] functionPresets = { "Start_DoAction", "Begin_DoAction", "End_DoAction", "Begin_JudgeAttack",
-                                       "End_JudgeAttack","Play_Sound", "Play_CameraShake" ,"End_Damaged" };
+    private string[] functionPresets =
+    {
+        "Start_DoAction",
+        "Begin_DoAction",
+        "End_DoAction",
+        "Begin_JudgeAttack",
+        "End_JudgeAttack",
+        "Play_Sound",
+        "Play_CameraShake",
+        "End_Damaged"
+    };
     private int selectedPresetIndex = 0;
     private string eventFunctionName = "Start_DoAction";
 
@@ -38,20 +47,29 @@ public class AnimationEventEditor : EditorWindow
     private int selectedEventIndex = -1;
 
     // 💡 에셋 검색 및 필터용 변수
-    public enum AssetFilterType { All, PrefabOnly, ModelOnly }
+    public enum AssetFilterType
+    {
+        All, PrefabOnly, ModelOnly
+    }
     private AssetFilterType currentFilter = AssetFilterType.All;
     private string searchQuery = "";
     private List<GameObject> cachedAssets = new List<GameObject>();
 
     [MenuItem("Tools/TheWheeler/Animation Event Editor")]
-    public static void ShowWindow() => GetWindow<AnimationEventEditor>("Event Editor");
+    public static void ShowWindow()
+    {
+        GetWindow<AnimationEventEditor>("Event Editor");
+    }
 
     private void OnEnable()
     {
         EditorApplication.update += OnEditorUpdate;
         lastUpdateTime = EditorApplication.timeSinceStartup;
 
-        if (targetAsset != null && previewUtility == null) InitPreview();
+        if (targetAsset != null && previewUtility == null)
+        {
+            InitPreview();
+        }
 
         RefreshAssetList();
     }
@@ -69,7 +87,11 @@ public class AnimationEventEditor : EditorWindow
             double deltaTime = EditorApplication.timeSinceStartup - lastUpdateTime;
             targetTime += (float)deltaTime;
 
-            if (targetTime >= targetClip.length) targetTime = 0;
+            if (targetTime >= targetClip.length)
+            {
+                targetTime = 0;
+            }
+
             Repaint();
         }
         lastUpdateTime = EditorApplication.timeSinceStartup;
@@ -220,14 +242,28 @@ public class AnimationEventEditor : EditorWindow
         foreach (string guid in guids)
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
-            if (string.IsNullOrEmpty(path)) continue;
+            if (string.IsNullOrEmpty(path))
+            {
+                continue;
+            }
 
             bool isPrefab = path.EndsWith(".prefab", System.StringComparison.OrdinalIgnoreCase);
             bool isModel = path.EndsWith(".fbx", System.StringComparison.OrdinalIgnoreCase) || path.EndsWith(".obj", System.StringComparison.OrdinalIgnoreCase);
 
-            if (!isPrefab && !isModel) continue;
-            if (currentFilter == AssetFilterType.PrefabOnly && !isPrefab) continue;
-            if (currentFilter == AssetFilterType.ModelOnly && !isModel) continue;
+            if (isPrefab == false && isModel == false)
+            {
+                continue;
+            }
+
+            if (currentFilter == AssetFilterType.PrefabOnly && isPrefab == false)
+            {
+                continue;
+            }
+
+            if (currentFilter == AssetFilterType.ModelOnly && isModel == false)
+            {
+                continue;
+            }
 
             GameObject obj = AssetDatabase.LoadAssetAtPath<GameObject>(path);
             if (obj != null)
@@ -247,7 +283,11 @@ public class AnimationEventEditor : EditorWindow
     {
         EditorGUILayout.BeginVertical("box");
         GUILayout.Label("Event List", EditorStyles.boldLabel);
-        if (targetClip == null) { EditorGUILayout.EndVertical(); return; }
+        if (targetClip == null)
+        {
+            EditorGUILayout.EndVertical();
+            return;
+        }
 
         var events = AnimationUtility.GetAnimationEvents(targetClip);
         for (int i = 0; i < events.Length; i++)
@@ -255,24 +295,52 @@ public class AnimationEventEditor : EditorWindow
             var ev = events[i];
 
             var oldColor = GUI.backgroundColor;
-            if (i == selectedEventIndex) GUI.backgroundColor = Color.green;
+            if (i == selectedEventIndex)
+            {
+                GUI.backgroundColor = Color.green;
+            }
 
             EditorGUILayout.BeginHorizontal("helpbox");
             GUI.backgroundColor = oldColor;
 
-            if (GUILayout.Button($"{ev.time:F2}s", GUILayout.Width(45))) SelectEventForEdit(i, ev);
+            if (GUILayout.Button($"{ev.time:F2}s", GUILayout.Width(45)))
+            {
+                SelectEventForEdit(i, ev);
+            }
 
             string paramSummary = ev.functionName;
-            if (ev.floatParameter != 0) paramSummary += $" (F: {ev.floatParameter})";
-            if (ev.intParameter != 0) paramSummary += $" (I: {ev.intParameter})";
-            if (!string.IsNullOrEmpty(ev.stringParameter)) paramSummary += $" (S: {ev.stringParameter})";
-            if (ev.objectReferenceParameter != null) paramSummary += $" (O: {ev.objectReferenceParameter.name})";
+            if (ev.floatParameter != 0)
+            {
+                paramSummary += $" (F: {ev.floatParameter})";
+            }
 
-            if (GUILayout.Button(paramSummary, EditorStyles.miniLabel)) SelectEventForEdit(i, ev);
+            if (ev.intParameter != 0)
+            {
+                paramSummary += $" (I: {ev.intParameter})";
+            }
+
+            if (string.IsNullOrEmpty(ev.stringParameter) == false)
+            {
+                paramSummary += $" (S: {ev.stringParameter})";
+            }
+
+            if (ev.objectReferenceParameter != null)
+            {
+                paramSummary += $" (O: {ev.objectReferenceParameter.name})";
+            }
+
+            if (GUILayout.Button(paramSummary, EditorStyles.miniLabel))
+            {
+                SelectEventForEdit(i, ev);
+            }
 
             if (GUILayout.Button("X", GUILayout.Width(20)))
             {
-                if (selectedEventIndex == i) selectedEventIndex = -1;
+                if (selectedEventIndex == i)
+                {
+                    selectedEventIndex = -1;
+                }
+
                 RemoveEvent(ev);
                 GUIUtility.ExitGUI();
             }
@@ -293,15 +361,23 @@ public class AnimationEventEditor : EditorWindow
         }
 
         if (selectedEventIndex == -1)
+        {
             GUILayout.Label("✨ Add New Event", EditorStyles.boldLabel);
+        }
         else
+        {
             GUILayout.Label($"✏️ Edit Event (Selected)", EditorStyles.boldLabel);
+        }
 
         EditorGUILayout.Space(5);
 
         EditorGUI.BeginChangeCheck();
         selectedPresetIndex = EditorGUILayout.Popup("Preset", selectedPresetIndex, functionPresets);
-        if (EditorGUI.EndChangeCheck()) eventFunctionName = functionPresets[selectedPresetIndex];
+        if (EditorGUI.EndChangeCheck())
+        {
+            eventFunctionName = functionPresets[selectedPresetIndex];
+        }
+
         eventFunctionName = EditorGUILayout.TextField("Function", eventFunctionName);
         eventFloat = EditorGUILayout.FloatField("Float", eventFloat);
         eventInt = EditorGUILayout.IntField("Int", eventInt);
@@ -313,12 +389,18 @@ public class AnimationEventEditor : EditorWindow
         if (selectedEventIndex == -1)
         {
             if (GUILayout.Button("Add Event", GUILayout.Height(35)))
-            { AddEvent(); GUIUtility.ExitGUI(); }
+            {
+                AddEvent();
+                GUIUtility.ExitGUI();
+            }
         }
         else
         {
             if (GUILayout.Button("Apply Changes", GUILayout.Height(35)))
-            { ApplyEventChanges(); GUIUtility.ExitGUI(); }
+            {
+                ApplyEventChanges();
+                GUIUtility.ExitGUI();
+            }
 
             EditorGUILayout.BeginHorizontal();
 
@@ -334,7 +416,10 @@ public class AnimationEventEditor : EditorWindow
             }
 
             if (GUILayout.Button("Cancel", GUILayout.Height(25)))
-            { selectedEventIndex = -1; GUIUtility.ExitGUI(); }
+            {
+                selectedEventIndex = -1;
+                GUIUtility.ExitGUI();
+            }
 
             EditorGUILayout.EndHorizontal();
         }
@@ -345,19 +430,32 @@ public class AnimationEventEditor : EditorWindow
     private void InitPreview()
     {
         CleanupPreview();
-        if (targetAsset == null) return;
+        if (targetAsset == null)
+        {
+            return;
+        }
 
         previewUtility = new PreviewRenderUtility();
         previewInstance = Instantiate(targetAsset);
         previewInstance.hideFlags = HideFlags.HideAndDontSave;
 
-        foreach (var mb in previewInstance.GetComponentsInChildren<MonoBehaviour>()) mb.enabled = false;
+        foreach (var mb in previewInstance.GetComponentsInChildren<MonoBehaviour>())
+        {
+            mb.enabled = false;
+        }
 
         previewUtility.AddSingleGO(previewInstance);
 
         Bounds bounds = new Bounds(previewInstance.transform.position, Vector3.zero);
-        foreach (Renderer r in previewInstance.GetComponentsInChildren<Renderer>()) bounds.Encapsulate(r.bounds);
-        if (bounds.extents == Vector3.zero) bounds.extents = new Vector3(1, 1, 1);
+        foreach (Renderer r in previewInstance.GetComponentsInChildren<Renderer>())
+        {
+            bounds.Encapsulate(r.bounds);
+        }
+
+        if (bounds.extents == Vector3.zero)
+        {
+            bounds.extents = new Vector3(1, 1, 1);
+        }
 
         targetCenter = bounds.center;
         targetMagnitude = bounds.extents.magnitude;
@@ -384,7 +482,10 @@ public class AnimationEventEditor : EditorWindow
 
     private void DrawCustomPreview()
     {
-        if (previewUtility == null || previewInstance == null) return;
+        if (previewUtility == null || previewInstance == null)
+        {
+            return;
+        }
 
         Rect previewRect = GUILayoutUtility.GetRect(200, 250, GUILayout.ExpandWidth(true));
 
@@ -430,7 +531,9 @@ public class AnimationEventEditor : EditorWindow
         // ==========================================================
 
         if (targetClip != null)
+        {
             targetClip.SampleAnimation(previewInstance, targetTime);
+        }
 
         previewUtility.camera.Render();
         Texture resultTexture = previewUtility.EndPreview();
@@ -441,7 +544,11 @@ public class AnimationEventEditor : EditorWindow
 
     private void CleanupPreview()
     {
-        if (previewInstance != null) DestroyImmediate(previewInstance);
+        if (previewInstance != null)
+        {
+            DestroyImmediate(previewInstance);
+        }
+
         if (previewUtility != null)
         {
             previewUtility.Cleanup();
@@ -454,7 +561,10 @@ public class AnimationEventEditor : EditorWindow
         GUILayout.Label("Available Animations", EditorStyles.miniBoldLabel);
         clipListScrollPos = EditorGUILayout.BeginScrollView(clipListScrollPos, "box", GUILayout.Height(120));
 
-        if (availableClips.Count == 0) GUILayout.Label("애니메이션을 찾을 수 없습니다.");
+        if (availableClips.Count == 0)
+        {
+            GUILayout.Label("애니메이션을 찾을 수 없습니다.");
+        }
 
         foreach (var clip in availableClips)
         {
@@ -477,30 +587,39 @@ public class AnimationEventEditor : EditorWindow
     {
         availableClips.Clear();
         targetClip = null;
-        
+
         ClearEventSelection();
 
-        if (targetAsset == null) return;
-
+        if (targetAsset == null)
+        {
+            return;
+        }
 
         var animator = targetAsset.GetComponentInChildren<Animator>();
         if (animator != null && animator.runtimeAnimatorController != null)
+        {
             availableClips.AddRange(animator.runtimeAnimatorController.animationClips);
+        }
 
         if (availableClips.Count == 0)
         {
             string path = AssetDatabase.GetAssetPath(targetAsset);
-            if (!string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path) == false)
             {
                 foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(path))
                 {
-                    if (asset is AnimationClip clip && !clip.name.StartsWith("__preview__"))
+                    if (asset is AnimationClip clip && clip.name.StartsWith("__preview__") == false)
+                    {
                         availableClips.Add(clip);
+                    }
                 }
             }
         }
         availableClips = availableClips.Distinct().ToList();
-        if (availableClips.Count > 0) targetClip = availableClips[0];
+        if (availableClips.Count > 0)
+        {
+            targetClip = availableClips[0];
+        }
     }
 
     private void DrawPlaybackControls()
@@ -508,8 +627,11 @@ public class AnimationEventEditor : EditorWindow
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button(isPlaying ? "⏸ Pause" : "▶ Play", GUILayout.Height(25)))
         {
-            isPlaying = !isPlaying;
-            if (isPlaying) lastUpdateTime = EditorApplication.timeSinceStartup;
+            isPlaying = (isPlaying == false);
+            if (isPlaying)
+            {
+                lastUpdateTime = EditorApplication.timeSinceStartup;
+            }
         }
         if (GUILayout.Button("Stop", GUILayout.Height(25)))
         {
@@ -524,7 +646,10 @@ public class AnimationEventEditor : EditorWindow
     {
         Rect rect = GUILayoutUtility.GetRect(10, 25, GUILayout.ExpandWidth(true));
         GUI.Box(rect, "", EditorStyles.helpBox);
-        if (targetClip == null || targetClip.length <= 0) return;
+        if (targetClip == null || targetClip.length <= 0)
+        {
+            return;
+        }
 
         float currentX = rect.x + (targetTime / targetClip.length) * rect.width;
         EditorGUI.DrawRect(new Rect(currentX - 1, rect.y, 2, rect.height), Color.red);
@@ -536,7 +661,10 @@ public class AnimationEventEditor : EditorWindow
             float eventX = rect.x + (ev.time / targetClip.length) * rect.width;
 
             var oldColor = GUI.backgroundColor;
-            if (i == selectedEventIndex) GUI.backgroundColor = Color.green;
+            if (i == selectedEventIndex)
+            {
+                GUI.backgroundColor = Color.green;
+            }
 
             if (GUI.Button(new Rect(eventX - 5, rect.y + 5, 10, 15), "", EditorStyles.radioButton))
             {
@@ -548,7 +676,10 @@ public class AnimationEventEditor : EditorWindow
 
     private void AddEvent()
     {
-        if (targetClip == null || string.IsNullOrWhiteSpace(eventFunctionName)) return;
+        if (targetClip == null || string.IsNullOrWhiteSpace(eventFunctionName))
+        {
+            return;
+        }
 
         var newEvent = new AnimationEvent
         {
@@ -568,7 +699,10 @@ public class AnimationEventEditor : EditorWindow
 
     private void RemoveEvent(AnimationEvent ev)
     {
-        if (targetClip == null) return;
+        if (targetClip == null)
+        {
+            return;
+        }
 
         var events = AnimationUtility.GetAnimationEvents(targetClip).ToList();
         events.RemoveAll(e => e.time == ev.time && e.functionName == ev.functionName);
@@ -587,7 +721,9 @@ public class AnimationEventEditor : EditorWindow
         {
             ModelImporterClipAnimation[] clipAnimations = importer.clipAnimations;
             if (clipAnimations == null || clipAnimations.Length == 0)
+            {
                 clipAnimations = importer.defaultClipAnimations;
+            }
 
             bool isModified = false;
 
@@ -646,7 +782,11 @@ public class AnimationEventEditor : EditorWindow
         isPlaying = false;
 
         selectedPresetIndex = System.Array.IndexOf(functionPresets, ev.functionName);
-        if (selectedPresetIndex < 0) selectedPresetIndex = 0;
+        if (selectedPresetIndex < 0)
+        {
+            selectedPresetIndex = 0;
+        }
+
         eventFunctionName = ev.functionName;
 
         eventFloat = ev.floatParameter;
@@ -659,7 +799,10 @@ public class AnimationEventEditor : EditorWindow
 
     private void ApplyEventChanges()
     {
-        if (targetClip == null || selectedEventIndex < 0 || string.IsNullOrWhiteSpace(eventFunctionName)) return;
+        if (targetClip == null || selectedEventIndex < 0 || string.IsNullOrWhiteSpace(eventFunctionName))
+        {
+            return;
+        }
 
         var events = AnimationUtility.GetAnimationEvents(targetClip).ToList();
         if (selectedEventIndex < events.Count)

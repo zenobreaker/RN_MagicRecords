@@ -7,7 +7,10 @@ public class UICharStatus : UiBase
 
     public void OnDrawCharStatus(CharStatusData status, CharEquipmentData equipment)
     {
-        if (status == null) return;
+        if (status == null)
+        {
+            return;
+        }
 
         // 중복되는 코드를 줄이고 번역까지 처리해 주는 내부 헬퍼 함수
         void UpdateStatRow(int rowIndex, StatusType type, string textKey)

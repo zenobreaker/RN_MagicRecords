@@ -43,12 +43,20 @@ public class PassiveModuleDrawer : PropertyDrawer
 
         void SetModule(PassiveModule module)
         {
-            if (target == null) return;
+            if (target == null)
+            {
+                return;
+            }
+
             using (var data = new SerializedObject(target))
             {
                 data.Update();
                 var current = data.FindProperty(path);
-                if (current == null) return;
+                if (current == null)
+                {
+                    return;
+                }
+
                 current.managedReferenceValue = module;
                 data.ApplyModifiedProperties();
             }
@@ -57,9 +65,14 @@ public class PassiveModuleDrawer : PropertyDrawer
         menu.AddItem(new GUIContent("None / Clear"), false, () => SetModule(null));
         menu.AddSeparator("");
         if (property.managedReferenceFieldTypename.EndsWith(" CommonRecordModule"))
+        {
             PassiveModuleMenu.AddItems(menu, SetModule, type => typeof(CommonRecordModule).IsAssignableFrom(type));
+        }
         else
+        {
             PassiveModuleMenu.AddItems(menu, SetModule);
+        }
+
         menu.ShowAsContext();
     }
 }

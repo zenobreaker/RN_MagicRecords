@@ -13,7 +13,7 @@ public enum StatusEffectType
 }
 
 /// <summary>
-/// 캐릭터에 상태이상 관리용 컴포넌트 
+/// 캐릭터에 상태이상 관리용 컴포넌트
 /// </summary>
 public class StatusEffectComponent : MonoBehaviour
 {
@@ -60,7 +60,7 @@ public class StatusEffectComponent : MonoBehaviour
         return (statusEffectType & inType) != 0;
     }
 
-    // 움직일 수 있는 상태이상인가에 대한 반환 
+    // 움직일 수 있는 상태이상인가에 대한 반환
     public bool GetMovableCondition()
     {
         bool check = false;
@@ -69,29 +69,31 @@ public class StatusEffectComponent : MonoBehaviour
         check |= HasCondition(StatusEffectType.Ice);
         check |= HasCondition(StatusEffectType.Airborne);
 
-        return check == false; 
+        return check == false;
     }
 
     private void ApplyStatusEffect()
     {
-        foreach(StatusEffectType type in Enum.GetValues(typeof(StatusEffectType)))
+        foreach (StatusEffectType type in Enum.GetValues(typeof(StatusEffectType)))
         {
             if (type == StatusEffectType.None)
-                continue; 
-
-            if((type & statusEffectType) != StatusEffectType.None)
             {
-                HandleStatusEffect(type);   
+                continue;
+            }
+
+            if ((type & statusEffectType) != StatusEffectType.None)
+            {
+                HandleStatusEffect(type);
             }
         }
     }
 
     private void HandleStatusEffect(StatusEffectType inType)
     {
-        switch(inType)
+        switch (inType)
         {
             case StatusEffectType.Stun:
-                break; 
+                break;
         }
     }
 

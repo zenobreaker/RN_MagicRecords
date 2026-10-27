@@ -16,5 +16,8 @@ public static class UIRegistry
         return controller as T;
     }
 
-    public static void Clear() => uiControllers.Clear();
+    public static void Clear()
+    {
+        uiControllers.Clear();
+    }
 }

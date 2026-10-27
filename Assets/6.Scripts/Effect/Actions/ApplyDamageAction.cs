@@ -6,45 +6,47 @@
 public class ApplyDamageAction
     : IEffectAction
 {
-    private DamageType type; 
-    private float power; 
- 
- 
+    private DamageType type;
+    private float power;
+
+
 
     public ApplyDamageAction(DamageType type = DamageType.NORMAL, float power = 0.0f)
     {
         this.type = type;
-        this.power= power;
+        this.power = power;
     }
 
     public void Execute(GameObject target, GameObject caster, int stackCount)
     {
-        if (!target.TryGetComponent<DamageHandleComponent>(out var damageHandle))
+        if (target.TryGetComponent<DamageHandleComponent>(out var damageHandle) == false)
+        {
             return;
+        }
 
-        float finalPower = power;   
+        float finalPower = power;
 
         var evt = new DamageEvent(0);
         evt.hitData.DamageType = type;
 
-        switch(type)
+        switch (type)
         {
             case DamageType.DOT_POISON:
                 evt.IgnoreDefenseRate = 1.0f;
-                evt.MaxHPRatio = (finalPower * stackCount ) * 0.01f;
+                evt.MaxHPRatio = (finalPower * stackCount) * 0.01f;
                 break;
             case DamageType.DOT_BURN:
-                evt.IgnoreDefenseRate = 0.0f; 
+                evt.IgnoreDefenseRate = 0.0f;
                 evt.BaseDamage = finalPower * stackCount;
                 break;
             case DamageType.DOT_BLEED:
-                evt.IgnoreDefenseRate = 0.0f; 
-                evt.BaseDamage = finalPower * stackCount; 
+                evt.IgnoreDefenseRate = 0.0f;
+                evt.BaseDamage = finalPower * stackCount;
                 break;
             case DamageType.DOT_HATERD:
                 evt.IgnoreDefenseRate = 1.0f;
                 evt.BaseDamage = finalPower * stackCount;
-                break; 
+                break;
         }
 
         Debug.Log("DOT Call");

@@ -19,7 +19,10 @@ public class SO_StageIconDatabase : ScriptableObject
         if (dict == null)
         {
             dict = new Dictionary<StageType, Sprite>();
-            foreach (var m in mappings) dict[m.type] = m.icon;
+            foreach (var m in mappings)
+            {
+                dict[m.type] = m.icon;
+            }
         }
 
         return dict.TryGetValue(type, out var icon) ? icon : null;

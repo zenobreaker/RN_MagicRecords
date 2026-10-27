@@ -6,7 +6,13 @@ using UnityEngine;
 public class Module_Passive_HitOnInhalation : PassiveModule
 {
     public int targetSkillID;
-    public override int TargetSkillID => targetSkillID;
+    public override int TargetSkillID
+    {
+        get
+        {
+            return targetSkillID;
+        }
+    }
     public float radius = 5.0f;
     public float force = 10.0f;
     public LayerMask enemyLayer;
@@ -19,7 +25,9 @@ public class Module_Passive_HitOnInhalation : PassiveModule
     public override void OnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill)
     {
         if (targetSkillID != 0 && casterSkill.SkillID != targetSkillID)
+        {
             return;
+        }
 
         if (spawnedObject is AbstractProjectile proj)
         {
@@ -37,7 +45,10 @@ public class Module_Passive_HitOnInhalation : PassiveModule
         foreach (var col in hitCols)
         {
             // 탄환에 맞은 타겟은 제외하거나, 원하는 대로 처리
-            if (col.gameObject == target) continue;
+            if (col.gameObject == target)
+            {
+                continue;
+            }
 
             // 2. 끌어당기는 힘 적용 (Rigidbody가 있다면 AddForce, 없다면 위치 강제 이동)
             if (col.TryGetComponent<Rigidbody>(out var rb))

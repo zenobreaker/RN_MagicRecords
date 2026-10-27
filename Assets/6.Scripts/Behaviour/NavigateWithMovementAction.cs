@@ -24,11 +24,15 @@ public partial class NavigateWithMovementAction : Action
     protected override Status OnStart()
     {
         if (Agent.Value == null || Target.Value == null || Movement.Value == null)
+        {
             return Status.Failure;
+        }
 
         m_NavMeshAgent = Agent.Value.GetComponent<NavMeshAgent>();
         if (m_NavMeshAgent == null)
+        {
             return Status.Failure;
+        }
 
         m_NavMeshAgent.enabled = true;
         m_NavMeshAgent.updatePosition = false;
@@ -45,7 +49,9 @@ public partial class NavigateWithMovementAction : Action
     {
         if (Agent.Value == null || Target.Value == null || Movement.Value == null ||
             m_NavMeshAgent.enabled == false)
+        {
             return Status.Failure;
+        }
 
         Vector3 currentAgentPos = Agent.Value.transform.position;
         Vector3 currentTargetPos = Target.Value.transform.position;
@@ -57,9 +63,11 @@ public partial class NavigateWithMovementAction : Action
         if (Vector3.Distance(lastTargetPos, currentTargetPos) > 0.1f)
         {
             lastTargetPos = currentTargetPos;
-            
-            if(m_NavMeshAgent.isStopped == false)
+
+            if (m_NavMeshAgent.isStopped == false)
+            {
                 m_NavMeshAgent.SetDestination(currentTargetPos);
+            }
         }
 
         // 💡 3. 함정 회피: 3D 거리가 아닌 X, Z축(바닥 평면) 거리만 계산! (높이 차이 무시)
@@ -76,7 +84,9 @@ public partial class NavigateWithMovementAction : Action
 
         // 5. 경로 계산 중 대기
         if (m_NavMeshAgent.pathPending)
+        {
             return Status.Running;
+        }
 
         // 6. 다음 이동할 곳으로 방향 지시
         Vector3 directionToTarget = m_NavMeshAgent.steeringTarget - currentAgentPos;

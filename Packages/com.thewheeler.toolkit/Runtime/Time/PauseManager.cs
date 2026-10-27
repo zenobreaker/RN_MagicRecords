@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public static class PauseManager 
+public static class PauseManager
 {
     private static int _pauseCount = 0;
 

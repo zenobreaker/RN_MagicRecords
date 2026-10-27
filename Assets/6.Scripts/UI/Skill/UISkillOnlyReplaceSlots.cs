@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 오로직 배치용으로만 사용하는 스킬 슬롯 그룹 
+// 오로직 배치용으로만 사용하는 스킬 슬롯 그룹
 public class UISkillOnlyReplaceSlots : MonoBehaviour
 {
     [SerializeField] private Button[] slots;
@@ -14,12 +14,17 @@ public class UISkillOnlyReplaceSlots : MonoBehaviour
     public Action<int> ClickedSlot;
 
     // Preparation screens own the selection pair; legacy skill-tree screens still equip on click.
-    public void SetSelectionOnly(bool value) => selectionOnly = value;
+    public void SetSelectionOnly(bool value)
+    {
+        selectionOnly = value;
+    }
 
     public void SetSelectedSlot(int selected)
     {
         for (int i = 0; i < slots.Length; i++)
+        {
             slots[i].image.color = i == selected ? new Color(.6f, .9f, 1f) : Color.white;
+        }
     }
 
     private void Awake()
@@ -27,8 +32,8 @@ public class UISkillOnlyReplaceSlots : MonoBehaviour
         for (int i = 0; i < slots.Length; i++)
         {
             int index = i;
-            slots[i].onClick.AddListener( (()=>OnClickSlot(index)));
-        }   
+            slots[i].onClick.AddListener((() => OnClickSlot(index)));
+        }
     }
 
     public void SetSkillTreeManager(SkillTreeManager stManager)
@@ -39,12 +44,15 @@ public class UISkillOnlyReplaceSlots : MonoBehaviour
     private void OnClickSlot(int index)
     {
         ClickedSlot?.Invoke(index);
-        if (!selectionOnly) ReplaceSlot(index);
+        if (selectionOnly == false)
+        {
+            ReplaceSlot(index);
+        }
     }
 
     public void DrawSlots(int charid)
     {
-        // 매니저로부터 선택한 대상의 스킬 리스트를 가져와서 그림 
+        // 매니저로부터 선택한 대상의 스킬 리스트를 가져와서 그림
 
         List<SkillRuntimeData> list = AppManager.Instance.GetEquippedActiveSkillListByCharID(charid);
 
@@ -56,10 +64,13 @@ public class UISkillOnlyReplaceSlots : MonoBehaviour
 
     public void ReplaceSlot(int slotIndex)
     {
-        if (stManager == null) return;
+        if (stManager == null)
+        {
+            return;
+        }
 
-        SkillRuntimeData srd = stManager.SelectedSkillData; 
-        int charid = 1; 
+        SkillRuntimeData srd = stManager.SelectedSkillData;
+        int charid = 1;
 
         AppManager.Instance.EquipActiveSkill(charid, slotIndex, srd);
         DrawSlots(charid);
@@ -67,12 +78,16 @@ public class UISkillOnlyReplaceSlots : MonoBehaviour
 
     private void DrawSkillIcon(int slot, SkillRuntimeData data)
     {
-        if(slots[slot].TryGetComponent<Image>(out var icon))
+        if (slots[slot].TryGetComponent<Image>(out var icon))
         {
             if (data != null)
+            {
                 icon.sprite = data.template.skillImage;
+            }
             else
+            {
                 icon.sprite = emptySlotSprite;
+            }
         }
     }
 }

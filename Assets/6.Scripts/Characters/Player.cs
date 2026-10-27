@@ -33,8 +33,14 @@ public class Player
     private int jobID;
     public int JobID
     {
-        get { return jobID; }
-        set { jobID = value; }
+        get
+        {
+            return jobID;
+        }
+        set
+        {
+            jobID = value;
+        }
     }
 
     protected override void Awake()
@@ -63,13 +69,17 @@ public class Player
         onAction = (context) =>
         {
             if (comboComponent != null)
+            {
                 comboComponent.InputQueue(InputCommandType.ACTION);
+            }
         };
 
         onDash = (context) =>
         {
             if (comboComponent != null)
+            {
                 comboComponent.InputQueue(InputCommandType.DASH);
+            }
         };
 
 
@@ -87,7 +97,10 @@ public class Player
     private void Awake_SkillAcitonInput(InputActionMap actionMap)
     {
         if (actionMap == null || skill == null)
+        {
             return;
+        }
+
         onSkillActions = new Action<InputAction.CallbackContext>[4];
         onSkillCancels = new Action<InputAction.CallbackContext>[4];
 
@@ -115,16 +128,22 @@ public class Player
 
         SetGenericTeamId(1);
         if (skill != null && subActionSkill != null)
+        {
             skill.SetActiveSkill(SkillSlot.SubAction, subActionSkill.CreateSkill() as ActiveSkill);
+        }
     }
     protected void OnEnable()
     {
         SetInputSubscriptions(true);
         if (state != null)
+        {
             state.OnStateTypeChanged += ChangeType;
+        }
 
         if (skill != null)
+        {
             skill.OnDoAction += DoAction;
+        }
 
         Debug.Log($"Battle Manager {BattleManager.Instance}");
     }
@@ -135,10 +154,14 @@ public class Player
         CancelInvoke(nameof(Dead));
 
         if (state != null)
+        {
             state.OnStateTypeChanged -= ChangeType;
+        }
 
         if (skill != null)
+        {
             skill.OnDoAction -= DoAction;
+        }
 
         SetInputSubscriptions(false);
 
@@ -147,26 +170,55 @@ public class Player
 
     private void SetInputSubscriptions(bool subscribe)
     {
-        if (playerActionMap == null) return;
+        if (playerActionMap == null)
+        {
+            return;
+        }
+
         void Bind(string name, Action<InputAction.CallbackContext> started,
-            Action<InputAction.CallbackContext> canceled = null)
+                    Action<InputAction.CallbackContext> canceled = null)
         {
             var action = playerActionMap.FindAction(name, false);
-            if (action == null) return;
-            if (started != null) action.started -= started;
-            if (canceled != null) action.canceled -= canceled;
+            if (action == null)
+            {
+                return;
+            }
+
+            if (started != null)
+            {
+                action.started -= started;
+            }
+
+            if (canceled != null)
+            {
+                action.canceled -= canceled;
+            }
+
             if (subscribe)
             {
-                if (started != null) action.started += started;
-                if (canceled != null) action.canceled += canceled;
+                if (started != null)
+                {
+                    action.started += started;
+                }
+
+                if (canceled != null)
+                {
+                    action.canceled += canceled;
+                }
             }
         }
         Bind("Action", onAction);
         Bind("Dash", onDash);
         Bind("Move", onMove);
-        if (onSkillActions == null || onSkillCancels == null) return;
+        if (onSkillActions == null || onSkillCancels == null)
+        {
+            return;
+        }
+
         for (int i = 0; i < onSkillActions.Length; i++)
+        {
             Bind($"SkillAction{i + 1}", onSkillActions[i], onSkillCancels[i]);
+        }
     }
 
     private void DoAction()
@@ -178,7 +230,9 @@ public class Player
     {
         base.Start_DoAction();
         if (skill.SafeInvoke(v => v.InAction))
+        {
             skill.StartAction();
+        }
     }
 
     public override void Begin_DoAction()
@@ -187,60 +241,88 @@ public class Player
 
         OnBeginDoAction?.Invoke();
         if (skill.SafeInvoke(v => v.InAction))
+        {
             skill.BeginDoAction();
+        }
     }
 
     public override void End_DoAction()
     {
-        if (endingAction) return;
+        if (endingAction)
+        {
+            return;
+        }
+
         endingAction = true;
         try
         {
             if (skill.SafeInvoke(v => v.InAction))
             {
                 skill.EndDoAction();
-                if (skill.InAction) return;
+                if (skill.InAction)
+                {
+                    return;
+                }
             }
             bInAction = false;
-            if (state != null && !state.DamagedMode && !state.DeadMode && !state.StopMode) state.SetIdleMode();
+            if (state != null && state.DamagedMode == false && state.DeadMode == false && state.StopMode == false)
+            {
+                state.SetIdleMode();
+            }
+
             OnEndDoAction?.Invoke();
         }
-        finally { endingAction = false; }
+        finally
+        {
+            endingAction = false;
+
+        }
     }
     public override void Begin_JudgeAttack(AnimationEvent e)
     {
         base.Begin_JudgeAttack(e);
         if (skill.SafeInvoke(v => v.InAction))
+        {
             skill.BeginJudgeAttack(e);
+        }
     }
 
     public override void End_JudgeAttack(AnimationEvent e)
     {
         base.End_JudgeAttack(e);
         if (skill.SafeInvoke(v => v.InAction))
+        {
             skill.EndJudgeAttack(e);
+        }
     }
 
     public override void Play_Sound()
     {
         base.Play_Sound();
         if (skill.SafeInvoke(v => v.InAction))
+        {
             skill.PlaySound();
+        }
     }
 
     public override void Play_CameraShake()
     {
         base.Play_CameraShake();
         if (skill.SafeInvoke(v => v.InAction))
+        {
             skill.PlayCameraShake();
+        }
     }
 
-    public WeaponController GetWeaponController() => weaponController;
+    public WeaponController GetWeaponController()
+    {
+        return weaponController;
+    }
 
     protected override bool CanReceiveDamage(DamageEvent damageEvent)
     {
         // Existing direct-hit evade rule does not suppress ongoing DOT damage.
-        if (!damageEvent.IsDOTEffect() && state != null && state.EvadeMode &&
+        if (damageEvent.IsDOTEffect() == false && state != null && state.EvadeMode &&
             (skill == null || skill.AllowsDefensiveBenefits))
         {
             MovableSlower.Instance.SafeInvoke(v => v.Start_Slow(this));
@@ -252,7 +334,10 @@ public class Player
     protected override void OnDamageDeath()
     {
         Collider collider = GetComponent<Collider>();
-        if (collider != null) collider.enabled = false;
+        if (collider != null)
+        {
+            collider.enabled = false;
+        }
 
         Invoke(nameof(Dead), 1f);
         visual.SafeInvoke(v => v.PlayDeadAnimation());

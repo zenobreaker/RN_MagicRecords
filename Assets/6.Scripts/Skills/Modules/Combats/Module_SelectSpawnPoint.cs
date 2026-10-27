@@ -36,7 +36,9 @@ public class Module_SelectSpawnPoint : SkillModule
             case SpawnPointSelectType.All:
 
                 for (int i = 0; i < spawn.SpawnPoints.Count; i++)
+                {
                     spawn.SelectedSpawnPointIndices.Add(i);
+                }
 
                 break;
 

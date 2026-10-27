@@ -3,7 +3,7 @@ using UnityEngine;
 using static UnityEngine.UI.GridLayoutGroup;
 
 [RequireComponent(typeof(Rigidbody))]
-public class SplitMotherProjectile 
+public class SplitMotherProjectile
     : AbstractProjectile
 {
     [Header("Split (Child) Settings")]
@@ -40,7 +40,11 @@ public class SplitMotherProjectile
         , bool bExtraCrit = false, float mulitplier = 1.0f)
     {
         base.SetDamageInfo(attacker, damageData, bExtraCrit, mulitplier);
-        if (attacker == null || damageData == null) return;
+        if (attacker == null || damageData == null)
+        {
+            return;
+        }
+
         isCrit = bExtraCrit;
 
         cachedChildDamageData = new DamageData
@@ -85,7 +89,9 @@ public class SplitMotherProjectile
         motherSpeedMultiplier = Mathf.Max(0.01f, multiplier);
         force = DefaultForce * motherSpeedMultiplier;
         if (isActiveAndEnabled && rigid != null)
+        {
             rigid.linearVelocity = transform.forward * force;
+        }
     }
 
     public void EnableChildHoming(float searchRadius, float turnSpeed, LayerMask enemyLayer,
@@ -113,7 +119,10 @@ public class SplitMotherProjectile
     // =======================================================
     private void SpawnChildSpread()
     {
-        if (childCount <= 0 || string.IsNullOrEmpty(childObjectName)) return;
+        if (childCount <= 0 || string.IsNullOrEmpty(childObjectName))
+        {
+            return;
+        }
 
         float angleStep = 360f / childCount;
 
@@ -126,7 +135,9 @@ public class SplitMotherProjectile
             GameObject childObj = ObjectPooler.DeferredSpawnFromPool(childObjectName, transform.position, childRotation);
 
             if (childObj != null && childObj.TryGetComponent<AbstractProjectile>(out var rangedChild))
+            {
                 rangedChild.ScaleLifeTime(childRangeMultiplier);
+            }
 
             if (childObj != null && childObj.TryGetComponent<ISkillEffect>(out var childEffect))
             {
@@ -136,8 +147,10 @@ public class SplitMotherProjectile
 
                 if (childHomingEnabled && childObj.TryGetComponent<BaseProjectile>(out var childProjectile))
                 {
-                    if (!childObj.TryGetComponent<RuntimeHomingBehaviour>(out var homingBehaviour))
+                    if (childObj.TryGetComponent<RuntimeHomingBehaviour>(out var homingBehaviour) == false)
+                    {
                         homingBehaviour = childObj.AddComponent<RuntimeHomingBehaviour>();
+                    }
 
                     homingBehaviour.Setup(
                         childHomingSearchRadius,

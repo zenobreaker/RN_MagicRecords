@@ -18,7 +18,7 @@ public class UISkillReplaceDetail : UiBase
     {
         base.Awake();
         SetSlots();
-    }  
+    }
 
     public void SetSkillTreeManager(SkillTreeManager manager)
     {
@@ -30,11 +30,18 @@ public class UISkillReplaceDetail : UiBase
     {
         GameObject currentObject = null;
         if (SystemInfo.deviceType == DeviceType.Desktop)
+        {
             currentObject = pcSkillReplaceGroup;
+        }
         else
+        {
             currentObject = mobileSkillReplaceGroup;
+        }
 
-        if (currentObject == null) return;
+        if (currentObject == null)
+        {
+            return;
+        }
 
         if (currentObject.TryGetComponent<UISkillOnlyReplaceSlots>(out var slots))
         {
@@ -50,18 +57,22 @@ public class UISkillReplaceDetail : UiBase
 
     public void ShowUI()
     {
-        selectedSlot = -1; 
+        selectedSlot = -1;
         gameObject.SetActive(true);
-        
+
         DrawUnequipButton();
-        
+
         GameObject currentObject = null;
         if (SystemInfo.deviceType == DeviceType.Desktop)
+        {
             currentObject = pcSkillReplaceGroup;
+        }
         else
+        {
             currentObject = mobileSkillReplaceGroup;
+        }
 
-        DrawSlots(currentObject); 
+        DrawSlots(currentObject);
     }
 
     private void OnClickedSlot(int slot)
@@ -72,7 +83,10 @@ public class UISkillReplaceDetail : UiBase
 
     private void DrawSlots(GameObject obj)
     {
-        if (obj == null) return;
+        if (obj == null)
+        {
+            return;
+        }
 
         if (obj.TryGetComponent<UISkillOnlyReplaceSlots>(out var slots))
         {
@@ -85,12 +99,19 @@ public class UISkillReplaceDetail : UiBase
 
     private void DrawUnequipButton()
     {
-        if (unequipButton == null) return;
+        if (unequipButton == null)
+        {
+            return;
+        }
 
         if (selectedSlot == -1)
+        {
             unequipButton.enabled = false;
+        }
         else
-            unequipButton.enabled = true; 
+        {
+            unequipButton.enabled = true;
+        }
     }
 
     public void OnUnequip()

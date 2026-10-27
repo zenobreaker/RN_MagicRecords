@@ -2,13 +2,13 @@
 using UnityEngine;
 
 /// <summary>
-/// 여러 효과를 발동시키는 매니저 
+/// 여러 효과를 발동시키는 매니저
 /// </summary>
 public class EffectManager : Singleton<EffectManager>
 {
     public List<SO_BaseEffect> effects;
 
-    private Dictionary<string, SO_BaseEffect> effectsDict = new(); 
+    private Dictionary<string, SO_BaseEffect> effectsDict = new();
     private Dictionary<GameObject, EffectComponent> activeEffects = new();
 
     protected override void Awake()
@@ -20,12 +20,16 @@ public class EffectManager : Singleton<EffectManager>
             effectsDict.Add(effect.id, effect);
         }
     }
-    
+
 
     public void RegisterEffect(GameObject target, GameObject appliedBy, BaseEffect effect)
     {
-        if (target == null || effect == null || !target.TryGetComponent<EffectComponent>(out var component)) return;
-        if (!activeEffects.ContainsKey(target))
+        if (target == null || effect == null || target.TryGetComponent<EffectComponent>(out var component) == false)
+        {
+            return;
+        }
+
+        if (activeEffects.ContainsKey(target) == false)
         {
             var buff = target.GetComponent<EffectComponent>();
             activeEffects[target] = buff;
@@ -41,15 +45,22 @@ public class EffectManager : Singleton<EffectManager>
 
     public void UnregisterEffect(Character target, BaseEffect effect)
     {
-        if (!activeEffects.ContainsKey(target)) return; 
+        if (activeEffects.ContainsKey(target) == false)
+        {
+            return;
+        }
 
         activeEffects[target].RemoveEffect(effect);
-       // effect.Remove(target);
+        // effect.Remove(target);
     }
 
     public void UnregisterAllEffects(Character target)
     {
-        if (target == null) return;
+        if (target == null)
+        {
+            return;
+        }
+
         activeEffects.Remove(target.gameObject);
         target.OnDead -= UnregisterAllEffects;
         target.GetComponent<EffectComponent>().SafeInvoke(component => component.ClearEffects());
@@ -58,7 +69,10 @@ public class EffectManager : Singleton<EffectManager>
     public void RegisterEffect_Burn(GameObject target, GameObject appliedBy, float duration, float basePower)
     {
         var effectObj = effectsDict["Burn"];
-        if (effectObj == null) return;
+        if (effectObj == null)
+        {
+            return;
+        }
 
         float tick = effectObj.tickInterval;
         BaseEffect effect = EffectFactory.CreateDotStatusEffect("Burn", "", duration, effectObj, tick, basePower);
@@ -69,7 +83,10 @@ public class EffectManager : Singleton<EffectManager>
     public void RegisterEffect_Bleed(GameObject target, GameObject appliedBy, float duration, float basePower)
     {
         var effectObj = effectsDict["Bleed"];
-        if (effectObj == null) return;
+        if (effectObj == null)
+        {
+            return;
+        }
 
         float tick = effectObj.tickInterval;
         BaseEffect effect = EffectFactory.CreateDotStatusEffect("Bleed", "", duration, effectObj, tick, basePower);
@@ -80,7 +97,10 @@ public class EffectManager : Singleton<EffectManager>
     public void RegisterEffect_Poison(GameObject target, GameObject appliedBy, float duration, float basePower)
     {
         var effectObj = effectsDict["Poison"];
-        if (effectObj == null) return;
+        if (effectObj == null)
+        {
+            return;
+        }
 
         float tick = effectObj.tickInterval;
         BaseEffect effect = EffectFactory.CreateDotStatusEffect("Poison", "", duration, effectObj, tick, basePower);
@@ -93,11 +113,14 @@ public class EffectManager : Singleton<EffectManager>
     {
         // 1. 데이터(SO_BaseEffect) 조회 (만약 저주도 SO로 관리한다면)
         var effectObj = effectsDict["Curse"];
-        if (effectObj == null) return;
+        if (effectObj == null)
+        {
+            return;
+        }
 
         // 2. CurseEffect 객체 생성 (BaseEffect를 상속받은 CurseEffect 클래스를 인스턴스화)
         BaseEffect effect = EffectFactory.CreateEffect("Curse", "", duration, effectObj);
-        
+
         // 3. 중앙 등록 함수 호출
         RegisterEffect(target, appliedBy, effect);
     }
@@ -105,7 +128,9 @@ public class EffectManager : Singleton<EffectManager>
     public void RegisterEffect_Hatred(GameObject target, GameObject appliedBy, float duration, float basePower)
     {
         if (effectsDict.ContainsKey("Curse_Hatred") == false)
+        {
             return;
+        }
 
         SO_BaseEffect so = effectsDict["Curse_Hatred"];
         float tick = so.tickInterval;
@@ -119,8 +144,10 @@ public class EffectManager : Singleton<EffectManager>
     // 💡 추가할 통합 메서드 (Burn, Bleed, Poison 모두 이 함수 하나로 처리 가능!)
     public void RegisterDotEffect(string effectID, GameObject target, GameObject appliedBy, float duration, float basePower)
     {
-        if (!effectsDict.TryGetValue(effectID, out var effectObj))
+        if (effectsDict.TryGetValue(effectID, out var effectObj) == false)
+        {
             return;
+        }
 
         float tick = effectObj.tickInterval;
         BaseEffect effect = EffectFactory.CreateDotStatusEffect(effectID, "", duration, effectObj, tick, basePower);

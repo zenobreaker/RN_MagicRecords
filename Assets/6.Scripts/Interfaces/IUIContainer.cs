@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public interface IUIContainer 
+public interface IUIContainer
 {
-    Transform PopUpParent { get; }
+    Transform PopUpParent
+    {
+        get;
+    }
 }

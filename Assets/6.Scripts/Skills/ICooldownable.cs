@@ -3,5 +3,8 @@ using UnityEngine;
 
 public interface ICooldownable
 {
-    bool IsOnCooldown { get; }
+    bool IsOnCooldown
+    {
+        get;
+    }
 }

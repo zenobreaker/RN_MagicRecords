@@ -28,14 +28,41 @@ public class UIPopUpShop : UIPopUp
     {
         base.Awake();
         // RequireComponent does not repair prefabs saved before the requirement.
-        if (canvasGroup == null) canvasGroup = gameObject.AddComponent<CanvasGroup>();
-        if (exitButton != null) exitButton.onClick.AddListener(CloseUI);
-        if (buyButton != null) buyButton.onClick.AddListener(TryBuyItem);
-        if (plusButton != null) plusButton.onClick.AddListener(() => SetAmount(amount == int.MaxValue ? amount : amount + 1));
-        if (minusButton != null) minusButton.onClick.AddListener(() => SetAmount(Math.Max(1, amount - 1)));
-        if (maximumButton != null) maximumButton.onClick.AddListener(() => SetAmount(unitPrice > 0 && CurrencyManager.Instance != null
-            ? CurrencyManager.Instance.GetCurrency(priceCurrency) / unitPrice : 1));
-        if (amountField != null) amountField.onEndEdit.AddListener(text => SetAmount(int.TryParse(text, out var value) ? value : 1));
+        if (canvasGroup == null)
+        {
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        }
+
+        if (exitButton != null)
+        {
+            exitButton.onClick.AddListener(CloseUI);
+        }
+
+        if (buyButton != null)
+        {
+            buyButton.onClick.AddListener(TryBuyItem);
+        }
+
+        if (plusButton != null)
+        {
+            plusButton.onClick.AddListener(() => SetAmount(amount == int.MaxValue ? amount : amount + 1));
+        }
+
+        if (minusButton != null)
+        {
+            minusButton.onClick.AddListener(() => SetAmount(Math.Max(1, amount - 1)));
+        }
+
+        if (maximumButton != null)
+        {
+            maximumButton.onClick.AddListener(() => SetAmount(unitPrice > 0 && CurrencyManager.Instance != null
+                    ? CurrencyManager.Instance.GetCurrency(priceCurrency) / unitPrice : 1));
+        }
+
+        if (amountField != null)
+        {
+            amountField.onEndEdit.AddListener(text => SetAmount(int.TryParse(text, out var value) ? value : 1));
+        }
     }
 
     public void SetData(ItemData item, int price, CurrencyType currency)
@@ -55,63 +82,125 @@ public class UIPopUpShop : UIPopUp
     {
         item = null;
         offerMode = true;
-        offerIcon = icon; offerName = title; offerDescription = description;
-        price = unitPrice = cost; amount = 1;
+        offerIcon = icon;
+        offerName = title;
+        offerDescription = description;
+        price = unitPrice = cost;
+        amount = 1;
         priceCurrency = CurrencyType.EXPOLORE_COIN;
         purchase = onPurchase;
         submitting = completed = false;
         ShowPopUp();
     }
 
-    private bool CanChooseAmount => !offerMode && item is ShopItem shop && !(shop.TargetItemData is EquipmentItem);
+    private bool CanChooseAmount
+    {
+        get
+        {
+            return offerMode == false && item is ShopItem shop && (shop.TargetItemData is EquipmentItem) == false;
+        }
+    }
 
     protected override void DrawPopUp()
     {
-        if (itemIconImage != null) itemIconImage.sprite = offerMode ? offerIcon : item?.Icon;
-        if (itemNameText != null) itemNameText.text = offerMode ? offerName : item?.LocalizedName;
-        if (itemMainDescText != null) itemMainDescText.text = offerMode ? offerDescription : item?.LocalizedDescription;
-        if (priceText != null) priceText.text = price.ToString();
-        if (plusButton != null) plusButton.gameObject.SetActive(CanChooseAmount);
-        if (minusButton != null) minusButton.gameObject.SetActive(CanChooseAmount);
-        if (maximumButton != null) maximumButton.gameObject.SetActive(CanChooseAmount);
+        if (itemIconImage != null)
+        {
+            itemIconImage.sprite = offerMode ? offerIcon : item?.Icon;
+        }
+
+        if (itemNameText != null)
+        {
+            itemNameText.text = offerMode ? offerName : item?.LocalizedName;
+        }
+
+        if (itemMainDescText != null)
+        {
+            itemMainDescText.text = offerMode ? offerDescription : item?.LocalizedDescription;
+        }
+
+        if (priceText != null)
+        {
+            priceText.text = price.ToString();
+        }
+
+        if (plusButton != null)
+        {
+            plusButton.gameObject.SetActive(CanChooseAmount);
+        }
+
+        if (minusButton != null)
+        {
+            minusButton.gameObject.SetActive(CanChooseAmount);
+        }
+
+        if (maximumButton != null)
+        {
+            maximumButton.gameObject.SetActive(CanChooseAmount);
+        }
+
         if (amountField != null)
         {
-            amountField.gameObject.SetActive(!offerMode);
+            amountField.gameObject.SetActive(offerMode == false);
             amountField.interactable = CanChooseAmount;
             amountField.SetTextWithoutNotify(amount.ToString());
         }
-        if (buyButton != null) buyButton.interactable = !completed && price >= 0;
+        if (buyButton != null)
+        {
+            buyButton.interactable = completed == false && price >= 0;
+        }
     }
 
     private void SetAmount(int value)
     {
-        if (!CanChooseAmount) return;
+        if (CanChooseAmount == false)
+        {
+            return;
+        }
+
         amount = Math.Max(1, Math.Min(value, unitPrice > 0 ? int.MaxValue / unitPrice : int.MaxValue));
         price = unitPrice * amount;
         DrawPopUp();
     }
 
-    public override void OnSubmit() => TryBuyItem();
+    public override void OnSubmit()
+    {
+        TryBuyItem();
+    }
 
     private void TryBuyItem()
     {
-        if (!isActiveAndEnabled || submitting || completed || price < 0) return;
+        if (isActiveAndEnabled == false || submitting || completed || price < 0)
+        {
+            return;
+        }
+
         submitting = true;
         try
         {
             if (offerMode)
             {
-                if (purchase == null || !purchase()) return;
+                if (purchase == null || purchase() == false)
+                {
+                    return;
+                }
             }
             else
             {
-                if (!(item is ShopItem shop) || shop.TargetItemData == null ||
-                    InventoryManager.Instance == null || CurrencyManager.Instance == null) return;
+                if ((item is ShopItem shop) == false || shop.TargetItemData == null ||
+                    InventoryManager.Instance == null || CurrencyManager.Instance == null)
+                {
+                    return;
+                }
+
                 var granted = shop.TargetItemData.Copy();
-                if (granted == null) return;
+                if (granted == null)
+                {
+                    return;
+                }
+
                 granted.uniqueID = Guid.NewGuid().ToString();
                 granted.SetCount(amount);
-                if (!CurrencyManager.Instance.SpendCurrency(priceCurrency, price))
+                if (CurrencyManager.Instance.SpendCurrency(priceCurrency, price) == false)
                 {
                     UIManager.Instance?.ShowToast("ui_toast_not_enough_cost_coin");
                     return;
@@ -122,7 +211,11 @@ public class UIPopUpShop : UIPopUp
             CloseUI();
             UIManager.Instance?.ShowToast("ui_toast_success_buy_item");
         }
-        finally { submitting = false; }
+        finally
+        {
+            submitting = false;
+
+        }
     }
 
     protected override void OnDisable()

@@ -24,12 +24,26 @@ public sealed class Module_ReloadMagicBullet : SkillModule
     /// <summary>보유 패시브와 공급자를 확인하고 최대 장전 수 이내에서 보충합니다.</summary>
     public override void OnNotify(Character owner, ActiveSkill skill, PhaseSkill phaseSkill)
     {
-        if (owner == null || skill == null || !skill.IsActive || !skill.IsPhaseRunning || skill.IsEnding) return;
+        if (owner == null || skill == null || skill.IsActive == false || skill.IsPhaseRunning == false || skill.IsEnding)
+        {
+            return;
+        }
+
         var component = owner.GetComponent<SkillComponent>();
-        if (component == null) return;
-        if (requireLastAttackPassive && component.GetCapability<Module_Passive_LastAttackMagicBullet>() == null) return;
+        if (component == null)
+        {
+            return;
+        }
+
+        if (requireLastAttackPassive && component.GetCapability<Module_Passive_LastAttackMagicBullet>() == null)
+        {
+            return;
+        }
 
         var provider = component.GetCapability<IMagicBulletProvider>();
-        if (provider != null) provider.Reload(Mathf.Max(0, reloadCount));
+        if (provider != null)
+        {
+            provider.Reload(Mathf.Max(0, reloadCount));
+        }
     }
 }

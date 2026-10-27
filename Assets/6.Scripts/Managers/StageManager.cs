@@ -27,10 +27,22 @@ public sealed class StageManager : MonoBehaviour
     public StageState stageState;
 
     private int currentStageChapter;
-    public int CurStageChapter { get => currentStageChapter; }
+    public int CurStageChapter
+    {
+        get
+        {
+            return currentStageChapter;
+        }
+    }
 
     private StageInfo currentStage;
-    public StageInfo CurrentStageInfo => currentStage;
+    public StageInfo CurrentStageInfo
+    {
+        get
+        {
+            return currentStage;
+        }
+    }
 
     private SpawnManager spawnManager;
     private RoomMaker roomMaker;
@@ -72,16 +84,21 @@ public sealed class StageManager : MonoBehaviour
         try
         {
             if (currentStage == null || roomMaker == null || spawnManager == null)
+            {
                 throw new InvalidOperationException("Stage preparation dependencies are missing.");
+            }
 
             stageState = StageState.Preparing;
             int currentWave = 1;
 
             // 풀러 대기
-            while (ObjectPooler.Instance == null || !ObjectPooler.Instance.IsInitialized)
+            while (ObjectPooler.Instance == null || ObjectPooler.Instance.IsInitialized == false)
             {
                 if (ObjectPooler.Instance != null && ObjectPooler.Instance.InitializationError != null)
+                {
                     throw new InvalidOperationException("Object pool initialization failed.", ObjectPooler.Instance.InitializationError);
+                }
+
                 await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
             }
 
@@ -93,14 +110,23 @@ public sealed class StageManager : MonoBehaviour
 
             // 플레이어 스폰 대기
             var explore = AppManager.Instance?.GetExploreManager();
-            if (explore == null) throw new InvalidOperationException("Exploration manager is missing.");
+            if (explore == null)
+            {
+                throw new InvalidOperationException("Exploration manager is missing.");
+            }
+
             explore.Init(false);
-            if (!explore.EnsureStartingPassives(out var passiveError))
+            if (explore.EnsureStartingPassives(out var passiveError) == false)
+            {
                 throw new InvalidOperationException(passiveError);
+            }
+
             await spawnManager.SpawnCharacterAsync(explore.CurrentSetupData.SelectedCharacterId,
-                roomData.MainSpawnPoints, token);
+                            roomData.MainSpawnPoints, token);
             if (spawnManager.ActivePlayerCount == 0)
+            {
                 throw new InvalidOperationException("Stage player could not be spawned.");
+            }
 
             bool isPlayerDead = false;
 
@@ -111,7 +137,11 @@ public sealed class StageManager : MonoBehaviour
                 if (groupIds != null && groupIds.Count > 0)
                 {
                     // 적 스폰 대기
-                    if (currentWave > groupIds.Count) throw new InvalidOperationException("Missing monster group for stage wave.");
+                    if (currentWave > groupIds.Count)
+                    {
+                        throw new InvalidOperationException("Missing monster group for stage wave.");
+                    }
+
                     await spawnManager.SpawnNPCAsync(groupIds[currentWave - 1], roomData.EnemySpawnPoints, true, token);
                 }
 
@@ -138,7 +168,10 @@ public sealed class StageManager : MonoBehaviour
             }
 
             if (currentStage.wave <= 0)
+            {
                 await SceneLoadingController.CompleteStagePreparationAsync(token);
+            }
+
             stageState = StageState.Result;
             var player = PlayerManager.Instance.SafeInvoke(manager => manager.GetCurrentPlayer());
             if (player != null)
@@ -150,7 +183,7 @@ public sealed class StageManager : MonoBehaviour
             // 결과 포장해서 던지기
             return new StageResult
             {
-                IsSuccess = !isPlayerDead,
+                IsSuccess = (isPlayerDead == false),
                 IsPlayerDead = isPlayerDead,
                 ClearedWave = currentWave - 1
             };
@@ -164,7 +197,10 @@ public sealed class StageManager : MonoBehaviour
 
     public void SetEnteredStage(StageInfo stage)
     {
-        if (stage == null) return;
+        if (stage == null)
+        {
+            return;
+        }
 
         currentStage = stage;
     }

@@ -16,7 +16,11 @@ public sealed class SO_NPCObjectsEditor : Editor
         npcList.drawHeaderCallback = DrawHeader;
         npcList.drawElementCallback = (rect, index, isActive, isFocused) =>
         {
-            if (index >= listProperty.arraySize) return;
+            if (index >= listProperty.arraySize)
+            {
+                return;
+            }
+
             var element = listProperty.GetArrayElementAtIndex(index);
             var id = element.FindPropertyRelative("id");
             string characterId = id.hasMultipleDifferentValues ? "—" : id.intValue.ToString();
@@ -48,9 +52,13 @@ public sealed class SO_NPCObjectsEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Script"));
 
         if (listProperty.isExpanded)
+        {
             npcList.DoLayoutList();
+        }
         else
+        {
             DrawHeader(EditorGUILayout.GetControlRect());
+        }
 
         DrawPropertiesExcluding(serializedObject, "m_Script", "list");
         serializedObject.ApplyModifiedProperties();

@@ -5,19 +5,43 @@ public class AIContext
     public GameObject Owner;
     public GameObject Target;
     public HealthPointComponent HealthPoint;
-    public int patternCount = -1; 
+    public int patternCount = -1;
 
     public AIContext(GameObject owner)
     {
         Owner = owner;
-        HealthPoint = owner.GetComponent<HealthPointComponent>();   
+        HealthPoint = owner.GetComponent<HealthPointComponent>();
     }
 
-    public float CurrentHP => HealthPoint != null ? HealthPoint.GetCurrentHpRatio : 0f; 
-    public Vector3 SelfPosition => Owner.transform.position;    
-    public Vector3 TargetPosition => Target != null ? Target.transform.position : Vector3.zero; 
+    public float CurrentHP
+    {
+        get
+        {
+            return HealthPoint != null ? HealthPoint.GetCurrentHpRatio : 0f;
+        }
+    }
+    public Vector3 SelfPosition
+    {
+        get
+        {
+            return Owner.transform.position;
+        }
+    }
+    public Vector3 TargetPosition
+    {
+        get
+        {
+            return Target != null ? Target.transform.position : Vector3.zero;
+        }
+    }
 
-    public int PatternCount => patternCount;
+    public int PatternCount
+    {
+        get
+        {
+            return patternCount;
+        }
+    }
 }
 
 public interface IPatternCondition
@@ -55,7 +79,9 @@ public abstract class PatternConditionBase : IPatternCondition
 
     protected abstract float GetContextValue(AIContext ctx);
 
-    public virtual void ResetCondition() { }
+    public virtual void ResetCondition()
+    {
+    }
 
     public bool Evaluate(float value, AIContext ctx)
     {
@@ -65,7 +91,7 @@ public abstract class PatternConditionBase : IPatternCondition
 }
 
 // Cooldown 상태가 있으므로 구조가 다름
-public sealed  class CooldownCondition : IUpdatableCondition
+public sealed class CooldownCondition : IUpdatableCondition
 {
     private float cooldown = 0.0f;
     private float maxCooldown;
@@ -101,7 +127,9 @@ public sealed class HealthCondition : PatternConditionBase
     }
 
     protected override float GetContextValue(AIContext ctx)
-        => ctx.CurrentHP;
+    {
+        return ctx.CurrentHP;
+    }
 }
 
 public sealed class DistanceCondition : PatternConditionBase
@@ -112,14 +140,16 @@ public sealed class DistanceCondition : PatternConditionBase
     }
 
     protected override float GetContextValue(AIContext ctx)
-    => Vector3.Distance(ctx.SelfPosition, ctx.TargetPosition);
+    {
+        return Vector3.Distance(ctx.SelfPosition, ctx.TargetPosition);
+    }
 
 }
 
 public sealed class CountCondition : PatternConditionBase, IUseableCondition
 {
     private int count = -1;
-    private int initCount = 0; 
+    private int initCount = 0;
 
     public CountCondition(IComparisonOperator comparisonOperator, float targetValue)
         : base(comparisonOperator, targetValue)
@@ -129,14 +159,14 @@ public sealed class CountCondition : PatternConditionBase, IUseableCondition
 
     public void Use()
     {
-        count--; 
+        count--;
     }
 
     protected override float GetContextValue(AIContext ctx)
     {
         return ctx.patternCount;
     }
-    
+
     public override void ResetCondition()
     {
         count = initCount;
@@ -148,32 +178,50 @@ public sealed class CountCondition : PatternConditionBase, IUseableCondition
 
 public class GreaterThanOperator : IComparisonOperator
 {
-    public bool Compare(float lhs, float rhs) => lhs > rhs;
+    public bool Compare(float lhs, float rhs)
+    {
+        return lhs > rhs;
+    }
 }
 
 public class LessThanOperator : IComparisonOperator
 {
-    public bool Compare(float lhs, float rhs) => lhs < rhs;
+    public bool Compare(float lhs, float rhs)
+    {
+        return lhs < rhs;
+    }
 }
 
 public class EqualOperator : IComparisonOperator
 {
-    public bool Compare(float lhs, float rhs) => lhs == rhs;
+    public bool Compare(float lhs, float rhs)
+    {
+        return lhs == rhs;
+    }
 }
 
 public class NotEqualOperator : IComparisonOperator
 {
-    public bool Compare(float lhs, float rhs) => lhs != rhs;
+    public bool Compare(float lhs, float rhs)
+    {
+        return lhs != rhs;
+    }
 }
 
 public class GreaterThanOrEqualOperator : IComparisonOperator
 {
-    public bool Compare(float lhs, float rhs) => lhs >= rhs;
+    public bool Compare(float lhs, float rhs)
+    {
+        return lhs >= rhs;
+    }
 }
 
 public class LessThanOrEqualOperator : IComparisonOperator
 {
-    public bool Compare(float lhs, float rhs) => lhs <= rhs;
+    public bool Compare(float lhs, float rhs)
+    {
+        return lhs <= rhs;
+    }
 }
 
 

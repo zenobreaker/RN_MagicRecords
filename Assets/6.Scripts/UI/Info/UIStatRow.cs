@@ -9,8 +9,13 @@ public class UIStatRow : MonoBehaviour
     public void SetStat(string title, string value)
     {
         if (titleText != null)
+        {
             titleText.text = title;
+        }
+
         if (valueText != null)
+        {
             valueText.text = value;
+        }
     }
 }

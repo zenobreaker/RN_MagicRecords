@@ -26,8 +26,14 @@ public class PropPlacerTool : EditorWindow
         window.minSize = new Vector2(700, 400);
     }
 
-    private void OnEnable() => SceneView.duringSceneGui += OnSceneGUI;
-    private void OnDisable() => SceneView.duringSceneGui -= OnSceneGUI;
+    private void OnEnable()
+    {
+        SceneView.duringSceneGui += OnSceneGUI;
+    }
+    private void OnDisable()
+    {
+        SceneView.duringSceneGui -= OnSceneGUI;
+    }
 
     private void OnGUI()
     {
@@ -59,7 +65,7 @@ public class PropPlacerTool : EditorWindow
         GUI.backgroundColor = isPlacingMode ? Color.green : Color.white;
         if (GUILayout.Button(isPlacingMode ? "배치 모드 활성화됨 (클릭하여 끄기)" : "배치 모드 켜기 (씬에서 클릭)", GUILayout.Height(50)))
         {
-            isPlacingMode = !isPlacingMode;
+            isPlacingMode = (isPlacingMode == false);
         }
         GUI.backgroundColor = Color.white;
 
@@ -67,7 +73,10 @@ public class PropPlacerTool : EditorWindow
 
         GUILayout.FlexibleSpace(); // 버튼을 위쪽으로 밀어주고 아래 여백을 채움
 
-        if (GUILayout.Button("현재 맵을 프리팹으로 저장", GUILayout.Height(35))) SaveMapToPrefab();
+        if (GUILayout.Button("현재 맵을 프리팹으로 저장", GUILayout.Height(35)))
+        {
+            SaveMapToPrefab();
+        }
 
         GUILayout.EndVertical();
         // ---------------------------------------------------------
@@ -109,9 +118,13 @@ public class PropPlacerTool : EditorWindow
                 // 프리팹의 미리보기 이미지를 가져옵니다. (로딩 안됐을 땐 텍스트 띄움)
                 Texture2D preview = AssetPreview.GetAssetPreview(prefab);
                 if (preview != null)
+                {
                     icons.Add(new GUIContent(preview, prefab.name)); // 마우스 올리면 이름 나옴
+                }
                 else
+                {
                     icons.Add(new GUIContent(prefab.name));
+                }
             }
         }
 
@@ -137,10 +150,16 @@ public class PropPlacerTool : EditorWindow
     // 씬 화면(Scene View)에 직접 그려지고 클릭을 감지하는 부분
     private void OnSceneGUI(SceneView sceneView)
     {
-        if (targetMap == null || !isPlacingMode) return;
+        if (targetMap == null || isPlacingMode == false)
+        {
+            return;
+        }
 
         Renderer mapRenderer = targetMap.GetComponent<Renderer>();
-        if (mapRenderer == null) return;
+        if (mapRenderer == null)
+        {
+            return;
+        }
 
         Bounds bounds = mapRenderer.bounds;
         Event e = Event.current;
@@ -193,10 +212,16 @@ public class PropPlacerTool : EditorWindow
 
     private void PlaceObjectAt(Vector3 hitPoint, Bounds bounds)
     {
-        if (palette == null || palette.prefabs.Count == 0 || selectedPrefabIndex >= palette.prefabs.Count) return;
+        if (palette == null || palette.prefabs.Count == 0 || selectedPrefabIndex >= palette.prefabs.Count)
+        {
+            return;
+        }
 
         GameObject prefabToPlace = palette.prefabs[selectedPrefabIndex];
-        if (prefabToPlace == null) return;
+        if (prefabToPlace == null)
+        {
+            return;
+        }
 
         float stepX = bounds.size.x / gridX;
         float stepZ = bounds.size.z / gridZ;
@@ -215,10 +240,16 @@ public class PropPlacerTool : EditorWindow
 
     private void SaveMapToPrefab()
     {
-        if (targetMap == null) return;
+        if (targetMap == null)
+        {
+            return;
+        }
 
         string path = EditorUtility.SaveFilePanelInProject("Save Map Prefab", targetMap.name, "prefab", "Save the decorated map as a prefab.");
-        if (string.IsNullOrEmpty(path)) return;
+        if (string.IsNullOrEmpty(path))
+        {
+            return;
+        }
 
         PrefabUtility.SaveAsPrefabAssetAndConnect(targetMap, path, InteractionMode.UserAction);
         Debug.Log($"<color=cyan>맵 프리팹 저장 완료: {path}</color>");

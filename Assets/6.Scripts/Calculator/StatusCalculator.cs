@@ -13,19 +13,32 @@ public static class StatusCalculator
         {
             foreach (var eq in equipment.equipments)
             {
-                if (string.IsNullOrEmpty(eq.itemUniqueId)) continue;
+                if (string.IsNullOrEmpty(eq.itemUniqueId))
+                {
+                    continue;
+                }
 
                 var item = InventoryManager.Instance.FindItem(eq.itemUniqueId) as EquipmentItem;
                 item ??= AppManager.Instance.GetEquipmentItem(eq.itemId);
-                
-                if (item == null || item.modifier == null) continue;
 
-                if (item.modifier.type != type) continue;
+                if (item == null || item.modifier == null)
+                {
+                    continue;
+                }
+
+                if (item.modifier.type != type)
+                {
+                    continue;
+                }
 
                 if (item.modifier.valueType == ModifierValueType.FIXED)
+                {
                     flatTotal += item.modifier.value;
+                }
                 else if (item.modifier.valueType == ModifierValueType.PERCENT)
+                {
                     percentTotal += item.modifier.value;
+                }
             }
         }
 

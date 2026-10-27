@@ -20,12 +20,12 @@ public class UIPopUpRewards : UIPopUp
         int index = 0;
         SetContentChildObjectsCallback<UIRewardSlot>(slot =>
         {
-            if(index <  rewardItems.Length)
+            if (index < rewardItems.Length)
             {
                 slot.SetItemData(rewardItems[index]);
                 slot.gameObject.SetActive(true);
-                    
-                index++; 
+
+                index++;
             }
             else
             {

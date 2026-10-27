@@ -12,7 +12,10 @@ public class UIPopUpOption
     {
         base.OnEnable();
         pausedBattle = UIManager.Instance != null && UIManager.Instance.IsInGame();
-        if (pausedBattle) PauseManager.RequestPause();
+        if (pausedBattle)
+        {
+            PauseManager.RequestPause();
+        }
 
         //slider_BGM.value = PlayerPrefs.GetFloat("BGM_Volume");
         //slider_SFX.value = PlayerPrefs.GetFloat("SFX_Volume");
@@ -30,14 +33,19 @@ public class UIPopUpOption
 
         // 2. 불러온 값을 UI에 주입 (out 키워드 제거)
         if (masterGroup != null)
+        {
             masterGroup.SetInitialize(SoundCategory.MASTER, loadedMasterMute, loadedMasterVolume);
+        }
 
         if (bgmGroup != null)
+        {
             bgmGroup.SetInitialize(SoundCategory.BGM, loadedBGMMute, loadedBGMVolume);
+        }
 
         if (sfxGroup != null)
+        {
             sfxGroup.SetInitialize(SoundCategory.SFX, loadedSFXMute, loadedSFXVolume);
-
+        }
 
         ShowPopUp();
     }
@@ -76,7 +84,7 @@ public class UIPopUpOption
             PlayerPrefs.SetFloat("SFX_Volume", sfxGroup.CurrentVolume);
             PlayerPrefs.SetInt("SFX_Mute", sfxGroup.CurrentMute ? 1 : 0);
         }
-            PlayerPrefs.Save(); // 💡 디스크에 즉시 저장 확정 (안전장치)
+        PlayerPrefs.Save(); // 💡 디스크에 즉시 저장 확정 (안전장치)
     }
 
     protected override void DrawPopUp()

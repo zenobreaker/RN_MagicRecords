@@ -44,7 +44,7 @@ public class StateComponentEditor : Editor
         GUI.backgroundColor = oldColor;
 
         // 플레이 모드가 아닐 때 안내 문구
-        if (!Application.isPlaying)
+        if (Application.isPlaying == false)
         {
             EditorGUILayout.HelpBox("게임이 실행되면 상태가 실시간으로 표시됩니다.", MessageType.Info);
         }
@@ -53,10 +53,16 @@ public class StateComponentEditor : Editor
     // 💡 씬(Scene) 뷰에서 캐릭터 머리 위에 텍스트를 띄워줍니다! (진짜 유용함)
     private void OnSceneGUI()
     {
-        if (!Application.isPlaying) return;
+        if (Application.isPlaying == false)
+        {
+            return;
+        }
 
         StateComponent stateComp = (StateComponent)target;
-        if (stateComp == null || !stateComp.gameObject.activeInHierarchy) return;
+        if (stateComp == null || stateComp.gameObject.activeInHierarchy == false)
+        {
+            return;
+        }
 
         // 캐릭터 머리 위쪽(대략 2유닛 위) 위치 계산
         Vector3 labelPosition = stateComp.transform.position + Vector3.up * 2.2f;
@@ -82,14 +88,22 @@ public class StateComponentEditor : Editor
     {
         switch (type)
         {
-            case StateType.Idle: return Color.green;
-            case StateType.Equip: return Color.cyan;
-            case StateType.Action: return new Color(1f, 0.6f, 0f); // 주황색
-            case StateType.Evade: return new Color(0.2f, 0.6f, 1f); // 파란색
-            case StateType.Damaged: return Color.red;
-            case StateType.Stop: return Color.magenta;
-            case StateType.Dead: return Color.gray;
-            default: return Color.white;
+            case StateType.Idle:
+                return Color.green;
+            case StateType.Equip:
+                return Color.cyan;
+            case StateType.Action:
+                return new Color(1f, 0.6f, 0f); // 주황색
+            case StateType.Evade:
+                return new Color(0.2f, 0.6f, 1f); // 파란색
+            case StateType.Damaged:
+                return Color.red;
+            case StateType.Stop:
+                return Color.magenta;
+            case StateType.Dead:
+                return Color.gray;
+            default:
+                return Color.white;
         }
     }
 

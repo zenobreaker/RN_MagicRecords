@@ -10,11 +10,19 @@ public class RecordPassive : PassiveSkill
     private BattleManager battle;
     public RecordPassive(SO_RecordData data) : base()
     {
-        if (data == null) return;
-        recordData = data.GetRecordData(); 
+        if (data == null)
+        {
+            return;
+        }
+
+        recordData = data.GetRecordData();
         foreach (var template in data.Modules ?? new List<CommonRecordModule>())
         {
-            if (template == null) continue;
+            if (template == null)
+            {
+                continue;
+            }
+
             var module = (CommonRecordModule)template.Clone();
             module.SetRecordId(data.id);
             modules.Add(module);
@@ -25,45 +33,88 @@ public class RecordPassive : PassiveSkill
     {
         OnLose();
         owner = skillOwner;
-        if (owner == null) return;
-        foreach (var module in modules) module.OnAcquire(owner, 1);
+        if (owner == null)
+        {
+            return;
+        }
+
+        foreach (var module in modules)
+        {
+            module.OnAcquire(owner, 1);
+        }
+
         battle = modules.Count > 0 ? BattleManager.Instance : null;
         if (battle != null && modules.Count > 0)
         {
             battle.OnBattleStarted += OnBattleStarted;
-            if (battle.IsInBattle) OnBattleStarted();
+            if (battle.IsInBattle)
+            {
+                OnBattleStarted();
+            }
         }
     }
     private void OnBattleStarted()
     {
-        if (owner == null || battle == null) return;
-        foreach (var module in modules) module.OnBattleStarted(battle.CurrentEnemies);
+        if (owner == null || battle == null)
+        {
+            return;
+        }
+
+        foreach (var module in modules)
+        {
+            module.OnBattleStarted(battle.CurrentEnemies);
+        }
     }
     public override void OnSkillCast(SkillUseEvent evt, SkillRuntimeContext context)
     {
-        foreach (var module in modules) module.OnSkillCast(evt, context);
+        foreach (var module in modules)
+        {
+            module.OnSkillCast(evt, context);
+        }
     }
     public override void OnUpdate(float deltaTime)
     {
-        foreach (var module in modules) module.OnUpdate(deltaTime);
+        foreach (var module in modules)
+        {
+            module.OnUpdate(deltaTime);
+        }
     }
 
 
     public override void OnApplyStaticEffect(StatusComponent status)
     {
-        if (recordData == null || status == null) return;
-        foreach (var module in modules) module.OnApplyStaticEffect(status);
-        if (modules.Count > 0) return;
+        if (recordData == null || status == null)
+        {
+            return;
+        }
+
+        foreach (var module in modules)
+        {
+            module.OnApplyStaticEffect(status);
+        }
+
+        if (modules.Count > 0)
+        {
+            return;
+        }
+
         RemoveModifiers(status);
-        if (!status.IsSameJob(recordData.targetFilter) || recordData.Stats == null) return;
+        if (status.IsSameJob(recordData.targetFilter) == false || recordData.Stats == null)
+        {
+            return;
+        }
 
         var modifiers = new List<StatModifier>();
         appliedModifiers[status] = modifiers;
         foreach (var modifier in recordData.Stats)
         {
-            if (modifier == null) continue;
+            if (modifier == null)
+            {
+                continue;
+            }
+
             var statMod = ModifierFactory.CreateStatModifier(
-                modifier.Status, modifier.Value, modifier.ValueType);
+                            modifier.Status, modifier.Value, modifier.ValueType);
             status.ApplyBuff(statMod);
             modifiers.Add(statMod);
         }
@@ -71,19 +122,36 @@ public class RecordPassive : PassiveSkill
 
     public override void OnLose()
     {
-        if (battle != null) battle.OnBattleStarted -= OnBattleStarted;
+        if (battle != null)
+        {
+            battle.OnBattleStarted -= OnBattleStarted;
+        }
+
         battle = null;
-        foreach (var module in modules) module.OnLose();
+        foreach (var module in modules)
+        {
+            module.OnLose();
+        }
+
         owner = null;
         foreach (var target in new List<StatusComponent>(appliedModifiers.Keys))
+        {
             RemoveModifiers(target);
+        }
     }
 
     private void RemoveModifiers(StatusComponent target)
     {
-        if (!appliedModifiers.TryGetValue(target, out var modifiers)) return;
+        if (appliedModifiers.TryGetValue(target, out var modifiers) == false)
+        {
+            return;
+        }
+
         foreach (var modifier in modifiers)
+        {
             target.SafeInvoke(value => value.RemoveBuff(modifier));
+        }
+
         appliedModifiers.Remove(target);
     }
 }

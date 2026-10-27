@@ -12,7 +12,9 @@ public partial class CheckTargetIsNullCondition : Condition
     public override bool IsTrue()
     {
         if (Target == null || Target.Value == null)
+        {
             return true;
+        }
 
         return false;
     }

@@ -38,7 +38,10 @@ public class Module_CalcSpawnPosition : SkillModule
 
     private void Add(Transform target, ActiveSkill skill)
     {
-        if (skill == null) return;
+        if (skill == null)
+        {
+            return;
+        }
 
         skill.Runtime.Spawn.SpawnPoints.Add(
             new SpawnPointData(
@@ -48,20 +51,28 @@ public class Module_CalcSpawnPosition : SkillModule
 
     private void AddWeaponMuzzles(Transform target, ActiveSkill skill)
     {
-        if (skill == null) return;
+        if (skill == null)
+        {
+            return;
+        }
 
-        if (target == null) return;
+        if (target == null)
+        {
+            return;
+        }
 
         if (target.TryGetComponent<WeaponComponent>(out var weaponComponent))
         {
             if (weaponComponent.GetCurrentWeapon() is IAttackOriginProvider origin)
             {
-                foreach(Transform t in origin.GetAttackOrigins())
+                foreach (Transform t in origin.GetAttackOrigins())
+                {
                     skill.Runtime.Spawn.SpawnPoints.Add(
-                        new SpawnPointData(
-                            t.position,
-                            target.rotation)
-                        );
+                    new SpawnPointData(
+                        t.position,
+                        target.rotation)
+                    );
+                }
             }
         }
     }

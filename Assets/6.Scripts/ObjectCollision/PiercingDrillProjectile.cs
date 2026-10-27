@@ -22,9 +22,21 @@ public class PiercingDrillProjectile
     private float defaultDrillingSpeedRatio;
     private readonly List<Collider> tickTargets = new List<Collider>();
 
-    public bool IsAttached => isAttached;
-    public float MovementSpeed => isAttached ? 0f :
+    public bool IsAttached
+    {
+        get
+        {
+            return isAttached;
+        }
+    }
+    public float MovementSpeed
+    {
+        get
+        {
+            return isAttached ? 0f :
         force * (currentTargets.Count > 0 ? drillingSpeedRatio : 1f);
+        }
+    }
 
     protected override void Awake()
     {
@@ -34,7 +46,11 @@ public class PiercingDrillProjectile
 
     private void CacheDrillDefaults()
     {
-        if (drillDefaultsCached) return;
+        if (drillDefaultsCached)
+        {
+            return;
+        }
+
         drillDefaultsCached = true;
         defaultDrillingSpeedRatio = drillingSpeedRatio;
     }
@@ -64,7 +80,7 @@ public class PiercingDrillProjectile
     {
         if (isAttached)
         {
-            if (attachedTarget == null || !attachedTarget.activeInHierarchy)
+            if (attachedTarget == null || attachedTarget.activeInHierarchy == false)
             {
                 gameObject.SetActive(false);
                 return;
@@ -92,9 +108,16 @@ public class PiercingDrillProjectile
                 for (int i = 0; i < tickTargets.Count && isActiveAndEnabled; i++)
                 {
                     Collider target = tickTargets[i];
-                    if (target == null || !target.gameObject.activeInHierarchy) continue;
+                    if (target == null || target.gameObject.activeInHierarchy == false)
+                    {
+                        continue;
+                    }
+
                     DealDamage(target.gameObject, target.transform.position);
-                    if (isAttached) break;
+                    if (isAttached)
+                    {
+                        break;
+                    }
                 }
             }
         }
@@ -102,7 +125,10 @@ public class PiercingDrillProjectile
 
     protected override void ProcessHit(Collider other)
     {
-        if (isAttached) return;
+        if (isAttached)
+        {
+            return;
+        }
         // 2. 관통 시작: 목록에 추가하고 즉시 1타 데미지
         if (currentTargets.Add(other))
         {
@@ -116,7 +142,10 @@ public class PiercingDrillProjectile
 
     private void FixedUpdate()
     {
-        if (rigid == null) return;
+        if (rigid == null)
+        {
+            return;
+        }
 
         // 부착 중에는 관통 속도 복원 로직이 다시 탄두를 밀어내지 않도록 합니다.
         if (isAttached)
@@ -126,19 +155,25 @@ public class PiercingDrillProjectile
             return;
         }
 
-        currentTargets.RemoveWhere(c => c == null || !c.gameObject.activeInHierarchy);
+        currentTargets.RemoveWhere(c => c == null || c.gameObject.activeInHierarchy == false);
         // 유도 방향은 유지하고, 이번 발사의 속도를 기준으로 감속합니다.
         Vector3 direction = rigid.linearVelocity.sqrMagnitude > 0f
             ? rigid.linearVelocity.normalized : transform.forward;
         rigid.linearVelocity = direction * MovementSpeed;
     }
 
-    
+
     private void OnTriggerExit(Collider other)
     {
-        if (isAttached) return;
-        if (IsFriendlyFire(other.gameObject))
+        if (isAttached)
+        {
             return;
+        }
+
+        if (IsFriendlyFire(other.gameObject))
+        {
+            return;
+        }
 
         // 완전히 뚫고 지나가면 목록에서 제거 (속도 원상복구용)
         if (currentTargets.Contains(other))
@@ -155,7 +190,11 @@ public class PiercingDrillProjectile
 
     public void AttachToTarget(GameObject target)
     {
-        if (isAttached || target == null) return;
+        if (isAttached || target == null)
+        {
+            return;
+        }
+
         isAttached = true;
         attachedTarget = target;
         tickTimer = 0f;

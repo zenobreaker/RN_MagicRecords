@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 
 
-// json으로 이루어진 데이터를 가공하는 용도의 클래스 
+// json으로 이루어진 데이터를 가공하는 용도의 클래스
 [System.Serializable]
 public class MonsterJson
 {
@@ -15,7 +15,7 @@ public class MonsterJson
     public int monsterGrade;
     public string monsterName;
     public string monsterImage;
-    public string monsterPrefabName;       // 프리팹 위치 경로값에 쓰일 이름 
+    public string monsterPrefabName;       // 프리팹 위치 경로값에 쓰일 이름
     public int statID;
 }
 
@@ -66,7 +66,7 @@ public class MonsterStatData
 
     public MonsterStatData(MonsterStatData other)
     {
-        id = other.id; 
+        id = other.id;
         monsterID = other.monsterID;
         hp = other.hp;
         attack = other.attack;
@@ -74,7 +74,9 @@ public class MonsterStatData
         speed = other.speed;
     }
 
-    public MonsterStatData() { }
+    public MonsterStatData()
+    {
+    }
 }
 
 
@@ -83,7 +85,7 @@ public class MonsterGroupData
 {
     public int id;
     public List<int> monsterIDs;
-    public List<int> counts; 
+    public List<int> counts;
 }
 
 [System.Serializable]
@@ -133,7 +135,10 @@ public class MonsterDataBase : MonoBehaviour
 
     public void InitializeMonsterData()
     {
-        if (monsterJson == null) return;
+        if (monsterJson == null)
+        {
+            return;
+        }
 
         JsonLoader.LoadJsonList<MonsterJsonAllData, MonsterJson, MonsterData>
             (
@@ -162,8 +167,10 @@ public class MonsterDataBase : MonoBehaviour
     public void InitializeMonsterStatData()
     {
         if (monsterStatJson == null)
+        {
             return;
-        
+        }
+
         JsonLoader.LoadJsonList<MonsterStatJsonAllData, MonsterStatJson, MonsterStatData>
             (
                 monsterStatJson,
@@ -192,7 +199,10 @@ public class MonsterDataBase : MonoBehaviour
 
     public void InitializeMonsterGroupData()
     {
-        if (monsterGroupJson == null) return;
+        if (monsterGroupJson == null)
+        {
+            return;
+        }
 
         JsonLoader.LoadJsonList<MonsterGroupJsonAllData, MonsterGroupJson, MonsterGroupData>
             (
@@ -218,7 +228,7 @@ public class MonsterDataBase : MonoBehaviour
 
     public MonsterGroupData GetMonsterGroupData(int groupID)
     {
-        return (monsterGroupDatas.TryGetValue(groupID, out var monsterGroupData)) 
+        return (monsterGroupDatas.TryGetValue(groupID, out var monsterGroupData))
             ? monsterGroupData : null;
     }
 
@@ -230,6 +240,6 @@ public class MonsterDataBase : MonoBehaviour
 
     public MonsterData GetMonsterData(int monsterID)
     {
-        return (monsterDatas.TryGetValue(monsterID, out var monsterData)) ? monsterData: null;
+        return (monsterDatas.TryGetValue(monsterID, out var monsterData)) ? monsterData : null;
     }
 }

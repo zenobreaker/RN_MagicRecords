@@ -27,8 +27,10 @@ public class ManagerWaiter : Singleton<ManagerWaiter>
             return;
         }
 
-        if (!waiters.ContainsKey(typeof(T)))
+        if (waiters.ContainsKey(typeof(T)) == false)
+        {
             waiters[typeof(T)] = new List<Delegate>();
+        }
 
         waiters[typeof(T)].Add(onReady);
     }
@@ -42,8 +44,10 @@ public class ManagerWaiter : Singleton<ManagerWaiter>
             return new EmptyDisposable();
         }
 
-        if (!waiters.ContainsKey(typeof(T)))
+        if (waiters.ContainsKey(typeof(T)) == false)
+        {
             waiters[typeof(T)] = new List<Delegate>();
+        }
 
         waiters[typeof(T)].Add(onReady);
         return new Registration(typeof(T), onReady);
@@ -56,17 +60,24 @@ public class ManagerWaiter : Singleton<ManagerWaiter>
     /// </summary>
     public static void RegisterManagerEvent<T>(MonoBehaviour owner, Action<T> onRegister, Action<T> onUnregister) where T : MonoBehaviour
     {
-        if (owner == null) return;
+        if (owner == null)
+        {
+            return;
+        }
 
         WaitForManager<T>(manager =>
         {
             try
             {
                 if (owner == null || owner.gameObject == null)
+                {
                     return; // 이미 파괴된 오브젝트
+                }
 
-                if (!owner.gameObject.activeInHierarchy)
+                if (owner.gameObject.activeInHierarchy == false)
+                {
                     return; // 씬 전환 중 비활성화된 상태면 무시
+                }
 
                 onRegister?.Invoke(manager);
                 // attach unsubscriber to owner to invoke unregister when owner is disabled
@@ -82,7 +93,10 @@ public class ManagerWaiter : Singleton<ManagerWaiter>
 
     public static void NotifyManagerReady<T>(T manager) where T : MonoBehaviour
     {
-        if (!waiters.ContainsKey(typeof(T))) return;
+        if (waiters.ContainsKey(typeof(T)) == false)
+        {
+            return;
+        }
 
         foreach (var w in waiters[typeof(T)])
         {
@@ -106,19 +120,31 @@ public class ManagerWaiter : Singleton<ManagerWaiter>
 
         public void Dispose()
         {
-            if (disposed) return;
+            if (disposed)
+            {
+                return;
+            }
+
             disposed = true;
 
-            if (!waiters.ContainsKey(key)) return;
+            if (waiters.ContainsKey(key) == false)
+            {
+                return;
+            }
+
             var list = waiters[key];
             list.Remove(callback);
             if (list.Count == 0)
+            {
                 waiters.Remove(key);
+            }
         }
     }
 
     private class EmptyDisposable : IDisposable
     {
-        public void Dispose() { }
+        public void Dispose()
+        {
+        }
     }
 }

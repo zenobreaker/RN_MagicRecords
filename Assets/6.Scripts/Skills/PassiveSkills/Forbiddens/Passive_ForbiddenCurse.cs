@@ -1,22 +1,22 @@
 using UnityEngine;
 
 /// <summary>
-///  패시브 - 금지된 마술 - 저주 
-///  피해를 입힌 대상에게 저주 부여 
-///  공격력과 치명타 확률 증가 
+///  패시브 - 금지된 마술 - 저주
+///  피해를 입힌 대상에게 저주 부여
+///  공격력과 치명타 확률 증가
 /// </summary>
 public class Passive_ForbiddenCurse : PassiveSkill
 {
-    // 1. 정적 효과 
+    // 1. 정적 효과
     private float atkBonus = 10.0f;
     private float critRateBonus = 0.05f;
 
-    // 2. 저주 설정 
+    // 2. 저주 설정
     private float curseChance = 1.0f;
     private float curseDuration = 5.0f;
 
     private StatusComponent status;
-    private StatModifier atkModifier; 
+    private StatModifier atkModifier;
     private StatModifier critModifier;
 
     public Passive_ForbiddenCurse(SO_SkillData data)
@@ -32,16 +32,19 @@ public class Passive_ForbiddenCurse : PassiveSkill
     public override void OnApplyStaticEffect(StatusComponent status)
     {
         this.status = status;
-        status.SafeInvoke(v=>v.ApplyBuff(atkModifier = new StatModifier(StatusType.ATTACK, atkBonus, ModifierValueType.FIXED)));
-        status.SafeInvoke(v=>v.ApplyBuff(critModifier = new StatModifier(StatusType.CRIT_RATIO, critRateBonus, ModifierValueType.FIXED)));
+        status.SafeInvoke(v => v.ApplyBuff(atkModifier = new StatModifier(StatusType.ATTACK, atkBonus, ModifierValueType.FIXED)));
+        status.SafeInvoke(v => v.ApplyBuff(critModifier = new StatModifier(StatusType.CRIT_RATIO, critRateBonus, ModifierValueType.FIXED)));
         Debug.Log($" Attack {status?.GetStatusValue(StatusType.ATTACK)} Crit Ratio : {status?.GetStatusValue(StatusType.CRIT_RATIO)}");
     }
 
     public override void OnAcquire(GameObject owner)
     {
-        this.owner = owner; 
+        this.owner = owner;
 
-        if (BattleManager.Instance == null) return;
+        if (BattleManager.Instance == null)
+        {
+            return;
+        }
 
         BattleManager.Instance.OnAnyAttackHit -= OnTargetHit;
         BattleManager.Instance.OnAnyAttackHit += OnTargetHit;
@@ -55,7 +58,10 @@ public class Passive_ForbiddenCurse : PassiveSkill
 
     private void OnTargetHit(GameObject attacker, GameObject target, DamageEvent evt)
     {
-        if (Random.value > curseChance) return;
+        if (Random.value > curseChance)
+        {
+            return;
+        }
 
         // 타겟에게 저주 상태이상 부여
         EffectManager.Instance?.RegisterEffect_Curse(target, owner, curseDuration);

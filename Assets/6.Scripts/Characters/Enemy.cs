@@ -21,7 +21,17 @@ public class Enemy
     private Material[] skinMaterials;
 
     [SerializeField] private bool isBoss = false;
-    public bool Boss { get => isBoss; set { isBoss = value; } }
+    public bool Boss
+    {
+        get
+        {
+            return isBoss;
+        }
+        set
+        {
+            isBoss = value;
+        }
+    }
 
     private LaunchComponent launch;
 
@@ -40,7 +50,9 @@ public class Enemy
         {
             Transform surface = transform.FindChildByName(name);
             if (surface == null)
+            {
                 continue;
+            }
 
             if (surface.TryGetComponent<SkinnedMeshRenderer>(out SkinnedMeshRenderer skin))
             {
@@ -67,7 +79,9 @@ public class Enemy
     {
         SetCharacterCollidersEnabled(true);
         if (state != null)
+        {
             state.OnStateTypeChanged += ChangeType;
+        }
     }
 
     protected override void OnDisable()
@@ -75,7 +89,9 @@ public class Enemy
         base.OnDisable();
 
         if (state != null)
+        {
             state.OnStateTypeChanged -= ChangeType;
+        }
 
         BattleManager.Instance.SafeInvoke(v => v.UnreistEnemy(this));
         CancelInvoke();
@@ -86,38 +102,59 @@ public class Enemy
     {
         base.Start_DoAction();
         if (skill.SafeInvoke(v => v.InAction))
+        {
             skill.StartAction();
+        }
     }
 
     public override void End_DoAction()
     {
-        if (endingAction) return;
+        if (endingAction)
+        {
+            return;
+        }
+
         endingAction = true;
         try
         {
             if (skill.SafeInvoke(v => v.InAction))
             {
                 skill.EndDoAction();
-                if (skill.InAction) return;
+                if (skill.InAction)
+                {
+                    return;
+                }
             }
             bInAction = false;
-            if (state != null && !state.DamagedMode && !state.DeadMode && !state.StopMode) state.SetIdleMode();
+            if (state != null && state.DamagedMode == false && state.DeadMode == false && state.StopMode == false)
+            {
+                state.SetIdleMode();
+            }
+
             OnEndDoAction?.Invoke();
         }
-        finally { endingAction = false; }
+        finally
+        {
+            endingAction = false;
+
+        }
     }
     public override void Begin_JudgeAttack(AnimationEvent e)
     {
         base.Begin_JudgeAttack(e);
         if (skill.SafeInvoke(v => v.InAction))
+        {
             skill.BeginJudgeAttack(e);
+        }
     }
 
     public override void End_JudgeAttack(AnimationEvent e)
     {
         base.End_JudgeAttack(e);
         if (skill.SafeInvoke(v => v.InAction))
+        {
             skill.EndJudgeAttack(e);
+        }
     }
 
     protected override void OnDamageDeath()
@@ -132,8 +169,12 @@ public class Enemy
 
     public bool KillForCheat()
     {
-        if (!isActiveAndEnabled || healthPoint == null || healthPoint.Dead ||
-            state == null || state.DeadMode) return false;
+        if (isActiveAndEnabled == false || healthPoint == null || healthPoint.Dead ||
+            state == null || state.DeadMode)
+        {
+            return false;
+        }
+
         healthPoint.Damage(Mathf.Max(1f, healthPoint.GetCurrentHP));
         state.SetDeadMode();
         OnDamageDeath();
@@ -148,7 +189,10 @@ public class Enemy
         {
             foreach (Material mat in skinMaterials)
             {
-                if (mat != null) mat.color = damageColor;
+                if (mat != null)
+                {
+                    mat.color = damageColor;
+                }
             }
 
             await UniTask.Delay(TimeSpan.FromSeconds(time), cancellationToken: token);
@@ -156,7 +200,11 @@ public class Enemy
             int index = 0;
             foreach (Material mat in skinMaterials)
             {
-                if (mat != null) mat.color = originColors[index];
+                if (mat != null)
+                {
+                    mat.color = originColors[index];
+                }
+
                 index++;
             }
         }
@@ -166,7 +214,11 @@ public class Enemy
             int index = 0;
             foreach (Material mat in skinMaterials)
             {
-                if (mat != null) mat.color = originColors[index];
+                if (mat != null)
+                {
+                    mat.color = originColors[index];
+                }
+
                 index++;
             }
         }
@@ -175,8 +227,11 @@ public class Enemy
     protected override void Dead()
     {
         // 이미 파괴 절차에 들어간 객체라면 무시! (Missing 에러 방어)
-        if (this == null || gameObject == null || !gameObject.activeInHierarchy)
+        if (this == null || gameObject == null || gameObject.activeInHierarchy == false)
+        {
             return;
+        }
+
         base.Dead();
         gameObject.SafeInvoke(v => v.SetActive(false));
     }
@@ -191,7 +246,10 @@ public class Enemy
 
     private void LookAttacker(GameObject attacker)
     {
-        if (attacker == null) return;
+        if (attacker == null)
+        {
+            return;
+        }
 
         transform.LookAt(attacker.transform, Vector3.up);
     }
@@ -216,12 +274,17 @@ public class Enemy
     public override void SetGrade(MonsterData data)
     {
         if (data != null)
+        {
             SetGrade(data.monsterGrade);
+        }
     }
 
     public void SetStatData(MonsterStatData statData)
     {
-        if (statData == null || status == null) return;
+        if (statData == null || status == null)
+        {
+            return;
+        }
 
         status.SetStatusValue(StatusType.ATTACK, statData.attack);
         status.SetStatusValue(StatusType.DEFENSE, statData.defense);
@@ -229,7 +292,9 @@ public class Enemy
         status.SetStatusValue(StatusType.ATTACKSPEED, 1.0f);
 
         if (healthPoint != null)
+        {
             healthPoint.SetMaxHP = statData.hp;
+        }
     }
 
 }

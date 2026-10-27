@@ -6,7 +6,7 @@ public class LobbyUIController
 {
     private void Start()
     {
-        if(SoundManager.Instance != null)
+        if (SoundManager.Instance != null)
         {
             SoundManager.Instance.ChangeBGM("Lobby1");
         }
@@ -16,15 +16,22 @@ public class LobbyUIController
     {
         base.OnEnable();
 
-        if (AppManager.Instance == null) return;
+        if (AppManager.Instance == null)
+        {
+            return;
+        }
 
         AppManager.Instance.OnAwaked += () =>
         {
-            if (bIsAwaked) return;
-            ManagerWaiter.WaitForManager<UIManager>(uiManager =>
+            if (bIsAwaked)
             {
-                uiManager.OnJoinedLobby += UpdateCurrencies;
-            });
+                return;
+            }
+
+            ManagerWaiter.WaitForManager<UIManager>(uiManager =>
+                        {
+                            uiManager.OnJoinedLobby += UpdateCurrencies;
+                        });
             bIsAwaked = true;
         };
     }
@@ -32,7 +39,9 @@ public class LobbyUIController
     protected void OnDisable()
     {
         if (ManagerWaiter.TryGetManager<UIManager>(out UIManager ui))
+        {
             ui.OnJoinedLobby -= UpdateCurrencies;
+        }
     }
 
     public void OnOpenShop()
