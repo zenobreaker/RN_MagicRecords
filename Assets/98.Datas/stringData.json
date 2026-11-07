@@ -1342,8 +1342,8 @@
     },
     {
       "key": "record_name_stat_crit_inc",
-      "kr": "약점 분석",
-      "en": "Weakness Analysis "
+      "kr": "분석용 돋보기",
+      "en": "Analytical Magnifying Glass"
     },
     {
       "key": "record_name_skill_auto_reload",
@@ -1378,7 +1378,7 @@
     {
       "key": "record_desc_stat_crit_inc",
       "kr": "크리티컬 확률 증가 10%",
-      "en": "Improves the probability of critical hits by 10%."
+      "en": "Critical hit chance +10 percentage points."
     },
     {
       "key": "record_desc_skill_auto_reload",
@@ -2217,8 +2217,8 @@
     },
     {
       "key": "record_desc_24",
-      "kr": "‘사출’계열의 관통 +1",
-      "en": "‘사출’계열의 관통 +1"
+      "kr": "치명타 확률 +5%p\n치명타 피해 +10%p\n‘사출’ 계열 관통 +1",
+      "en": "Critical hit chance +5 percentage points. Critical damage +10 percentage points. Projectile skill pierce +1."
     },
     {
       "key": "record_name_25",
@@ -2242,13 +2242,13 @@
     },
     {
       "key": "record_name_27",
-      "kr": "하얀 방진 마스크",
-      "en": "하얀 방진 마스크"
+      "kr": "프레임 클리너",
+      "en": "Frame Cleaner"
     },
     {
       "key": "record_desc_27",
-      "kr": "방어력 +2%",
-      "en": "방어력 +2%"
+      "kr": "방어력 +12%",
+      "en": "Defense +12%."
     },
     {
       "key": "record_name_28",
@@ -2277,8 +2277,8 @@
     },
     {
       "key": "record_desc_30",
-      "kr": "에너지 습득 시 추가 +1\n공격 적중 시 최대 마나의 2%를 회복합니다. 스킬 적중은 10% 효율로 적용되어 최대 마나의 0.2%를 회복합니다.",
-      "en": "에너지 습득 시 추가 +1\n공격 적중 시 최대 마나의 2%를 회복합니다. 스킬 적중은 10% 효율로 적용되어 최대 마나의 0.2%를 회복합니다."
+      "kr": "에너지 습득 시 추가 +1\n공격 적중 시 최대 마나의 2%를 추가 회복합니다. 스킬 적중은 10% 효율로 최대 마나의 0.2%를 추가 회복합니다.\n기본 회복 설정(기본 공격 2%·스킬 0.2%)과 합산하면 각각 4%·0.4%를 회복합니다.",
+      "en": "Energy gained +1. Restore an additional 2% of maximum mana on basic attack hits, or 0.2% on skill hits (10% efficiency). With default base recovery, totals are 4% and 0.4%."
     },
     {
       "key": "record_name_31",
@@ -2582,13 +2582,13 @@
     },
     {
       "key": "record_name_47",
-      "kr": "약점 분석",
-      "en": "약점 분석"
+      "kr": "분석용 돋보기",
+      "en": "Analytical Magnifying Glass"
     },
     {
       "key": "record_desc_47",
       "kr": "크리티컬 확률 증가 10%",
-      "en": "크리티컬 확률 증가 10%"
+      "en": "Critical hit chance +10 percentage points."
     },
     {
       "key": "record_name_48",
@@ -2609,6 +2609,16 @@
       "key": "record_desc_100103",
       "kr": "시전 시 반경 10 안의 적을 등급이 높은 순서, 같은 등급은 가까운 순서로 최대 6명 록온합니다. 총 6발을 대상들에게 균등 분배하며 남는 탄환은 첫 대상부터 우선 배정합니다. 대상이 1명이면 6발, 2명이면 각 3발을 발사합니다. 탄환은 경로상의 적을 무시하고 지정 대상에게 도달하면 피해를 주고 소멸합니다. 다른 기술과 동시에 사용하며 별도 시전 동작 없이 발동합니다. 쿨다운이 80% 감소합니다.",
       "en": "시전 시 반경 10 안의 적을 등급이 높은 순서, 같은 등급은 가까운 순서로 최대 6명 록온합니다. 총 6발을 대상들에게 균등 분배하며 남는 탄환은 첫 대상부터 우선 배정합니다. 대상이 1명이면 6발, 2명이면 각 3발을 발사합니다. 탄환은 경로상의 적을 무시하고 지정 대상에게 도달하면 피해를 주고 소멸합니다. 다른 기술과 동시에 사용하며 별도 시전 동작 없이 발동합니다. 쿨다운이 80% 감소합니다."
+    },
+    {
+      "key": "record_name_49",
+      "kr": "낡은 주석의 마도서",
+      "en": "Old Annotated Grimoire"
+    },
+    {
+      "key": "record_desc_49",
+      "kr": "초당 마나 회복량 +10%",
+      "en": "Mana regeneration per second +10%."
     }
   ]
 }

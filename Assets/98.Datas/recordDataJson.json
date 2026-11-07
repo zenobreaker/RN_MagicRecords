@@ -53,7 +53,13 @@
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritRatio.asset\"}, \"kind\": 0, \"stat\": 5, \"valueType\": 0, \"displayName\": \"치명타 확률 증가\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
     },
     {
       "id": 6,
@@ -891,7 +897,7 @@
       "id": 24,
       "recordType": 2,
       "targetFilter": "ALL",
-      "rarity": 0,
+      "rarity": 2,
       "stats": [],
       "skills": [],
       "linkedPassiveSkillID": 0,
@@ -901,6 +907,10 @@
         {
           "type": "RecordPierceModule",
           "json": "{\"tag\": \"사출\", \"count\": 1, \"triggerTime\": 2}"
+        },
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritRatio.asset\"}, \"kind\": 0, \"stat\": 5, \"valueType\": 0, \"displayName\": \"치명타 확률 증가\", \"amount\": 0.05, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritDamage.asset\"}, \"kind\": 0, \"stat\": 6, \"valueType\": 0, \"displayName\": \"치명타 피해 증가\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
         }
       ]
     },
@@ -942,7 +952,7 @@
       "id": 27,
       "recordType": 2,
       "targetFilter": "ALL",
-      "rarity": 0,
+      "rarity": 1,
       "stats": [],
       "skills": [],
       "linkedPassiveSkillID": 0,
@@ -951,7 +961,7 @@
       "modules": [
         {
           "type": "CommonRecordBuffModule",
-          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Defense.asset\"}, \"kind\": 0, \"stat\": 2, \"valueType\": 1, \"displayName\": \"레코드 Defense\", \"amount\": 0.02, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Defense.asset\"}, \"kind\": 0, \"stat\": 2, \"valueType\": 1, \"displayName\": \"레코드 Defense\", \"amount\": 0.12, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
         }
       ]
     },
@@ -1380,7 +1390,7 @@
     },
     {
       "id": 47,
-      "recordType": 3,
+      "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 0,
       "stats": [],
@@ -1423,6 +1433,23 @@
       "linkedPassiveSkillID": 100103,
       "isImplemented": true,
       "importNote": "익스큐터: 최대 6명 지정 사격, 동시 시전, 쿨다운 80% 감소"
+    },
+    {
+      "id": 49,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Mana.asset\"}, \"kind\": 0, \"stat\": 18, \"valueType\": 0, \"displayName\": \"초당 마나 회복량 증가\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": ""
     }
   ]
 }

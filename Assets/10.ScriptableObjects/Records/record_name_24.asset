@@ -21,13 +21,14 @@ MonoBehaviour:
   keywords: []
   targetFilter: 0
   type: 2
-  rarity: 0
+  rarity: 2
   Stats: []
   Skills: []
   linkedPassiveSkillID: 0
   mutualExclusionGroup: ""
   Modules:
   - {rid: 101}
+  - {rid: 102}
   references:
     version: 2
     RefIds:
@@ -37,3 +38,25 @@ MonoBehaviour:
         tag: "\uc0ac\ucd9c"
         count: 1
         triggerTime: 2
+    - rid: 102
+      type: {class: CommonRecordBuffModule, ns: "", asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        activation: 0
+        buffs:
+        - buff: {fileID: 11400000, guid: f7c3597aacc5457f8ade12ca41fa6a90, type: 2}
+          kind: 0
+          stat: 5
+          valueType: 0
+          displayName: "치명타 확률 증가"
+          amount: 0.05
+          duration: 0
+        - buff: {fileID: 11400000, guid: f0ce816311ea43f89c96aa8fbb130025, type: 2}
+          kind: 0
+          stat: 6
+          valueType: 0
+          displayName: "치명타 피해 증가"
+          amount: 0.1
+          duration: 0
+        probability: 1
+        healthThreshold: 0.3
