@@ -39,6 +39,23 @@ public sealed class RecordManager : MonoBehaviour
     private bool filterStartingSkills;
 
     private bool isDirty = false;
+    private const float HighestRarityBonusPerMiss = 0.002f;
+    private const int MaximumRarityMissCount = 500;
+    private int highestRarityMissCount;
+
+    public float HighestRarityBonus => highestRarityMissCount * HighestRarityBonusPerMiss;
+
+    /// <summary>보정 누적 횟수는 저장 가능 범위로 제한하고 변경 시 저장 대상으로 표시합니다.</summary>
+    private void SetHighestRarityMissCount(int value)
+    {
+        int next = Mathf.Clamp(value, 0, MaximumRarityMissCount);
+        if (highestRarityMissCount == next)
+        {
+            return;
+        }
+        highestRarityMissCount = next;
+        isDirty = true;
+    }
 
     public void SetReceiveRecordFlag()
     {
@@ -55,6 +72,7 @@ public sealed class RecordManager : MonoBehaviour
         recordPassives.Clear();
         isReceived = false;
         filterStartingSkills = false;
+        SetHighestRarityMissCount(0);
         rerollCount = maxRerollCount;
         recordInventory.ClearAll();
         SelectedRecords.Clear();
@@ -126,6 +144,7 @@ public sealed class RecordManager : MonoBehaviour
         }
 
         isReceived = saveData.isReceived;
+        highestRarityMissCount = Mathf.Clamp(saveData.highestRarityMissCount, 0, MaximumRarityMissCount);
     }
 
     private RecordData RestoreRecord(RecordSaveData saved)
@@ -287,8 +306,18 @@ public sealed class RecordManager : MonoBehaviour
             allRecord.RemoveAll(data => (IsRewardCandidate(data) == false));
         }
 
-        CurrentOptions = FilterDraftCandidates(allRecord, startingSkillsOnly)
-            .OrderBy(_ => Random.value).Take(generateCount).ToList();
+        var candidates = FilterDraftCandidates(allRecord, startingSkillsOnly);
+        CurrentOptions = new List<RecordData>();
+        for (int i = 0; i < generateCount && candidates.Count > 0; i++)
+        {
+            var selected = PickRandomRewardRecord(candidates);
+            if (selected == null)
+            {
+                break;
+            }
+            CurrentOptions.Add(selected);
+            candidates.RemoveAll(candidate => candidate.id == selected.id);
+        }
         if (CurrentOptions.Count == 0)
         {
             var empty = db.GetEmptyRecord();
@@ -298,6 +327,7 @@ public sealed class RecordManager : MonoBehaviour
             }
         }
 
+        SaveIfDirty();
         // 5. AppManager를 통해 UI 오픈 이벤트 발행
         PauseManager.RequestPause();
         UIManager.Instance.OpenRecordSelectPopUp(CurrentOptions, canReroll, RecordUIMode.DRAFT);
@@ -325,17 +355,20 @@ public sealed class RecordManager : MonoBehaviour
         {
             return false;
         }
+        if (record.targetFilter == TargetFilterType.ALL && record.type != RecordType.PASSIVE)
+        {
+            return false;
+        }
 
         var targets = new HashSet<int>((record.Skills ?? new List<RecordSkillData>())
                     .Where(s => s != null && s.SkillID > 0).Select(s => s.SkillID));
         if (recordsDict.TryGetValue(record.id, out var so) == false || so == null)
         {
-            return targets.Count == 0 || targets.Overlaps(equipped);
+            return targets.Count > 0 ? targets.Overlaps(equipped) : record.type == RecordType.PASSIVE;
         }
 
-        var passive = SkillTreeManager.Instance?.GetSkillRuntimeData(
-                    so.targetFilter == TargetFilterType.ALL ? 0 : (int)so.targetFilter,
-                    so.linkedPassiveSkillID)?.template as SO_PassiveSkillData;
+        var passive = AppManager.Instance?.GetExploreManager()?.ResolvePassiveTemplate(
+            so.linkedPassiveSkillID, so.targetFilter == TargetFilterType.ALL ? 0 : (int)so.targetFilter);
         if (passive?.Modules != null)
         {
             foreach (var module in passive.Modules)
@@ -346,15 +379,60 @@ public sealed class RecordManager : MonoBehaviour
                 }
             }
         }
-        // Stats and general passives have no particular skill target.
-        // An unresolved skill modifier must not bypass the equipment filter.
-        if (targets.Count == 0 && passive == null && so.linkedPassiveSkillID > 0 &&
-            (record.type == RecordType.AUGMENT || record.type == RecordType.MODIFY))
+        // 특정 액티브 스킬을 대상으로 하는 레코드는 타입과 무관하게 장착 여부를 검사합니다.
+        return targets.Count > 0 ? targets.Overlaps(equipped) : record.type == RecordType.PASSIVE;
+    }
+
+    /// <summary>등급별 가중치에 최고 등급 미등장 보정을 적용하고 해당 등급 안에서 균등 추첨합니다.</summary>
+    public RecordData PickRandomRewardRecord(List<RecordData> candidates)
+    {
+        var rarityTable = SO_GameSettings.Instance.RecordRarityTable;
+        var groups = (candidates ?? new List<RecordData>())
+            .Where(record => record != null && rarityTable.GetWeight(record.rarity) > 0f)
+            .GroupBy(record => record.rarity)
+            .OrderBy(group => group.Key)
+            .ToList();
+        bool hasHighest = rarityTable.TryGetHighestRarity(out RecordRarity highestRarity) &&
+            groups.Any(group => group.Key == highestRarity);
+        if (hasHighest == false)
         {
-            return false;
+            // 최고 등급이 소진되거나 현재 후보에 없으면 보정을 멈춥니다.
+            SetHighestRarityMissCount(0);
+        }
+        float totalWeight = groups.Sum(group => rarityTable.GetWeight(group.Key));
+        if (totalWeight <= 0f)
+        {
+            return null;
         }
 
-        return targets.Count == 0 || targets.Overlaps(equipped);
+        float highestBaseChance = hasHighest ? rarityTable.GetWeight(highestRarity) / totalWeight : 0f;
+        float highestChance = hasHighest ? Mathf.Clamp01(highestBaseChance + HighestRarityBonus) : 0f;
+        float lowerScale = hasHighest && highestBaseChance < 1f
+            ? (1f - highestChance) / (1f - highestBaseChance) : 1f;
+        float roll = Random.value;
+        RecordRarity selectedRarity = groups[groups.Count - 1].Key;
+        foreach (var group in groups)
+        {
+            float chance = group.Key == highestRarity && hasHighest
+                ? highestChance : rarityTable.GetWeight(group.Key) / totalWeight * lowerScale;
+            if (chance <= 0f)
+            {
+                continue;
+            }
+            selectedRarity = group.Key;
+            roll -= chance;
+            if (roll < 0f)
+            {
+                break;
+            }
+        }
+
+        if (hasHighest)
+        {
+            SetHighestRarityMissCount(selectedRarity == highestRarity ? 0 : highestRarityMissCount + 1);
+        }
+        var recordsOfRarity = groups.First(group => group.Key == selectedRarity).ToList();
+        return recordsOfRarity[Random.Range(0, recordsOfRarity.Count)];
     }
 
     public RecordData GetEmptyRecord()
@@ -649,9 +727,13 @@ public sealed class RecordManager : MonoBehaviour
             // 뽑을 수 있는 레코드가 있다면 랜덤 추출
             if (candidates.Count > 0)
             {
-                int randomIndex = Random.Range(0, candidates.Count);
-                newOptions.Add(candidates[randomIndex]);
-                candidates.RemoveAt(randomIndex); // 이번 셔플 내 중복 방지
+                var selected = PickRandomRewardRecord(candidates);
+                if (selected == null)
+                {
+                    continue;
+                }
+                newOptions.Add(selected);
+                candidates.RemoveAll(candidate => candidate.id == selected.id);
             }
             else
             {
@@ -674,6 +756,7 @@ public sealed class RecordManager : MonoBehaviour
 
         // 4. 데이터 갱신 및 UI 트리거
         CurrentOptions = newOptions;
+        SaveIfDirty();
 
         return newOptions;
     }
@@ -797,6 +880,7 @@ public sealed class RecordManager : MonoBehaviour
         }
 
         SelectedRecords.Clear();
+        filterStartingSkills = false;
         PauseManager.RequestResume();
         return true;
     }
@@ -883,6 +967,7 @@ public sealed class RecordManager : MonoBehaviour
         }
 
         save.isReceived = isReceived;
+        save.highestRarityMissCount = highestRarityMissCount;
         SaveManager.SaveRecordData(save);
         isDirty = false;
     }

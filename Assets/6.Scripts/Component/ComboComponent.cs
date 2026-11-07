@@ -126,7 +126,12 @@ public class ComboComponent : MonoBehaviour
         // 이동 입력은 공격 중인 콤보나 마지막 타격의 대기시간을 초기화하지 않습니다.
         if (newInput.InputType == InputCommandType.SKILL)
         {
-            ResetCombo();
+            SkillSlot slot = SkillSlot.SLOT1 + newInput.SkillSlotIndex;
+            if (skill == null || skill.TryGetRegisteredActiveSkill(slot, out var requested) == false ||
+                requested.CanUseConcurrently == false)
+            {
+                ResetCombo();
+            }
         }
 
         switch (newInput.InputType)

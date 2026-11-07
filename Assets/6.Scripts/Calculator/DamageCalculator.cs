@@ -19,15 +19,20 @@ public static class DamageCalculator
         bool bFirstHit = false, bool bExtraCrit = false, float multiplier = 1.0f)
     {
         float attack = status.GetStatusValue(StatusType.ATTACK);
-        float critRatio = Mathf.Clamp01(status.GetStatusValue(StatusType.CRIT_RATIO));
+        float rawCritRatio = status.GetStatusValue(StatusType.CRIT_RATIO) + (data.SpecialBulletMode == 6 ? 1f : 0f);
+        float critRatio = Mathf.Clamp01(rawCritRatio);
         float critDmg = status.GetStatusValue(StatusType.CRIT_DMG);
+        if (status.GetStatusValue(StatusType.CRIT_OVERFLOW) > 0f)
+        {
+            critDmg += Mathf.Max(0f, rawCritRatio - 1f);
+        }
         bool crit = false;
 
         float result = data.baseDamage + (attack * data.statCoefficient);
         result *= multiplier;
 
         // 배율이 누락된 공격은 일반 피해를 유지하고 치명타로 처리하지 않습니다.
-        if (result > 0f && critDmg > 1f)
+        if (result > 0f && critDmg > 1f && data.CannotCrit == false)
         {
             crit = bExtraCrit || (critRatio > 0f && Random.value < critRatio);
         }
@@ -39,6 +44,15 @@ public static class DamageCalculator
 
         DamageEvent evt = new DamageEvent(result, crit, bFirstHit, data.hitData);
         evt.AttackInstanceID = GetNextAttackInstanceID();
+        evt.IsBasicAttack = data.IsBasicAttack;
+        evt.IsSubAction = data.IsSubAction;
+        evt.SuppressRecordTriggers = data.SuppressRecordTriggers;
+        evt.SpecialBulletMode = data.SpecialBulletMode;
+        evt.SkillTags = data.SkillTags;
+        if (evt.IsBasicAttack)
+        {
+            evt.BaseDamage *= Mathf.Max(0f, 1f + status.GetStatusValue(StatusType.BASIC_DAMAGE_BONUS));
+        }
 
         evt.IgnoreDefenseRate = data.ignoreDefenseRate;
         return evt;

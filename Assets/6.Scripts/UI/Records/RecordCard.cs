@@ -231,7 +231,7 @@ public class RecordCard : MonoBehaviour
 
         if (descText != null)
         {
-            descText.text = $"[{entry.Label}]\n{entry.Description}";
+            descText.text = $"[{entry.Label}]\n{BuildDescriptionPreview(entry.Description)}";
         }
 
         SetIcon(entry.Icon, entry.Type == RecordType.AUGMENT);
@@ -249,6 +249,28 @@ public class RecordCard : MonoBehaviour
         {
             selectButton.onClick.AddListener(() => onClick?.Invoke());
         }
+    }
+
+    /// <summary>Shows a short plain-text preview; the detail popup keeps the full description.</summary>
+    private static string BuildDescriptionPreview(string description)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+        {
+            return string.Empty;
+        }
+
+        string plain = System.Text.RegularExpressions.Regex.Replace(description, "<br\\s*/?>", "\n",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        plain = System.Text.RegularExpressions.Regex.Replace(plain, "<[^>]*>", string.Empty).Trim();
+        plain = System.Text.RegularExpressions.Regex.Replace(plain, @"\s+", " ");
+        var elements = new System.Globalization.StringInfo(plain);
+        const int maxCharacters = 48;
+        if (elements.LengthInTextElements > maxCharacters)
+        {
+            return elements.SubstringByTextElements(0, maxCharacters).TrimEnd() + "…";
+        }
+
+        return plain;
     }
 
     /// <summary>Displays the icon in the prefab slot for its record type.</summary>

@@ -247,7 +247,7 @@ public class UIExplorationSetup : UIPopUp
         }
         else if (currentStep < ExplorationStep.Final)
         {
-            ChangeStep(currentStep + 1);
+            ForceProceedToNextStep();
         }
     }
 
@@ -261,7 +261,7 @@ public class UIExplorationSetup : UIPopUp
 
     private void OnClickStart()
     {
-        if (SceneLoadingController.IsLoading)
+        if (currentStep != ExplorationStep.Final || SceneLoadingController.IsLoading)
         {
             return;
         }

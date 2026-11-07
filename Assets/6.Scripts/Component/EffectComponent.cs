@@ -10,7 +10,25 @@ public class EffectComponent : MonoBehaviour
         private set;
     } = 0;
 
+    public event System.Action<int> OnLaserEnergyGained;
     private Character owner;
+
+    /// <summary>에너지 획득 보너스를 한 번 적용하고 기존 버프 중첩에 저장합니다.</summary>
+    public void AddLaserEnergy(int amount, Sprite icon = null, bool applyBonus = true)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+        StatusComponent status = GetComponent<StatusComponent>();
+        int bonus = applyBonus && status != null ? Mathf.RoundToInt(status.GetStatusValue(StatusType.ENERGY_GAIN_BONUS)) : 0;
+        int gain = (int)System.Math.Min(int.MaxValue, (long)amount + System.Math.Max(0, bonus));
+        for (int i = 0; i < gain; i++)
+        {
+            ApplyEffect(new LaserEnergyEffect(icon), gameObject, gameObject);
+        }
+        OnLaserEnergyGained?.Invoke(gain);
+    }
 
     private Dictionary<string, BaseEffect> activeEffects = new Dictionary<string, BaseEffect>();
     public IReadOnlyCollection<BaseEffect> ActiveEffects
@@ -109,6 +127,7 @@ public class EffectComponent : MonoBehaviour
         }
 
         NotifyEffectUI(newEffect);
+        BattleManager.Instance?.NotifyEffectApplied(target, appliedBy, newEffect);
     }
 
     public bool TryConsumeStacks(string effectID, int amount)
@@ -149,17 +168,25 @@ public class EffectComponent : MonoBehaviour
         }
     }
 
-    public void RemoveEffect(BaseEffect effect)
+    public void RefreshEffectUI(BaseEffect effect)
+    {
+        if (effect != null && HasEffect(effect.ID) == effect)
+        {
+            NotifyEffectUI(effect);
+        }
+    }
+
+    public void RemoveEffect(BaseEffect effect, bool force = false)
     {
         if (effect == null || HasEffect(effect.ID) != effect)
         {
             return;
         }
 
-        RemoveEffect(effect.ID);
+        RemoveEffect(effect.ID, force);
     }
 
-    public void RemoveEffect(string buffID)
+    public void RemoveEffect(string buffID, bool force = false)
     {
         if (string.IsNullOrEmpty(buffID))
         {
@@ -168,6 +195,10 @@ public class EffectComponent : MonoBehaviour
 
         if (activeEffects.TryGetValue(buffID, out BaseEffect baseEffect))
         {
+            if (force == false && baseEffect.IsDispellable == false)
+            {
+                return;
+            }
             activeEffects.Remove(buffID);
             if (baseEffect.Type == EffectType.DEBUFF)
             {
@@ -190,7 +221,7 @@ public class EffectComponent : MonoBehaviour
     {
         foreach (var effect in new List<BaseEffect>(activeEffects.Values))
         {
-            RemoveEffect(effect);
+            RemoveEffect(effect, true);
         }
     }
 

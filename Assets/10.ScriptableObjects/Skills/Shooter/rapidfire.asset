@@ -15,10 +15,13 @@ MonoBehaviour:
   id: 1005
   skillName: skill_name_rapidfire
   skillDescription: skill_desc_rapidfire
+  keywords:
+  - "\uC0AC\uCD9C"
+  isDevelopmentLocked: 0
   learnableLevel: 0
   maxLevel: 10
   skillUpgradeCost: 
-  skillImage: {fileID: 21300000, guid: 38c23e410f444a94ebd02c4b43beb1fe, type: 3}
+  skillImage: {fileID: 906609873, guid: 15bff6b08af38aa40bc7bc25577304ba, type: 3}
   leadingSkillList: 
   levelDatas:
   - range: 20
@@ -268,6 +271,8 @@ MonoBehaviour:
         broadcastAttackOnSpawn: 1
         baseLifeTime: -1
         useLevelDuration: 0
+        lifetimeBonusPerBullet: 0
+        childRangeBonusPerBullet: 0
     - rid: 91003
       type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
       data:
@@ -343,6 +348,18 @@ MonoBehaviour:
         transitionType: 2
         targetPhaseIndex: 0
         delayTime: 0
+        useCastRecoveryDelay: 0
+    - rid: 91009
+      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 1
+        useFireIntervalMultiplier: 0
+        controlType: 0
+        speedMultiplier: 1
+        unlockOnPhaseExit: 1
     - rid: 9167119434737516818
       type: {class: Module_MagicBulletConsum, ns: , asm: Assembly-CSharp}
       data:
@@ -355,14 +372,3 @@ MonoBehaviour:
         consumePerPhase: 1
         applyMode: 0
         requireLastAttackPassive: 0
-    - rid: 91009
-      type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
-      data:
-        triggerTime: 0
-        triggerDelay: 0
-        movementRepeatInterval: 0.1
-        executeOncePerPhase: 1
-        useFireIntervalMultiplier: 0
-        controlType: 0
-        speedMultiplier: 1
-        unlockOnPhaseExit: 1

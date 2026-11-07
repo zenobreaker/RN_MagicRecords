@@ -229,7 +229,7 @@ public sealed class CooldownReductionEffect : BaseEffect
         : base(sourceId, definition.description, duration)
     {
         this.amount = amount;
-        Type = EffectType.BUFF;
+        Type = amount < 0f ? EffectType.DEBUFF : EffectType.BUFF;
         Name = displayName;
         FxIcon = definition.icon;
         FxObject = definition.vfxObject;

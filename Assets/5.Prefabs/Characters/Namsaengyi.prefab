@@ -507,6 +507,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 58291482447164253}
+  - component: {fileID: 9137200501029384}
   - component: {fileID: 625348172007067594}
   - component: {fileID: 4978973499253769768}
   - component: {fileID: 8368930230702370149}
@@ -549,6 +550,24 @@ Transform:
   - {fileID: 4122958283610932998}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9137200501029384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2169032415967224289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14eba82f3ab543359a8f0c682828b3da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ManaComponent
+  maxMana: 300
+  regenerationRatioPerSecond: 0
+  regenerationPerSecond: 1
+  regenerationPerLevel: 1
+  hitRecoveryRatio: 0.19
+  skillHitEfficiency: 0.1
 --- !u!54 &625348172007067594
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -664,6 +683,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e6f2f178497d6c45a82fa0f94736ac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lightReactionTime: 0.08
+  heavyReactionTime: 0.2
+  knockbackReactionTime: 0.15
+  reactionRecoveryTime: 0.15
+  baseReactionResistance: 0
+  preserveBossReactionResistance: 1
 --- !u!114 &7590112948273742374
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -707,6 +732,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useAnimationEvents: 1
+  subActionCancelCooldown: 7
 --- !u!114 &3816881467583088079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -737,21 +763,33 @@ MonoBehaviour:
     - type: 1
       value:
         baseValue: 10
+        IgnoreNegativeModifiers: 0
+        IgnorePositiveModifiers: 0
     - type: 2
       value:
         baseValue: 0
+        IgnoreNegativeModifiers: 0
+        IgnorePositiveModifiers: 0
     - type: 3
       value:
         baseValue: 1
+        IgnoreNegativeModifiers: 0
+        IgnorePositiveModifiers: 0
     - type: 4
       value:
         baseValue: 1.5
+        IgnoreNegativeModifiers: 0
+        IgnorePositiveModifiers: 0
     - type: 5
       value:
         baseValue: 0
+        IgnoreNegativeModifiers: 0
+        IgnorePositiveModifiers: 0
     - type: 6
       value:
         baseValue: 15
+        IgnoreNegativeModifiers: 0
+        IgnorePositiveModifiers: 0
 --- !u!114 &7950985210200753739
 MonoBehaviour:
   m_ObjectHideFlags: 0

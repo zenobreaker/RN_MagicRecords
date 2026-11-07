@@ -175,7 +175,7 @@ public sealed class UIExplorationSkills : UiBase
         equippedSlots.SetSelectedSlot(selectedSlot);
         unequipButton.interactable = slots != null && selectedSlot >= 0 && selectedSlot < slots.Count && slots[selectedSlot] != null;
         skillNameText.text = selectedSkill == null ? "" : Local(selectedSkill.GetSkillName());
-        detailText.text = selectedSkill == null ? "스킬을 선택하세요." :
+        detailText.text = selectedSkill == null ? Local("ui_skill_event_select") :
             $"Lv.{selectedSkill.currentLevel}\n\n{Local(selectedSkill.GetSkillDesc())}";
         for (int i = 0; i < availableSkills.Count; i++)
         {
@@ -183,10 +183,10 @@ public sealed class UIExplorationSkills : UiBase
             entries[i].GetComponentInChildren<TMP_Text>().text = UIRecordSkillUpPopUp.SkillEntryText(availableSkills[i], equippedSlot);
             entries[i].image.color = availableSkills[i] == selectedSkill ? new Color(.6f, .9f, 1f) : Color.white;
         }
-        statusText.text = (IsReady == false) ? "캐릭터와 직업을 선택해주세요." : availableSkills.Count == 0 ?
-            "배운 액티브 스킬이 없습니다. 스킬 화면에서 레벨 1 이상을 배우세요." :
-            skillChosen ? "장착할 슬롯을 선택하세요. 변경 즉시 저장됩니다." :
-            slotChosen ? $"{selectedSlot + 1}번 슬롯 선택됨 · 장착할 스킬을 고르세요." :
-            "슬롯과 스킬을 고르면 장착·이동됩니다. 변경 즉시 저장됩니다.";
+        statusText.text = (IsReady == false) ? Local("ui_exploration_select_character_job") : availableSkills.Count == 0 ?
+            Local("ui_exploration_no_learned_active") :
+            skillChosen ? Local("ui_exploration_select_equip_slot") :
+            slotChosen ? string.Format(Local("ui_exploration_slot_selected"), selectedSlot + 1) :
+            Local("ui_exploration_equip_help");
     }
 }

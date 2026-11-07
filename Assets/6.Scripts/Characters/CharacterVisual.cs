@@ -48,6 +48,9 @@ public sealed class CharacterVisual : MonoBehaviour
     }
     private Character character; // 💡 상위 객체에 있는 논리 컴포넌트
     private float originAnimSpeed;
+    private readonly HashSet<int> supersededActionStates = new HashSet<int>();
+    private string expectedActionState;
+    private string expectedActionFullPath;
     private AnimatorOverrideController overrideController;
     private Dictionary<DamageType, List<DamageMotionData>> damageMotionTable;
 
@@ -169,16 +172,26 @@ public sealed class CharacterVisual : MonoBehaviour
             return;
         }
 
+        expectedActionState = actionData.StateName;
+        expectedActionFullPath = Animator.GetLayerName(layer) + "." + expectedActionState;
         float finalSpeed = actionData.ActionSpeed * statSpeedMultiplier;
         Animator.SetFloat(actionData.ActionSpeedHash, finalSpeed);
         Debug.Log($"{actionData.StateName} play anim");
-        if (restartFromBeginning)
+        AnimatorStateInfo currentState = Animator.GetCurrentAnimatorStateInfo(layer);
+        bool sameState = currentState.IsName(expectedActionState) || currentState.IsName(expectedActionFullPath);
+        if (Animator.IsInTransition(layer))
+        {
+            AnimatorStateInfo nextState = Animator.GetNextAnimatorStateInfo(layer);
+            sameState |= nextState.IsName(expectedActionState) || nextState.IsName(expectedActionFullPath);
+        }
+        // 같은 클립을 쓰는 평타와 스킬도 이전 재생 시간을 이어받지 않습니다.
+        if (restartFromBeginning || sameState)
         {
             Animator.Play(actionData.StateName, layer, 0f);
         }
         else
         {
-            Animator.CrossFade(actionData.StateName, 0.1f, layer);
+            Animator.CrossFade(actionData.StateName, 0.1f, layer, 0f);
         }
     }
 
@@ -339,6 +352,9 @@ public sealed class CharacterVisual : MonoBehaviour
 
     private void CleanupTask()
     {
+        expectedActionState = null;
+        expectedActionFullPath = null;
+        supersededActionStates.Clear();
         if (fadeCts != null)
         {
             fadeCts.Cancel();
@@ -349,32 +365,102 @@ public sealed class CharacterVisual : MonoBehaviour
     #endregion
 
     #region Animation Event Bridge
-    public void Start_DoAction()
+    /// <summary>새 단독 시전 전에 이전 애니메이션의 지연 이벤트를 무효화합니다.</summary>
+    public void BeginActionAnimationScope()
     {
+        expectedActionState = null;
+        expectedActionFullPath = null;
+        supersededActionStates.Clear();
+        if (Animator == null || Animator.runtimeAnimatorController == null)
+        {
+            return;
+        }
+        for (int layer = 0; layer < Animator.layerCount; layer++)
+        {
+            supersededActionStates.Add(Animator.GetCurrentAnimatorStateInfo(layer).fullPathHash);
+            if (Animator.IsInTransition(layer))
+            {
+                supersededActionStates.Add(Animator.GetNextAnimatorStateInfo(layer).fullPathHash);
+            }
+        }
+    }
+
+    /// <summary>현재 시전의 재생 상태에서 발생한 이벤트만 액션 로직으로 전달합니다.</summary>
+    private bool IsCurrentActionEvent(AnimationEvent animationEvent)
+    {
+        // 코드가 직접 호출하는 이벤트와 스킬 모듈의 타이머 경로는 그대로 허용합니다.
+        if (animationEvent == null || animationEvent.isFiredByAnimator == false)
+        {
+            return true;
+        }
+        return IsCurrentActionState(animationEvent.animatorStateInfo);
+    }
+
+    /// <summary>전환 중인 이전 상태와 이번 시전의 이벤트 발생 상태를 구분합니다.</summary>
+    private bool IsCurrentActionState(AnimatorStateInfo source)
+    {
+        if (string.IsNullOrEmpty(expectedActionState) == false)
+        {
+            return source.IsName(expectedActionState) || source.IsName(expectedActionFullPath);
+        }
+        // 파라미터로 전환되는 시전 동작도 이전 평타 상태의 이벤트는 받지 않습니다.
+        return supersededActionStates.Contains(source.fullPathHash) == false;
+    }
+
+    public void Start_DoAction(AnimationEvent animationEvent = null)
+    {
+        if (IsCurrentActionEvent(animationEvent) == false)
+        {
+            return;
+        }
         character.SafeInvoke(v => v.Start_DoAction());
     }
-    public void Begin_DoAction()
+    public void Begin_DoAction(AnimationEvent animationEvent = null)
     {
+        if (IsCurrentActionEvent(animationEvent) == false)
+        {
+            return;
+        }
         character.SafeInvoke(v => v.Begin_DoAction());
     }
-    public void End_DoAction()
+    public void End_DoAction(AnimationEvent animationEvent = null)
     {
+        if (IsCurrentActionEvent(animationEvent) == false)
+        {
+            return;
+        }
         character.SafeInvoke(v => v.End_DoAction());
     }
     public void Begin_JudgeAttack(AnimationEvent e = null)
     {
+        if (IsCurrentActionEvent(e) == false)
+        {
+            return;
+        }
         character.SafeInvoke(v => v.Begin_JudgeAttack(e));
     }
     public void End_JudgeAttack(AnimationEvent e = null)
     {
+        if (IsCurrentActionEvent(e) == false)
+        {
+            return;
+        }
         character.SafeInvoke(v => v.End_JudgeAttack(e));
     }
-    public void Play_Sound()
+    public void Play_Sound(AnimationEvent animationEvent = null)
     {
+        if (IsCurrentActionEvent(animationEvent) == false)
+        {
+            return;
+        }
         character.SafeInvoke(v => v.Play_Sound());
     }
-    public void Play_CameraShake()
+    public void Play_CameraShake(AnimationEvent animationEvent = null)
     {
+        if (IsCurrentActionEvent(animationEvent) == false)
+        {
+            return;
+        }
         character.SafeInvoke(v => v.Play_CameraShake());
     }
     public void End_Damaged()

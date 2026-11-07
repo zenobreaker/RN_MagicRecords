@@ -397,10 +397,7 @@ public class PassiveSystem
         // 액티브 스킬 모듈이 투사체를 만들었다고 알려오면, 모든 패시브에게 전달!
         foreach (var passive in AllEffectivePassives())
         {
-            if (passive is GenericPassiveSkill gps)
-            {
-                gps.OnSpawnObject(spawnedObject, casterSkill);
-            }
+            passive.OnSpawnObject(spawnedObject, casterSkill);
         }
     }
 

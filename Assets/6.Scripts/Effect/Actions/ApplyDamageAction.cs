@@ -8,6 +8,7 @@ public class ApplyDamageAction
 {
     private DamageType type;
     private float power;
+    public float Power => power;
 
 
 

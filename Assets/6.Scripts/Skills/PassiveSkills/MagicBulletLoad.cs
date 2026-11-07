@@ -4,9 +4,11 @@ using UnityEngine;
 public struct BulletData
 {
     public bool isCrit;
+    public int recordMode;
     public BulletData(bool isCrit)
     {
         this.isCrit = isCrit;
+        recordMode = 0;
     }
 }
 
@@ -21,6 +23,8 @@ public class Passive_MagicBulletLoad
     : PassiveSkill
     , IMagicBulletDataProvider
 {
+    public event System.Action OnBulletConsumed;
+    public int MaxBulletCount => maxBullets;
     private int maxBullets;
     private int currentBullet;
     private Queue<BulletData> bullets;
@@ -96,6 +100,7 @@ public class Passive_MagicBulletLoad
         }
 
         bullet = bullets.Dequeue();
+        OnBulletConsumed?.Invoke();
         Debug.Log($"탄환 소모 ! crit = {bullet.isCrit}");
 
         NotifyBulletChanged();

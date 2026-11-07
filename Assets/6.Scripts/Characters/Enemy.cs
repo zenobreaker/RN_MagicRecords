@@ -33,6 +33,12 @@ public class Enemy
         }
     }
 
+    public int SpawnVersion
+    {
+        get;
+        private set;
+    }
+
     private LaunchComponent launch;
 
     protected SkillComponent skill;
@@ -77,6 +83,7 @@ public class Enemy
 
     protected void OnEnable()
     {
+        SpawnVersion++;
         SetCharacterCollidersEnabled(true);
         if (state != null)
         {

@@ -242,6 +242,8 @@ public sealed partial class ExploreManager : MonoBehaviour
         ResetExploreProgress();
         ResetData();
         Init(true);
+        // 새 탐사 준비가 시작되면 이전 탐사의 이어하기 상태를 덮어쓴다.
+        SaveExploreMap();
 
         ChangeState(ExploreState.READY);
     }

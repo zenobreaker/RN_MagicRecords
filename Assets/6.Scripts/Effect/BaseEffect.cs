@@ -148,6 +148,16 @@ public abstract class BaseEffect
         }
     }
 
+    public virtual bool IsDispellable => true;
+    public GameObject AppliedBy => appliedBy;
+    public GameObject Target => owner;
+
+    /// <summary>전이 가능한 디버프는 독립된 효과 인스턴스를 반환합니다.</summary>
+    public virtual BaseEffect CreateTransferCopy(float duration)
+    {
+        return null;
+    }
+
     public bool IsExpired
     {
         get

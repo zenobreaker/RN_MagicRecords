@@ -78,6 +78,10 @@ public class GenericPassiveSkill : PassiveSkill
             }
 
             var module = template.Clone();
+            if (module is CommonRecordModule common)
+            {
+                common.SetRecordId(data.id);
+            }
             runtimeModules.Add(module);
             if (moduleCache.ContainsKey(module.triggerTime) == false)
             {
@@ -122,12 +126,17 @@ public class GenericPassiveSkill : PassiveSkill
             }
         }
 
-        if (moduleCache.ContainsKey(PassiveTriggerTime.OnHit))
+        if (moduleCache.ContainsKey(PassiveTriggerTime.OnHit) || runtimeModules.Exists(module => module is CommonRecordModule))
         {
             subscribedBattleManager = BattleManager.Instance;
             if (subscribedBattleManager != null)
             {
                 subscribedBattleManager.OnAnyAttackHit += OnAttackHit;
+                subscribedBattleManager.OnBattleStarted += OnRecordBattleStarted;
+                if (subscribedBattleManager.IsInBattle)
+                {
+                    OnRecordBattleStarted();
+                }
             }
         }
     }
@@ -143,8 +152,23 @@ public class GenericPassiveSkill : PassiveSkill
         }
     }
 
+    private void OnRecordBattleStarted()
+    {
+        foreach (var module in runtimeModules)
+        {
+            if (module is CommonRecordModule common)
+            {
+                common.OnBattleStarted(subscribedBattleManager.CurrentEnemies);
+            }
+        }
+    }
+
     private void OnAttackHit(GameObject attacker, GameObject target, DamageEvent damageEvent)
     {
+        if (damageEvent?.SuppressRecordTriggers == true)
+        {
+            return;
+        }
         if (moduleCache.TryGetValue(PassiveTriggerTime.OnHit, out var modules))
         {
             foreach (var module in modules)
@@ -153,6 +177,17 @@ public class GenericPassiveSkill : PassiveSkill
                 {
                     contextModule.OnAttackHit(attacker, target, damageEvent);
                 }
+            }
+        }
+    }
+
+    public override void OnUpdate(float deltaTime)
+    {
+        foreach (var module in runtimeModules)
+        {
+            if (module is CommonRecordModule recordModule)
+            {
+                recordModule.OnUpdate(deltaTime);
             }
         }
     }
@@ -173,6 +208,7 @@ public class GenericPassiveSkill : PassiveSkill
         if (subscribedBattleManager != null)
         {
             subscribedBattleManager.OnAnyAttackHit -= OnAttackHit;
+            subscribedBattleManager.OnBattleStarted -= OnRecordBattleStarted;
         }
 
         subscribedBattleManager = null;
@@ -191,8 +227,15 @@ public class GenericPassiveSkill : PassiveSkill
     }
 
     // (새로 추가할) 투사체 생성 이벤트
-    public void OnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill)
+    public override void OnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill)
     {
+        foreach (var module in runtimeModules)
+        {
+            if (module is CommonRecordModule common)
+            {
+                common.OnSpawnObject(spawnedObject, casterSkill);
+            }
+        }
         if (moduleCache.TryGetValue(PassiveTriggerTime.OnSpawnObject, out var modules))
         {
             foreach (var mod in modules)

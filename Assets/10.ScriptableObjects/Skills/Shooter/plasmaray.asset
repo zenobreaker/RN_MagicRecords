@@ -15,10 +15,12 @@ MonoBehaviour:
   id: 1002
   skillName: skill_name_plasmaray
   skillDescription: skill_desc_plasmaray
+  keywords: []
+  isDevelopmentLocked: 0
   learnableLevel: 5
   maxLevel: 10
   skillUpgradeCost: 
-  skillImage: {fileID: 21300000, guid: c2c4ced47962c1f4baa78b91b6fc205a, type: 3}
+  skillImage: {fileID: -132982412, guid: 15bff6b08af38aa40bc7bc25577304ba, type: 3}
   leadingSkillList: 
   levelDatas:
   - range: 0
@@ -216,6 +218,7 @@ MonoBehaviour:
         executeOncePerPhase: 0
         useFireIntervalMultiplier: 0
         maxConsumeCount: 3
+        consumePerPhase: 0
         applyMode: 2
         requireLastAttackPassive: 0
     - rid: 7012345678900000002
@@ -279,8 +282,11 @@ MonoBehaviour:
         baseAngleBetween: 0
         spawnObj: {fileID: 0}
         objectName: Beam
+        broadcastAttackOnSpawn: 0
         baseLifeTime: -1
         useLevelDuration: 0
+        lifetimeBonusPerBullet: 0
+        childRangeBonusPerBullet: 0
     - rid: 9058063302450741331
       type: {class: Module_PlayAnimation, ns: , asm: Assembly-CSharp}
       data:

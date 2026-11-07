@@ -3,6 +3,7 @@
 // 스킬 사용 시 처리 이벤트
 public class SkillUseEvent
 {
+    public ActiveSkill Skill;
     public int SkillID;
     public string SkillName;
     public GameObject Owner;
@@ -59,6 +60,10 @@ public abstract class PassiveSkill
     public virtual void OnSkillCast(SkillUseEvent evt, SkillRuntimeContext context)
     {
     }
+    public virtual void OnSpawnObject(ISkillEffect effect, ActiveSkill skill)
+    {
+    }
+
     public virtual void OnSkillJudge(SkillUseEvent evt)
     {
     }

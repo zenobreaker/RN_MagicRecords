@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -30,6 +31,13 @@ namespace TheWheeler.Editor
         public float value;
     }
     [Serializable]
+    public sealed class RecordImportModule
+    {
+        public string type;
+        public string json;
+    }
+
+    [Serializable]
     public sealed class RecordImportData
     {
         public int id, recordType, rarity, linkedPassiveSkillID;
@@ -37,6 +45,7 @@ namespace TheWheeler.Editor
         public bool isImplemented = true;
         public RecordImportStat[] stats;
         public RecordImportSkill[] skills;
+        public RecordImportModule[] modules;
     }
     [Serializable]
     public sealed class RecordImportInfoRoot
@@ -131,7 +140,7 @@ namespace TheWheeler.Editor
             // Detect every destination collision before writing any asset.
             foreach (var row in info)
             {
-                if (byId.ContainsKey(row.id) == false && File.Exists($"{assetFolder}/{row.id}_{SafeFileName(row.namekeycode)}.asset"))
+                if (byId.ContainsKey(row.id) == false && File.Exists($"{assetFolder}/{SafeFileName(row.namekeycode)}.asset"))
                 {
                     throw new IOException($"Unrelated asset already occupies the destination for ID {row.id}.");
                 }
@@ -196,6 +205,11 @@ namespace TheWheeler.Editor
                     WriteSkills(Required(so, "Skills"), payload.skills);
                 }
 
+                if (protectedCommon == false && payload.modules != null)
+                {
+                    WriteModules(Required(so, "Modules"), payload.modules);
+                }
+
                 so.ApplyModifiedPropertiesWithoutUndo();
                 if (found)
                 {
@@ -204,7 +218,7 @@ namespace TheWheeler.Editor
                 }
                 else
                 {
-                    AssetDatabase.CreateAsset(asset, $"{assetFolder}/{row.id}_{SafeFileName(row.namekeycode)}.asset");
+                    AssetDatabase.CreateAsset(asset, $"{assetFolder}/{SafeFileName(row.namekeycode)}.asset");
                     report.created++;
                 }
                 if (ready == false)
@@ -217,6 +231,34 @@ namespace TheWheeler.Editor
             AssetDatabase.SaveAssets();
             return report;
         }
+        /// <summary>게임 어셈블리 참조 없이 JSON 모듈과 SO 경로를 관리 참조로 복원합니다.</summary>
+        private static void WriteModules(SerializedProperty property, RecordImportModule[] modules)
+        {
+            property.arraySize = modules.Length;
+            Type baseType = ResolveType("CommonRecordModule");
+            for (int i = 0; i < modules.Length; i++)
+            {
+                Type type = ResolveType(modules[i].type);
+                if (type == null || type.IsAbstract || baseType == null || baseType.IsAssignableFrom(type) == false)
+                {
+                    throw new InvalidDataException($"Unsupported record module: {modules[i].type}");
+                }
+                object instance = Activator.CreateInstance(type);
+                string json = Regex.Replace(modules[i].json ?? "{}", @"\{\s*""asset""\s*:\s*""([^""]+)""\s*\}", match =>
+                {
+                    string path = match.Groups[1].Value;
+                    Object asset = AssetDatabase.LoadAssetAtPath<Object>(path);
+                    if (asset == null)
+                    {
+                        throw new InvalidDataException($"Record module asset not found: {path}");
+                    }
+                    return "{\"instanceID\":" + asset.GetInstanceID() + "}";
+                });
+                JsonUtility.FromJsonOverwrite(json, instance);
+                property.GetArrayElementAtIndex(i).managedReferenceValue = instance;
+            }
+        }
+
         public static void Validate(RecordImportInfo[] info, RecordImportData[] data)
         {
             if (info.Any(x => x == null) || data.Any(x => x == null))
@@ -240,6 +282,11 @@ namespace TheWheeler.Editor
                 {
                     throw new InvalidDataException($"Record {row.id} has an empty localization key.");
                 }
+            }
+
+            if (info.Select(row => SafeFileName(row.namekeycode)).Distinct(StringComparer.OrdinalIgnoreCase).Count() != info.Length)
+            {
+                throw new InvalidDataException("Record name keys produce duplicate asset filenames.");
             }
 
             foreach (var row in data)

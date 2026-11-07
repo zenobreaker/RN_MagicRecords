@@ -18,6 +18,11 @@ public abstract class BaseProjectile
     protected DamageEvent damageEvent;
 
     protected DamageData cachedDamageData;
+    public DamageEvent LastHit
+    {
+        get;
+        private set;
+    }
     private float shotDamageMultiplier = 1f;
     private bool shotExtraCrit;
     public Character Owner
@@ -99,10 +104,18 @@ public abstract class BaseProjectile
 
         ownerObject = attacker;
         owner = attacker;
-        cachedDamageData = damageData;
+        cachedDamageData = damageData.Clone();
+        if (ConsumedBullets.Count > 0)
+        {
+            cachedDamageData.SpecialBulletMode = ConsumedBullets[0].recordMode;
+            if (cachedDamageData.SpecialBulletMode == 2)
+            {
+                cachedDamageData.ignoreDefenseRate = Mathf.Clamp01(cachedDamageData.ignoreDefenseRate + 0.3f);
+            }
+        }
         shotDamageMultiplier = multiplier;
         shotExtraCrit = bExtraCrit;
-        damageEvent = damageData.GetMyDamageEvent(attacker.Status, false, bExtraCrit, multiplier);
+        damageEvent = cachedDamageData.GetMyDamageEvent(attacker.Status, false, bExtraCrit, multiplier);
 
         // 부모가 알아서 쏜 사람의 팀 ID를 캐싱해 둡니다.
         myTeamId = TeamUtility.GetTeamId(attacker);
@@ -181,6 +194,7 @@ public abstract class BaseProjectile
         shotExtraCrit = false;
         damageEvent = default;
         OnTargetHitEvent = null;
+        LastHit = null;
         SetMagicBullets(null, BulletEffectApplyMode.FirstAttackOnly);
     }
 
@@ -211,9 +225,10 @@ public abstract class BaseProjectile
             return;
         }
 
+        LastHit = cachedDamageData.GetMyDamageEvent(owner.Status, false, shotExtraCrit, shotDamageMultiplier);
         CombatHelper.ApplyDamage(
                     owner,
-                    cachedDamageData.GetMyDamageEvent(owner.Status, false, shotExtraCrit, shotDamageMultiplier),
+                    LastHit,
                     target,
                     hitPoint
                 );

@@ -25,6 +25,17 @@ public abstract class ActiveSkill
 
     [Header("Damage Data")]
     public DamageData damageData;
+    public bool IsBasicAttack
+    {
+        get;
+        internal set;
+    }
+
+    public bool IsSubAction
+    {
+        get;
+        internal set;
+    }
 
     [Header("Option List")]
     public List<int> bonusOptionList;
@@ -188,6 +199,8 @@ public abstract class ActiveSkill
     }
     // 이 스킬이 다른 행동 중에도 쓸 수 있는 '즉발/동시 사용' 스킬인가?
     public bool isConcurrentSkill = false;
+    private bool concurrentCast;
+    public virtual bool CanUseConcurrently => isConcurrentSkill;
     // 각 페이즈별로 애니메이션 유무를 미리 저장해둘 캐싱 배열
     private bool[] cachedActionDataFlags;
 
@@ -287,13 +300,23 @@ public abstract class ActiveSkill
         maxCooldown = levelData.cooldown;
         castingTime = levelData.castingTime;
 
-        damageData = levelData.damageData.Clone();
+        damageData = CreateDamageSnapshot(levelData.damageData);
         // TODO : 레벨이 초과된 상태라면 데미지를 추가부여할지 ...
         //damageData.baseDamage = damageData.baseDamage * (1f + overLevel * 0.1f);
         //damageData.statCoefficient = damageData.statCoefficient + overLevel * 0.05f;
 
 
         bonusOptionList = levelData.bonusOptionList;
+    }
+
+    /// <summary>기본 공격 구분을 포함한 런타임 피해 스냅샷을 생성합니다.</summary>
+    public DamageData CreateDamageSnapshot(DamageData source)
+    {
+        DamageData snapshot = source != null ? source.Clone() : new DamageData();
+        snapshot.IsBasicAttack = IsBasicAttack;
+        snapshot.IsSubAction = IsSubAction;
+        snapshot.SkillTags = Keywords;
+        return snapshot;
     }
 
     public virtual void NotifyMovement(SkillTriggerTime timing, float elapsed = 0f)
@@ -412,6 +435,7 @@ public abstract class ActiveSkill
     {
         float recordCooldownMultiplier = status != null ? status.GetCooldownMultiplier() : 1f;
         maxCooldown = Mathf.Max(0f, limitCooldown, Runtime.Base.Cooldown * recordCooldownMultiplier / castAttackSpeed);
+        maxCooldown *= Mathf.Max(0f, Runtime.Cast.CooldownMultiplier);
         currentCooldown = maxCooldown;
     }
 
@@ -424,7 +448,19 @@ public abstract class ActiveSkill
             Runtime.Cast.CastingTime /= castAttackSpeed;
         }
 
+        if (status != null)
+        {
+            Runtime.Cast.CastingTime /= Mathf.Max(0.01f, 1f + status.GetStatusValue(StatusType.CAST_SPEED_BONUS));
+            Runtime.Cast.MaxChargeTime *= Mathf.Clamp01(1f - status.GetStatusValue(StatusType.CHARGE_TIME_REDUCTION));
+        }
+
         Runtime.Cast.MaxCastingTime = Runtime.Cast.CastingTime;
+    }
+
+    /// <summary>현재 남은 쿨다운을 비율만큼 줄입니다.</summary>
+    public void ReduceRemainingCooldown(float ratio)
+    {
+        currentCooldown *= Mathf.Clamp01(1f - ratio);
     }
 
     public void Update_Cooldown(float deltaTime)
@@ -454,6 +490,11 @@ public abstract class ActiveSkill
         skillCts = ownerCharacter != null
             ? CancellationTokenSource.CreateLinkedTokenSource(ownerCharacter.GetCancellationTokenOnDestroy())
             : new CancellationTokenSource();
+        concurrentCast = CanUseConcurrently;
+        if (concurrentCast == false)
+        {
+            ownerCharacter.Visual?.BeginActionAnimationScope();
+        }
         IsActive = true;
         phaseCts = CancellationTokenSource.CreateLinkedTokenSource(SkillToken);
 
@@ -471,6 +512,7 @@ public abstract class ActiveSkill
         {
             SkillUseEvent evt = new SkillUseEvent
             {
+                Skill = this,
                 SkillID = this.skillID,
                 SkillName = this.skillName,
                 Owner = this.ownerCharacter
@@ -529,7 +571,7 @@ public abstract class ActiveSkill
 
     private void BeginSkillAction()
     {
-        if (isConcurrentSkill)
+        if (concurrentCast)
         {
             EnterPhase(PhaseIndex);
             return;
@@ -915,7 +957,7 @@ public abstract class ActiveSkill
                 vfx.RemoveSkillEffects(this);
             }
 
-            if (isConcurrentSkill == false && ownerObject != null)
+            if (concurrentCast == false && ownerObject != null)
             {
                 var agent = ownerObject.GetComponent<NavMeshAgent>();
                 if (agent != null && agent.isActiveAndEnabled)
@@ -935,7 +977,7 @@ public abstract class ActiveSkill
                     state.SetIdleMode();
                 }
             }
-            if (notifyOwner && isConcurrentSkill == false && skillComponent != null)
+            if (notifyOwner && concurrentCast == false && skillComponent != null)
             {
                 skillComponent.CompleteSkillAction(this);
             }

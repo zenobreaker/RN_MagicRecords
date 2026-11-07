@@ -67,6 +67,7 @@ public sealed class ModifierContext
 [Serializable]
 public sealed class CastContext
 {
+    public float CooldownMultiplier = 1f;
     public bool IsActionCancel;
     public bool SuppressDefensiveBenefits;
     public bool AllowsDefensiveBenefits
@@ -191,6 +192,7 @@ public sealed class CombatContext
             return ConsumedBulletCount > 0;
         }
     }
+    public GameObject MagicBulletOwner;
     private bool magicBulletsConsumed;
     private int nextBulletAttack;
     private int magicBulletPhaseVersion = -1;
@@ -256,6 +258,11 @@ public sealed class CombatContext
 
     // Each simultaneous volley (including multiple muzzles/pellets) is one attack.
     public IReadOnlyList<BulletData> TakeBulletsForAttack()
+    {
+        return RecordMythBulletModule.PrepareShot(MagicBulletOwner, TakeAssignedBullets());
+    }
+
+    private IReadOnlyList<BulletData> TakeAssignedBullets()
     {
         if (ConsumedBullets.Count == 0)
         {

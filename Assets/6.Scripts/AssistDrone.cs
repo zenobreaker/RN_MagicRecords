@@ -30,6 +30,12 @@ public class AssistDrone
     [SerializeField] private string droneBeamProj = "AssistDroneBeam";
     [SerializeField] private string droneHyperBeamProj = "AssistDroneHyperBeam";
 
+    private bool executorMode;
+    private Character executorTarget;
+    private DamageData executorDamage;
+    private bool executorCrit;
+    private float executorMultiplier;
+    private string executorProjectilePool;
     private Character ownerCharacter;
     private Animator[] anims;
     private CancellationTokenSource cts;
@@ -65,7 +71,7 @@ public class AssistDrone
 
     public void HandlePlayerAttack(ActionData actionData, Character attacker)
     {
-        if (actionData == null || spawnActivated == false || isActiveAndEnabled == false || attacker != ownerCharacter)
+        if (executorMode || actionData == null || spawnActivated == false || isActiveAndEnabled == false || attacker != ownerCharacter)
         {
             return;
         }
@@ -221,6 +227,12 @@ public class AssistDrone
         }
 
         ownerCharacter = null;
+        executorMode = false;
+        executorTarget = null;
+        executorDamage = null;
+        executorCrit = false;
+        executorMultiplier = 1f;
+        executorProjectilePool = null;
         spawnActivated = false;
         lifetime = 0f;
         CancelToken(ref cts);
@@ -294,6 +306,10 @@ public class AssistDrone
         }
 
         spawnActivated = true;
+        if (executorMode)
+        {
+            FireExecutor();
+        }
         StartLifetime();
     }
 
@@ -328,6 +344,53 @@ public class AssistDrone
         {
             Destroy(gameObject);
         }
+    }
+
+    /// <summary>익스큐터는 소유자 추종과 공격 구독 없이 한 대상에게 한 번 사격합니다.</summary>
+    public void SetupExecutor(Character caster, Character target, DamageData damage, bool crit,
+        float multiplier, string projectilePool)
+    {
+        if (ownerCharacter != null)
+        {
+            ownerCharacter.OnAttackExecuted -= HandlePlayerAttack;
+        }
+        ownerCharacter = caster;
+        executorMode = true;
+        executorTarget = target;
+        executorDamage = damage;
+        executorCrit = crit;
+        executorMultiplier = multiplier;
+        executorProjectilePool = projectilePool;
+    }
+
+    /// <summary>지정된 적에게 탄환 한 발을 발사하고 소환물의 기존 수명 종료를 기다립니다.</summary>
+    private void FireExecutor()
+    {
+        if (ownerCharacter == null || executorTarget == null || executorTarget.isActiveAndEnabled == false)
+        {
+            return;
+        }
+        foreach (var animator in anims)
+        {
+            animator.SetTrigger("Fire");
+        }
+        Transform muzzle = muzzles != null && muzzles.Length > 0 && muzzles[0] != null
+            ? muzzles[0] : transform;
+        Vector3 direction = executorTarget.transform.position + Vector3.up - muzzle.position;
+        Quaternion rotation = direction.sqrMagnitude > 0.001f
+            ? Quaternion.LookRotation(direction) : transform.rotation;
+        GameObject obj = ObjectPooler.DeferredSpawnFromPool(executorProjectilePool, muzzle.position, rotation);
+        if (obj == null)
+        {
+            return;
+        }
+        if (obj.TryGetComponent<ExecutorProjectile>(out var projectile))
+        {
+            projectile.SetTarget(executorTarget);
+            projectile.SetDamageInfo(ownerCharacter, executorDamage, executorCrit, executorMultiplier);
+            projectile.AddIgnore(ownerCharacter);
+        }
+        ObjectPooler.FinishSpawn(obj);
     }
 
     public void SetupOwner(GameObject owner)

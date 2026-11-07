@@ -558,12 +558,7 @@ public class Module_SpawnObject : SkillModule
         }
 
         float ignoreBonus = skill?.Runtime?.Combat?.IgnoreDefenseBonus ?? 0f;
-        if (damageApplyType != DamageApplyType.Multiply && ignoreBonus <= 0f)
-        {
-            return source;
-        }
-
-        var result = source.Clone();
+        var result = skill != null ? skill.CreateDamageSnapshot(source) : source.Clone();
         if (damageApplyType == DamageApplyType.Multiply)
         {
             result.baseDamage *= damageMultiplier;

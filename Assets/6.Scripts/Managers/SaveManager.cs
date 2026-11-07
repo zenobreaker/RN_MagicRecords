@@ -1,4 +1,4 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -111,6 +111,7 @@ public sealed class RecordSaveListData
     public List<RecordSaveData> recordIDs = new();
     public List<RecordSaveData> transferedrecordIDs = new();
     public bool isReceived = false;
+    public int highestRarityMissCount;
 }
 
 public static class SaveManager

@@ -444,6 +444,24 @@ public class AppManager
 
     public void ContinueExplorationProcess()
     {
+        if (exploreManager == null || SceneLoadingController.IsLoading)
+        {
+            return;
+        }
+
+        exploreManager.Init(false);
+        if (exploreManager.RunStatus == RunStatus.SetupIncomplete)
+        {
+            UIManager.Instance.SafeInvoke(ui => ui.OpenExplorationSetupPopUp(
+                setup => setup.OpenForContinue(exploreManager.CurrentSetupData)));
+            return;
+        }
+        if (exploreManager.RunStatus == RunStatus.NoSave)
+        {
+            EnterTheExplorationProcess();
+            return;
+        }
+
         SceneManager.LoadScene(
             "StageSelectScene");
     }

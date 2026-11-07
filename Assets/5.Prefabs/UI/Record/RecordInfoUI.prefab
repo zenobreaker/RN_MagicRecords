@@ -1529,6 +1529,7 @@ GameObject:
   - component: {fileID: 5324109122895083759}
   - component: {fileID: 9039354598515106342}
   - component: {fileID: 3617380094966711854}
+  - component: {fileID: 7904110300000000001}
   m_Layer: 5
   m_Name: DescriptionScroll
   m_TagString: Untagged
@@ -1638,3 +1639,18 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7904110300000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7924163340754460837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e06eb5ae25b4fce8791a2ef73654cd0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  scroll: {fileID: 3617380094966711854}
+  pixelsPerSecond: 18
+  pauseSeconds: 3

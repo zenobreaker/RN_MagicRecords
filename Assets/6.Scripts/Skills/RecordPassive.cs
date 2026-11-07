@@ -29,6 +29,15 @@ public class RecordPassive : PassiveSkill
         }
     }
 
+    public override void OnChangedLevel(int newLevel)
+    {
+        SetLevel(newLevel);
+        foreach (var module in modules)
+        {
+            module.OnChangedLevel(newLevel);
+        }
+    }
+
     public override void OnAcquire(GameObject skillOwner)
     {
         OnLose();
@@ -72,6 +81,14 @@ public class RecordPassive : PassiveSkill
             module.OnSkillCast(evt, context);
         }
     }
+    public override void OnSpawnObject(ISkillEffect effect, ActiveSkill skill)
+    {
+        foreach (var module in modules)
+        {
+            module.OnSpawnObject(effect, skill);
+        }
+    }
+
     public override void OnUpdate(float deltaTime)
     {
         foreach (var module in modules)

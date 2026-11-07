@@ -9,6 +9,19 @@ public class GenericActiveSkill : ActiveSkill
     private readonly HashSet<SkillModule> executedModules = new();
     private readonly Dictionary<SkillModule, float> nextMovementTimes = new();
 
+    private Module_Passive_AssistExecutor executorForCast;
+
+    private Module_Passive_AssistExecutor ExecutorModifier
+    {
+        get
+        {
+            var modifier = skillComponent?.GetCapability<Module_Passive_AssistExecutor>();
+            return modifier != null && modifier.TargetSkillID == SkillID ? modifier : null;
+        }
+    }
+
+    public override bool CanUseConcurrently => base.CanUseConcurrently || ExecutorModifier != null;
+
     public GenericActiveSkill(SO_SkillData skillData) : base(skillData)
     {
     }
@@ -151,7 +164,14 @@ public class GenericActiveSkill : ActiveSkill
 
     protected override void PrepareCasting()
     {
+        executorForCast = ExecutorModifier;
         executedModules.Clear();
+        if (executorForCast != null)
+        {
+            Runtime.Cast.CastingTime = 0f;
+            Runtime.Cast.CooldownMultiplier = executorForCast.cooldownMultiplier;
+            return;
+        }
         NotifyModules(phaseIndex, SkillTriggerTime.OnCastingStart);
     }
 
@@ -161,6 +181,10 @@ public class GenericActiveSkill : ActiveSkill
 
     protected override void OnPhaseEntered()
     {
+        if (executorForCast != null)
+        {
+            return;
+        }
         executedModules.Clear();
         nextMovementTimes.Clear();
         int version = PhaseVersion;
@@ -180,6 +204,10 @@ public class GenericActiveSkill : ActiveSkill
 
     protected override void OnPhaseExited()
     {
+        if (executorForCast != null)
+        {
+            return;
+        }
         if (phaseModules.TryGetValue(phaseIndex, out var modules))
         {
             foreach (var module in modules)
@@ -191,7 +219,10 @@ public class GenericActiveSkill : ActiveSkill
 
     protected override void OnSkillEnding()
     {
-        NotifyModules(phaseIndex, SkillTriggerTime.OnEndDoAction);
+        if (executorForCast == null)
+        {
+            NotifyModules(phaseIndex, SkillTriggerTime.OnEndDoAction);
+        }
         executedModules.Clear();
         nextMovementTimes.Clear();
     }
@@ -301,6 +332,12 @@ public class GenericActiveSkill : ActiveSkill
 
     protected override void ExecutePhase(int index)
     {
+        if (executorForCast != null)
+        {
+            executorForCast.execution.OnNotify(ownerCharacter, this, phaseSkill);
+            EndSkill(false);
+            return;
+        }
         int version = PhaseVersion;
         NotifyModules(index, SkillTriggerTime.OnExecute);
         if (IsCurrentPhase(version) == false || HasPendingPhaseChange)

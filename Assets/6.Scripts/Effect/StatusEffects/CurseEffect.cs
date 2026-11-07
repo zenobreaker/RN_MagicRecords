@@ -21,6 +21,15 @@ public class CurseEffect : BaseEffect
         Debug.Log($"{owner.name}에 저주 적용 받는 피해 20% 증가");
     }
 
+    public override BaseEffect CreateTransferCopy(float duration)
+    {
+        return new CurseEffect(ID, Description, duration)
+        {
+            FxIcon = FxIcon,
+            FxObject = FxObject
+        };
+    }
+
     public float GetDamageIncrease()
     {
         return DAMAGE_INCREASE_PRECENT;

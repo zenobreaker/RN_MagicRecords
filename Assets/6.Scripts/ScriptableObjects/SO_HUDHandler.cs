@@ -4,6 +4,14 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SO_HUDHandler", menuName = "Scriptable Objects/SO_HUDHandler")]
 public class SO_HUDHandler : ScriptableObject
 {
+    private bool hasManaValue;
+    private float currentMana;
+    private float maxMana;
+
+    public bool HasManaValue => hasManaValue;
+    public float CurrentMana => currentMana;
+    public float MaxMana => maxMana;
+
     public event Action<float> OnInitHP;
     public event Action<float> OnInitMP;
 
@@ -25,6 +33,9 @@ public class SO_HUDHandler : ScriptableObject
     }
     public void OnInitValue_MP(float value)
     {
+        hasManaValue = true;
+        currentMana = value;
+        maxMana = value;
         OnInitMP?.Invoke(value);
     }
 
@@ -45,6 +56,9 @@ public class SO_HUDHandler : ScriptableObject
 
     public void OnChangeValue_MP(float value1, float value2)
     {
+        hasManaValue = true;
+        currentMana = value1;
+        maxMana = value2;
         OnChangeMP_TwoParam?.Invoke(value1, value2);
     }
 

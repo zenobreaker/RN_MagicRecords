@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 [Serializable]
@@ -32,15 +32,9 @@ public sealed class Module_GainLaserEnergy : SkillModule
         long gain = (long)Math.Max(0, baseGain) + Math.Max(0, runtime.Combat.LaserEnergyGainBonus) +
                     (long)runtime.Combat.ConsumedBulletCount * Math.Max(0, gainPerConsumedBullet);
         // Stack은 캐릭터의 EffectComponent가 소유합니다. 모듈에는 누적 상태를 두지 않습니다.
-        var effects = EffectManager.Instance;
-        if (effects == null || owner.TryGetComponent<EffectComponent>(out _) == false)
+        if (owner.TryGetComponent<EffectComponent>(out var effects))
         {
-            return;
-        }
-
-        for (long i = 0; i < gain; i++)
-        {
-            effects.RegisterEffect(owner.gameObject, owner.gameObject, new LaserEnergyEffect(energyIcon));
+            effects.AddLaserEnergy((int)Math.Min(int.MaxValue, gain), energyIcon);
         }
     }
 }

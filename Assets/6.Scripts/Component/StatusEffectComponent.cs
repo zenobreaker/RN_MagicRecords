@@ -63,6 +63,10 @@ public class StatusEffectComponent : MonoBehaviour
     // 움직일 수 있는 상태이상인가에 대한 반환
     public bool GetMovableCondition()
     {
+        if (GetComponent<StatusComponent>()?.HasDebuffImmunity == true)
+        {
+            return true;
+        }
         bool check = false;
         check |= HasCondition(StatusEffectType.Stun);
         check |= HasCondition(StatusEffectType.Down);

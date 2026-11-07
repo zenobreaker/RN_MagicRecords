@@ -46,14 +46,39 @@ public class DamageHandleComponent : MonoBehaviour
 
         if (damageEvent.IsDOTEffect() == false && this.TryGetComponent<EffectComponent>(out var effectComp))
         {
-            if (effectComp.HasEffect("Curse") is CurseEffect curse)
+            if (status.HasDebuffImmunity == false && effectComp.HasEffect("Curse") is CurseEffect curse)
             {
                 value *= (1.0f + curse.GetDamageIncrease());
             }
         }
 
+        float previousHealth = health.GetCurrentHP;
+        StatusComponent attackerStatus = attacker != null ? attacker.GetComponent<StatusComponent>() : null;
+        value *= Mathf.Max(0f, 1f + (attackerStatus != null ? attackerStatus.GetStatusValue(StatusType.DAMAGE_BONUS) : 0f));
+        value *= Mathf.Max(0f, 1f + status.GetStatusValue(StatusType.INCOMING_DAMAGE_BONUS));
+        value *= Mathf.Clamp01(1f - status.GetStatusValue(StatusType.DAMAGE_REDUCTION));
+        if (status.HasDebuffImmunity && (damageEvent.IsDOTEffect() || damageEvent.IsStatusEffectDamage))
+        {
+            value = 0f;
+        }
+        if (TryGetComponent<EffectComponent>(out var shields))
+        {
+            foreach (var effect in new System.Collections.Generic.List<BaseEffect>(shields.ActiveEffects))
+            {
+                if (effect is RecordShieldEffect shield)
+                {
+                    value = shield.Absorb(value);
+                }
+            }
+        }
         health.SafeInvoke(v => v.Damage(value));
-        BattleManager.Instance.SafeInvoke(v => v.NotifyAttackHitFinish(attacker, this.gameObject, value));
+        damageEvent.KilledTarget = previousHealth > 0f && health.GetCurrentHP <= 0f;
+        if (attacker != null && attacker.TryGetComponent<ManaComponent>(out var mana))
+        {
+            mana.RecoverOnHit(damageEvent, previousHealth - health.GetCurrentHP, gameObject);
+        }
+
+        BattleManager.Instance.SafeInvoke(v => v.NotifyAttackHitFinish(attacker, this.gameObject, previousHealth - health.GetCurrentHP, damageEvent));
         ShowDamageText(value, damageEvent);
 
         // Damage notification only. Character applies the resolved reaction after death checking.

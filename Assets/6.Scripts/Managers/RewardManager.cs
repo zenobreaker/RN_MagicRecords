@@ -190,10 +190,8 @@ public class RecordReward : IReward
 
             case RecordRewardMode.RandomAll:
                 {
-                    var list = AppManager.Instance
-                        .GetRecordManager().GetRewardCandidates();
-
-                    record = list.Count > 0 ? list.Random() : AppManager.Instance.GetRecordManager()?.GetEmptyRecord();
+                    var records = AppManager.Instance.GetRecordManager();
+                    record = records.PickRandomRewardRecord(records.GetRewardCandidates()) ?? records.GetEmptyRecord();
                 }
                 break;
         }

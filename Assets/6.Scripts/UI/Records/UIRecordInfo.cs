@@ -41,6 +41,10 @@ public class UIRecordInfo : UiBase
             Canvas.ForceUpdateCanvases();
             descriptionScroll.StopMovement();
             descriptionScroll.verticalNormalizedPosition = 1f;
+            if (descriptionScroll.TryGetComponent<RecordDescriptionAutoScroll>(out var autoScroll))
+            {
+                autoScroll.ResetScroll();
+            }
         }
     }
 

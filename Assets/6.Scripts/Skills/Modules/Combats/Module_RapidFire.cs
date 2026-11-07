@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -275,25 +275,14 @@ public class Module_RapidFire : SkillModule
 
     private DamageData GetEffectiveDamageData(ActiveSkill skill)
     {
-        if (damageApplyType == DamageApplyType.Override)
+        DamageData source = damageApplyType == DamageApplyType.Override ? damageData : skill?.damageData;
+        DamageData result = skill != null ? skill.CreateDamageSnapshot(source) : source?.Clone() ?? new DamageData();
+        if (damageApplyType == DamageApplyType.Multiply)
         {
-            return damageData;
+            result.baseDamage *= damageMultiplier;
+            result.statCoefficient *= damageMultiplier;
         }
 
-        var source = skill?.damageData;
-        if (source == null)
-        {
-            return new DamageData();
-        }
-
-        if (damageApplyType != DamageApplyType.Multiply)
-        {
-            return source;
-        }
-
-        var result = source.Clone();
-        result.baseDamage *= damageMultiplier;
-        result.statCoefficient *= damageMultiplier;
         // Runtime multiplier is passed separately to SetDamageInfo, exactly once.
         return result;
     }

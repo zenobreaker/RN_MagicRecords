@@ -514,7 +514,8 @@ public sealed class SkillComponent : ActionComponent
         {
             return skill != null &&
                    skill.IsOnCooldown == false && skill.IsActive == false && skill.IsCasting == false && skill.IsEnding == false &&
-                   (InAction == false || (skillName == nameof(SkillSlot.SubAction) && IsSubActionCancelOnCooldown == false));
+                   (InAction == false || skill.CanUseConcurrently ||
+                    (skillName == nameof(SkillSlot.SubAction) && IsSubActionCancelOnCooldown == false));
         }
 
         return false;
@@ -595,6 +596,12 @@ public sealed class SkillComponent : ActionComponent
                 skill);
         }
 
+        if (skill != null)
+        {
+            skill.IsBasicAttack = slotName == SkillSlot.Default.ToString();
+            skill.IsSubAction = slotName == SkillSlot.SubAction.ToString();
+        }
+
         skillSlotTable[slotName]?.SetOwner(rootObject);
         skillSlotTable[slotName]?.InitializedData();
     }
@@ -639,7 +646,7 @@ public sealed class SkillComponent : ActionComponent
 
 
         // 동시 사용 가능 스킬
-        if (skill.isConcurrentSkill)
+        if (skill.CanUseConcurrently)
         {
             if (skill.IsOnCooldown || skill.IsActive || skill.IsCasting || skill.IsEnding)
             {

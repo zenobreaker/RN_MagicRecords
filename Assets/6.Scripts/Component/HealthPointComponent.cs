@@ -213,7 +213,9 @@ public class HealthPointComponent : MonoBehaviour
             return;
         }
 
-        RestoreCurrentHealth(HealedValue(currentHealthPoint, maxHealthPoint, amount));
+        StatusComponent currentStatus = GetComponent<StatusComponent>();
+        float bonus = currentStatus != null ? currentStatus.GetStatusValue(StatusType.HEALING_BONUS) : 0f;
+        RestoreCurrentHealth(HealedValue(currentHealthPoint, maxHealthPoint, amount * Mathf.Max(0f, 1f + bonus)));
     }
 
     public void RestoreCurrentHealth(float value)

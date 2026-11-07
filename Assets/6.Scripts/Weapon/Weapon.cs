@@ -54,6 +54,13 @@ public class HitData
 [Serializable]
 public class DamageData
 {
+    [NonSerialized] public bool IsBasicAttack;
+    [NonSerialized] public bool IsSubAction;
+    [NonSerialized] public bool SuppressRecordTriggers;
+    [NonSerialized] public int SpecialBulletMode;
+    [NonSerialized] public bool CannotCrit;
+    [NonSerialized] public IReadOnlyList<string> SkillTags;
+
     [Header("Power Settings")]
     [HideInInspector] public DamageType damageType; // Legacy serialized field; use hitData.DamageType.
 
@@ -119,6 +126,12 @@ public class DamageData
         clone.csp = csp;
         clone.hitData = this.hitData?.Clone() ?? new HitData();
         clone.ignoreDefenseRate = this.ignoreDefenseRate;
+        clone.IsBasicAttack = IsBasicAttack;
+        clone.IsSubAction = IsSubAction;
+        clone.SuppressRecordTriggers = SuppressRecordTriggers;
+        clone.SpecialBulletMode = SpecialBulletMode;
+        clone.CannotCrit = CannotCrit;
+        clone.SkillTags = SkillTags;
         return clone;
     }
 }
@@ -265,6 +278,14 @@ public class ActionData
 
 public class DamageEvent
 {
+    public bool IsBasicAttack;
+    public bool IsSubAction;
+    public bool SuppressRecordTriggers;
+    public bool KilledTarget;
+    public bool IsStatusEffectDamage;
+    public int SpecialBulletMode;
+    public IReadOnlyList<string> SkillTags;
+
     public float BaseDamage;
     public bool isCrit;
     public bool isFisrtHit;

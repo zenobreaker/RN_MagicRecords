@@ -15,7 +15,9 @@ public partial class ObjectPooler : MonoBehaviour
         {
             if (pool == null || string.IsNullOrEmpty(pool.tag) || pool.prefab == null)
             {
-                throw new System.InvalidOperationException("Invalid pool entry (tag/prefab).");
+                string tag = pool != null ? pool.tag : "<null>";
+                throw new System.InvalidOperationException(
+                    $"Invalid pool entry (tag/prefab): tag='{tag}', prefab='{pool?.prefab}'.");
             }
 
             if (poolDictionary.ContainsKey(pool.tag))

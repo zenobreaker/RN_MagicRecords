@@ -9,6 +9,14 @@ public class BattleManager
     public event Action<GameObject, GameObject, DamageEvent> OnAnyAttackHit;
     public event Action<GameObject, GameObject, float> OnAnyAttackHitFinish;
     public event Action OnBattleStarted;
+    public event Action OnBattleEnded;
+    public event Action<GameObject, GameObject, BaseEffect> OnEffectApplied;
+
+    public void NotifyEffectApplied(GameObject target, GameObject caster, BaseEffect effect)
+    {
+        OnEffectApplied?.Invoke(target, caster, effect);
+    }
+    public event Action<GameObject, GameObject, DamageEvent, float> OnAttackResolved;
     public bool IsInBattle
     {
         get
@@ -57,6 +65,9 @@ public class BattleManager
         OnAnyAttackHit = Instance.OnAnyAttackHit;
         OnAnyAttackHitFinish = Instance.OnAnyAttackHitFinish;
         OnBattleStarted = Instance.OnBattleStarted;
+        OnBattleEnded = Instance.OnBattleEnded;
+        OnEffectApplied = Instance.OnEffectApplied;
+        OnAttackResolved = Instance.OnAttackResolved;
         OnFinishBeginBattle = Instance.OnFinishBeginBattle;
 
         bInBattle = Instance.bInBattle;
@@ -148,6 +159,7 @@ public class BattleManager
         battleTable?.Clear();
 
         bInBattle = false;
+        OnBattleEnded?.Invoke();
     }
 
 
@@ -205,8 +217,9 @@ public class BattleManager
         OnAnyAttackHit?.Invoke(attacker, target, evt);
     }
 
-    public void NotifyAttackHitFinish(GameObject attacker, GameObject target, float damage)
+    public void NotifyAttackHitFinish(GameObject attacker, GameObject target, float damage, DamageEvent damageEvent = null)
     {
         OnAnyAttackHitFinish?.Invoke(attacker, target, damage);
+        OnAttackResolved?.Invoke(attacker, target, damageEvent, damage);
     }
 }

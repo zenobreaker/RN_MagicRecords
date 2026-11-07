@@ -8,6 +8,8 @@ using UnityEngine.PlayerLoop;
 public class StatusValue
 {
     public float baseValue;
+    public bool IgnoreNegativeModifiers;
+    public bool IgnorePositiveModifiers;
     private readonly List<StatModifier> modifiers = new();
     private float finalValue;
     private bool isDirty = true;
@@ -49,6 +51,10 @@ public class StatusValue
 
         foreach (var mod in modifiers)
         {
+            if ((IgnoreNegativeModifiers && mod.value < 0f) || (IgnorePositiveModifiers && mod.value > 0f))
+            {
+                continue;
+            }
             if (mod.valueType == ModifierValueType.FIXED)
             {
                 result += mod.value;
@@ -57,6 +63,10 @@ public class StatusValue
 
         foreach (var mod in modifiers)
         {
+            if ((IgnoreNegativeModifiers && mod.value < 0f) || (IgnorePositiveModifiers && mod.value > 0f))
+            {
+                continue;
+            }
             if (mod.valueType == ModifierValueType.PERCENT)
             {
                 result *= (1 + mod.value);
@@ -151,11 +161,26 @@ public class Status
 public class StatusComponent : MonoBehaviour
 {
     private readonly Dictionary<object, float> cooldownReductions = new();
+    private readonly HashSet<object> debuffImmunitySources = new();
+    public bool HasDebuffImmunity => debuffImmunitySources.Count > 0;
+
+    /// <summary>면역의 출처별 획득과 해제를 관리합니다.</summary>
+    public void SetDebuffImmunity(object source, bool enabled)
+    {
+        if (enabled)
+        {
+            debuffImmunitySources.Add(source);
+        }
+        else
+        {
+            debuffImmunitySources.Remove(source);
+        }
+    }
     public void SetCooldownReduction(object source, float amount)
     {
         if (source != null && float.IsNaN(amount) == false && float.IsInfinity(amount) == false)
         {
-            cooldownReductions[source] = Mathf.Clamp01(amount);
+            cooldownReductions[source] = Mathf.Clamp(amount, -10f, 1f);
         }
     }
     public void RemoveCooldownReduction(object source)
@@ -170,10 +195,13 @@ public class StatusComponent : MonoBehaviour
         float reduction = 0;
         foreach (float value in cooldownReductions.Values)
         {
-            reduction += value;
+            if (HasDebuffImmunity == false || value >= 0f)
+            {
+                reduction += value;
+            }
         }
 
-        return 1f - Mathf.Clamp(reduction, 0, .95f);
+        return 1f - Mathf.Clamp(reduction, -10f, .95f);
     }
     [SerializeField] private Status status;
 
@@ -252,7 +280,19 @@ public class StatusComponent : MonoBehaviour
 
         var value = status.Get(type);
 
-        return value == null ? 0.0f : value.FinalValue;
+        if (value == null)
+        {
+            return 0f;
+        }
+        bool ignoreNegative = HasDebuffImmunity && type != StatusType.INCOMING_DAMAGE_BONUS;
+        bool ignorePositive = HasDebuffImmunity && type == StatusType.INCOMING_DAMAGE_BONUS;
+        if (value.IgnoreNegativeModifiers != ignoreNegative || value.IgnorePositiveModifiers != ignorePositive)
+        {
+            value.IgnoreNegativeModifiers = ignoreNegative;
+            value.IgnorePositiveModifiers = ignorePositive;
+            value.Set(value.baseValue);
+        }
+        return value.FinalValue;
     }
 
     public float GetMaxHP()
@@ -284,6 +324,10 @@ public class StatusComponent : MonoBehaviour
         SetStatusValue(StatusType.CRIT_RATIO, data.GetStatusValue(StatusType.CRIT_RATIO));
         SetStatusValue(StatusType.CRIT_DMG, data.GetStatusValue(StatusType.CRIT_DMG));
         SetStatusValue(StatusType.HEALTH, data.GetStatusValue(StatusType.HEALTH));
+        if (TryGetComponent<ManaComponent>(out var mana))
+        {
+            mana.SetLevel(data.level);
+        }
         OnSetHealth?.Invoke(data.GetStatusValue(StatusType.HEALTH));
     }
 

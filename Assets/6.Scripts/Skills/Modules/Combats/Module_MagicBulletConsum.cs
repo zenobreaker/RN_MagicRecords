@@ -34,6 +34,7 @@ public class Module_MagicBulletConsum : SkillModule
             return;
         }
 
+        skill.Runtime.Combat.MagicBulletOwner = owner.gameObject;
         // 장착 후 패시브를 얻거나 잃을 수 있으므로 공급자는 실행 시 조회합니다.
         var provider = owner.GetComponent<SkillComponent>().SafeInvoke(component => component.GetCapability<IMagicBulletProvider>());
         if (consumePerPhase)

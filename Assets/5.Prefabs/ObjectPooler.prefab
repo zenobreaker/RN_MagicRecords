@@ -125,6 +125,14 @@ MonoBehaviour:
     prefab: {fileID: 2006234525802268607, guid: 556d6581a3a0f9c418f19704e6054abd, type: 3}
     size: 5
     parentTransform: {fileID: 0}
+  - tag: AssistExecutorWeapon
+    prefab: {fileID: 3606507098463213375, guid: a154784cad37b0545beb0c94f0df3e87, type: 3}
+    size: 6
+    parentTransform: {fileID: 0}
+  - tag: AssistExecutorBullet
+    prefab: {fileID: 1002, guid: 43810cd8c17a4502abdf071cde8525de, type: 3}
+    size: 6
+    parentTransform: {fileID: 0}
   - tag: AssistDroneBullet
     prefab: {fileID: 7935417353228486464, guid: 4760895ce813d0448899ead78a75c134, type: 3}
     size: 5
