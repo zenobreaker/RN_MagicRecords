@@ -107,6 +107,125 @@
       "activation": "0",
       "class ": "shooter",
       "concept": "bullet"
+    },
+    {
+      "id": "30",
+      "skillKeycode": "record_passive_30",
+      "maxLevel": "3",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "record",
+      "modules": [
+        {
+          "type": "RecordHeatModule",
+          "json": "{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Heat.asset\"}, \"damagePerStack\": [0.03, 0.04, 0.05], \"decayInterval\": 4, \"maxStacks\": 5, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": "31",
+      "skillKeycode": "record_passive_31",
+      "maxLevel": "1",
+      "activation": "0",
+      "class ": "shooter",
+      "concept": "record",
+      "modules": []
+    },
+    {
+      "id": "32",
+      "skillKeycode": "record_passive_32",
+      "maxLevel": "1",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "record",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritRatio.asset\"}, \"kind\": 0, \"stat\": 5, \"valueType\": 0, \"displayName\": \"레코드 CritRatio\", \"amount\": 0.1, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritRatio.asset\"}, \"kind\": 0, \"stat\": 14, \"valueType\": 0, \"displayName\": \"레코드 CritRatio\", \"amount\": 1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": "33",
+      "skillKeycode": "record_passive_33",
+      "maxLevel": "1",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "record",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_AttackSpeed.asset\"}, \"kind\": 0, \"stat\": 3, \"valueType\": 1, \"displayName\": \"레코드 AttackSpeed\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        },
+        {
+          "type": "RecordSkillTimingModule",
+          "json": "{\"tag\": \"사출\", \"cooldownReduction\": 0.1, \"triggerTime\": 2}"
+        },
+        {
+          "type": "RecordMythBulletModule",
+          "json": "{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_BulletModes.asset\"}, \"mark\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_RecordMark.asset\"}, \"childProjectileTag\": \"Bullet\", \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": "34",
+      "skillKeycode": "record_passive_34",
+      "maxLevel": "3",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "record",
+      "modules": [
+        {
+          "type": "RecordRandomDebuffModule",
+          "json": "{\"debuffs\": [{\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Bleed.asset\"}, {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Burn.asset\"}, {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Poison.asset\"}, {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Stun.asset\"}, {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Ice.asset\"}], \"cooldownByLevel\": [5, 4, 3], \"duration\": 5, \"attackRatio\": 0.1, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": "35",
+      "skillKeycode": "record_passive_35",
+      "maxLevel": "1",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "record",
+      "modules": [
+        {
+          "type": "RecordRancorModule",
+          "json": "{\"debuff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_RecordRancor.asset\"}, \"delay\": 3, \"attackRatio\": 1, \"bonusPerDebuff\": 0.1, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": "36",
+      "skillKeycode": "record_passive_36",
+      "maxLevel": "3",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "record",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritDamage.asset\"}, \"kind\": 0, \"stat\": 6, \"valueType\": 0, \"displayName\": \"레코드 CritDamage\", \"amount\": 0.3, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        },
+        {
+          "type": "RecordDebuffTransferModule",
+          "json": "{\"radius\": 8, \"targetCounts\": [1, 2, 3], \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": "37",
+      "skillKeycode": "record_passive_37",
+      "maxLevel": "1",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "record",
+      "modules": [
+        {
+          "type": "RecordBlackArmorModule",
+          "json": "{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_BlackCurseArmor.asset\"}, \"damageDebuffs\": [{\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Bleed.asset\"}, {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Burn.asset\"}, {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Poison.asset\"}], \"duration\": 5, \"attackRatio\": 0.1, \"reductionPerKind\": 0.1, \"maximumReduction\": 0.3, \"damagePerKind\": 0.05, \"maximumDamage\": 0.2, \"triggerTime\": 2}"
+        }
+      ]
     }
   ]
 }

@@ -57,7 +57,7 @@
     },
     {
       "id": 6,
-      "recordType": 3,
+      "recordType": 2,
       "targetFilter": "Shooter",
       "rarity": 0,
       "stats": [
@@ -363,17 +363,6 @@
       "importNote": ""
     },
     {
-      "id": 10063,
-      "recordType": 4,
-      "targetFilter": "Shooter",
-      "rarity": 0,
-      "stats": [],
-      "skills": [],
-      "linkedPassiveSkillID": 0,
-      "isImplemented": false,
-      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
-    },
-    {
       "id": 10091,
       "recordType": 4,
       "targetFilter": "Shooter",
@@ -454,23 +443,35 @@
       "id": 8,
       "recordType": 2,
       "targetFilter": "ALL",
-      "rarity": 0,
+      "rarity": 1,
       "stats": [],
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Attack.asset\"}, \"kind\": 0, \"stat\": 1, \"valueType\": 1, \"displayName\": \"레코드 Attack\", \"amount\": 0.1, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_AttackSpeed.asset\"}, \"kind\": 0, \"stat\": 3, \"valueType\": 1, \"displayName\": \"레코드 AttackSpeed\", \"amount\": 0.1, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CastSpeed.asset\"}, \"kind\": 0, \"stat\": 12, \"valueType\": 0, \"displayName\": \"레코드 CastSpeed\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
     },
     {
       "id": 9,
       "recordType": 2,
       "targetFilter": "ALL",
-      "rarity": 0,
+      "rarity": 2,
       "stats": [],
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Health.asset\"}, \"kind\": 0, \"stat\": 7, \"valueType\": 1, \"displayName\": \"레코드 Health\", \"amount\": 0.03, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Defense.asset\"}, \"kind\": 0, \"stat\": 2, \"valueType\": 1, \"displayName\": \"레코드 Defense\", \"amount\": 0.03, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Cooldown.asset\"}, \"kind\": 1, \"stat\": 0, \"valueType\": 1, \"displayName\": \"레코드 Cooldown\", \"amount\": 0.12, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
     },
     {
       "id": 10,
@@ -481,7 +482,13 @@
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Attack.asset\"}, \"kind\": 0, \"stat\": 1, \"valueType\": 1, \"displayName\": \"레코드 Attack\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
     },
     {
       "id": 11,
@@ -503,7 +510,13 @@
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_MoveSpeed.asset\"}, \"kind\": 0, \"stat\": 4, \"valueType\": 1, \"displayName\": \"레코드 MoveSpeed\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
     },
     {
       "id": 13,
@@ -514,7 +527,13 @@
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritRatio.asset\"}, \"kind\": 0, \"stat\": 5, \"valueType\": 0, \"displayName\": \"레코드 CritRatio\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
     },
     {
       "id": 14,
@@ -525,7 +544,13 @@
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_MoveSpeed.asset\"}, \"kind\": 0, \"stat\": 4, \"valueType\": 1, \"displayName\": \"레코드 MoveSpeed\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
     },
     {
       "id": 15,
@@ -536,7 +561,13 @@
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Attack.asset\"}, \"kind\": 0, \"stat\": 1, \"valueType\": 1, \"displayName\": \"레코드 Attack\", \"amount\": 0.1, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Defense.asset\"}, \"kind\": 0, \"stat\": 2, \"valueType\": 1, \"displayName\": \"레코드 Defense\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
     },
     {
       "id": 16,
@@ -547,7 +578,13 @@
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Defense.asset\"}, \"kind\": 0, \"stat\": 2, \"valueType\": 1, \"displayName\": \"레코드 Defense\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
     },
     {
       "id": 17,
@@ -558,62 +595,98 @@
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Cooldown.asset\"}, \"kind\": 1, \"stat\": 0, \"valueType\": 1, \"displayName\": \"레코드 Cooldown\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
     },
     {
       "id": 18,
       "recordType": 3,
       "targetFilter": "ALL",
-      "rarity": 0,
+      "rarity": 3,
       "stats": [],
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBattleBleedModule",
+          "json": "{\"bleed\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Bleed.asset\"}, \"duration\": 10, \"attackRatio\": 0.1, \"triggerTime\": 2}"
+        }
+      ]
     },
     {
       "id": 19,
       "recordType": 3,
       "targetFilter": "ALL",
-      "rarity": 0,
+      "rarity": 2,
       "stats": [],
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"activation\": 1, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritDamage.asset\"}, \"kind\": 0, \"stat\": 6, \"valueType\": 1, \"displayName\": \"레코드 CritDamage\", \"amount\": 0.2, \"duration\": 30}], \"probability\": 1, \"triggerTime\": 0}"
+        }
+      ]
     },
     {
       "id": 20,
       "recordType": 3,
       "targetFilter": "ALL",
-      "rarity": 0,
+      "rarity": 1,
       "stats": [],
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"activation\": 2, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_MoveSpeed.asset\"}, \"kind\": 0, \"stat\": 4, \"valueType\": 1, \"displayName\": \"레코드 MoveSpeed\", \"amount\": 0.12, \"duration\": 10}], \"probability\": 0.05, \"triggerTime\": 0}"
+        }
+      ]
     },
     {
       "id": 21,
-      "recordType": 3,
+      "recordType": 2,
       "targetFilter": "ALL",
-      "rarity": 0,
+      "rarity": 2,
       "stats": [],
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"activation\": 1, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Attack.asset\"}, \"kind\": 0, \"stat\": 1, \"valueType\": 1, \"displayName\": \"레코드 Attack\", \"amount\": 0.1, \"duration\": 30}], \"probability\": 1, \"triggerTime\": 0}"
+        }
+      ]
     },
     {
       "id": 22,
       "recordType": 2,
       "targetFilter": "ALL",
-      "rarity": 0,
+      "rarity": 2,
       "stats": [],
       "skills": [],
       "linkedPassiveSkillID": 0,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "modules": [
+        {
+          "type": "RecordCooldownOnCastModule",
+          "json": "{\"reduction\": 0.03, \"cooldown\": 3, \"triggerTime\": 2}"
+        }
+      ]
     },
     {
       "id": 2000,
@@ -663,23 +736,25 @@
       "id": 2004,
       "recordType": 2,
       "targetFilter": "Shooter",
-      "rarity": 0,
+      "rarity": 1,
       "stats": [],
       "skills": [],
-      "linkedPassiveSkillID": 0,
-      "isImplemented": false,
-      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+      "linkedPassiveSkillID": 34,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": []
     },
     {
       "id": 2005,
       "recordType": 2,
       "targetFilter": "Shooter",
-      "rarity": 0,
+      "rarity": 4,
       "stats": [],
       "skills": [],
-      "linkedPassiveSkillID": 0,
-      "isImplemented": false,
-      "importNote": "기획 데이터 에셋: 효과 로직 미구현"
+      "linkedPassiveSkillID": 37,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": []
     },
     {
       "id": 2006,
@@ -790,6 +865,564 @@
       "linkedPassiveSkillID": 10112,
       "isImplemented": true,
       "importNote": ""
+    },
+    {
+      "id": 23,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 3,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritRatio.asset\"}, \"kind\": 0, \"stat\": 5, \"valueType\": 0, \"displayName\": \"레코드 CritRatio\", \"amount\": 0.03, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        },
+        {
+          "type": "RecordEmergencyReloadModule",
+          "json": "{\"threshold\": 0.5, \"reloadRatio\": 0.3, \"cooldown\": 15, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "RecordPierceModule",
+          "json": "{\"tag\": \"사출\", \"count\": 1, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Damage.asset\"}, \"kind\": 0, \"stat\": 9, \"valueType\": 0, \"displayName\": \"레코드 Damage\", \"amount\": 0.03, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 2,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Health.asset\"}, \"kind\": 0, \"stat\": 7, \"valueType\": 0, \"displayName\": \"레코드 Health\", \"amount\": 100, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Defense.asset\"}, \"kind\": 0, \"stat\": 2, \"valueType\": 1, \"displayName\": \"레코드 Defense\", \"amount\": 0.02, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 2,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Attack.asset\"}, \"kind\": 0, \"stat\": 1, \"valueType\": 1, \"displayName\": \"레코드 Attack\", \"amount\": 0.03, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Cooldown.asset\"}, \"kind\": 1, \"stat\": 0, \"valueType\": 1, \"displayName\": \"레코드 Cooldown\", \"amount\": 0.05, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        },
+        {
+          "type": "RecordInitialEnergyModule",
+          "json": "{\"amount\": 10, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 1,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Energy.asset\"}, \"kind\": 0, \"stat\": 17, \"valueType\": 0, \"displayName\": \"레코드 Energy\", \"amount\": 1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 2,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Energy.asset\"}, \"kind\": 0, \"stat\": 17, \"valueType\": 0, \"displayName\": \"레코드 Energy\", \"amount\": 1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        },
+        {
+          "type": "RecordManaModule",
+          "json": "{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Mana.asset\"}, \"hitRecoveryBonus\": 0.02, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 1,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "RecordManaModule",
+          "json": "{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Mana.asset\"}, \"maxManaBonus\": 100, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 3,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Attack.asset\"}, \"kind\": 0, \"stat\": 1, \"valueType\": 1, \"displayName\": \"레코드 Attack\", \"amount\": 0.05, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Health.asset\"}, \"kind\": 0, \"stat\": 7, \"valueType\": 0, \"displayName\": \"레코드 Health\", \"amount\": 100, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Healing.asset\"}, \"kind\": 0, \"stat\": 11, \"valueType\": 0, \"displayName\": \"레코드 Healing\", \"amount\": 0.02, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        },
+        {
+          "type": "RecordTaggedDamageModule",
+          "json": "{\"tag\": \"마검\", \"bonus\": 0.1, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "RecordManaModule",
+          "json": "{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Mana.asset\"}, \"maxManaBonus\": 50, \"regenerationBonus\": 0.02, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 3,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "RecordSkillTimingModule",
+          "json": "{\"tag\": \"원소\", \"cooldownReduction\": 0.1, \"castTimeReduction\": 0.12, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 2,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_ChargeSpeed.asset\"}, \"kind\": 0, \"stat\": 13, \"valueType\": 0, \"displayName\": \"레코드 ChargeSpeed\", \"amount\": 0.2, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 2,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritRatio.asset\"}, \"kind\": 0, \"stat\": 5, \"valueType\": 0, \"displayName\": \"레코드 CritRatio\", \"amount\": 0.15, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Cooldown.asset\"}, \"kind\": 1, \"stat\": 0, \"valueType\": 1, \"displayName\": \"레코드 Cooldown\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 3,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "RecordCooldownOnCastModule",
+          "json": "{\"reduction\": 1, \"cooldown\": 1, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "recordType": 3,
+      "targetFilter": "ALL",
+      "rarity": 3,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_BasicDamage.asset\"}, \"kind\": 0, \"stat\": 10, \"valueType\": 0, \"displayName\": \"레코드 BasicDamage\", \"amount\": 1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        },
+        {
+          "type": "RecordSkillTimingModule",
+          "json": "{\"subActionOnly\": true, \"cooldownReduction\": 0.5, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "recordType": 3,
+      "targetFilter": "ALL",
+      "rarity": 3,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "RecordMarkModule",
+          "json": "{\"debuff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_RecordMark.asset\"}, \"chance\": 0.3, \"duration\": 5, \"damageBonus\": 0.1, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "recordType": 3,
+      "targetFilter": "ALL",
+      "rarity": 3,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "RecordDoomModule",
+          "json": "{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Doom.asset\"}, \"delay\": 5, \"delayedBuffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Attack.asset\"}, \"kind\": 0, \"stat\": 1, \"valueType\": 1, \"displayName\": \"레코드 Attack\", \"amount\": 0.2, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Defense.asset\"}, \"kind\": 0, \"stat\": 2, \"valueType\": 1, \"displayName\": \"레코드 Defense\", \"amount\": -0.2, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_MoveSpeed.asset\"}, \"kind\": 0, \"stat\": 4, \"valueType\": 1, \"displayName\": \"레코드 MoveSpeed\", \"amount\": 0.12, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Cooldown.asset\"}, \"kind\": 1, \"stat\": 0, \"valueType\": 1, \"displayName\": \"레코드 Cooldown\", \"amount\": 0.1, \"duration\": 0}], \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "recordType": 3,
+      "targetFilter": "ALL",
+      "rarity": 1,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_MoveSpeed.asset\"}, \"kind\": 0, \"stat\": 4, \"valueType\": 1, \"displayName\": \"레코드 MoveSpeed\", \"amount\": 0.02, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        },
+        {
+          "type": "RecordInitialEnergyModule",
+          "json": "{\"amount\": 10, \"triggerTime\": 2}"
+        },
+        {
+          "type": "RecordSoroModule",
+          "json": "{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Soro.asset\"}, \"delay\": 4, \"duration\": 30, \"damagePerEnergy\": 0.01, \"maxEnergy\": 10, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "recordType": 3,
+      "targetFilter": "ALL",
+      "rarity": 1,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_AttackSpeed.asset\"}, \"kind\": 0, \"stat\": 3, \"valueType\": 1, \"displayName\": \"레코드 AttackSpeed\", \"amount\": 0.025, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        },
+        {
+          "type": "RecordWildnessModule",
+          "json": "{\"shieldBuff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Shield.asset\"}, \"healChance\": 0.03, \"healRatio\": 0.03, \"shieldChance\": 0.05, \"shieldRatio\": 0.01, \"shieldDuration\": 5, \"triggerTime\": 2}"
+        }
+      ]
+    },
+    {
+      "id": 2101,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 1,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 30,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": []
+    },
+    {
+      "id": 2102,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 2,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 31,
+      "isImplemented": false,
+      "importNote": "원소 효과 미정: 구현 보류",
+      "modules": []
+    },
+    {
+      "id": 2103,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 3,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 32,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": []
+    },
+    {
+      "id": 2104,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 4,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 33,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": []
+    },
+    {
+      "id": 2106,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 2,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 35,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": []
+    },
+    {
+      "id": 2107,
+      "recordType": 2,
+      "targetFilter": "Shooter",
+      "rarity": 3,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 36,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": []
+    },
+    {
+      "id": 43,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Attack.asset\"}, \"kind\": 0, \"stat\": 1, \"valueType\": 1, \"displayName\": \"레코드 Attack\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Defense.asset\"}, \"kind\": 0, \"stat\": 2, \"valueType\": 1, \"displayName\": \"레코드 Defense\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_MoveSpeed.asset\"}, \"kind\": 0, \"stat\": 4, \"valueType\": 1, \"displayName\": \"레코드 MoveSpeed\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_AttackSpeed.asset\"}, \"kind\": 0, \"stat\": 3, \"valueType\": 1, \"displayName\": \"레코드 AttackSpeed\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "recordType": 3,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritRatio.asset\"}, \"kind\": 0, \"stat\": 5, \"valueType\": 0, \"displayName\": \"레코드 CritRatio\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritDamage.asset\"}, \"kind\": 0, \"stat\": 6, \"valueType\": 0, \"displayName\": \"레코드 CritDamage\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": 100103,
+      "recordType": 4,
+      "targetFilter": "Shooter",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "modules": [],
+      "linkedPassiveSkillID": 100103,
+      "isImplemented": true,
+      "importNote": "익스큐터: 최대 6명 지정 사격, 동시 시전, 쿨다운 80% 감소"
     }
   ]
 }
