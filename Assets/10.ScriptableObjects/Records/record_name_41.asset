@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Name: record_name_41
+  m_EditorClassIdentifier: ""
+  id: 41
+  isImplemented: 1
+  importNote: ""
+  recordName: "record_name_41"
+  description: "record_desc_41"
+  icon: {fileID: 0}
+  keywords: []
+  targetFilter: 0
+  type: 3
+  rarity: 1
+  Stats: []
+  Skills: []
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: ""
+  Modules:
+  - {rid: 101}
+  - {rid: 102}
+  - {rid: 103}
+  references:
+    version: 2
+    RefIds:
+    - rid: 101
+      type: {class: "CommonRecordBuffModule", ns: "", asm: "Assembly-CSharp"}
+      data:
+        triggerTime: 0
+        activation: 0
+        buffs:
+        - buff: {fileID: 11400000, guid: "96ce7043071c43e288536a17630dcc90", type: 2}
+          kind: 0
+          stat: 4
+          valueType: 1
+          displayName: "\ub808\ucf54\ub4dc MoveSpeed"
+          amount: 0.02
+          duration: 0
+        probability: 1
+        healthThreshold: 0.3
+    - rid: 102
+      type: {class: "RecordInitialEnergyModule", ns: "", asm: "Assembly-CSharp"}
+      data:
+        amount: 10
+        triggerTime: 2
+    - rid: 103
+      type: {class: "RecordSoroModule", ns: "", asm: "Assembly-CSharp"}
+      data:
+        buff: {fileID: 11400000, guid: "28308d84b5094af29c86520d9c8dbfc7", type: 2}
+        delay: 4
+        duration: 30
+        damagePerEnergy: 0.01
+        maxEnergy: 10
+        triggerTime: 2

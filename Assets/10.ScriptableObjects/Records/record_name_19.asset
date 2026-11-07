@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Name: record_name_19
+  m_EditorClassIdentifier: ""
+  id: 19
+  isImplemented: 1
+  importNote: ""
+  recordName: "record_name_19"
+  description: "record_desc_19"
+  icon: {fileID: -800476974, guid: "b1062ede74b0afc4aad1ce4b23d59c13", type: 3}
+  keywords: []
+  targetFilter: 0
+  type: 3
+  rarity: 2
+  Stats: []
+  Skills: []
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: ""
+  Modules:
+  - {rid: 101}
+  references:
+    version: 2
+    RefIds:
+    - rid: 101
+      type: {class: "CommonRecordBuffModule", ns: "", asm: "Assembly-CSharp"}
+      data:
+        activation: 1
+        buffs:
+        - buff: {fileID: 11400000, guid: "f0ce816311ea43f89c96aa8fbb130025", type: 2}
+          kind: 0
+          stat: 6
+          valueType: 1
+          displayName: "\ub808\ucf54\ub4dc CritDamage"
+          amount: 0.2
+          duration: 30
+        probability: 1
+        triggerTime: 0

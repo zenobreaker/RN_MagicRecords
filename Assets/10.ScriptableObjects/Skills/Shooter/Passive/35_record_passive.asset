@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: "46b10d0a553238744b0cd87f519edeba", type: 3}
+  m_Name: "35_record_passive"
+  m_EditorClassIdentifier: ""
+  id: 35
+  skillName: "skill_name_35"
+  skillDescription: "skill_desc_35"
+  keywords: []
+  isDevelopmentLocked: 0
+  learnableLevel: 0
+  maxLevel: 1
+  skillUpgradeCost: []
+  skillImage: {fileID: 0}
+  leadingSkillList: []
+  levelDatas: []
+  implementation: 0
+  jobID: 1
+  Modules:
+  - {rid: 101}
+  references:
+    version: 2
+    RefIds:
+    - rid: 101
+      type: {class: "RecordRancorModule", ns: "", asm: "Assembly-CSharp"}
+      data:
+        debuff: {fileID: 11400000, guid: "c49f9e04ee6d4a6f93d27669655aea07", type: 2}
+        delay: 3
+        attackRatio: 1
+        bonusPerDebuff: 0.1
+        triggerTime: 2

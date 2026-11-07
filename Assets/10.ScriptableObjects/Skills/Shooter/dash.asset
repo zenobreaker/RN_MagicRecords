@@ -15,10 +15,12 @@ MonoBehaviour:
   id: 1025
   skillName: name_dash
   skillDescription: 
+  keywords: []
+  isDevelopmentLocked: 0
   learnableLevel: 0
   maxLevel: 1
   skillUpgradeCost: 
-  skillImage: {fileID: 21300000, guid: 24159eb5a316fcc48bc820607bbe5a23, type: 3}
+  skillImage: {fileID: 2133217528, guid: 34bf9ae6183f4d94ea679c2c04ab1202, type: 3}
   leadingSkillList: 
   levelDatas:
   - range: 0
@@ -26,6 +28,7 @@ MonoBehaviour:
     cooldown: 0.2
     castingTime: -1
     chargeTime: 0
+    duration: 0
     damageData:
       damageType: 0
       baseDamage: 0
@@ -36,6 +39,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0

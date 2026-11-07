@@ -15,10 +15,12 @@ MonoBehaviour:
   id: 1003
   skillName: skill_name_hyperbeam
   skillDescription: skill_desc_hyperbeam
+  keywords: []
+  isDevelopmentLocked: 0
   learnableLevel: 5
   maxLevel: 10
   skillUpgradeCost: 
-  skillImage: {fileID: 21300000, guid: a0f66e5e23869a74ab54bd9db3238cf7, type: 3}
+  skillImage: {fileID: -1285895389, guid: 15bff6b08af38aa40bc7bc25577304ba, type: 3}
   leadingSkillList: 
   levelDatas:
   - range: 0
@@ -255,6 +257,7 @@ MonoBehaviour:
         executeOncePerPhase: 0
         useFireIntervalMultiplier: 0
         maxConsumeCount: 3
+        consumePerPhase: 0
         applyMode: 2
         requireLastAttackPassive: 0
     - rid: 7012345678900000006
@@ -388,8 +391,11 @@ MonoBehaviour:
         baseAngleBetween: 0
         spawnObj: {fileID: 0}
         objectName: HyperBeam
+        broadcastAttackOnSpawn: 0
         baseLifeTime: 1
         useLevelDuration: 0
+        lifetimeBonusPerBullet: 0
+        childRangeBonusPerBullet: 0
     - rid: 8682830680103845977
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
@@ -400,6 +406,7 @@ MonoBehaviour:
         useFireIntervalMultiplier: 0
         controlType: 0
         speedMultiplier: 0.5
+        unlockOnPhaseExit: 0
     - rid: 8682830680103845981
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
@@ -410,6 +417,7 @@ MonoBehaviour:
         useFireIntervalMultiplier: 0
         controlType: 1
         speedMultiplier: 1
+        unlockOnPhaseExit: 0
     - rid: 8682830680103845989
       type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
       data:
@@ -475,6 +483,7 @@ MonoBehaviour:
         transitionType: 2
         targetPhaseIndex: 0
         delayTime: 0
+        useCastRecoveryDelay: 0
     - rid: 9167119120672227464
       type: {class: Module_SpawnWeaponVFX, ns: , asm: Assembly-CSharp}
       data:

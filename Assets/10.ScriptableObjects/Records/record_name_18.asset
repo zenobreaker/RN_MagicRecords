@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Name: record_name_18
+  m_EditorClassIdentifier: ""
+  id: 18
+  isImplemented: 1
+  importNote: ""
+  recordName: "record_name_18"
+  description: "record_desc_18"
+  icon: {fileID: 927249965, guid: "b1062ede74b0afc4aad1ce4b23d59c13", type: 3}
+  keywords: []
+  targetFilter: 0
+  type: 3
+  rarity: 3
+  Stats: []
+  Skills: []
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: ""
+  Modules:
+  - {rid: 101}
+  references:
+    version: 2
+    RefIds:
+    - rid: 101
+      type: {class: "CommonRecordBattleBleedModule", ns: "", asm: "Assembly-CSharp"}
+      data:
+        bleed: {fileID: 11400000, guid: "50a2bac2a64340c48af2c6d55330f575", type: 2}
+        duration: 10
+        attackRatio: 0.1
+        triggerTime: 2

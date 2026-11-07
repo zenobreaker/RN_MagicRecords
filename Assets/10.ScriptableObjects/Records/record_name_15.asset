@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Name: record_name_15
+  m_EditorClassIdentifier: ""
+  id: 15
+  isImplemented: 1
+  importNote: ""
+  recordName: "record_name_15"
+  description: "record_desc_15"
+  icon: {fileID: 780851909, guid: "84c09ba676cfad148979f1e21cf4a052", type: 3}
+  keywords: []
+  targetFilter: 0
+  type: 2
+  rarity: 0
+  Stats: []
+  Skills: []
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: ""
+  Modules:
+  - {rid: 101}
+  references:
+    version: 2
+    RefIds:
+    - rid: 101
+      type: {class: "CommonRecordBuffModule", ns: "", asm: "Assembly-CSharp"}
+      data:
+        triggerTime: 0
+        activation: 0
+        buffs:
+        - buff: {fileID: 11400000, guid: "8a5a67c9c4f1409c946bd8a4a32e5c6f", type: 2}
+          kind: 0
+          stat: 1
+          valueType: 1
+          displayName: "\ub808\ucf54\ub4dc Attack"
+          amount: 0.1
+          duration: 0
+        - buff: {fileID: 11400000, guid: "2815d87dff13416c9537f3ae57f8f78b", type: 2}
+          kind: 0
+          stat: 2
+          valueType: 1
+          displayName: "\ub808\ucf54\ub4dc Defense"
+          amount: 0.1
+          duration: 0
+        probability: 1
+        healthThreshold: 0.3

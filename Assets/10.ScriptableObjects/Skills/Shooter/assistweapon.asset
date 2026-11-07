@@ -15,10 +15,12 @@ MonoBehaviour:
   id: 1010
   skillName: skill_name_assistweapon
   skillDescription: skill_desc_assistweapon
+  keywords: []
+  isDevelopmentLocked: 0
   learnableLevel: 15
   maxLevel: 10
   skillUpgradeCost: 
-  skillImage: {fileID: 21300000, guid: 8a8f8ef6d8cb2354881f7285a8a554cf, type: 3}
+  skillImage: {fileID: -69841273, guid: 15bff6b08af38aa40bc7bc25577304ba, type: 3}
   leadingSkillList: 
   levelDatas:
   - range: 0
@@ -37,6 +39,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -66,6 +69,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -95,6 +99,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -124,6 +129,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -153,6 +159,7 @@ MonoBehaviour:
       impulseDirection: {x: 0, y: 0, z: 0}
       csp: {fileID: 0}
       hitData:
+        Reaction: 0
         DamageType: 0
         Distance: 0
         HeightValue: 0
@@ -199,6 +206,10 @@ MonoBehaviour:
       type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         parameterName: IsCasting
         paramType: 0
         boolValue: 1
@@ -208,18 +219,32 @@ MonoBehaviour:
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 0
         speedMultiplier: 0.5
+        unlockOnPhaseExit: 0
     - rid: 1371895434487791698
       type: {class: Module_MovementControl, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 4
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         controlType: 1
         speedMultiplier: 0.5
+        unlockOnPhaseExit: 0
     - rid: 1371895434487791699
       type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 3
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         parameterName: IsCasting
         paramType: 0
         boolValue: 0
@@ -229,6 +254,10 @@ MonoBehaviour:
       type: {class: Module_SetAnimParam, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         parameterName: Casting
         paramType: 3
         boolValue: 0
@@ -238,6 +267,10 @@ MonoBehaviour:
       type: {class: Module_SpawnObject, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 4
+        triggerDelay: 0
+        movementRepeatInterval: 0.1
+        executeOncePerPhase: 0
+        useFireIntervalMultiplier: 0
         damageApplyType: 0
         damageMultiplier: 1
         damageData:
@@ -250,6 +283,7 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           hitData:
+            Reaction: 0
             DamageType: 0
             Distance: 0
             HeightValue: 0
@@ -267,5 +301,8 @@ MonoBehaviour:
         baseAngleBetween: 0
         spawnObj: {fileID: 3606507098463213375, guid: a154784cad37b0545beb0c94f0df3e87, type: 3}
         objectName: 
+        broadcastAttackOnSpawn: 0
         baseLifeTime: -1
         useLevelDuration: 1
+        lifetimeBonusPerBullet: 0
+        childRangeBonusPerBullet: 0

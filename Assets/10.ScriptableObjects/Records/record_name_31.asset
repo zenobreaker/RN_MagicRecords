@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Name: record_name_31
+  m_EditorClassIdentifier: ""
+  id: 31
+  isImplemented: 1
+  importNote: ""
+  recordName: "record_name_31"
+  description: "record_desc_31"
+  icon: {fileID: 0}
+  keywords: []
+  targetFilter: 0
+  type: 2
+  rarity: 1
+  Stats: []
+  Skills: []
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: ""
+  Modules:
+  - {rid: 101}
+  references:
+    version: 2
+    RefIds:
+    - rid: 101
+      type: {class: "RecordManaModule", ns: "", asm: "Assembly-CSharp"}
+      data:
+        buff: {fileID: 11400000, guid: "691aec17a45e456eafa22a1caa1212a8", type: 2}
+        maxManaBonus: 100
+        triggerTime: 2
