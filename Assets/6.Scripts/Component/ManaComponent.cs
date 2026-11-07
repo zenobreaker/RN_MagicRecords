@@ -14,6 +14,7 @@ public sealed class ManaComponent : MonoBehaviour
 
     private Character owner;
     private HealthPointComponent health;
+    private StatusComponent status;
     private SO_HUDHandler hudHandler;
     private float currentMana;
     private int currentLevel = 1;
@@ -50,9 +51,16 @@ public sealed class ManaComponent : MonoBehaviour
     public float CurrentMana => currentMana;
     public float MaxMana => Mathf.Max(1f, maxMana + RecordModifiers.x);
     public float RegenerationRatioPerSecond => Mathf.Max(0f, regenerationRatioPerSecond + RecordModifiers.z);
-    public float RegenerationPerSecond =>
-        Mathf.Max(0f, regenerationPerSecond + (currentLevel - 1) * regenerationPerLevel) +
-        MaxMana * RegenerationRatioPerSecond;
+    public float RegenerationPerSecond
+    {
+        get
+        {
+            float recovery = Mathf.Max(0f, regenerationPerSecond + (currentLevel - 1) * regenerationPerLevel) +
+                MaxMana * RegenerationRatioPerSecond;
+            float bonus = status != null ? status.GetStatusValue(StatusType.MANA_REGEN_BONUS) : 0f;
+            return recovery * Mathf.Max(0f, 1f + bonus);
+        }
+    }
     public float HitRecoveryRatio => Mathf.Clamp01(hitRecoveryRatio + RecordModifiers.y);
     public float SkillHitEfficiency => skillHitEfficiency;
     public event Action<float, float> OnChanged;
@@ -61,6 +69,7 @@ public sealed class ManaComponent : MonoBehaviour
     {
         owner = GetComponent<Character>();
         health = GetComponent<HealthPointComponent>();
+        status = GetComponent<StatusComponent>();
         if (owner is Player)
         {
             hudHandler = Resources.Load<SO_HUDHandler>("SO_HUDHandler");

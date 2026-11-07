@@ -128,6 +128,7 @@ public enum StatusType
     DAMAGE_REDUCTION,
     INCOMING_DAMAGE_BONUS,
     ENERGY_GAIN_BONUS,
+    MANA_REGEN_BONUS,
 
     MAX,
 }
