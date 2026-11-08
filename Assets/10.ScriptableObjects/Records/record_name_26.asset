@@ -9,40 +9,53 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: record_name_26
-  m_EditorClassIdentifier: ""
+  m_EditorClassIdentifier: 
   id: 26
   isImplemented: 1
-  importNote: ""
-  recordName: "record_name_26"
-  description: "record_desc_26"
-  icon: {fileID: 0}
+  importNote: 
+  recordName: record_name_26
+  description: record_desc_26
+  icon: {fileID: 174293200, guid: 84c09ba676cfad148979f1e21cf4a052, type: 3}
   keywords: []
   targetFilter: 0
   type: 2
   rarity: 2
   Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
-  mutualExclusionGroup: ""
   Modules:
-  - {rid: 101}
+  - rid: 101
+  - rid: 102
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 
   references:
     version: 2
     RefIds:
     - rid: 101
-      type: {class: "CommonRecordBuffModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: CommonRecordBuffModule, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
         activation: 0
         buffs:
-        - buff: {fileID: 11400000, guid: "0037200cf7fb40e4aae93e6ce91104f4", type: 2}
+        - buff: {fileID: 11400000, guid: 8a5a67c9c4f1409c946bd8a4a32e5c6f, type: 2}
           kind: 0
-          stat: 7
-          valueType: 0
-          displayName: "\ub808\ucf54\ub4dc Health"
-          amount: 100
+          stat: 1
+          valueType: 1
+          displayName: "\uB808\uCF54\uB4DC Attack"
+          amount: 0.03
+          duration: 0
+        - buff: {fileID: 11400000, guid: dff0444bc054ed24f87e357aad1c5cb9, type: 2}
+          kind: 1
+          stat: 0
+          valueType: 1
+          displayName: "\uB808\uCF54\uB4DC Cooldown"
+          amount: 0.05
           duration: 0
         probability: 1
         healthThreshold: 0.3
+    - rid: 102
+      type: {class: RecordInitialEnergyModule, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 2
+        amount: 10

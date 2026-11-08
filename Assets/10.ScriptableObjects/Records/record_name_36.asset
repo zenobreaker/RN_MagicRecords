@@ -9,47 +9,49 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: record_name_36
-  m_EditorClassIdentifier: ""
+  m_EditorClassIdentifier: 
   id: 36
   isImplemented: 1
-  importNote: ""
-  recordName: "record_name_36"
-  description: "record_desc_36"
-  icon: {fileID: 0}
+  importNote: 
+  recordName: record_name_36
+  description: record_desc_36
+  icon: {fileID: -556017173, guid: b1062ede74b0afc4aad1ce4b23d59c13, type: 3}
   keywords: []
   targetFilter: 0
-  type: 2
-  rarity: 2
+  type: 3
+  rarity: 3
   Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
-  mutualExclusionGroup: ""
   Modules:
-  - {rid: 101}
+  - rid: 101
+  - rid: 102
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 
   references:
     version: 2
     RefIds:
     - rid: 101
-      type: {class: "CommonRecordBuffModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: CommonRecordBuffModule, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
         activation: 0
         buffs:
-        - buff: {fileID: 11400000, guid: "f7c3597aacc5457f8ade12ca41fa6a90", type: 2}
+        - buff: {fileID: 11400000, guid: eabaab6ad68c450ea035584bb376f3bf, type: 2}
           kind: 0
-          stat: 5
+          stat: 10
           valueType: 0
-          displayName: "\ub808\ucf54\ub4dc CritRatio"
-          amount: 0.15
-          duration: 0
-        - buff: {fileID: 11400000, guid: "dff0444bc054ed24f87e357aad1c5cb9", type: 2}
-          kind: 1
-          stat: 0
-          valueType: 1
-          displayName: "\ub808\ucf54\ub4dc Cooldown"
-          amount: 0.1
+          displayName: "\uB808\uCF54\uB4DC BasicDamage"
+          amount: 1
           duration: 0
         probability: 1
         healthThreshold: 0.3
+    - rid: 102
+      type: {class: RecordSkillTimingModule, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 2
+        tag: 
+        subActionOnly: 1
+        cooldownReduction: 0.5
+        castTimeReduction: 0

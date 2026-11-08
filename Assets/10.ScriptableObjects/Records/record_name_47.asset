@@ -9,39 +9,39 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: record_name_47
-  m_EditorClassIdentifier: ""
+  m_EditorClassIdentifier: 
   id: 47
   isImplemented: 1
-  importNote: ""
-  recordName: "record_name_47"
-  description: "record_desc_47"
-  icon: {fileID: -1077125748, guid: "84c09ba676cfad148979f1e21cf4a052", type: 3}
+  importNote: 
+  recordName: record_name_47
+  description: record_desc_47
+  icon: {fileID: -1586276483, guid: 84c09ba676cfad148979f1e21cf4a052, type: 3}
   keywords: []
   targetFilter: 0
   type: 2
   rarity: 0
   Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
-  mutualExclusionGroup: ""
   Modules:
-  - {rid: 101}
+  - rid: 101
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 
   references:
     version: 2
     RefIds:
     - rid: 101
-      type: {class: "CommonRecordBuffModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: CommonRecordBuffModule, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
         activation: 0
         buffs:
-        - buff: {fileID: 11400000, guid: "f7c3597aacc5457f8ade12ca41fa6a90", type: 2}
+        - buff: {fileID: 11400000, guid: 691aec17a45e456eafa22a1caa1212a8, type: 2}
           kind: 0
-          stat: 5
+          stat: 18
           valueType: 0
-          displayName: "\ub808\ucf54\ub4dc CritRatio"
+          displayName: "\uCD08\uB2F9 \uB9C8\uB098 \uD68C\uBCF5\uB7C9 \uC99D\uAC00"
           amount: 0.1
           duration: 0
         probability: 1

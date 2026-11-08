@@ -9,31 +9,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: record_name_37
-  m_EditorClassIdentifier: ""
+  m_EditorClassIdentifier: 
   id: 37
   isImplemented: 1
-  importNote: ""
-  recordName: "record_name_37"
-  description: "record_desc_37"
-  icon: {fileID: 0}
+  importNote: 
+  recordName: record_name_37
+  description: record_desc_37
+  icon: {fileID: -540453145, guid: b1062ede74b0afc4aad1ce4b23d59c13, type: 3}
   keywords: []
   targetFilter: 0
-  type: 2
+  type: 3
   rarity: 3
   Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
-  mutualExclusionGroup: ""
   Modules:
-  - {rid: 101}
+  - rid: 101
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 
   references:
     version: 2
     RefIds:
     - rid: 101
-      type: {class: "RecordCooldownOnCastModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: RecordMarkModule, ns: , asm: Assembly-CSharp}
       data:
-        reduction: 1
-        cooldown: 1
         triggerTime: 2
+        debuff: {fileID: 11400000, guid: ddd9856cb3b84b319899a93935bb6d99, type: 2}
+        chance: 0.3
+        duration: 5
+        damageBonus: 0.1

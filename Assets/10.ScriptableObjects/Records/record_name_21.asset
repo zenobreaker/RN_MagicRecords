@@ -9,39 +9,48 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: record_name_21
-  m_EditorClassIdentifier: ""
+  m_EditorClassIdentifier: 
   id: 21
   isImplemented: 1
-  importNote: ""
-  recordName: "record_name_21"
-  description: "record_desc_21"
-  icon: {fileID: 1900299784, guid: "b1062ede74b0afc4aad1ce4b23d59c13", type: 3}
+  importNote: 
+  recordName: record_name_21
+  description: record_desc_21
+  icon: {fileID: 12059965, guid: 84c09ba676cfad148979f1e21cf4a052, type: 3}
   keywords: []
   targetFilter: 0
   type: 2
-  rarity: 2
+  rarity: 3
   Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
-  mutualExclusionGroup: ""
   Modules:
-  - {rid: 101}
+  - rid: 101
+  - rid: 102
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 
   references:
     version: 2
     RefIds:
     - rid: 101
-      type: {class: "CommonRecordBuffModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: CommonRecordBuffModule, ns: , asm: Assembly-CSharp}
       data:
-        activation: 1
-        buffs:
-        - buff: {fileID: 11400000, guid: "8a5a67c9c4f1409c946bd8a4a32e5c6f", type: 2}
-          kind: 0
-          stat: 1
-          valueType: 1
-          displayName: "\ub808\ucf54\ub4dc Attack"
-          amount: 0.1
-          duration: 30
-        probability: 1
         triggerTime: 0
+        activation: 0
+        buffs:
+        - buff: {fileID: 11400000, guid: f7c3597aacc5457f8ade12ca41fa6a90, type: 2}
+          kind: 0
+          stat: 5
+          valueType: 0
+          displayName: "\uB808\uCF54\uB4DC CritRatio"
+          amount: 0.03
+          duration: 0
+        probability: 1
+        healthThreshold: 0.3
+    - rid: 102
+      type: {class: RecordEmergencyReloadModule, ns: , asm: Assembly-CSharp}
+      data:
+        triggerTime: 2
+        threshold: 0.5
+        reloadRatio: 0.3
+        cooldown: 15

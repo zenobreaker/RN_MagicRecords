@@ -17,18 +17,17 @@ MonoBehaviour:
   importNote: ""
   recordName: "record_name_42"
   description: "record_desc_42"
-  icon: {fileID: 0}
+  icon: {fileID: 225507173, guid: "84c09ba676cfad148979f1e21cf4a052", type: 3}
   keywords: []
   targetFilter: 0
-  type: 3
-  rarity: 1
+  type: 2
+  rarity: 0
   Stats: []
   Skills: []
   linkedPassiveSkillID: 0
   mutualExclusionGroup: ""
   Modules:
   - {rid: 101}
-  - {rid: 102}
   references:
     version: 2
     RefIds:
@@ -38,22 +37,12 @@ MonoBehaviour:
         triggerTime: 0
         activation: 0
         buffs:
-        - buff: {fileID: 11400000, guid: "3173ba64914441f497c54ec9fa429519", type: 2}
+        - buff: {fileID: 11400000, guid: "2815d87dff13416c9537f3ae57f8f78b", type: 2}
           kind: 0
-          stat: 3
+          stat: 2
           valueType: 1
-          displayName: "\ub808\ucf54\ub4dc AttackSpeed"
-          amount: 0.025
+          displayName: "\ub808\ucf54\ub4dc Defense"
+          amount: 0.1
           duration: 0
         probability: 1
         healthThreshold: 0.3
-    - rid: 102
-      type: {class: "RecordWildnessModule", ns: "", asm: "Assembly-CSharp"}
-      data:
-        shieldBuff: {fileID: 11400000, guid: "75907291b0664ff898e95c3a69f98275", type: 2}
-        healChance: 0.03
-        healRatio: 0.03
-        shieldChance: 0.05
-        shieldRatio: 0.01
-        shieldDuration: 5
-        triggerTime: 2

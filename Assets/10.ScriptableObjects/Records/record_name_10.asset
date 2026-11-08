@@ -17,7 +17,7 @@ MonoBehaviour:
   importNote: ""
   recordName: "record_name_10"
   description: "record_desc_10"
-  icon: {fileID: -231280438, guid: "84c09ba676cfad148979f1e21cf4a052", type: 3}
+  icon: {fileID: 786935102, guid: "84c09ba676cfad148979f1e21cf4a052", type: 3}
   keywords: []
   targetFilter: 0
   type: 2
@@ -37,11 +37,11 @@ MonoBehaviour:
         triggerTime: 0
         activation: 0
         buffs:
-        - buff: {fileID: 11400000, guid: "8a5a67c9c4f1409c946bd8a4a32e5c6f", type: 2}
+        - buff: {fileID: 11400000, guid: "96ce7043071c43e288536a17630dcc90", type: 2}
           kind: 0
-          stat: 1
+          stat: 4
           valueType: 1
-          displayName: "\ub808\ucf54\ub4dc Attack"
+          displayName: "\ub808\ucf54\ub4dc MoveSpeed"
           amount: 0.1
           duration: 0
         probability: 1

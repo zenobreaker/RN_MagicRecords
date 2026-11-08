@@ -9,39 +9,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: record_name_20
-  m_EditorClassIdentifier: ""
+  m_EditorClassIdentifier: 
   id: 20
   isImplemented: 1
-  importNote: ""
-  recordName: "record_name_20"
-  description: "record_desc_20"
-  icon: {fileID: -138100, guid: "b1062ede74b0afc4aad1ce4b23d59c13", type: 3}
+  importNote: 
+  recordName: record_name_20
+  description: record_desc_20
+  icon: {fileID: 1584706395, guid: 84c09ba676cfad148979f1e21cf4a052, type: 3}
   keywords: []
   targetFilter: 0
-  type: 3
-  rarity: 1
+  type: 2
+  rarity: 2
   Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
-  mutualExclusionGroup: ""
   Modules:
-  - {rid: 101}
+  - rid: 101
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 
   references:
     version: 2
     RefIds:
     - rid: 101
-      type: {class: "CommonRecordBuffModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: RecordCooldownOnCastModule, ns: , asm: Assembly-CSharp}
       data:
-        activation: 2
-        buffs:
-        - buff: {fileID: 11400000, guid: "96ce7043071c43e288536a17630dcc90", type: 2}
-          kind: 0
-          stat: 4
-          valueType: 1
-          displayName: "\ub808\ucf54\ub4dc MoveSpeed"
-          amount: 0.12
-          duration: 10
-        probability: 0.05
-        triggerTime: 0
+        triggerTime: 2
+        reduction: 0.03
+        cooldown: 3

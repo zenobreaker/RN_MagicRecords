@@ -9,32 +9,40 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: record_name_18
-  m_EditorClassIdentifier: ""
+  m_EditorClassIdentifier: 
   id: 18
   isImplemented: 1
-  importNote: ""
-  recordName: "record_name_18"
-  description: "record_desc_18"
-  icon: {fileID: 927249965, guid: "b1062ede74b0afc4aad1ce4b23d59c13", type: 3}
+  importNote: 
+  recordName: record_name_18
+  description: record_desc_18
+  icon: {fileID: 740600927, guid: b1062ede74b0afc4aad1ce4b23d59c13, type: 3}
   keywords: []
   targetFilter: 0
   type: 3
-  rarity: 3
+  rarity: 1
   Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
-  mutualExclusionGroup: ""
   Modules:
-  - {rid: 101}
+  - rid: 101
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 
   references:
     version: 2
     RefIds:
     - rid: 101
-      type: {class: "CommonRecordBattleBleedModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: CommonRecordBuffModule, ns: , asm: Assembly-CSharp}
       data:
-        bleed: {fileID: 11400000, guid: "50a2bac2a64340c48af2c6d55330f575", type: 2}
-        duration: 10
-        attackRatio: 0.1
-        triggerTime: 2
+        triggerTime: 0
+        activation: 2
+        buffs:
+        - buff: {fileID: 11400000, guid: 96ce7043071c43e288536a17630dcc90, type: 2}
+          kind: 0
+          stat: 4
+          valueType: 1
+          displayName: "\uB808\uCF54\uB4DC MoveSpeed"
+          amount: 0.12
+          duration: 10
+        probability: 0.05
+        healthThreshold: 0.3

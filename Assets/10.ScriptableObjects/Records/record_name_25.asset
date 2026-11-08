@@ -21,7 +21,7 @@ MonoBehaviour:
   keywords: []
   targetFilter: 0
   type: 2
-  rarity: 0
+  rarity: 1
   Stats: []
   Skills: []
   linkedPassiveSkillID: 0
@@ -37,12 +37,12 @@ MonoBehaviour:
         triggerTime: 0
         activation: 0
         buffs:
-        - buff: {fileID: 11400000, guid: "c7a61de386724628901dd2e452fe05c2", type: 2}
+        - buff: {fileID: 11400000, guid: "2815d87dff13416c9537f3ae57f8f78b", type: 2}
           kind: 0
-          stat: 9
-          valueType: 0
-          displayName: "\ub808\ucf54\ub4dc Damage"
-          amount: 0.03
+          stat: 2
+          valueType: 1
+          displayName: "\ub808\ucf54\ub4dc Defense"
+          amount: 0.12
           duration: 0
         probability: 1
         healthThreshold: 0.3

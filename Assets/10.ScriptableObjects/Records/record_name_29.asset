@@ -9,40 +9,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: record_name_29
-  m_EditorClassIdentifier: ""
+  m_EditorClassIdentifier: 
   id: 29
   isImplemented: 1
-  importNote: ""
-  recordName: "record_name_29"
-  description: "record_desc_29"
-  icon: {fileID: 0}
+  importNote: 
+  recordName: record_name_29
+  description: record_desc_29
+  icon: {fileID: 2097274662, guid: 84c09ba676cfad148979f1e21cf4a052, type: 3}
   keywords: []
   targetFilter: 0
   type: 2
   rarity: 1
   Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
-  mutualExclusionGroup: ""
   Modules:
-  - {rid: 101}
+  - rid: 101
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 
   references:
     version: 2
     RefIds:
     - rid: 101
-      type: {class: "CommonRecordBuffModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: RecordManaModule, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 0
-        activation: 0
-        buffs:
-        - buff: {fileID: 11400000, guid: "1c286f59b2f34ee19b52a2b4b0d5850a", type: 2}
-          kind: 0
-          stat: 17
-          valueType: 0
-          displayName: "\ub808\ucf54\ub4dc Energy"
-          amount: 1
-          duration: 0
-        probability: 1
-        healthThreshold: 0.3
+        triggerTime: 2
+        buff: {fileID: 11400000, guid: 691aec17a45e456eafa22a1caa1212a8, type: 2}
+        maxManaBonus: 100
+        hitRecoveryBonus: 0
+        regenerationBonus: 0

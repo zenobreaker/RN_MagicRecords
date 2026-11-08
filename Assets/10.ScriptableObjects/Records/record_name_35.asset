@@ -9,40 +9,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: record_name_35
-  m_EditorClassIdentifier: ""
+  m_EditorClassIdentifier: 
   id: 35
   isImplemented: 1
-  importNote: ""
-  recordName: "record_name_35"
-  description: "record_desc_35"
-  icon: {fileID: 0}
+  importNote: 
+  recordName: record_name_35
+  description: record_desc_35
+  icon: {fileID: -1186223096, guid: 84c09ba676cfad148979f1e21cf4a052, type: 3}
   keywords: []
   targetFilter: 0
   type: 2
-  rarity: 2
+  rarity: 3
   Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
-  mutualExclusionGroup: ""
   Modules:
-  - {rid: 101}
+  - rid: 101
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 
   references:
     version: 2
     RefIds:
     - rid: 101
-      type: {class: "CommonRecordBuffModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: RecordCooldownOnCastModule, ns: , asm: Assembly-CSharp}
       data:
-        triggerTime: 0
-        activation: 0
-        buffs:
-        - buff: {fileID: 11400000, guid: "50aac7609f8848c3aa4efdb8c40f61e7", type: 2}
-          kind: 0
-          stat: 13
-          valueType: 0
-          displayName: "\ub808\ucf54\ub4dc ChargeSpeed"
-          amount: 0.2
-          duration: 0
-        probability: 1
-        healthThreshold: 0.3
+        triggerTime: 2
+        reduction: 1
+        cooldown: 1

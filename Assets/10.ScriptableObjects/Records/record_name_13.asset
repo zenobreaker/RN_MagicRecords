@@ -17,7 +17,7 @@ MonoBehaviour:
   importNote: ""
   recordName: "record_name_13"
   description: "record_desc_13"
-  icon: {fileID: -1378318818, guid: "84c09ba676cfad148979f1e21cf4a052", type: 3}
+  icon: {fileID: 780851909, guid: "84c09ba676cfad148979f1e21cf4a052", type: 3}
   keywords: []
   targetFilter: 0
   type: 2
@@ -37,11 +37,18 @@ MonoBehaviour:
         triggerTime: 0
         activation: 0
         buffs:
-        - buff: {fileID: 11400000, guid: "f7c3597aacc5457f8ade12ca41fa6a90", type: 2}
+        - buff: {fileID: 11400000, guid: "8a5a67c9c4f1409c946bd8a4a32e5c6f", type: 2}
           kind: 0
-          stat: 5
-          valueType: 0
-          displayName: "\ub808\ucf54\ub4dc CritRatio"
+          stat: 1
+          valueType: 1
+          displayName: "\ub808\ucf54\ub4dc Attack"
+          amount: 0.1
+          duration: 0
+        - buff: {fileID: 11400000, guid: "2815d87dff13416c9537f3ae57f8f78b", type: 2}
+          kind: 0
+          stat: 2
+          valueType: 1
+          displayName: "\ub808\ucf54\ub4dc Defense"
           amount: 0.1
           duration: 0
         probability: 1

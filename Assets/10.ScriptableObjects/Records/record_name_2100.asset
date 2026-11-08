@@ -10,21 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
-  m_Name: record_name_skill_auto_reload
+  m_Name: record_name_2100
   m_EditorClassIdentifier: 
-  id: 6
+  id: 2100
   isImplemented: 1
+  levelsPassiveOnly: 1
   importNote: 
-  recordName: record_name_skill_auto_reload
-  description: record_desc_skill_auto_reload
-  icon: {fileID: 21300000, guid: f15ae4c1facb85245ac36f28c93f0d4e, type: 3}
+  recordName: record_name_2100
+  description: record_desc_magicbulletload
+  icon: {fileID: -1796133093, guid: c93b8447255acbd4cb8be2f0f008cb3a, type: 3}
+  keywords: []
   targetFilter: 1
   type: 2
   rarity: 0
-  Stats:
-  - Status: 5
-    ValueType: 0
-    Value: 0.1
+  Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
+  Modules: []
+  linkedPassiveSkillID: 11
   mutualExclusionGroup: 
+  references:
+    version: 2
+    RefIds: []

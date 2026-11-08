@@ -9,47 +9,61 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: record_name_30
-  m_EditorClassIdentifier: ""
+  m_EditorClassIdentifier: 
   id: 30
   isImplemented: 1
-  importNote: ""
-  recordName: "record_name_30"
-  description: "record_desc_30"
-  icon: {fileID: 0}
+  importNote: 
+  recordName: record_name_30
+  description: record_desc_30
+  icon: {fileID: -2066944171, guid: 84c09ba676cfad148979f1e21cf4a052, type: 3}
   keywords: []
   targetFilter: 0
   type: 2
-  rarity: 2
+  rarity: 3
   Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
-  mutualExclusionGroup: ""
   Modules:
-  - {rid: 101}
-  - {rid: 102}
+  - rid: 101
+  - rid: 102
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 
   references:
     version: 2
     RefIds:
     - rid: 101
-      type: {class: "CommonRecordBuffModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: CommonRecordBuffModule, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
         activation: 0
         buffs:
-        - buff: {fileID: 11400000, guid: "1c286f59b2f34ee19b52a2b4b0d5850a", type: 2}
+        - buff: {fileID: 11400000, guid: 8a5a67c9c4f1409c946bd8a4a32e5c6f, type: 2}
           kind: 0
-          stat: 17
+          stat: 1
+          valueType: 1
+          displayName: "\uB808\uCF54\uB4DC Attack"
+          amount: 0.05
+          duration: 0
+        - buff: {fileID: 11400000, guid: 0037200cf7fb40e4aae93e6ce91104f4, type: 2}
+          kind: 0
+          stat: 7
           valueType: 0
-          displayName: "\ub808\ucf54\ub4dc Energy"
-          amount: 1
+          displayName: "\uB808\uCF54\uB4DC Health"
+          amount: 100
+          duration: 0
+        - buff: {fileID: 11400000, guid: 358cc89fba5d46d889f00b2cdc39affd, type: 2}
+          kind: 0
+          stat: 11
+          valueType: 0
+          displayName: "\uB808\uCF54\uB4DC Healing"
+          amount: 0.02
           duration: 0
         probability: 1
         healthThreshold: 0.3
     - rid: 102
-      type: {class: "RecordManaModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: RecordTaggedDamageModule, ns: , asm: Assembly-CSharp}
       data:
-        buff: {fileID: 11400000, guid: "691aec17a45e456eafa22a1caa1212a8", type: 2}
-        hitRecoveryBonus: 0.02
         triggerTime: 2
+        tag: "\uB9C8\uAC80"
+        bonus: 0.1

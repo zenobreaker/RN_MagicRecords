@@ -17,7 +17,7 @@ MonoBehaviour:
   importNote: ""
   recordName: "record_name_15"
   description: "record_desc_15"
-  icon: {fileID: 780851909, guid: "84c09ba676cfad148979f1e21cf4a052", type: 3}
+  icon: {fileID: 1897190174, guid: "84c09ba676cfad148979f1e21cf4a052", type: 3}
   keywords: []
   targetFilter: 0
   type: 2
@@ -37,18 +37,11 @@ MonoBehaviour:
         triggerTime: 0
         activation: 0
         buffs:
-        - buff: {fileID: 11400000, guid: "8a5a67c9c4f1409c946bd8a4a32e5c6f", type: 2}
-          kind: 0
-          stat: 1
+        - buff: {fileID: 11400000, guid: "dff0444bc054ed24f87e357aad1c5cb9", type: 2}
+          kind: 1
+          stat: 0
           valueType: 1
-          displayName: "\ub808\ucf54\ub4dc Attack"
-          amount: 0.1
-          duration: 0
-        - buff: {fileID: 11400000, guid: "2815d87dff13416c9537f3ae57f8f78b", type: 2}
-          kind: 0
-          stat: 2
-          valueType: 1
-          displayName: "\ub808\ucf54\ub4dc Defense"
+          displayName: "\ub808\ucf54\ub4dc Cooldown"
           amount: 0.1
           duration: 0
         probability: 1

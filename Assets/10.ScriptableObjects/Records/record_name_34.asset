@@ -9,32 +9,47 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: record_name_34
-  m_EditorClassIdentifier: ""
+  m_EditorClassIdentifier: 
   id: 34
   isImplemented: 1
-  importNote: ""
-  recordName: "record_name_34"
-  description: "record_desc_34"
-  icon: {fileID: 0}
+  importNote: 
+  recordName: record_name_34
+  description: record_desc_34
+  icon: {fileID: -1353485727, guid: 84c09ba676cfad148979f1e21cf4a052, type: 3}
   keywords: []
   targetFilter: 0
   type: 2
-  rarity: 3
+  rarity: 2
   Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
-  mutualExclusionGroup: ""
   Modules:
-  - {rid: 101}
+  - rid: 101
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 
   references:
     version: 2
     RefIds:
     - rid: 101
-      type: {class: "RecordSkillTimingModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: CommonRecordBuffModule, ns: , asm: Assembly-CSharp}
       data:
-        tag: "\uc6d0\uc18c"
-        cooldownReduction: 0.1
-        castTimeReduction: 0.12
-        triggerTime: 2
+        triggerTime: 0
+        activation: 0
+        buffs:
+        - buff: {fileID: 11400000, guid: f7c3597aacc5457f8ade12ca41fa6a90, type: 2}
+          kind: 0
+          stat: 5
+          valueType: 0
+          displayName: "\uB808\uCF54\uB4DC CritRatio"
+          amount: 0.15
+          duration: 0
+        - buff: {fileID: 11400000, guid: dff0444bc054ed24f87e357aad1c5cb9, type: 2}
+          kind: 1
+          stat: 0
+          valueType: 1
+          displayName: "\uB808\uCF54\uB4DC Cooldown"
+          amount: 0.1
+          duration: 0
+        probability: 1
+        healthThreshold: 0.3

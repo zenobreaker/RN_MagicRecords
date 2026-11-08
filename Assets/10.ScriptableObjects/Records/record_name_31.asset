@@ -9,31 +9,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: record_name_31
-  m_EditorClassIdentifier: ""
+  m_EditorClassIdentifier: 
   id: 31
   isImplemented: 1
-  importNote: ""
-  recordName: "record_name_31"
-  description: "record_desc_31"
-  icon: {fileID: 0}
+  importNote: 
+  recordName: record_name_31
+  description: record_desc_31
+  icon: {fileID: 1915643150, guid: 84c09ba676cfad148979f1e21cf4a052, type: 3}
   keywords: []
   targetFilter: 0
   type: 2
-  rarity: 1
+  rarity: 0
   Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
-  mutualExclusionGroup: ""
   Modules:
-  - {rid: 101}
+  - rid: 101
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 
   references:
     version: 2
     RefIds:
     - rid: 101
-      type: {class: "RecordManaModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: RecordManaModule, ns: , asm: Assembly-CSharp}
       data:
-        buff: {fileID: 11400000, guid: "691aec17a45e456eafa22a1caa1212a8", type: 2}
-        maxManaBonus: 100
         triggerTime: 2
+        buff: {fileID: 11400000, guid: 691aec17a45e456eafa22a1caa1212a8, type: 2}
+        maxManaBonus: 50
+        hitRecoveryBonus: 0
+        regenerationBonus: 0.02
