@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 10072
   skillName: record_name_10072
-  skillDescription: desc_slowmodule
+  skillDescription: record_desc_modify_splitshot_slowmodule
   learnableLevel: 0
   maxLevel: 1
   skillUpgradeCost: 
@@ -33,3 +33,4 @@ MonoBehaviour:
         triggerTime: 3
         targetSkillID: 1007
         speedMultiplier: 0.1
+        lifetimeMultiplier: 1.3

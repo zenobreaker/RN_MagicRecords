@@ -250,9 +250,10 @@ MonoBehaviour:
           impulseDirection: {x: 0, y: 0, z: 0}
           csp: {fileID: 0}
           hitData:
-            Reaction: 0
+            Reaction: 1
             DamageType: 0
-            Distance: 0.2
+            Distance: 0
+            PushDistance: 0.15
             HeightValue: 0
             StopFrame: 0
             HitImpactIndex: 0

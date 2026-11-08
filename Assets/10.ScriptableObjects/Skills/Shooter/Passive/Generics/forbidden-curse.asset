@@ -16,9 +16,9 @@ MonoBehaviour:
   skillName: skill_name_forbidden-curse
   skillDescription: skill_desc_forbidden-curse
   learnableLevel: 0
-  maxLevel: 5
+  maxLevel: 3
   skillUpgradeCost: 
-  skillImage: {fileID: 0}
+  skillImage: {fileID: 2054049702, guid: c93b8447255acbd4cb8be2f0f008cb3a, type: 3}
   leadingSkillList: 
   levelDatas:
   - range: 0
@@ -60,5 +60,9 @@ MonoBehaviour:
       type: {class: Module_Passive_ApplyCurseOnHit, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 4
-        chance: 1
+        chance: 0.15
+        chanceByLevel:
+        - 0.15
+        - 0.3
+        - 0.6
         duration: 5
