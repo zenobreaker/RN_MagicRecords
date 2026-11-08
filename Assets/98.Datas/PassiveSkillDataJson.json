@@ -1,4 +1,4 @@
-{
+﻿{
   "PassiveSkillDataJson": [
     {
       "id": "11",
@@ -226,6 +226,18 @@
           "json": "{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_BlackCurseArmor.asset\"}, \"damageDebuffs\": [{\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Bleed.asset\"}, {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Burn.asset\"}, {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Poison.asset\"}], \"duration\": 5, \"attackRatio\": 0.1, \"reductionPerKind\": 0.1, \"maximumReduction\": 0.3, \"damagePerKind\": 0.05, \"maximumDamage\": 0.2, \"triggerTime\": 2}"
         }
       ]
+    },
+    {
+      "id": "38",
+      "skillKeycode": "38",
+      "maxLevel": "1",
+      "bonusOptionList": null,
+      "enhanceSkillTargetList": null,
+      "leadingSkillList": null,
+      "coefficient": "0",
+      "activation": "1",
+      "class ": "shooter",
+      "concept": "critical"
     }
   ]
 }

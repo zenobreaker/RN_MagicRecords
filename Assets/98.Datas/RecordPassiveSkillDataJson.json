@@ -118,15 +118,6 @@
       "activation": 1
     },
     {
-      "id": 100101,
-      "skillKeycode": "record_name_100101",
-      "maxLevel": 1,
-      "targetSkillID": 1010,
-      "class": "shooter",
-      "concept": "record_mod",
-      "activation": 1
-    },
-    {
       "id": 100102,
       "skillKeycode": "record_name_100102",
       "maxLevel": 1,
@@ -196,6 +187,33 @@
       "targetSkillID": 11,
       "class": "shooter",
       "concept": "record_mod",
+      "activation": 1
+    },
+    {
+      "id": 2100,
+      "skillKeycode": "record_name_2100",
+      "maxLevel": 3,
+      "targetSkillID": 0,
+      "class": "shooter",
+      "concept": "starting_passive",
+      "activation": 1
+    },
+    {
+      "id": 2000,
+      "skillKeycode": "record_name_2000",
+      "maxLevel": 3,
+      "targetSkillID": 0,
+      "class": "shooter",
+      "concept": "starting_passive",
+      "activation": 1
+    },
+    {
+      "id": 2108,
+      "skillKeycode": "record_name_2108",
+      "maxLevel": 1,
+      "targetSkillID": 0,
+      "class": "shooter",
+      "concept": "record_passive",
       "activation": 1
     }
   ]

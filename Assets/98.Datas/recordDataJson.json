@@ -62,24 +62,18 @@
       ]
     },
     {
-      "id": 6,
+      "id": 2108,
       "recordType": 2,
       "targetFilter": "Shooter",
       "rarity": 0,
-      "stats": [
-        {
-          "stat": "CRIT_RATIO",
-          "calcType": 0,
-          "value": 0.1
-        }
-      ],
+      "stats": [],
       "skills": [],
-      "linkedPassiveSkillID": 0,
+      "linkedPassiveSkillID": 38,
       "isImplemented": true,
       "importNote": ""
     },
     {
-      "id": 7,
+      "id": 6,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 0,
@@ -413,17 +407,6 @@
       "importNote": "기획 데이터 에셋: 효과 로직 미구현"
     },
     {
-      "id": 100101,
-      "recordType": 4,
-      "targetFilter": "Shooter",
-      "rarity": 0,
-      "stats": [],
-      "skills": [],
-      "linkedPassiveSkillID": 100101,
-      "isImplemented": true,
-      "importNote": ""
-    },
-    {
       "id": 100102,
       "recordType": 4,
       "targetFilter": "Shooter",
@@ -446,7 +429,7 @@
       "importNote": ""
     },
     {
-      "id": 8,
+      "id": 7,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 1,
@@ -463,7 +446,7 @@
       ]
     },
     {
-      "id": 9,
+      "id": 8,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 2,
@@ -480,7 +463,7 @@
       ]
     },
     {
-      "id": 10,
+      "id": 9,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 0,
@@ -497,7 +480,7 @@
       ]
     },
     {
-      "id": 11,
+      "id": 2100,
       "recordType": 2,
       "targetFilter": "Shooter",
       "rarity": 0,
@@ -505,7 +488,42 @@
       "skills": [],
       "linkedPassiveSkillID": 11,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "levelsPassiveOnly": true
+    },
+    {
+      "id": 10,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_MoveSpeed.asset\"}, \"kind\": 0, \"stat\": 4, \"valueType\": 1, \"displayName\": \"레코드 MoveSpeed\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "recordType": 2,
+      "targetFilter": "ALL",
+      "rarity": 0,
+      "stats": [],
+      "skills": [],
+      "linkedPassiveSkillID": 0,
+      "isImplemented": true,
+      "importNote": "",
+      "modules": [
+        {
+          "type": "CommonRecordBuffModule",
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritRatio.asset\"}, \"kind\": 0, \"stat\": 5, \"valueType\": 0, \"displayName\": \"레코드 CritRatio\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+        }
+      ]
     },
     {
       "id": 12,
@@ -537,7 +555,7 @@
       "modules": [
         {
           "type": "CommonRecordBuffModule",
-          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_CritRatio.asset\"}, \"kind\": 0, \"stat\": 5, \"valueType\": 0, \"displayName\": \"레코드 CritRatio\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Attack.asset\"}, \"kind\": 0, \"stat\": 1, \"valueType\": 1, \"displayName\": \"레코드 Attack\", \"amount\": 0.1, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Defense.asset\"}, \"kind\": 0, \"stat\": 2, \"valueType\": 1, \"displayName\": \"레코드 Defense\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
         }
       ]
     },
@@ -554,7 +572,7 @@
       "modules": [
         {
           "type": "CommonRecordBuffModule",
-          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_MoveSpeed.asset\"}, \"kind\": 0, \"stat\": 4, \"valueType\": 1, \"displayName\": \"레코드 MoveSpeed\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
+          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Defense.asset\"}, \"kind\": 0, \"stat\": 2, \"valueType\": 1, \"displayName\": \"레코드 Defense\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
         }
       ]
     },
@@ -571,46 +589,12 @@
       "modules": [
         {
           "type": "CommonRecordBuffModule",
-          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Attack.asset\"}, \"kind\": 0, \"stat\": 1, \"valueType\": 1, \"displayName\": \"레코드 Attack\", \"amount\": 0.1, \"duration\": 0}, {\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Defense.asset\"}, \"kind\": 0, \"stat\": 2, \"valueType\": 1, \"displayName\": \"레코드 Defense\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
-        }
-      ]
-    },
-    {
-      "id": 16,
-      "recordType": 2,
-      "targetFilter": "ALL",
-      "rarity": 0,
-      "stats": [],
-      "skills": [],
-      "linkedPassiveSkillID": 0,
-      "isImplemented": true,
-      "importNote": "",
-      "modules": [
-        {
-          "type": "CommonRecordBuffModule",
-          "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Defense.asset\"}, \"kind\": 0, \"stat\": 2, \"valueType\": 1, \"displayName\": \"레코드 Defense\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
-        }
-      ]
-    },
-    {
-      "id": 17,
-      "recordType": 2,
-      "targetFilter": "ALL",
-      "rarity": 0,
-      "stats": [],
-      "skills": [],
-      "linkedPassiveSkillID": 0,
-      "isImplemented": true,
-      "importNote": "",
-      "modules": [
-        {
-          "type": "CommonRecordBuffModule",
           "json": "{\"triggerTime\": 0, \"activation\": 0, \"buffs\": [{\"buff\": {\"asset\": \"Assets/10.ScriptableObjects/Effects/SO_Buff_Cooldown.asset\"}, \"kind\": 1, \"stat\": 0, \"valueType\": 1, \"displayName\": \"레코드 Cooldown\", \"amount\": 0.1, \"duration\": 0}], \"probability\": 1, \"healthThreshold\": 0.3}"
         }
       ]
     },
     {
-      "id": 18,
+      "id": 16,
       "recordType": 3,
       "targetFilter": "ALL",
       "rarity": 3,
@@ -627,7 +611,7 @@
       ]
     },
     {
-      "id": 19,
+      "id": 17,
       "recordType": 3,
       "targetFilter": "ALL",
       "rarity": 2,
@@ -644,7 +628,7 @@
       ]
     },
     {
-      "id": 20,
+      "id": 18,
       "recordType": 3,
       "targetFilter": "ALL",
       "rarity": 1,
@@ -661,7 +645,7 @@
       ]
     },
     {
-      "id": 21,
+      "id": 19,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 2,
@@ -678,7 +662,7 @@
       ]
     },
     {
-      "id": 22,
+      "id": 20,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 2,
@@ -701,9 +685,10 @@
       "rarity": 0,
       "stats": [],
       "skills": [],
-      "linkedPassiveSkillID": 1200,
+      "linkedPassiveSkillID": 12,
       "isImplemented": true,
-      "importNote": ""
+      "importNote": "",
+      "levelsPassiveOnly": true
     },
     {
       "id": 2001,
@@ -873,7 +858,7 @@
       "importNote": ""
     },
     {
-      "id": 23,
+      "id": 21,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 3,
@@ -894,7 +879,7 @@
       ]
     },
     {
-      "id": 24,
+      "id": 22,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 2,
@@ -915,7 +900,7 @@
       ]
     },
     {
-      "id": 25,
+      "id": 23,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 0,
@@ -932,7 +917,7 @@
       ]
     },
     {
-      "id": 26,
+      "id": 24,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 2,
@@ -949,7 +934,7 @@
       ]
     },
     {
-      "id": 27,
+      "id": 25,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 1,
@@ -966,7 +951,7 @@
       ]
     },
     {
-      "id": 28,
+      "id": 26,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 2,
@@ -987,7 +972,7 @@
       ]
     },
     {
-      "id": 29,
+      "id": 27,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 1,
@@ -1004,7 +989,7 @@
       ]
     },
     {
-      "id": 30,
+      "id": 28,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 2,
@@ -1025,7 +1010,7 @@
       ]
     },
     {
-      "id": 31,
+      "id": 29,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 1,
@@ -1042,7 +1027,7 @@
       ]
     },
     {
-      "id": 32,
+      "id": 30,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 3,
@@ -1063,7 +1048,7 @@
       ]
     },
     {
-      "id": 33,
+      "id": 31,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 0,
@@ -1080,7 +1065,7 @@
       ]
     },
     {
-      "id": 34,
+      "id": 32,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 3,
@@ -1097,7 +1082,7 @@
       ]
     },
     {
-      "id": 35,
+      "id": 33,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 2,
@@ -1114,7 +1099,7 @@
       ]
     },
     {
-      "id": 36,
+      "id": 34,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 2,
@@ -1131,7 +1116,7 @@
       ]
     },
     {
-      "id": 37,
+      "id": 35,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 3,
@@ -1148,7 +1133,7 @@
       ]
     },
     {
-      "id": 38,
+      "id": 36,
       "recordType": 3,
       "targetFilter": "ALL",
       "rarity": 3,
@@ -1169,7 +1154,7 @@
       ]
     },
     {
-      "id": 39,
+      "id": 37,
       "recordType": 3,
       "targetFilter": "ALL",
       "rarity": 3,
@@ -1186,7 +1171,7 @@
       ]
     },
     {
-      "id": 40,
+      "id": 38,
       "recordType": 3,
       "targetFilter": "ALL",
       "rarity": 3,
@@ -1203,7 +1188,7 @@
       ]
     },
     {
-      "id": 41,
+      "id": 39,
       "recordType": 3,
       "targetFilter": "ALL",
       "rarity": 1,
@@ -1228,7 +1213,7 @@
       ]
     },
     {
-      "id": 42,
+      "id": 40,
       "recordType": 3,
       "targetFilter": "ALL",
       "rarity": 1,
@@ -1321,7 +1306,7 @@
       "modules": []
     },
     {
-      "id": 43,
+      "id": 41,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 0,
@@ -1338,7 +1323,7 @@
       ]
     },
     {
-      "id": 44,
+      "id": 42,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 0,
@@ -1355,7 +1340,7 @@
       ]
     },
     {
-      "id": 45,
+      "id": 43,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 0,
@@ -1372,7 +1357,7 @@
       ]
     },
     {
-      "id": 46,
+      "id": 44,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 0,
@@ -1389,7 +1374,7 @@
       ]
     },
     {
-      "id": 47,
+      "id": 45,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 0,
@@ -1406,7 +1391,7 @@
       ]
     },
     {
-      "id": 48,
+      "id": 46,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 0,
@@ -1435,7 +1420,7 @@
       "importNote": "익스큐터: 최대 6명 지정 사격, 동시 시전, 쿨다운 80% 감소"
     },
     {
-      "id": 49,
+      "id": 47,
       "recordType": 2,
       "targetFilter": "ALL",
       "rarity": 0,

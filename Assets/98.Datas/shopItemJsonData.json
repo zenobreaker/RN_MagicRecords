@@ -91,7 +91,16 @@
       "currencyType": "1"
     }
   ],
-  "exploreRecordPrices": [],
+  "exploreRecordPrices": [
+    { "rarity": 0, "price": 70, "maximumPrice": 80 },
+    { "rarity": 1, "price": 80, "maximumPrice": 100 },
+    { "rarity": 2, "price": 90, "maximumPrice": 120 },
+    { "rarity": 3, "price": 100, "maximumPrice": 150 },
+    { "rarity": 4, "price": 250, "maximumPrice": 250 }
+  ],
+  "specialShopChance": 0.2,
+  "recordUpgradeBasePrice": 20,
+  "recordUpgradeLevelStep": 10,
   "exploreHeal15Price": 15,
   "exploreHeal60Price": 50,
   "exploreCharacterLevelUpPrice": 10,
