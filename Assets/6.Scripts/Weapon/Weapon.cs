@@ -13,6 +13,8 @@ public class HitData
     public DamageType DamageType;
     [Min(0f), Tooltip("Knockback의 수평 속도. 기존 Distance 값을 재사용합니다.")]
     public float Distance;
+    [Min(0f), Tooltip("경직이 허용됐을 때 밀리는 수평 거리(월드 단위). 0이면 기존 반응을 유지합니다.")]
+    public float PushDistance;
     [HideInInspector] // Reserved legacy launch data; airborne is outside this feature.
     public float HeightValue;
     public int StopFrame;
@@ -39,6 +41,7 @@ public class HitData
         clone.Reaction = Reaction;
         clone.DamageType = DamageType;
         clone.Distance = Distance;
+        clone.PushDistance = PushDistance;
         clone.HeightValue = HeightValue;
         clone.StopFrame = StopFrame;
         clone.HitImpactIndex = HitImpactIndex;
