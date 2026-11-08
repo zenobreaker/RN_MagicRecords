@@ -37,6 +37,8 @@ public class RecordData
 {
     public int id;
     public string uniqueID;
+    // 일반 카드는 자체 레벨, 탐사 패시브 카드는 이 카드로 얻은 레벨 수입니다.
+    public int ownedLevels;
     public string recordName;
     public string description;
     public Sprite icon;
@@ -71,6 +73,7 @@ public class RecordData
         var temp = new RecordData();
         temp.id = id;
         temp.uniqueID = uniqueID;
+        temp.ownedLevels = ownedLevels;
         temp.recordName = LocalizationManager.Instance.GetText(recordName);
         temp.description = LocalizationManager.Instance.GetText(description);
         temp.icon = icon;
@@ -93,6 +96,8 @@ public class SO_RecordData : ScriptableObject
     public int id;
     [Tooltip("False for catalogue assets whose gameplay effect is not implemented yet.")]
     public bool isImplemented = true;
+    [Tooltip("획득 카드를 보관하지 않고 연결된 탐사 패시브의 레벨만 올립니다.")]
+    public bool levelsPassiveOnly;
     [TextArea] public string importNote;
     public string recordName;
     public string description;

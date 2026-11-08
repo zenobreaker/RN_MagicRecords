@@ -78,6 +78,10 @@ public class DamageHandleComponent : MonoBehaviour
             mana.RecoverOnHit(damageEvent, previousHealth - health.GetCurrentHP, gameObject);
         }
 
+        AppManager.Instance.SafeInvoke(app => app.GetExploreManager())
+            .SafeInvoke(explore => explore.RecordBattleDamage(
+                attacker, gameObject, Mathf.Max(0f, previousHealth - health.GetCurrentHP), damageEvent.KilledTarget));
+
         BattleManager.Instance.SafeInvoke(v => v.NotifyAttackHitFinish(attacker, this.gameObject, previousHealth - health.GetCurrentHP, damageEvent));
         ShowDamageText(value, damageEvent);
 

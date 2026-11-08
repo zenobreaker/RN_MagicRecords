@@ -15,6 +15,8 @@ public class SplitMotherProjectile
     [SerializeField] private float fireInterval = 0.3f;
     [Tooltip("자탄이 가질 데미지 배율 (0.3 = 모탄 데미지의 30%)")]
     [SerializeField] private float childDamageMultiplier = 0.3f;
+    [SerializeField, Min(0f), Tooltip("자탄 적중 시에만 적용하는 수평 밀림 거리")]
+    private float childPushDistance;
     [Tooltip("자탄을 한 번 뿌린 뒤 전방위 패턴을 회전시킬 각도")]
     [SerializeField] private float spreadRotationPerShot = 15f;
 
@@ -57,8 +59,13 @@ public class SplitMotherProjectile
             SoundName = damageData.SoundName,
             impulseDirection = damageData.impulseDirection,
             csp = damageData.csp,
-            hitData = damageData.hitData
+            hitData = damageData.hitData?.Clone() ?? new HitData()
         };
+        if (childPushDistance > 0f)
+        {
+            cachedChildDamageData.hitData.Reaction = HitReactionType.Light;
+            cachedChildDamageData.hitData.PushDistance = childPushDistance;
+        }
 
         cachedMultiplier = mulitplier;
     }

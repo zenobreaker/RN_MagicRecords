@@ -28,49 +28,196 @@ public sealed partial class ExploreManager
             return null;
         }
 
-        if (node.shopStock != null)
-        {
-            UpdateShopOffers(node.shopStock);
-            return node.shopStock;
-        }
         var policy = DataBaseManager.Instance.SafeInvoke(database => database.ExploreShopPolicy);
         var records = AppManager.Instance.SafeInvoke(app => app.GetRecordManager());
-        var stock = new ExploreShopStock();
-        var prices = policy?.exploreRecordPrices ?? new List<ExploreRecordPrice>();
-        if (records != null)
+        if (records == null || policy == null)
         {
-            foreach (var record in records.GetShopCandidates()
-            .Where(r => prices.Any(p => p.rarity == r.rarity && p.price >= 0))
-            .OrderBy(_ => UnityEngine.Random.value).Take(3))
+            return null;
+        }
+
+        var stock = node.shopStock;
+        if (stock != null && stock.recordSlotCount > 0)
+        {
+            UpdateShopOffers(stock);
+            return stock;
+        }
+
+        stock ??= new ExploreShopStock();
+        stock.offers ??= new List<ExploreShopOffer>();
+        stock.recordSlotCount = UnityEngine.Random.value < policy.specialShopChance ? 8 : 4;
+        // 이전 저장의 이미 구매한 카드와 서비스 구매 횟수를 보존하고 빈 자리만 채웁니다.
+        var existing = stock.offers.Where(offer => offer.kind == ExploreShopKind.Record).ToList();
+        foreach (var offer in existing)
+        {
+            var record = records.GetShopRecord(offer.recordId);
+            var range = record == null ? null : policy.GetRecordPrice(record.rarity);
+            if (offer.sold == false && range != null && (offer.price < range.price || offer.price > range.maximumPrice))
+            {
+                offer.price = range.Roll(record.type);
+            }
+        }
+        var additional = RollShopRecords(records, policy, stock, existing, out _, out _);
+        stock.offers.AddRange(additional);
+        foreach (var kind in new[] { ExploreShopKind.SkillSwap, ExploreShopKind.Heal15, ExploreShopKind.Heal60 })
+        {
+            if (stock.offers.Any(offer => offer.kind == kind) == false)
             {
                 stock.offers.Add(new ExploreShopOffer
                 {
-                    kind = ExploreShopKind.Record,
-                    recordId = record.id,
-                    price = prices.First(p => p.rarity == record.rarity && p.price >= 0).price
+                    kind = kind
                 });
             }
         }
-
-        stock.offers.Add(new ExploreShopOffer
-        {
-            kind = ExploreShopKind.SkillSwap,
-            price = 0
-        });
-        stock.offers.Add(new ExploreShopOffer
-        {
-            kind = ExploreShopKind.Heal15,
-            price = policy?.exploreHeal15Price ?? -1
-        });
-        stock.offers.Add(new ExploreShopOffer
-        {
-            kind = ExploreShopKind.Heal60,
-            price = policy?.exploreHeal60Price ?? -1
-        });
         node.shopStock = stock;
         UpdateShopOffers(stock);
         SaveExploreMap();
         return stock;
+    }
+
+    /// <summary>한 진열 전체에 같은 보정을 사용하며 ID가 같은 카드는 두 번 뽑지 않습니다.</summary>
+    private static List<ExploreShopOffer> RollShopRecords(RecordManager manager, ShopJsonAllData policy,
+        ExploreShopStock stock, List<ExploreShopOffer> existing, out bool highestEligible, out bool highestShown)
+    {
+        var excluded = new HashSet<int>(existing.Select(offer => offer.recordId));
+        var candidates = manager.GetShopCandidates()
+            .Where(record => excluded.Contains(record.id) == false && policy.GetRecordPrice(record.rarity) != null).ToList();
+        var result = new List<ExploreShopOffer>();
+        highestEligible = false;
+        highestShown = false;
+        while (result.Count + existing.Count < stock.recordSlotCount && candidates.Count > 0)
+        {
+            var record = RecordManager.PickWeightedRecord(candidates, stock.rarityMissCount, out bool eligible, out var highest);
+            highestEligible |= eligible;
+            if (record == null)
+            {
+                break;
+            }
+            highestShown |= eligible && record.rarity == highest;
+            result.Add(new ExploreShopOffer
+            {
+                kind = ExploreShopKind.Record,
+                recordId = record.id,
+                price = policy.GetRecordPrice(record.rarity).Roll(record.type)
+            });
+            candidates.RemoveAll(candidate => candidate.id == record.id);
+        }
+        return result;
+    }
+
+    private bool IsOpenShop(MapNodeInfo node)
+    {
+        return purchasing == false && RunStatus == RunStatus.MidRun && node != null && node.type == StageType.Shop &&
+            node == GetReplacedNodeInfo() && node.shopStock != null;
+    }
+
+    /// <summary>결제에 성공한 리롤만 진열, 다음 가격 및 해당 상점의 보정에 반영합니다.</summary>
+    public bool RerollShop(MapNodeInfo node, int displayedPrice)
+    {
+        if (IsOpenShop(node) == false || node.shopStock.RerollPrice != displayedPrice)
+        {
+            return false;
+        }
+        var manager = AppManager.Instance.SafeInvoke(app => app.GetRecordManager());
+        var policy = DataBaseManager.Instance.SafeInvoke(database => database.ExploreShopPolicy);
+        if (policy == null || manager == null)
+        {
+            return false;
+        }
+
+        purchasing = true;
+        try
+        {
+            var stock = node.shopStock;
+            var next = RollShopRecords(manager, policy, stock, new List<ExploreShopOffer>(), out bool eligible, out bool shown);
+            if (next.Count == 0)
+            {
+                UIManager.Instance.SafeInvoke(ui => ui.ShowToast("진열할 레코드가 없습니다."));
+                return false;
+            }
+            if (SpendShopCoins(displayedPrice) == false)
+            {
+                return false;
+            }
+            stock.offers.RemoveAll(offer => offer.kind == ExploreShopKind.Record);
+            stock.offers.AddRange(next);
+            stock.rerollCount++;
+            stock.rarityMissCount = eligible && shown == false ? Mathf.Min(stock.rarityMissCount + 1, 500) : 0;
+            AppManager.Instance.SaveIfDirty();
+            return true;
+        }
+        finally
+        {
+            purchasing = false;
+        }
+    }
+
+    private static bool SpendShopCoins(int price)
+    {
+        if (price < 0 || CurrencyManager.Instance.SafeInvoke(wallet => wallet.SpendCurrency(CurrencyType.EXPOLORE_COIN, price)) == false)
+        {
+            UIManager.Instance.SafeInvoke(ui => ui.ShowToast("ui_toast_not_enough_cost_coin"));
+            return false;
+        }
+        return true;
+    }
+
+    /// <summary>표시된 레벨과 가격을 재검사해 같은 확인 요청으로 두 번 강화하지 않습니다.</summary>
+    public bool UpgradeShopRecord(MapNodeInfo node, RecordData record, int quotedLevel, int quotedPrice)
+    {
+        var manager = AppManager.Instance.SafeInvoke(app => app.GetRecordManager());
+        var policy = DataBaseManager.Instance.SafeInvoke(database => database.ExploreShopPolicy);
+        if (IsOpenShop(node) == false || policy == null || manager == null ||
+            manager.TryGetUpgradeLevel(record, out int current, out _) == false || current != quotedLevel ||
+            policy.GetUpgradePrice(current) != quotedPrice)
+        {
+            return false;
+        }
+        purchasing = true;
+        try
+        {
+            if (SpendShopCoins(quotedPrice) == false)
+            {
+                return false;
+            }
+            if (manager.TryUpgradeOwned(record, quotedLevel) == false)
+            {
+                CurrencyManager.Instance.AddCurrency(CurrencyType.EXPOLORE_COIN, quotedPrice);
+                return false;
+            }
+            AppManager.Instance.SaveIfDirty();
+            return true;
+        }
+        finally
+        {
+            purchasing = false;
+        }
+    }
+
+    /// <summary>인벤토리에서 같은 실물을 제거한 뒤에만 판매 대금을 지급합니다.</summary>
+    public bool SellShopRecord(MapNodeInfo node, RecordData record, int quotedPrice)
+    {
+        var manager = AppManager.Instance.SafeInvoke(app => app.GetRecordManager());
+        var policy = DataBaseManager.Instance.SafeInvoke(database => database.ExploreShopPolicy);
+        if (IsOpenShop(node) == false || manager == null || CurrencyManager.Instance == null || record == null ||
+            policy?.GetRecordPrice(record.rarity)?.price != quotedPrice)
+        {
+            return false;
+        }
+        purchasing = true;
+        try
+        {
+            if (manager.TrySellOwned(record) == false)
+            {
+                return false;
+            }
+            CurrencyManager.Instance.AddCurrency(CurrencyType.EXPOLORE_COIN, quotedPrice);
+            AppManager.Instance.SaveIfDirty();
+            return true;
+        }
+        finally
+        {
+            purchasing = false;
+        }
     }
 
     private static void UpdateShopOffers(ExploreShopStock stock)
@@ -182,13 +329,16 @@ public sealed partial class ExploreManager
                 CurrencyManager.Instance.AddCurrency(CurrencyType.EXPOLORE_COIN, offer.price);
                 return false;
             }
-            offer.sold = true; // Lock before inventory / HP callbacks can re-enter.
+            offer.sold = true;
             offer.purchases++;
-            if (record != null)
+            if (record != null && recordManager.GrantRecord(record) == null)
             {
-                recordManager.AddRecord(record);
+                offer.sold = false;
+                offer.purchases--;
+                CurrencyManager.Instance.AddCurrency(CurrencyType.EXPOLORE_COIN, offer.price);
+                return false;
             }
-            else if (offer.kind != ExploreShopKind.CharacterLevelUp)
+            if (record == null && offer.kind != ExploreShopKind.CharacterLevelUp)
             {
                 HealParty(offer.kind == ExploreShopKind.Heal15 ? .15f : .60f);
             }

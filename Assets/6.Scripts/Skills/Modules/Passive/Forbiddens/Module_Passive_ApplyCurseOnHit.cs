@@ -6,6 +6,8 @@ using UnityEngine;
 public sealed class Module_Passive_ApplyCurseOnHit : PassiveContextModule
 {
     [Range(0f, 1f)] public float chance = 1f;
+    public float[] chanceByLevel = Array.Empty<float>();
+    public float CurrentChance => Mathf.Clamp01(GetLevelValue(chanceByLevel, chance));
     [Min(0f)] public float duration = 5f;
 
     public Module_Passive_ApplyCurseOnHit()
@@ -21,7 +23,7 @@ public sealed class Module_Passive_ApplyCurseOnHit : PassiveContextModule
             return;
         }
 
-        if (target == null || UnityEngine.Random.value > chance)
+        if (target == null || CurrentChance <= 0f || UnityEngine.Random.value >= CurrentChance)
         {
             return;
         }

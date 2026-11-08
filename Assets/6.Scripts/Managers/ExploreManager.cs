@@ -224,6 +224,7 @@ public sealed partial class ExploreManager : MonoBehaviour
         SkillManager.Instance?.ResetRunTimeData();
         CurrentState = ExploreState.NONE;
         RunStatus = RunStatus.NoSave;
+        BattleReport = new BattleReport();
         CurrentSetupData = new ExplorationSetupData();
         runHealth.Clear();
         liveHealth.Clear();
@@ -313,6 +314,7 @@ public sealed partial class ExploreManager : MonoBehaviour
         if (loadData != null)
         {
             RunStatus = loadData.runStatus;
+            BattleReport = loadData.battleReport ?? new BattleReport();
             bAllCleared = RunStatus == RunStatus.FinalRunCleared;
             CurrentSetupData = loadData.setupData ?? new ExplorationSetupData();
             runHealth = loadData.partyHealth ?? new();
@@ -519,6 +521,7 @@ public sealed partial class ExploreManager : MonoBehaviour
             return;
         }
 
+        CaptureBattleReport();
         if (TryAdvanceChapter())
         {
             ChangeState(ExploreState.ON_EXPLORE);
@@ -618,6 +621,7 @@ public sealed partial class ExploreManager : MonoBehaviour
         }
 
         MapNodeID = node.id;
+        CaptureBattleReport();
 
         ChangeState(ExploreState.IN_STAGE);
 
@@ -810,6 +814,7 @@ public sealed partial class ExploreManager : MonoBehaviour
         ExploreRunSaveData saveData = new ExploreRunSaveData
         {
             runStatus = RunStatus,
+            battleReport = CaptureBattleReport(),
             setupData = CurrentSetupData,
             partyHealth = runHealth,
             characterLevels = PlayerManager.Instance.SafeInvoke(players => players.CaptureRunCharacterLevels()) ?? new(),

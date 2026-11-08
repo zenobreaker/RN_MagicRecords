@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,7 +11,7 @@ public static class CheatCommands
         "heal : 체력 회복    |    kill_all : 현재 적 처치    |    unlock_boss : 보스 노드 해금\n" +
         "learn_all_skills : 전체 스킬 배우기 (로비)\n" +
         "gain_skill 스킬ID 슬롯 [레벨] : 스킬 장착 (인게임, 슬롯 1~4, 기본 Lv.1)\n" +
-        "gain_record 레코드ID : 레코드 추가\n" +
+        "gain_record 레코드ID : 특정 레코드 지급    |    gain_all_records : 미보유 레코드 전체 지급\n" +
         "give_coin [수량] / give_money [수량] : 일반 코인 추가 (기본 10000)\n" +
         "give_explore_coin [수량] : 탐사 코인 추가 (기본 10000)\n" +
         "help [명령어] : 사용법    |    [ ]는 생략 가능한 인자, 입력할 때는 괄호 없이";
@@ -50,6 +52,8 @@ public static class CheatCommands
                 return GainSkill(args);
             case "gain_record":
                 return GainRecord(args);
+            case "gain_all_records":
+                return args.Length == 1 ? GainAllRecords() : Usage(name);
             case "give_coin":
                 return GiveCurrency(args, CurrencyType.GOLD);
             case "give_explore_coin":
@@ -83,7 +87,8 @@ public static class CheatCommands
             "unlock_boss" => "사용법: unlock_boss — 현재 탐사 챕터의 마지막 보스 노드를 해금합니다.",
             "learn_all_skills" => "사용법: learn_all_skills — 로비에서 전체 스킬을 최소 1레벨로 배웁니다.",
             "gain_skill" => "사용법: gain_skill 스킬ID 슬롯 [레벨] (인게임, 슬롯 1~4, 기본 1, 최대레벨로 제한)",
-            "gain_record" => "사용법: gain_record 레코드ID (예: gain_record 10001)",
+            "gain_record" => "사용법: gain_record 레코드ID (예: gain_record 1)",
+            "gain_all_records" => "사용법: gain_all_records — 획득 가능한 미보유 레코드를 종류별로 한 번씩 지급합니다.",
             "give_coin" => "사용법: give_coin [수량] 또는 give_money [수량] (기본 10000, 양의 정수)",
             "give_explore_coin" => "사용법: give_explore_coin [수량] (기본 10000, 양의 정수)",
             "help" => "사용법: help [명령어]",
@@ -207,25 +212,68 @@ public static class CheatCommands
             return Usage("gain_record");
         }
 
-        var manager = AppManager.Instance != null ? AppManager.Instance.GetRecordManager() : null;
+        var manager = AppManager.Instance.SafeInvoke(app => app.GetRecordManager());
         if (manager == null)
         {
             return "레코드 관리자가 준비되지 않았습니다.";
         }
 
-        var record = manager.GetShopRecord(id);
-        if (record == null)
+        if (manager.GetImplementedRecordIds().Contains(id) == false)
         {
-            return $"존재하지 않는 레코드 ID입니다: {id}";
+            return $"존재하지 않거나 미구현인 레코드 ID입니다: {id}";
         }
 
-        var granted = manager.GrantRecord(record);
+        var granted = manager.GrantRecord(manager.GetShopRecord(id));
         if (granted == null)
         {
             return $"레코드 {id} 지급 실패: 상호 배제, 최대레벨 또는 탐사 상태를 확인하세요.";
         }
 
         return granted.id == id ? $"레코드 {id} 지급 완료." : $"레코드 {id}는 이미 보유 중이므로 기존 중복 지급 규칙에 따라 레코드 {granted.id}로 지급했습니다.";
+    }
+
+    /// <summary>이미 보유한 레코드의 레벨이나 중복 보상을 바꾸지 않고 누락된 종류만 지급합니다.</summary>
+    private static string GainAllRecords()
+    {
+        var manager = AppManager.Instance.SafeInvoke(app => app.GetRecordManager());
+        if (manager == null)
+        {
+            return "레코드 관리자가 준비되지 않았습니다.";
+        }
+
+        var ids = manager.GetImplementedRecordIds().OrderBy(id => id).ToList();
+        if (ids.Count == 0)
+        {
+            return "지급할 레코드가 등록되지 않았습니다.";
+        }
+
+        var owned = new HashSet<int>(manager.GetPossesRecord().Select(record => record.id));
+        var blocked = new List<int>();
+        int alreadyOwned = 0;
+        int granted = 0;
+        foreach (int id in ids)
+        {
+            if (owned.Contains(id))
+            {
+                alreadyOwned++;
+                continue;
+            }
+
+            var record = manager.GetShopRecord(id);
+            if (manager.IsRewardCandidate(record) == false || manager.GrantRecord(record)?.id != id)
+            {
+                blocked.Add(id);
+                continue;
+            }
+            granted++;
+        }
+
+        string result = $"레코드 전체 지급: 신규 {granted}개, 이미 보유 {alreadyOwned}개, 지급 불가 {blocked.Count}개.";
+        if (blocked.Count > 0)
+        {
+            result += $"\n지급 불가 ID (상호 배제·탐사 상태·패시브 레벨 확인): {string.Join(", ", blocked)}";
+        }
+        return result;
     }
 
     private static string GiveCurrency(string[] args, CurrencyType type)

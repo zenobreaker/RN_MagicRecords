@@ -7,6 +7,7 @@ using UnityEngine;
 public sealed class ExploreRunSaveData
 {
     public RunStatus runStatus = RunStatus.NoSave;
+    public BattleReport battleReport = new();
     public ExplorationSetupData setupData = new();
 
     public MapData mapData;
@@ -101,6 +102,7 @@ public sealed class CharacterSkillData
 [System.Serializable]
 public sealed class RecordSaveData
 {
+    public int ownedLevels;
     public int recordID;
     public string uniqueID;
 }
@@ -108,6 +110,7 @@ public sealed class RecordSaveData
 [System.Serializable]
 public sealed class RecordSaveListData
 {
+    public int catalogVersion;
     public List<RecordSaveData> recordIDs = new();
     public List<RecordSaveData> transferedrecordIDs = new();
     public bool isReceived = false;

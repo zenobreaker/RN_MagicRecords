@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -175,11 +175,41 @@ public sealed partial class ExploreManager
     private bool RestoreStartingPassives(ExploreRunSaveData save)
     {
         startingPassiveState = save.startingPassives ?? new();
+        // 이전 레코드 전용 저주(1200)의 성장을 기본 금단의 저주(12)로 합칩니다.
+        foreach (var legacy in startingPassiveState.FindAll(entry => entry != null && entry.skillID == 1200))
+        {
+            var canonical = startingPassiveState.Find(entry => entry != null && entry.jobID == legacy.jobID && entry.skillID == 12);
+            if (canonical == null)
+            {
+                legacy.skillID = 12;
+                legacy.level = Mathf.Clamp(legacy.level, 1, 3);
+            }
+            else
+            {
+                canonical.level = Mathf.Clamp(canonical.level + legacy.level, 1, 3);
+                startingPassiveState.Remove(legacy);
+            }
+        }
         startingPassivesInitialized = save.startingPassiveVersion >= 1;
         startingPassivesRestored = false;
         if (RunStatus != RunStatus.MidRun && RunStatus != RunStatus.ChapterCleared)
         {
             return true;
+        }
+
+        // 기존 능력치 레코드로 보유했던 에임 부스터도 사수 패시브로 복원합니다.
+        var ownedRecords = AppManager.Instance.SafeInvoke(app => app.GetRecordManager())
+            .SafeInvoke(manager => manager.GetPossesRecord());
+        if (CurrentSetupData != null && CurrentSetupData.SelectedClassId == 1 &&
+            ownedRecords != null && ownedRecords.Exists(record => record != null && record.id == 2108) &&
+            startingPassiveState.Exists(entry => entry != null && entry.jobID == 1 && entry.skillID == 38) == false)
+        {
+            startingPassiveState.Add(new ExplorePassiveSaveData
+            {
+                jobID = 1,
+                skillID = 38,
+                level = 1
+            });
         }
 
         if (EnsureStartingPassives(out var error))

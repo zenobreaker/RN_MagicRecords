@@ -132,6 +132,53 @@ public class PassiveSystem
         return true;
     }
 
+    /// <summary>판매한 카드가 준 레벨만 회수하고 직업의 기본 패시브와 학습 패시브를 보존합니다.</summary>
+    public bool RemoveRecordLevels(int job, int skillId, int amount, int minimum)
+    {
+        var skill = GetRunPassive(job, skillId);
+        if (skill == null)
+        {
+            return amount == 0;
+        }
+        if (amount <= 0)
+        {
+            return true;
+        }
+        int next = Math.Max(minimum, skill.SkillLevel - amount);
+        activeOwners.TryGetValue(job, out var owner);
+        if (next > 0)
+        {
+            skill.SetLevel(next);
+            skill.OnChangedLevel(next);
+            if (owner != null && owner.TryGetComponent<StatusComponent>(out var status))
+            {
+                skill.OnApplyStaticEffect(status);
+            }
+            return true;
+        }
+
+        skill.OnLose();
+        updatablePassive.Remove(skill);
+        runPassives.Remove(skill);
+        if (owner != null && passiveSkillList.TryGetValue(job, out var learned))
+        {
+            var restored = learned.Find(passive => passive.SkillID == skillId);
+            if (restored != null)
+            {
+                restored.OnAcquire(owner);
+                if (IsOverriden(restored.GetType(), "OnUpdate"))
+                {
+                    updatablePassive.Unique(restored);
+                }
+                if (owner.TryGetComponent<StatusComponent>(out var status))
+                {
+                    restored.OnApplyStaticEffect(status);
+                }
+            }
+        }
+        return true;
+    }
+
     private IEnumerable<PassiveSkill> EffectivePassives(int jobID)
     {
         if (jobID == runJobID)

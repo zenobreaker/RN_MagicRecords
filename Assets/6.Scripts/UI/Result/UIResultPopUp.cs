@@ -38,6 +38,7 @@ public class UITotalResultPopUp : UIPopUp
     [SerializeField] private RectTransform contentRect; // Content 오브젝트 연결
 
     // 통계 데이터 (AppManager 등에서 받아올 실제 값)
+    private BattleReport battleReport;
     private float targetPlayTime = 0f;
     private int targetKillCount = 0;
 
@@ -85,8 +86,8 @@ public class UITotalResultPopUp : UIPopUp
     {
         isAnimating = false;
 
-        // 1. 현재 진행 중인 모든 연출 코루틴을 즉시 강제 정지!
-        StopAllCoroutines();
+        // 진행 중인 숫자 및 페이드 연출을 함께 취소한다.
+        CancelAndDisposeCTS();
 
         // 2. 결과창을 100% 켜진 상태(최종 상태)로 즉시 덮어씌움
         ActiveUIElements();
@@ -169,10 +170,14 @@ public class UITotalResultPopUp : UIPopUp
 
     private void FetchResultData()
     {
-        // TODO: AppManager나 ExploreManager에서 실제 통계 데이터를 가져와서 저장합니다.
-        // 임시 테스트용 데이터
-        targetPlayTime = 145f; // 2분 25초
-        targetKillCount = 1240;
+        battleReport = AppManager.Instance.SafeInvoke(app => app.GetExploreManager())
+            .SafeInvoke(explore => explore.CaptureBattleReport()) ?? new BattleReport();
+        targetPlayTime = battleReport.playTime;
+        targetKillCount = battleReport.killCount;
+        if (maxExploreText != null)
+        {
+            maxExploreText.text = $"{battleReport.reachedChapter}-{battleReport.reachedDepth}";
+        }
 
         // 초기 텍스트 세팅 (0부터 시작)
         playTimeText.text = "00:00";
@@ -239,38 +244,38 @@ public class UITotalResultPopUp : UIPopUp
 
     private void DrawExploreInfo()
     {
-        playTimeText?.gameObject.SetActive(true);
-        killCountText?.gameObject.SetActive(true);
-        maxExploreText?.gameObject.SetActive(true);
+        playTimeText.SafeInvoke(component => component.gameObject.SetActive(true));
+        killCountText.SafeInvoke(component => component.gameObject.SetActive(true));
+        maxExploreText.SafeInvoke(component => component.gameObject.SetActive(true));
     }
 
     private void InactiveUIElements()
     {
-        portrait?.gameObject.SetActive(false);
-        characterNameText?.gameObject.SetActive(false);
-        jobIcon?.gameObject.SetActive(false);
-        jobNameText?.gameObject.SetActive(false);
-        playTimeText?.gameObject.SetActive(false);
-        killCountText?.gameObject.SetActive(false);
-        maxExploreText?.gameObject.SetActive(false);
+        portrait.SafeInvoke(component => component.gameObject.SetActive(false));
+        characterNameText.SafeInvoke(component => component.gameObject.SetActive(false));
+        jobIcon.SafeInvoke(component => component.gameObject.SetActive(false));
+        jobNameText.SafeInvoke(component => component.gameObject.SetActive(false));
+        playTimeText.SafeInvoke(component => component.gameObject.SetActive(false));
+        killCountText.SafeInvoke(component => component.gameObject.SetActive(false));
+        maxExploreText.SafeInvoke(component => component.gameObject.SetActive(false));
     }
 
     private void ActiveUIElements()
     {
-        charInfoGroup?.gameObject.SetActive(true);
-        playTimeGroup?.gameObject.SetActive(true);
-        killCountGroup?.gameObject.SetActive(true);
-        exploreNodeGroup?.gameObject.SetActive(true);
-        recordListGroup?.gameObject.SetActive(true);
-        buttonGroup?.gameObject.SetActive(true);
+        charInfoGroup.SafeInvoke(component => component.gameObject.SetActive(true));
+        playTimeGroup.SafeInvoke(component => component.gameObject.SetActive(true));
+        killCountGroup.SafeInvoke(component => component.gameObject.SetActive(true));
+        exploreNodeGroup.SafeInvoke(component => component.gameObject.SetActive(true));
+        recordListGroup.SafeInvoke(component => component.gameObject.SetActive(true));
+        buttonGroup.SafeInvoke(component => component.gameObject.SetActive(true));
 
-        portrait?.gameObject.SetActive(true);
-        characterNameText?.gameObject.SetActive(true);
-        jobIcon?.gameObject.SetActive(true);
-        jobNameText?.gameObject.SetActive(true);
-        playTimeText?.gameObject.SetActive(true);
-        killCountText?.gameObject.SetActive(true);
-        maxExploreText?.gameObject.SetActive(true);
+        portrait.SafeInvoke(component => component.gameObject.SetActive(true));
+        characterNameText.SafeInvoke(component => component.gameObject.SetActive(true));
+        jobIcon.SafeInvoke(component => component.gameObject.SetActive(true));
+        jobNameText.SafeInvoke(component => component.gameObject.SetActive(true));
+        playTimeText.SafeInvoke(component => component.gameObject.SetActive(true));
+        killCountText.SafeInvoke(component => component.gameObject.SetActive(true));
+        maxExploreText.SafeInvoke(component => component.gameObject.SetActive(true));
     }
 
 
@@ -283,35 +288,32 @@ public class UITotalResultPopUp : UIPopUp
             return;
         }
 
-        // 캐릭터 정보 처리
-        var player = PlayerManager.Instance.GetCurrentPlayer();
-        if (player == null)
+        // 결과 객체에 보존된 캐릭터 정보를 사용한다.
+        if (battleReport == null)
         {
             return;
         }
-        else
+
+        var playerInfo = PlayerManager.Instance.GetCharacterInfo(battleReport.characterId);
+        if (playerInfo == null)
         {
-            var playerInfo = PlayerManager.Instance.GetCharacterInfo(player.CharID);
-            if (playerInfo == null)
-            {
-                return;
-            }
-
-            if (portrait != null)
-            {
-                portrait.sprite = playerInfo.charSprite;
-                portrait.gameObject.SetActive(true);
-            }
-
-            if (characterNameText != null)
-            {
-                characterNameText.text = LocalizationManager.Instance != null
-                    ? LocalizationManager.Instance.GetText(playerInfo.name) : playerInfo.name;
-                characterNameText.gameObject.SetActive(true);
-            }
+            return;
         }
 
-        int jobID = player.JobID;
+        if (portrait != null)
+        {
+            portrait.sprite = playerInfo.charSprite;
+            portrait.gameObject.SetActive(true);
+        }
+
+        if (characterNameText != null)
+        {
+            characterNameText.text = LocalizationManager.Instance.SafeInvoke(
+                localization => localization.GetText(playerInfo.name), playerInfo.name);
+            characterNameText.gameObject.SetActive(true);
+        }
+
+        int jobID = battleReport.jobId;
         // 직업 정보 처리
         var jobInfo = PlayerManager.Instance.GetJobInfo(jobID);
         if (jobInfo != null)
@@ -324,8 +326,8 @@ public class UITotalResultPopUp : UIPopUp
 
             if (jobNameText != null)
             {
-                jobNameText.text = LocalizationManager.Instance != null
-                    ? LocalizationManager.Instance.GetText(jobInfo.jobName) : jobInfo.jobName;
+                jobNameText.text = LocalizationManager.Instance.SafeInvoke(
+                    localization => localization.GetText(jobInfo.jobName), jobInfo.jobName);
                 jobNameText.gameObject.SetActive(true);
             }
         }
@@ -333,13 +335,23 @@ public class UITotalResultPopUp : UIPopUp
 
     private void DrawRecords()
     {
-        List<RecordData> records = AppManager.Instance?.GetRecordManager()?.GetPossesRecord();
-        if (records == null || recordParent == null || recordCard == null)
+        if (battleReport == null || recordParent == null || recordCard == null)
         {
             return;
         }
 
-        records.RemoveAll(x => x == null || x.id <= 0);
+        List<RecordData> records = new();
+        if (battleReport.recordIds != null)
+        {
+            foreach (int recordId in battleReport.recordIds)
+            {
+                var record = AppManager.Instance.SafeInvoke(app => app.GetRecordData(recordId));
+                if (record != null)
+                {
+                    records.Add(record);
+                }
+            }
+        }
 
         UIListDrawer.DrawListToTarget<RecordCard, RecordData>(
             recordParent.transform,

@@ -134,31 +134,58 @@ public sealed class RecordManager : MonoBehaviour
         // 소지 중인 레코드 복구
         foreach (RecordSaveData savedInfo in saveData.recordIDs)
         {
-            recordInventory.AddRecord(RestoreRecord(savedInfo));
+            var restored = RestoreRecord(savedInfo, saveData.catalogVersion);
+            if (IsPassiveLevelReward(restored) == false)
+            {
+                recordInventory.AddRecord(restored);
+            }
         }
 
         // 다음 회차로 인계된 레코드 복구
         foreach (RecordSaveData transferInfo in saveData.transferedrecordIDs)
         {
-            transferInventory.AddRecord(RestoreRecord(transferInfo));
+            transferInventory.AddRecord(RestoreRecord(transferInfo, saveData.catalogVersion));
         }
 
         isReceived = saveData.isReceived;
         highestRarityMissCount = Mathf.Clamp(saveData.highestRarityMissCount, 0, MaximumRarityMissCount);
     }
 
-    private RecordData RestoreRecord(RecordSaveData saved)
+    private RecordData RestoreRecord(RecordSaveData saved, int catalogVersion = 0)
     {
         if (saved == null)
         {
             return null;
         }
 
-        var record = saved.recordID == RecordDataBase.EmptyRecordId ? GetEmptyRecord() :
-                    recordsDict.TryGetValue(saved.recordID, out var template) ? template.GetRecordData() : null;
+        // 체이서 저장 카드는 대체된 익스큐터로 복원합니다.
+        int recordId = saved.recordID == 100101 ? 100103 : saved.recordID;
+        // 번호 정리 전 저장 데이터만 변환하여 재저장 후 중복 이동을 방지합니다.
+        if (catalogVersion < 1)
+        {
+            if (recordId == 6)
+            {
+                recordId = 2108;
+            }
+            else if (recordId >= 7 && recordId <= 10)
+            {
+                recordId -= 1;
+            }
+            else if (recordId == 11)
+            {
+                recordId = 2100;
+            }
+            else if (recordId >= 12 && recordId <= 49)
+            {
+                recordId -= 2;
+            }
+        }
+        var record = recordId == RecordDataBase.EmptyRecordId ? GetEmptyRecord() :
+                    recordsDict.TryGetValue(recordId, out var template) ? template.GetRecordData() : null;
         if (record != null)
         {
             record.uniqueID = saved.uniqueID;
+            record.ownedLevels = Mathf.Max(0, saved.ownedLevels);
         }
 
         return record;
@@ -386,19 +413,25 @@ public sealed class RecordManager : MonoBehaviour
     /// <summary>등급별 가중치에 최고 등급 미등장 보정을 적용하고 해당 등급 안에서 균등 추첨합니다.</summary>
     public RecordData PickRandomRewardRecord(List<RecordData> candidates)
     {
+        var selected = PickWeightedRecord(candidates, highestRarityMissCount, out bool hasHighest, out var highestRarity);
+        SetHighestRarityMissCount(hasHighest && selected != null && selected.rarity != highestRarity
+            ? highestRarityMissCount + 1 : 0);
+        return selected;
+    }
+
+    /// <summary>전달받은 보정으로 추첨만 하고 탐사 보상 및 상점의 상태를 변경하지 않습니다.</summary>
+    internal static RecordData PickWeightedRecord(List<RecordData> candidates, int misses, out bool hasHighest,
+        out RecordRarity highestRarity)
+    {
         var rarityTable = SO_GameSettings.Instance.RecordRarityTable;
         var groups = (candidates ?? new List<RecordData>())
             .Where(record => record != null && rarityTable.GetWeight(record.rarity) > 0f)
             .GroupBy(record => record.rarity)
             .OrderBy(group => group.Key)
             .ToList();
-        bool hasHighest = rarityTable.TryGetHighestRarity(out RecordRarity highestRarity) &&
-            groups.Any(group => group.Key == highestRarity);
-        if (hasHighest == false)
-        {
-            // 최고 등급이 소진되거나 현재 후보에 없으면 보정을 멈춥니다.
-            SetHighestRarityMissCount(0);
-        }
+        bool configured = rarityTable.TryGetHighestRarity(out var highest);
+        highestRarity = highest;
+        hasHighest = configured && groups.Any(group => group.Key == highest);
         float totalWeight = groups.Sum(group => rarityTable.GetWeight(group.Key));
         if (totalWeight <= 0f)
         {
@@ -406,7 +439,7 @@ public sealed class RecordManager : MonoBehaviour
         }
 
         float highestBaseChance = hasHighest ? rarityTable.GetWeight(highestRarity) / totalWeight : 0f;
-        float highestChance = hasHighest ? Mathf.Clamp01(highestBaseChance + HighestRarityBonus) : 0f;
+        float highestChance = hasHighest ? Mathf.Clamp01(highestBaseChance + Mathf.Clamp(misses, 0, MaximumRarityMissCount) * HighestRarityBonusPerMiss) : 0f;
         float lowerScale = hasHighest && highestBaseChance < 1f
             ? (1f - highestChance) / (1f - highestBaseChance) : 1f;
         float roll = Random.value;
@@ -427,10 +460,6 @@ public sealed class RecordManager : MonoBehaviour
             }
         }
 
-        if (hasHighest)
-        {
-            SetHighestRarityMissCount(selectedRarity == highestRarity ? 0 : highestRarityMissCount + 1);
-        }
         var recordsOfRarity = groups.First(group => group.Key == selectedRarity).ToList();
         return recordsOfRarity[Random.Range(0, recordsOfRarity.Count)];
     }
@@ -545,6 +574,45 @@ public sealed class RecordManager : MonoBehaviour
         template.linkedPassiveSkillID > 0;
     }
 
+    /// <summary>기본 패시브 강화 보상은 레코드 인벤토리에 별도 카드를 만들지 않습니다.</summary>
+    public bool IsPassiveLevelReward(RecordData record)
+    {
+        return IsRuntimePassiveRecord(record) && recordsDict[record.id].levelsPassiveOnly;
+    }
+
+    private string PassiveUpgradeIdentity(RecordData record, int job)
+    {
+        return $"passive:{job}:{recordsDict[record.id].linkedPassiveSkillID}";
+    }
+
+    /// <summary>실물 카드와 현재 보유한 패시브 중 다음 레벨이 가능한 대상을 반환합니다.</summary>
+    public List<RecordData> GetUpgradeableRecords()
+    {
+        var result = recordInventory.Records.Where(record => TryGetUpgradeLevel(record, out _, out _)).ToList();
+        var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
+        var setup = explore.SafeInvoke(value => value.CurrentSetupData);
+        if (setup == null)
+        {
+            return result;
+        }
+        foreach (var definition in recordsDict.Values)
+        {
+            if (definition == null || definition.isImplemented == false || definition.levelsPassiveOnly == false ||
+                (definition.targetFilter != TargetFilterType.ALL && (int)definition.targetFilter != setup.SelectedClassId))
+            {
+                continue;
+            }
+            var record = definition.GetRecordData();
+            record.uniqueID = PassiveUpgradeIdentity(record, setup.SelectedClassId);
+            if (TryGetUpgradeLevel(record, out int level, out _))
+            {
+                record.ownedLevels = level;
+                result.Add(record);
+            }
+        }
+        return result;
+    }
+
     private SO_PassiveSkillData ResolveRecordPassiveTemplate(RecordData record)
     {
         if (IsRuntimePassiveRecord(record) == false)
@@ -598,8 +666,116 @@ public sealed class RecordManager : MonoBehaviour
             return;
         }
 
+        if (record.ownedLevels > 1)
+        {
+            passive.OnChangedLevel(record.ownedLevels);
+            passive.SetLevel(record.ownedLevels);
+        }
         recordPassives[record.uniqueID] = passive;
         AppManager.Instance?.GetPassiveSystem()?.Add(Constants.GLOBAL_RECORD_JOB_ID, passive);
+    }
+
+    /// <summary>실제로 소유한 카드의 효과가 다음 레벨을 지원할 때만 강화 대상으로 반환합니다.</summary>
+    public bool TryGetUpgradeLevel(RecordData record, out int level, out int maximum)
+    {
+        level = 0;
+        maximum = 0;
+        if (record == null || string.IsNullOrEmpty(record.uniqueID) ||
+            recordsDict.TryGetValue(record.id, out var definition) == false || definition == null)
+        {
+            return false;
+        }
+        var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
+        if (explore == null || explore.CurrentSetupData == null)
+        {
+            return false;
+        }
+        if (IsPassiveLevelReward(record))
+        {
+            if (record.uniqueID != PassiveUpgradeIdentity(record, explore.CurrentSetupData.SelectedClassId))
+            {
+                return false;
+            }
+        }
+        else if (recordInventory.GetRecord(record.uniqueID) != record)
+        {
+            return false;
+        }
+        if (IsRuntimePassiveRecord(record))
+        {
+            var template = ResolveRecordPassiveTemplate(record);
+            var active = AppManager.Instance.SafeInvoke(app => app.GetPassiveSystem())?.GetRunPassive(explore.CurrentSetupData.SelectedClassId, definition.linkedPassiveSkillID);
+            level = active?.SkillLevel ?? 0;
+            maximum = template.SafeInvoke(data => data.maxLevel);
+        }
+        else if (definition.linkedPassiveSkillID > 0 && recordPassives.TryGetValue(record.uniqueID, out var effect) &&
+            effect.SkillID == definition.linkedPassiveSkillID)
+        {
+            int job = definition.targetFilter == TargetFilterType.ALL ? 0 : (int)definition.targetFilter;
+            var template = explore.ResolvePassiveTemplate(definition.linkedPassiveSkillID, job);
+            maximum = template.SafeInvoke(data => data.maxLevel);
+            level = Mathf.Max(1, record.ownedLevels);
+        }
+        return maximum > 1 && level > 0 && level < maximum;
+    }
+
+    public bool TryUpgradeOwned(RecordData record, int expectedLevel)
+    {
+        if (TryGetUpgradeLevel(record, out int current, out _) == false || current != expectedLevel)
+        {
+            return false;
+        }
+        if (IsRuntimePassiveRecord(record))
+        {
+            return GrantRecord(record) != null;
+        }
+        var effect = recordPassives[record.uniqueID];
+        record.ownedLevels = current + 1;
+        effect.SetLevel(record.ownedLevels);
+        effect.OnChangedLevel(record.ownedLevels);
+        isDirty = true;
+        return true;
+    }
+
+    /// <summary>이전 저장에는 카드별 기여도가 없어 기존 탐사 레벨에서 직업 기본분을 제외합니다.</summary>
+    private int GrantedLevels(RecordData owned, ExploreManager explore, int passiveId)
+    {
+        if (owned == null)
+        {
+            return 0;
+        }
+        if (owned.ownedLevels > 0)
+        {
+            return owned.ownedLevels;
+        }
+        int job = explore.CurrentSetupData.SelectedClassId;
+        var effect = AppManager.Instance.GetPassiveSystem()?.GetRunPassive(job, passiveId);
+        return Mathf.Max(0, (effect?.SkillLevel ?? 0) - (explore.IsJobStartingPassive(job, passiveId) ? 1 : 0));
+    }
+
+    public bool TrySellOwned(RecordData record)
+    {
+        if (record == null || string.IsNullOrEmpty(record.uniqueID) || recordInventory.GetRecord(record.uniqueID) != record)
+        {
+            return false;
+        }
+        if (IsRuntimePassiveRecord(record))
+        {
+            var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
+            if (explore == null || explore.CurrentSetupData == null)
+            {
+                return false;
+            }
+            int job = explore.CurrentSetupData.SelectedClassId;
+            int id = recordsDict[record.id].linkedPassiveSkillID;
+            var system = AppManager.Instance.GetPassiveSystem();
+            if (system == null || system.RemoveRecordLevels(job, id, GrantedLevels(record, explore, id),
+                explore.IsJobStartingPassive(job, id) ? 1 : 0) == false)
+            {
+                return false;
+            }
+        }
+        return RemoveOwnedRecord(record);
     }
 
     public bool RemoveOwnedRecord(RecordData record)
@@ -632,13 +808,32 @@ public sealed class RecordManager : MonoBehaviour
         {
             var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
             var template = ResolveRecordPassiveTemplate(recordData);
-            if (explore == null || explore.GrantPassiveRecord(template) == false)
+            if (explore == null || template == null)
+            {
+                return null;
+            }
+            if (IsPassiveLevelReward(recordData))
+            {
+                if (explore.GrantPassiveRecord(template) == false)
+                {
+                    return null;
+                }
+                recordData.ownedLevels = AppManager.Instance.SafeInvoke(app => app.GetPassiveSystem())?.GetRunPassive(explore.CurrentSetupData.SelectedClassId, template.id)?.SkillLevel ?? 0;
+                isReceived = true;
+                isDirty = true;
+                SaveIfDirty();
+                explore.SaveExploreMap();
+                return recordData;
+            }
+            var owned = recordInventory.Records.FirstOrDefault(r => r.id == recordData.id);
+            int previous = GrantedLevels(owned, explore, template.id);
+            if (explore.GrantPassiveRecord(template) == false)
             {
                 return null;
             }
             // 강화 레코드는 한 장만 보관하며 중복 획득은 빈 레코드 대신 레벨로 반영합니다.
-            var owned = recordInventory.Records.FirstOrDefault(r => r.id == recordData.id);
             var result = owned ?? recordInventory.AddRecord(recordData);
+            result.ownedLevels = previous + 1;
             isReceived = true;
             isDirty = true;
             SaveIfDirty();
@@ -665,14 +860,23 @@ public sealed class RecordManager : MonoBehaviour
     // Same SO enrichment, job eligibility and unowned rule as the existing draft.
     public List<RecordData> GetShopCandidates()
     {
-        return FilterDraftCandidates(GetAllEnrichedRecordData(), false)
-            .Where(r => r.id > 0 && IsRewardCandidate(r))
+        var catalog = recordsDict.Values.Where(template => template != null && template.isImplemented && template.id > 0)
+            .Select(template => template.GetRecordData());
+        return FilterDraftCandidates(catalog, false)
             .GroupBy(r => r.id).Select(g => g.First()).ToList();
     }
 
     public List<RecordData> GetRewardCandidates()
     {
         return FilterDraftCandidates(GetAllEnrichedRecordData(), false);
+    }
+
+    /// <summary>상점 추첨 조건과 관계없이 등록된 실제 획득 대상의 ID를 반환합니다.</summary>
+    public IEnumerable<int> GetImplementedRecordIds()
+    {
+        return recordsDict.Values
+            .Where(record => record != null && record.isImplemented && record.id > 0)
+            .Select(record => record.id);
     }
 
     public RecordData GetShopRecord(int id)
@@ -945,12 +1149,14 @@ public sealed class RecordManager : MonoBehaviour
         }
 
         RecordSaveListData save = new RecordSaveListData();
+        save.catalogVersion = 1;
 
         // 1. 소지 중인 레코드 저장
         foreach (RecordData data in recordInventory.Records)
         {
             save.recordIDs.Add(new RecordSaveData()
             {
+                ownedLevels = data.ownedLevels,
                 recordID = data.id,
                 uniqueID = data.uniqueID
             });
@@ -961,6 +1167,7 @@ public sealed class RecordManager : MonoBehaviour
         {
             save.transferedrecordIDs.Add(new RecordSaveData()
             {
+                ownedLevels = data.ownedLevels,
                 recordID = data.id,
                 uniqueID = data.uniqueID
             });

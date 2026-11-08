@@ -9,6 +9,7 @@ public class UIPopUpShop : UIPopUp
     [SerializeField] protected Image itemIconImage;
     [SerializeField] protected TextMeshProUGUI itemNameText;
     [SerializeField] protected TextMeshProUGUI itemMainDescText;
+    [SerializeField] private ScrollRect descriptionScroll;
     [SerializeField] protected TextMeshProUGUI priceText;
     [SerializeField] protected Button buyButton;
     [SerializeField] protected Button exitButton;
@@ -116,6 +117,12 @@ public class UIPopUpShop : UIPopUp
         if (itemMainDescText != null)
         {
             itemMainDescText.text = offerMode ? offerDescription : item?.LocalizedDescription;
+            descriptionScroll.SafeInvoke(scroll =>
+            {
+                scroll.content.SafeInvoke(content => LayoutRebuilder.ForceRebuildLayoutImmediate(content));
+                scroll.StopMovement();
+                scroll.verticalNormalizedPosition = 1f;
+            });
         }
 
         if (priceText != null)

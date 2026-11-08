@@ -20,6 +20,7 @@ public sealed class Module_Passive_SplitMotherSlow : PassiveModule
     [Tooltip("모탄 속도 배율입니다. 0.1이면 기본 속도의 10%로 매우 느리게 이동합니다.")]
     [Range(0.01f, 1f)]
     public float speedMultiplier = 0.1f;
+    [Min(1f)] public float lifetimeMultiplier = 1.3f;
 
     public Module_Passive_SplitMotherSlow()
     {
@@ -36,6 +37,7 @@ public sealed class Module_Passive_SplitMotherSlow : PassiveModule
         if (spawnedObject is SplitMotherProjectile motherProjectile)
         {
             motherProjectile.SetMotherSpeedMultiplier(speedMultiplier);
+            motherProjectile.ScaleLifeTime(lifetimeMultiplier);
         }
     }
 }

@@ -140,12 +140,21 @@ public partial class StateComponent
         if (reactionOwnsState)
         {
             reactionImmunityRemaining = reactionTimeRemaining + Mathf.Max(0f, reactionRecoveryTime);
-            ChangeType(StateType.Damaged);
             // State entry cancels skill movement before knockback takes control of the body.
-            if (reaction == HitReactionType.Knockback)
+            ChangeType(StateType.Damaged);
+        }
+
+        var hit = damageEvent.hitData;
+        if (hit.PushDistance > 0f)
+        {
+            if ((EffectiveReactionResistance & HitReactionResistance.Knockback) == 0)
             {
-                launch?.ApplyKnockback(attacker, hitPoint, damageEvent.hitData.Distance, reactionTimeRemaining);
+                launch.SafeInvoke(component => component.ApplyHitPush(attacker, hitPoint, hit.PushDistance, reactionTimeRemaining));
             }
+        }
+        else if (reaction == HitReactionType.Knockback)
+        {
+            launch.SafeInvoke(component => component.ApplyKnockback(attacker, hitPoint, hit.Distance, reactionTimeRemaining));
         }
 
         // Existing Hit is full-body. Light never replaces an ongoing skill animation.
@@ -172,7 +181,7 @@ public partial class StateComponent
         }
 
         bool restoreState = reactionOwnsState && DamagedMode;
-        CancelHitReaction();
+        CancelHitReaction(cancelDistancePush: false);
         if (restoreState)
         {
             if (statusEffect != null && statusEffect.GetMovableCondition() == false)
@@ -206,13 +215,16 @@ public partial class StateComponent
         return true;
     }
 
-    private void CancelHitReaction()
+    private void CancelHitReaction(bool cancelDistancePush = true)
     {
         CurrentHitReaction = HitReactionType.None;
         reactionTimeRemaining = 0f;
         reactionOwnsState = false;
         legacyDamageAnimation = false;
-        launch?.CancelLaunch();
+        if (launch != null && (cancelDistancePush || launch.IsDistancePush == false))
+        {
+            launch.CancelLaunch();
+        }
     }
 
     private void OnDisable()

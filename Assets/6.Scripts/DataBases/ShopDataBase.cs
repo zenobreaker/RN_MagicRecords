@@ -15,6 +15,20 @@ public class ShopJsonAllData
 {
     public List<ShopJsonData> shopItemJsonData;
     public List<ExploreRecordPrice> exploreRecordPrices = new();
+    public float specialShopChance = 0.2f;
+    public int recordUpgradeBasePrice = 20;
+    public int recordUpgradeLevelStep = 10;
+
+    public int GetUpgradePrice(int currentLevel)
+    {
+        return (int)System.Math.Min(int.MaxValue, recordUpgradeBasePrice + (long)(currentLevel - 1) * recordUpgradeLevelStep);
+    }
+
+    public ExploreRecordPrice GetRecordPrice(RecordRarity rarity)
+    {
+        return exploreRecordPrices?.Find(entry => entry != null && entry.rarity == rarity && entry.price >= 0);
+    }
+
     public int exploreHeal15Price = 15;
     public int exploreHeal60Price = 50;
     public int exploreCharacterLevelUpPrice = 10;

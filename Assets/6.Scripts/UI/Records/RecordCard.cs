@@ -219,6 +219,24 @@ public class RecordCard : MonoBehaviour
         }
     }
 
+    /// <summary>인벤토리 카드의 설명 영역에 등급과 실제 거래 가격을 함께 표시합니다.</summary>
+    public void SetupShopEntry(RecordData record, string label, bool available, Action click)
+    {
+        string rarity = record.rarity switch
+        {
+            RecordRarity.NORMAL => "노말",
+            RecordRarity.RARE => "레어",
+            RecordRarity.UNIQUE => "유니크",
+            RecordRarity.LEGENDARY => "레전더리",
+            RecordRarity.MYTH => "신화",
+            _ => ""
+        };
+        var entry = new BuildEntryViewData(record.recordName, record.description, record.icon,
+            $"{rarity} · {label}", keywords: record.keywords, recordType: record.type);
+        SetupBuildEntry(entry, click);
+        selectButton.interactable = available;
+    }
+
     public void SetupBuildEntry(BuildEntryViewData entry, Action onClick)
     {
         myData = null;

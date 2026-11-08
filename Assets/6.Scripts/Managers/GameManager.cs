@@ -76,6 +76,8 @@ public class GameManager
     {
         if (state == GameState.PROCESS_BATTLE)
         {
+            AppManager.Instance.SafeInvoke(app => app.GetExploreManager())
+                .SafeInvoke(explore => explore.RecordBattleTime(Time.deltaTime));
             OnUpdated?.Invoke(Time.deltaTime);
         }
     }
