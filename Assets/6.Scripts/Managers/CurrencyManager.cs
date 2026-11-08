@@ -25,8 +25,10 @@ public class CurrencyManager
             return;
         }
 
+        currencyInventory.OnInventoryChanged -= CurrencyInventory_OnInventoryChanged;
         currencyInventory = inventory;
         currencyInventory.OnInventoryChanged += CurrencyInventory_OnInventoryChanged;
+        OnUpdatedCurrency?.Invoke();
     }
 
     private void CurrencyInventory_OnInventoryChanged(Inventory obj)
