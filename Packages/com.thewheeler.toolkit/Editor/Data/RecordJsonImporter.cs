@@ -43,6 +43,7 @@ namespace TheWheeler.Editor
         public int id, recordType, rarity, linkedPassiveSkillID;
         public string targetFilter, importNote;
         public bool isImplemented = true;
+        public bool levelsPassiveOnly;
         public RecordImportStat[] stats;
         public RecordImportSkill[] skills;
         public RecordImportModule[] modules;
@@ -189,6 +190,11 @@ namespace TheWheeler.Editor
                 }
                 Required(so, "linkedPassiveSkillID").intValue = payload.linkedPassiveSkillID;
                 Required(so, "isImplemented").boolValue = ready;
+                var passiveOnly = so.FindProperty("levelsPassiveOnly");
+                if (passiveOnly != null)
+                {
+                    passiveOnly.boolValue = payload.levelsPassiveOnly;
+                }
                 var note = so.FindProperty("importNote");
                 if (note != null)
                 {
