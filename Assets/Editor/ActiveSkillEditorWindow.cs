@@ -124,7 +124,7 @@ public class ActiveSkillEditorWindow : EditorWindow
             {
                 if (imageProp.objectReferenceValue is Sprite spr)
                 {
-                    icon = spr.texture;
+                    icon = SkillRecordIconPreview.GetTexture(spr, Repaint);
                 }
                 else if (imageProp.objectReferenceValue is Texture2D tex)
                 {
@@ -181,7 +181,7 @@ public class ActiveSkillEditorWindow : EditorWindow
         SerializedObject so = serializedSelectedSkill;
         so.Update();
 
-        TheWheeler.Editor.EditorLocalization.DrawPreview(so);
+        SkillRecordIconPreview.DrawHeader(so, Repaint);
 
         SerializedProperty phaseListProp = so.FindProperty("phaseList");
 

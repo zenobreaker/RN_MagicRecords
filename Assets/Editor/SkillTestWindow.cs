@@ -89,7 +89,7 @@ public class SkillTestWindow : EditorWindow
         }
         else
         {
-            Texture2D icon = selectedSkill.skillImage != null ? selectedSkill.skillImage.texture : null;
+            Texture2D icon = SkillRecordIconPreview.GetTexture(selectedSkill.skillImage, Repaint);
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label(icon, GUILayout.Width(64f), GUILayout.Height(64f));
             EditorGUILayout.BeginVertical();
@@ -193,7 +193,7 @@ public class SkillTestWindow : EditorWindow
             }
 
             EditorGUILayout.BeginVertical(GUILayout.Width(GridItemWidth - 4f));
-            Texture2D icon = skill.skillImage != null ? skill.skillImage.texture : null;
+            Texture2D icon = SkillRecordIconPreview.GetTexture(skill.skillImage, Repaint);
             Color previousColor = GUI.backgroundColor;
             if (skill == selectedSkill)
             {

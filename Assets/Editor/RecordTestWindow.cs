@@ -73,7 +73,7 @@ public class RecordTestWindow : EditorWindow
         }
         else
         {
-            Texture2D icon = selectedRecord.icon != null ? selectedRecord.icon.texture : null;
+            Texture2D icon = SkillRecordIconPreview.GetTexture(selectedRecord.icon, Repaint);
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label(icon, GUILayout.Width(64f), GUILayout.Height(64f));
             EditorGUILayout.BeginVertical();
@@ -141,7 +141,7 @@ public class RecordTestWindow : EditorWindow
             }
 
             EditorGUILayout.BeginVertical(GUILayout.Width(GridItemWidth - 4f));
-            Texture2D icon = record.icon != null ? record.icon.texture : null;
+            Texture2D icon = SkillRecordIconPreview.GetTexture(record.icon, Repaint);
             Color previousColor = GUI.backgroundColor;
             if (record == selectedRecord)
             {

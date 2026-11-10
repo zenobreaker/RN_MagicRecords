@@ -157,7 +157,7 @@ public class PassiveSkillEditorWindow : EditorWindow
                     GUI.backgroundColor = new Color(0.3f, 0.6f, 0.9f);
                 }
 
-                var icon = skill.skillImage != null ? AssetPreview.GetAssetPreview(skill.skillImage) : null;
+                var icon = SkillRecordIconPreview.GetTexture(skill.skillImage, Repaint);
                 if (GUILayout.Button(new GUIContent(title, icon, skill.skillName + "\n" + AssetDatabase.GetAssetPath(skill)), style))
                 {
                     SelectSkill(skill);
@@ -201,7 +201,7 @@ public class PassiveSkillEditorWindow : EditorWindow
                 }
             }
             centerScroll = EditorGUILayout.BeginScrollView(centerScroll);
-            TheWheeler.Editor.EditorLocalization.DrawPreview(serializedSkill);
+            SkillRecordIconPreview.DrawHeader(serializedSkill, Repaint);
             var modules = serializedSkill.FindProperty("Modules");
             if (selectedModuleIndex < 0)
             {
