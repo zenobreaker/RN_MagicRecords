@@ -9,37 +9,38 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: "bc0fb5b0e08c32d43b6152491dbb36cf", type: 3}
+  m_Script: {fileID: 11500000, guid: bc0fb5b0e08c32d43b6152491dbb36cf, type: 3}
   m_Name: record_name_22
-  m_EditorClassIdentifier: ""
+  m_EditorClassIdentifier: 
   id: 22
   isImplemented: 1
-  importNote: ""
-  recordName: "record_name_22"
-  description: "record_desc_22"
-  icon: {fileID: 0}
+  levelsPassiveOnly: 0
+  importNote: 
+  recordName: record_name_22
+  description: record_desc_22
+  icon: {fileID: 841138527, guid: 84c09ba676cfad148979f1e21cf4a052, type: 3}
   keywords: []
   targetFilter: 0
   type: 2
   rarity: 2
   Stats: []
   Skills: []
-  linkedPassiveSkillID: 0
-  mutualExclusionGroup: ""
   Modules:
-  - {rid: 101}
-  - {rid: 102}
+  - rid: 101
+  - rid: 102
+  linkedPassiveSkillID: 0
+  mutualExclusionGroup: 
   references:
     version: 2
     RefIds:
     - rid: 101
-      type: {class: "RecordPierceModule", ns: "", asm: "Assembly-CSharp"}
+      type: {class: RecordPierceModule, ns: , asm: Assembly-CSharp}
       data:
-        tag: "\uc0ac\ucd9c"
-        count: 1
         triggerTime: 2
+        tag: "\uC0AC\uCD9C"
+        count: 1
     - rid: 102
-      type: {class: CommonRecordBuffModule, ns: "", asm: Assembly-CSharp}
+      type: {class: CommonRecordBuffModule, ns: , asm: Assembly-CSharp}
       data:
         triggerTime: 0
         activation: 0
@@ -48,14 +49,14 @@ MonoBehaviour:
           kind: 0
           stat: 5
           valueType: 0
-          displayName: "치명타 확률 증가"
+          displayName: "\uCE58\uBA85\uD0C0 \uD655\uB960 \uC99D\uAC00"
           amount: 0.05
           duration: 0
         - buff: {fileID: 11400000, guid: f0ce816311ea43f89c96aa8fbb130025, type: 2}
           kind: 0
           stat: 6
           valueType: 0
-          displayName: "치명타 피해 증가"
+          displayName: "\uCE58\uBA85\uD0C0 \uD53C\uD574 \uC99D\uAC00"
           amount: 0.1
           duration: 0
         probability: 1
