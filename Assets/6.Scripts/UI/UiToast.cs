@@ -36,14 +36,13 @@ public class UIToast : MonoBehaviour
     {
         Debug.Assert(LocalizationManager.Instance != null);
 
-        // 기존에 실행 중이던 연출이 있다면 취소
-        if (cts != null)
-        {
-            cts.Cancel();
-            cts.Dispose();
-        }
+        // 새 토큰을 먼저 등록한 뒤 이전 연출을 취소합니다.
+        // 취소 콜백 중 OnDisable이 실행돼도 새 토큰을 건드리지 않습니다.
+        CancellationTokenSource previousCts = cts;
+        CancellationTokenSource currentCts = new CancellationTokenSource();
+        cts = currentCts;
 
-        cts = new CancellationTokenSource();
+        CancelAndDispose(previousCts);
 
         gameObject.SetActive(true);
 
@@ -52,10 +51,10 @@ public class UIToast : MonoBehaviour
 
         messageText.text = LocalizationManager.Instance.GetText(messageKey);
 
-        HideRoutine(cts.Token).Forget();
+        HideRoutine(currentCts).Forget();
     }
 
-    private async UniTaskVoid HideRoutine(CancellationToken token)
+    private async UniTaskVoid HideRoutine(CancellationTokenSource routineCts)
     {
         try
         {
@@ -71,13 +70,13 @@ public class UIToast : MonoBehaviour
                     fadeDuration)
                     .SetEase(Ease.OutBack))
                 .SetUpdate(true)
-                .ToUniTask(cancellationToken: token);
+                .ToUniTask(cancellationToken: routineCts.Token);
 
             // 대기
             await UniTask.Delay(
                 TimeSpan.FromSeconds(showTime),
                 ignoreTimeScale: true,
-                cancellationToken: token);
+                cancellationToken: routineCts.Token);
 
             // Fade Out
             await DOTween.Sequence()
@@ -87,11 +86,13 @@ public class UIToast : MonoBehaviour
                     fadeDuration)
                     .SetEase(Ease.InBack))
                 .SetUpdate(true)
-                .ToUniTask(cancellationToken: token);
+                .ToUniTask(cancellationToken: routineCts.Token);
 
-
-            // 모든 연출이 끝나면 비활성화
-            gameObject.SetActive(false);
+            // 이전 연출이 새 토스트를 비활성화하지 않도록 현재 토큰인지 확인합니다.
+            if (cts == routineCts)
+            {
+                gameObject.SetActive(false);
+            }
         }
         catch (OperationCanceledException)
         {
@@ -101,14 +102,33 @@ public class UIToast : MonoBehaviour
         }
     }
 
+    private void CancelAndDispose(CancellationTokenSource source)
+    {
+        if (source == null)
+        {
+            return;
+        }
+
+        try
+        {
+            if (source.IsCancellationRequested == false)
+            {
+                source.Cancel();
+            }
+
+            source.Dispose();
+        }
+        catch (ObjectDisposedException)
+        {
+            // 이미 종료 처리된 토큰은 다시 해제하지 않습니다.
+        }
+    }
+
     private void OnDisable()
     {
         // 오브젝트가 꺼지거나 씬이 넘어갈 때 찌꺼기 방지
-        if (cts != null)
-        {
-            cts.Cancel();
-            cts.Dispose();
-            cts = null;
-        }
+        CancellationTokenSource currentCts = cts;
+        cts = null;
+        CancelAndDispose(currentCts);
     }
 }
