@@ -29,6 +29,14 @@ public class Player
     private Action<InputAction.CallbackContext> onDash;
     private Action<InputAction.CallbackContext>[] onSkillActions;
     private Action<InputAction.CallbackContext>[] onSkillCancels;
+    private bool combatInputEnabled = true;
+    public bool CombatInputEnabled => combatInputEnabled;
+
+    /// <summary>튜토리얼에서 무기를 꺼내기 전의 공격과 스킬 입력을 제한합니다.</summary>
+    public void SetCombatInputEnabled(bool enabled)
+    {
+        combatInputEnabled = enabled;
+    }
 
 
     private int jobID;
@@ -69,6 +77,11 @@ public class Player
 
         onAction = (context) =>
         {
+            if (combatInputEnabled == false)
+            {
+                return;
+            }
+
             if (comboComponent != null)
             {
                 comboComponent.InputQueue(InputCommandType.ACTION);
@@ -77,6 +90,11 @@ public class Player
 
         onDash = (context) =>
         {
+            if (combatInputEnabled == false)
+            {
+                return;
+            }
+
             if (comboComponent != null)
             {
                 comboComponent.InputQueue(InputCommandType.DASH);
@@ -111,6 +129,11 @@ public class Player
             int index = i;
             onSkillActions[i] = (context) =>
             {
+                if (combatInputEnabled == false)
+                {
+                    return;
+                }
+
                 comboComponent.InputQueue(InputCommandType.SKILL, index);
             };
 

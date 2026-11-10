@@ -14,6 +14,13 @@ public static class SaveDataEditor
         if (EditorUtility.DisplayDialog("전체 초기화", "모든 JSON 세이브 파일을 삭제하시겠습니까?", "삭제", "취소"))
         {
             DeleteFile("mapdata.json");
+            DeleteFile("runSaveData.json");
+            DeleteFile("playerdata.json");
+            if (SaveManager.SaveDirectory == Application.persistentDataPath)
+            {
+                PlayerPrefs.DeleteKey("Tutorial.Completed.v1");
+                PlayerPrefs.Save();
+            }
             DeleteFile("stagedata.json");
             DeleteFile("charinfo.json");
             DeleteFile("invetory.json");
@@ -79,12 +86,12 @@ public static class SaveDataEditor
     [MenuItem(MenuPath + "Open Save Folder", false, 31)]
     public static void OpenSaveFolder()
     {
-        EditorUtility.RevealInFinder(Application.persistentDataPath);
+        EditorUtility.RevealInFinder(SaveManager.SaveDirectory);
     }
 
     private static void DeleteFile(string fileName)
     {
-        string fullPath = Path.Combine(Application.persistentDataPath, fileName);
+        string fullPath = Path.Combine(SaveManager.SaveDirectory, fileName);
         if (File.Exists(fullPath))
         {
             File.Delete(fullPath);

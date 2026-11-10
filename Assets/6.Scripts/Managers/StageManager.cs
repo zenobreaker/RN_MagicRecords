@@ -130,6 +130,29 @@ public sealed class StageManager : MonoBehaviour
 
             bool isPlayerDead = false;
 
+            var tutorial = FindFirstObjectByType<TutorialSequence>();
+            if (explore.IsTutorialStage)
+            {
+                if (tutorial == null)
+                {
+                    throw new InvalidOperationException("Tutorial sequence is missing from Stage.");
+                }
+
+                UIManager.Instance.SafeInvoke(ui => ui.SetGameplayHUDVisible(false));
+                await UniTask.NextFrame(cancellationToken: token);
+                await SceneLoadingController.CompleteStagePreparationAsync(token);
+                stageState = StageState.Battle;
+                OnProcessBattle?.Invoke();
+                StageResult tutorialResult = await tutorial.RunStageAsync(spawnManager, roomData, token);
+                stageState = StageState.Result;
+                return tutorialResult;
+            }
+
+            if (explore.TutorialStep == TutorialStep.RecordEffect && tutorial != null)
+            {
+                tutorial.ObserveRecordEffect();
+            }
+
             // 웨이브 루프 시작!
             while (currentWave <= currentStage.wave)
             {
@@ -164,6 +187,13 @@ public sealed class StageManager : MonoBehaviour
                     break; // 사망 시 즉시 루프 탈출
                 }
 
+                if (explore.TutorialStep == TutorialStep.RecordEffect && tutorial != null &&
+                    tutorial.HasRecordEffectHit == false)
+                {
+                    // 레코드가 적용된 스킬을 적에게 사용하도록 같은 연습 무리를 다시 제시합니다.
+                    continue;
+                }
+
                 currentWave++;
             }
 
@@ -173,6 +203,10 @@ public sealed class StageManager : MonoBehaviour
             }
 
             stageState = StageState.Result;
+            if (isPlayerDead == false && explore.TutorialStep == TutorialStep.RecordEffect && tutorial != null)
+            {
+                await tutorial.WaitForRecordEffectAsync(token);
+            }
             var player = PlayerManager.Instance.SafeInvoke(manager => manager.GetCurrentPlayer());
             if (player != null)
             {

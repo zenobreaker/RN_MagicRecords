@@ -13,6 +13,18 @@ public class PerceptionComponent
     [SerializeField] private LayerMask layerMask;
 
     private Dictionary<GameObject, float> percievedTable;
+    private GameObject forcedTarget;
+
+    /// <summary>연출 중에는 인식 결과보다 지정 대상을 우선합니다.</summary>
+    public void SetForcedTarget(GameObject target)
+    {
+        forcedTarget = target;
+    }
+
+    private void OnDisable()
+    {
+        forcedTarget = null;
+    }
 
     public event Action<List<GameObject>> OnPerceptionUpdated;
     public Action OnValueChange;
@@ -81,6 +93,11 @@ public class PerceptionComponent
 
     public GameObject GetTarget()
     {
+        if (forcedTarget != null)
+        {
+            return forcedTarget;
+        }
+
         OnPerceptionUpdated?.Invoke(percievedTable.Keys.ToList());
         if (percievedTable != null)
         {

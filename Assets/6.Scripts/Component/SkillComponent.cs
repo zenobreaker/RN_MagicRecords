@@ -53,6 +53,13 @@ public sealed class SkillComponent : ActionComponent
 
 
     public event Action<bool> OnSkillUse;
+    public event Action OnBasicAttackBulletReloaded;
+
+    /// <summary>기본 공격 모듈이 실제로 탄환을 보충한 경우에만 알립니다.</summary>
+    public void NotifyBasicAttackBulletReloaded()
+    {
+        OnBasicAttackBulletReloaded?.Invoke();
+    }
     public event Action<SkillSlot, ActiveSkill> OnActiveSkillChanged;
     public event Action<SkillSlot, bool> OnActiveSkillCooldownChanged;
     public event Action<SkillSlot, float, float> OnActiveSkillCooldownUpdated;

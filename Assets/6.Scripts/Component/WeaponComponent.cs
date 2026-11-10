@@ -22,6 +22,13 @@ public class WeaponComponent
     [Header("Weapon Type")]
     [SerializeField] private WeaponType initType = WeaponType.Unarmed;
     private WeaponType type = WeaponType.Unarmed;
+    private bool suppressInitialEquip;
+
+    /// <summary>튜토리얼에서 첫 무기 장착 시점을 대화 이후로 미룹니다.</summary>
+    public void SuppressInitialEquip()
+    {
+        suppressInitialEquip = true;
+    }
     public WeaponType Type
     {
         get
@@ -184,6 +191,11 @@ public class WeaponComponent
 
     private void Start()
     {
+        if (suppressInitialEquip)
+        {
+            return;
+        }
+
         // Equip
         switch (initType)
         {

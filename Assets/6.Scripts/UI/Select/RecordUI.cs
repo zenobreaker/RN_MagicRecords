@@ -19,6 +19,18 @@ public class RecordUI : UIPopUp
 
     private bool cachedRerollFlag;
 
+    /// <summary>튜토리얼의 첫 레코드는 선택을 완료한 후에만 닫을 수 있습니다.</summary>
+    public override void CloseUI()
+    {
+        var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
+        if (currentMode == RecordUIMode.DRAFT && explore.SafeInvoke(manager => manager.TutorialStep == TutorialStep.Record))
+        {
+            return;
+        }
+
+        base.CloseUI();
+    }
+
     protected override void Awake()
     {
         base.Awake();

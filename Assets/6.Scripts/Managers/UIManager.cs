@@ -49,6 +49,13 @@ public class UIManager : Singleton<UIManager>
     private GameLocate currLocate;
     private int lastCancelFrame = -1;
     private GameObject currentUIGroup;
+    private PlayerUIController gameplayHUD;
+
+    /// <summary>씬에 생성된 플레이어 HUD의 전투 요소만 전환합니다.</summary>
+    public void SetGameplayHUDVisible(bool visible)
+    {
+        gameplayHUD.SafeInvoke(hud => hud.SetCombatHUDVisible(visible));
+    }
 
     [Header("Toast Settings")]
     [SerializeField] private UIToast toastPrefab;
@@ -183,6 +190,11 @@ public class UIManager : Singleton<UIManager>
     /// <summary>Esc 입력을 한 프레임에 한 번 처리합니다.</summary>
     public void HandleCancelInput()
     {
+        if (TutorialSequence.CapturesInput)
+        {
+            return;
+        }
+
         if (CheatConsoleUI.CapturesInput)
         {
             return;
@@ -225,6 +237,11 @@ public class UIManager : Singleton<UIManager>
     // 💡 엔터/스페이스를 눌렀을 때
     private void OnSubmitPressed(InputAction.CallbackContext context)
     {
+        if (TutorialSequence.CapturesInput)
+        {
+            return;
+        }
+
         if (CheatConsoleUI.CapturesInput)
         {
             return;
@@ -423,6 +440,7 @@ public class UIManager : Singleton<UIManager>
         }
 
         var go = Instantiate<GameObject>(currentObject);
+        gameplayHUD = go.GetComponent<PlayerUIController>();
         go.SafeInvoke(v => v.SetActive(true));
     }
 

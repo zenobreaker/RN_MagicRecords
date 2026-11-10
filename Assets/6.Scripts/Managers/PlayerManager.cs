@@ -9,6 +9,31 @@ public class PlayerManager :
     [Tooltip("Character base-stat ScriptableObjects. Add every playable character here.")]
     public List<CharStatusData> charInfoDataList = new();
 
+    public PlayerData Data
+    {
+        get;
+        private set;
+    } = new();
+
+    /// <summary>진행 단계를 캐릭터나 탐사 저장과 별도로 즉시 저장합니다.</summary>
+    public void SetTutorialProgress(TutorialStep step)
+    {
+        Data.tutorialStep = step;
+        if (step != TutorialStep.None)
+        {
+            Data.hasCompletedTutorial = false;
+        }
+        SaveManager.SavePlayerData(Data);
+    }
+
+    /// <summary>튜토리얼 완료 이력은 탐사가 초기화되어도 유지합니다.</summary>
+    public void CompleteTutorial()
+    {
+        Data.hasCompletedTutorial = true;
+        Data.tutorialStep = TutorialStep.None;
+        SaveManager.SavePlayerData(Data);
+    }
+
     private List<int> characterIds = new List<int>();
     public List<int> CharIds
     {
@@ -77,6 +102,7 @@ public class PlayerManager :
 
     public void OnInit()
     {
+        Data = SaveManager.LoadPlayerData();
         charStatusDatas.Clear();
         foreach (CharStatusData charInfoData in charInfoDataList)
         {
@@ -154,6 +180,7 @@ public class PlayerManager :
     {
         base.SyncDataFromSingleton();
 
+        Data = Instance.Data;
         characterIds = Instance.characterIds;
         charEquipments = Instance.charEquipments;
         charEquipments = Instance.charEquipments;

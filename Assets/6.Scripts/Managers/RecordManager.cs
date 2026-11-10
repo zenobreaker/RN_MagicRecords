@@ -284,6 +284,13 @@ public sealed class RecordManager : MonoBehaviour
     // 💡 1. 탐사 시작 시 호출 (중복 방지 플래그 검사 O)
     public void GenerateChapterStartRecords(int count = 3, bool canReroll = true)
     {
+        var tutorialExplore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
+        if (tutorialExplore.SafeInvoke(explore => explore.TutorialStep == TutorialStep.Record))
+        {
+            GenerateTutorialRecord();
+            return;
+        }
+
         // 이미 이번 스테이지에서 기본 보상을 받았다면 무시
         if (isReceived || AppManager.Instance == null)
         {
@@ -297,6 +304,42 @@ public sealed class RecordManager : MonoBehaviour
         }
 
         GenerateDraftRecords(count, canReroll, true);
+    }
+
+    /// <summary>튜토리얼에서는 기존 스타팅 선택 UI에 할로포인트 한 장만 표시합니다.</summary>
+    private void GenerateTutorialRecord()
+    {
+        var tutorial = FindFirstObjectByType<TutorialSequence>();
+        if (tutorial == null || tutorial.StartingRecord == null)
+        {
+            Debug.LogError("튜토리얼 스타팅 레코드 설정이 없습니다.");
+            return;
+        }
+
+        var record = GetShopRecord(tutorial.StartingRecord.id);
+        if (recordInventory.Records.Any(owned => owned.id == tutorial.StartingRecord.id))
+        {
+            var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
+            explore.SafeInvoke(manager => manager.ConsumeInitialRecordReward());
+            explore.SafeInvoke(manager => manager.SetTutorialStep(TutorialStep.RecordEffect));
+            return;
+        }
+
+        if (record == null || IsRewardCandidate(record) == false)
+        {
+            Debug.LogError("튜토리얼 할로포인트 레코드를 지급할 수 없습니다.");
+            return;
+        }
+
+        filterStartingSkills = false;
+        generateCount = 1;
+        SelectedRecords.Clear();
+        CurrentOptions = new List<RecordData>
+        {
+            record
+        };
+        PauseManager.RequestPause();
+        UIManager.Instance.SafeInvoke(ui => ui.OpenRecordSelectPopUp(CurrentOptions, false, RecordUIMode.DRAFT));
     }
 
     // 💡 2. 이벤트 보상 시 호출 (중복 방지 플래그 검사 X - 무조건 지급)
@@ -1080,7 +1123,17 @@ public sealed class RecordManager : MonoBehaviour
 
         foreach (RecordData data in selectedRecords)
         {
-            GrantRecord(data);
+            if (GrantRecord(data) == null)
+            {
+                return false;
+            }
+        }
+
+        var tutorialExplore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
+        if (tutorialExplore.SafeInvoke(explore => explore.TutorialStep == TutorialStep.Record))
+        {
+            tutorialExplore.ConsumeInitialRecordReward();
+            tutorialExplore.SetTutorialStep(TutorialStep.RecordEffect);
         }
 
         SelectedRecords.Clear();

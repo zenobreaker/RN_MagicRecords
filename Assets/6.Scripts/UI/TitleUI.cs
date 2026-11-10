@@ -46,12 +46,11 @@ public class TitleUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 게임 시작 버튼 -> 로비 씬으로 이동
+    /// 게임 시작 버튼에서 배경 설명 씬으로 이동합니다.
     /// </summary>
     private void OnStartButtonClicked()
     {
-        // 💡 "Lobby" 씬으로 이동 (씬 빌드 세팅에 Lobby 씬이 등록되어 있어야 합니다)
-        SceneManager.LoadScene("Lobby");
+        SceneLoadingController.LoadScene("Story");
     }
 
     /// <summary>

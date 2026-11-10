@@ -51,6 +51,7 @@ public class StageUIController
     {
         exploreManager = AppManager.Instance.GetExploreManager();
         exploreManager.OnStageClear += RefreshMainUI;
+        exploreManager.OnTutorialStepChanged += RefreshMainUI;
 
 
         //exploreManager.OnStageClear += RefreshMainUI;
@@ -69,6 +70,7 @@ public class StageUIController
         if (exploreManager != null)
         {
             exploreManager.OnStageClear -= RefreshMainUI;
+            exploreManager.OnTutorialStepChanged -= RefreshMainUI;
         }
 
         if (ManagerWaiter.TryGetManager<UIManager>(out UIManager ui))

@@ -421,6 +421,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 2147000002}
   - component: {fileID: 8778330850048548109}
   - component: {fileID: 823534969822439246}
   - component: {fileID: 8536512556311622727}
@@ -3973,3 +3974,20 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3264474861388175452, guid: 6ff5a33bd1a463a4fa575fc8faac4ad5, type: 3}
   m_PrefabInstance: {fileID: 4425201443950990652}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2147000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1932776284738236466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 775715b956c02d246909e0fd0f776858, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  currencies: []
+  pauseButton: {fileID: 0}
+  combatHUD:
+  - {fileID: 2285392010964487275}
+  - {fileID: 8207030773929161447}

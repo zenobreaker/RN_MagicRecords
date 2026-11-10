@@ -6,6 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public sealed class ExploreRunSaveData
 {
+    public bool isTutorialRun;
     public RunStatus runStatus = RunStatus.NoSave;
     public BattleReport battleReport = new();
     public ExplorationSetupData setupData = new();
@@ -119,7 +120,16 @@ public sealed class RecordSaveListData
 
 public static class SaveManager
 {
-    private static string SaveDirectory
+    private const string TutorialCompletedKey = "Tutorial.Completed.v1";
+
+    [System.Serializable]
+    private sealed class LegacyTutorialProgress
+    {
+        public TutorialStep tutorialStep = TutorialStep.None;
+    }
+
+    /// <summary>에디터의 저장 관리도 현재 활성화된 저장 위치를 사용합니다.</summary>
+    public static string SaveDirectory
     {
         get
         {
@@ -140,6 +150,63 @@ public static class SaveManager
         {
             return Path.Combine(SaveDirectory, "runSaveData.json");
         }
+    }
+
+    private static string playerDataPath => Path.Combine(SaveDirectory, "playerdata.json");
+
+    /// <summary>튜토리얼 이력을 별도 파일에서 읽고 이전 저장 형식은 최초 한 번만 이전합니다.</summary>
+    public static PlayerData LoadPlayerData()
+    {
+        if (File.Exists(playerDataPath))
+        {
+            var loaded = JsonUtility.FromJson<PlayerData>(File.ReadAllText(playerDataPath)) ?? new PlayerData();
+            loaded.NormalizeTutorialProgress();
+            return loaded;
+        }
+
+        bool migratePreferences = SaveDirectory == Application.persistentDataPath;
+        var data = new PlayerData
+        {
+            hasCompletedTutorial = migratePreferences && PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1,
+            tutorialStep = LoadLegacyTutorialStep()
+        };
+        SavePlayerData(data);
+        if (migratePreferences && PlayerPrefs.HasKey(TutorialCompletedKey))
+        {
+            PlayerPrefs.DeleteKey(TutorialCompletedKey);
+            PlayerPrefs.Save();
+        }
+        return data;
+    }
+
+    /// <summary>플레이어 기록을 탐사 저장과 별도로 저장합니다.</summary>
+    public static void SavePlayerData(PlayerData data)
+    {
+        if (data == null)
+        {
+            return;
+        }
+
+        data.NormalizeTutorialProgress();
+        Directory.CreateDirectory(SaveDirectory);
+        File.WriteAllText(playerDataPath, JsonUtility.ToJson(data, true));
+    }
+
+    /// <summary>이전 탐사 파일의 튜토리얼 단계는 호환성 이전에만 사용합니다.</summary>
+    private static TutorialStep LoadLegacyTutorialStep()
+    {
+        if (File.Exists(runSaveDataPath) == false)
+        {
+            return TutorialStep.None;
+        }
+
+        var legacy = JsonUtility.FromJson<LegacyTutorialProgress>(File.ReadAllText(runSaveDataPath));
+        var step = legacy?.tutorialStep ?? TutorialStep.None;
+        if (step < TutorialStep.None || step > TutorialStep.RecordEffect)
+        {
+            return TutorialStep.None;
+        }
+        return step;
     }
     private static string mapDataPath
     {
@@ -199,7 +266,12 @@ public static class SaveManager
         }
 
         string json = System.IO.File.ReadAllText(runSaveDataPath);
-        return JsonUtility.FromJson<ExploreRunSaveData>(json);
+        var data = JsonUtility.FromJson<ExploreRunSaveData>(json);
+        if (data != null && LoadLegacyTutorialStep() != TutorialStep.None)
+        {
+            data.isTutorialRun = true;
+        }
+        return data;
     }
 
     public static bool HasSavedExploreRun()

@@ -273,6 +273,8 @@ public class AppManager
             return;
         }
 
+        exploreManager.CompleteTutorialBattle(result.IsSuccess);
+
         if (exploreManager.IsEventCombat)
         {
             exploreManager.CompleteEventCombat(result.IsSuccess);
@@ -439,6 +441,43 @@ public class AppManager
         UIManager.Instance.SafeInvoke(
             v =>
                 v.OpenExplorationSetupPopUp());
+    }
+
+    /// <summary>기존 탐사 준비와 동일한 경로로 튜토리얼 캐릭터와 직업 패시브를 설정합니다.</summary>
+    public bool BeginTutorial(int characterId, int jobId, SO_ActiveSkillData initialSkill, bool replaceExistingRun = false)
+    {
+        if ((HasSavedExploration() && replaceExistingRun == false) || initialSkill == null || initialSkill.isDevelopmentLocked ||
+            initialSkill.maxLevel < 1 || exploreManager == null || skillManager == null ||
+            PlayerManager.Instance.SafeInvoke(players => players.CanCharacterUseJob(characterId, jobId)) == false)
+        {
+            return false;
+        }
+
+        recordManager.SafeInvoke(records => records.ResetRecordFlowData());
+        passiveSystem.ResetExplorePassives();
+        exploreManager.StartExplore();
+        skillManager.ResetRunTimeData();
+
+        skillManager.EquipActiveSkill(characterId, 0, new SkillRuntimeData
+        {
+            template = initialSkill,
+            currentLevel = 1,
+            isUnlocked = true
+        });
+
+        if (exploreManager.FinallizeSetupAndGenerateMap(new ExplorationSetupData
+        {
+            SelectedCharacterId = characterId,
+            SelectedClassId = jobId
+        }) == false)
+        {
+            exploreManager.PurgeCurrentRun();
+            return false;
+        }
+
+        exploreManager.SetTutorialStep(TutorialStep.Movement);
+        SaveIfDirty();
+        return true;
     }
 
 

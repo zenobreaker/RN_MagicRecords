@@ -29,6 +29,13 @@ public class AIController : MonoBehaviour
 
     private PatternEntry currentPattern;
 
+    /// <summary>연출 전투의 지정 대상을 인식 대상보다 우선합니다. 풀 반환 시 해제합니다.</summary>
+    public void SetForcedTarget(GameObject target)
+    {
+        perception.SafeInvoke(value => value.SetForcedTarget(target));
+        aiBehaivour.SafeInvoke(ai => ai.SetTarget(target));
+    }
+
     public StateComponent State
     {
         get
@@ -156,7 +163,7 @@ public class AIController : MonoBehaviour
         {
             context = new AIContext(this.gameObject);
         }
-        context.Target = perception.GetTarget();
+        context.Target = perception.SafeInvoke(value => value.GetTarget());
     }
 
     private void AddPattern(PatternEntry entry)

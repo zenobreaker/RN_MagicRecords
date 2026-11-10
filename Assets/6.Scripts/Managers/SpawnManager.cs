@@ -96,6 +96,13 @@ public sealed class SpawnManager : MonoBehaviour
 
             if (playerGO.TryGetComponent<Player>(out var player))
             {
+                var tutorialExplore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
+                if (tutorialExplore.SafeInvoke(explore => explore.IsTutorialStage))
+                {
+                    player.GetComponent<WeaponComponent>().SafeInvoke(weapon => weapon.SuppressInitialEquip());
+                    player.SetCombatInputEnabled(false);
+                }
+
                 // Char ID
                 player.CharID = id;
                 PlayerManager.Instance.SafeInvoke(v => v.SetCurrentPlayer(player));

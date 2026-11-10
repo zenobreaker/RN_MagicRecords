@@ -219,6 +219,7 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public void ResetData()
     {
+        TutorialStep = TutorialStep.None;
         ResetStartingPassiveState();
         PlayerManager.Instance.SafeInvoke(players => players.ResetRunCharacterLevels());
         SkillManager.Instance?.ResetRunTimeData();
@@ -313,6 +314,9 @@ public sealed partial class ExploreManager : MonoBehaviour
         // 1. 저장 데이터가 존재하는 경우
         if (loadData != null)
         {
+            TutorialStep = loadData.isTutorialRun
+                ? PlayerManager.Instance.SafeInvoke(players => players.Data.tutorialStep)
+                : TutorialStep.None;
             RunStatus = loadData.runStatus;
             BattleReport = loadData.battleReport ?? new BattleReport();
             bAllCleared = RunStatus == RunStatus.FinalRunCleared;
@@ -548,6 +552,11 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     public bool CanEnableNode(int targetNodeId, bool bCheat = false)
     {
+        if (TutorialStep == TutorialStep.Record || IsTutorialStage)
+        {
+            return false;
+        }
+
         if (RunStatus == RunStatus.ChapterCleared || RunStatus == RunStatus.FinalRunCleared)
         {
             return false;
@@ -813,6 +822,7 @@ public sealed partial class ExploreManager : MonoBehaviour
 
         ExploreRunSaveData saveData = new ExploreRunSaveData
         {
+            isTutorialRun = TutorialStep != TutorialStep.None,
             runStatus = RunStatus,
             battleReport = CaptureBattleReport(),
             setupData = CurrentSetupData,

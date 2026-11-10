@@ -43,7 +43,12 @@ public sealed class Module_ReloadMagicBullet : SkillModule
         var provider = component.GetCapability<IMagicBulletProvider>();
         if (provider != null)
         {
+            int previousCount = provider.CurrentBulletCount;
             provider.Reload(Mathf.Max(0, reloadCount));
+            if (provider.CurrentBulletCount > previousCount)
+            {
+                component.NotifyBasicAttackBulletReloaded();
+            }
         }
     }
 }

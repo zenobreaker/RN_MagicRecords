@@ -103,6 +103,27 @@ public class GameManager
             StageResult result = await stageManager.RunStageFlowAsync(token);
             token.ThrowIfCancellationRequested();
             SetGameState(GameState.FINISH_STAGE);
+            var explore = AppManager.Instance.SafeInvoke(app => app.GetExploreManager());
+            if (explore.SafeInvoke(manager => manager.IsTutorialStage))
+            {
+                if (result.IsSuccess)
+                {
+                    if (explore.TutorialStep == TutorialStep.Movement)
+                    {
+                        explore.SetTutorialStep(TutorialStep.Rescue);
+                    }
+                    else
+                    {
+                        explore.SetTutorialStep(TutorialStep.Record);
+                        SceneLoadingController.LoadScene("StageSelectScene");
+                        return;
+                    }
+                }
+
+                explore.ResetTutorialHealth();
+                EnterStage(stageManager.CurrentStageInfo);
+                return;
+            }
             AppManager.Instance.HandleStageResult(result);
         }
         catch (OperationCanceledException error)
