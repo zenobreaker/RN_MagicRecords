@@ -9,6 +9,7 @@ public class RecordCard : MonoBehaviour
     public event Action<RecordData> OnRecordData;
     public event Action<RecordCard, RecordData> OnRecordData_Two;
 
+    [SerializeField] private RectTransform artworkRoot;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI descText;
     [SerializeField] private Image iconImage;
@@ -28,6 +29,7 @@ public class RecordCard : MonoBehaviour
     [SerializeField] private TextMeshProUGUI emptyKeywordText;
 
     private readonly List<Image> keywordItems = new();
+    private bool showCardText = true;
     public IReadOnlyList<string> Keywords
     {
         get
@@ -53,6 +55,7 @@ public class RecordCard : MonoBehaviour
 
     private void OnEnable()
     {
+        FitArtwork();
         SetKeywordView(false);
     }
 
@@ -64,8 +67,21 @@ public class RecordCard : MonoBehaviour
         }
     }
 
+    private void FitArtwork()
+    {
+        if (artworkRoot == null)
+        {
+            return;
+        }
+
+        var bounds = ((RectTransform)transform).rect.size;
+        var design = artworkRoot.rect.size;
+        artworkRoot.localScale = Vector3.one * Mathf.Min(bounds.x / design.x, bounds.y / design.y);
+    }
+
     private void OnRectTransformDimensionsChange()
     {
+        FitArtwork();
         UpdateKeywordCellSize();
     }
 
@@ -128,7 +144,8 @@ public class RecordCard : MonoBehaviour
     public void SetKeywordView(bool showKeywords)
     {
         // Older card variants without a keyword panel keep their description visible.
-        bool hasKeywords = keywords != null && keywords.Count > 0 && keywordScroll != null;
+        nameText.SafeInvoke(label => label.gameObject.SetActive(showCardText));
+        bool hasKeywords = showCardText && keywords != null && keywords.Count > 0 && keywordScroll != null;
         if (keywordToggleButton != null)
         {
             keywordToggleButton.interactable = hasKeywords;
@@ -137,7 +154,7 @@ public class RecordCard : MonoBehaviour
         IsShowingKeywords = showKeywords && hasKeywords;
         if (descText != null)
         {
-            descText.gameObject.SetActive(IsShowingKeywords == false);
+            descText.gameObject.SetActive(showCardText && IsShowingKeywords == false);
         }
 
         if (keywordScroll != null)
@@ -182,7 +199,10 @@ public class RecordCard : MonoBehaviour
         System.Action onlockAction = null,
         bool canReroll = true)
     {
+        selectButton.interactable = true;
+        lockButton.SafeInvoke(button => button.interactable = true);
         myData = data;
+        showCardText = true;
         SetKeywords(data.keywords);
         DrawLockText();
 
@@ -191,7 +211,7 @@ public class RecordCard : MonoBehaviour
         // 1. UI 텍스트 업데이트
         nameText.text = LocalizationManager.Instance != null ? LocalizationManager.Instance.GetText(data.recordName) : data.recordName;
         descText.text = LocalizationManager.Instance != null ? LocalizationManager.Instance.GetText(data.description) : data.description;
-        SetIcon(data.icon, data.type == RecordType.AUGMENT);
+        SetIcon(data.icon, data.type == RecordType.MEMORY);
 
         // 2. 버튼 리스너 초기화 및 재할당
         selectButton.onClick.RemoveAllListeners();
@@ -219,7 +239,7 @@ public class RecordCard : MonoBehaviour
         }
     }
 
-    /// <summary>인벤토리 카드의 설명 영역에 등급과 실제 거래 가격을 함께 표시합니다.</summary>
+    /// <summary>상점 카드 하단 버튼에 거래 가격을 표시합니다.</summary>
     public void SetupShopEntry(RecordData record, string label, bool available, Action click)
     {
         string rarity = record.rarity switch
@@ -232,15 +252,20 @@ public class RecordCard : MonoBehaviour
             _ => ""
         };
         var entry = new BuildEntryViewData(record.recordName, record.description, record.icon,
-            $"{rarity} · {label}", keywords: record.keywords, recordType: record.type);
+            rarity, keywords: record.keywords, recordType: record.type);
         SetupBuildEntry(entry, click);
         selectButton.interactable = available;
+        lockText.text = label;
+        lockButton.gameObject.SetActive(true);
+        lockButton.interactable = available;
+        lockButton.onClick.AddListener(() => click?.Invoke());
     }
 
-    public void SetupBuildEntry(BuildEntryViewData entry, Action onClick)
+    public void SetupBuildEntry(BuildEntryViewData entry, Action onClick, bool showText = true)
     {
         myData = null;
-        SetKeywords(entry.Keywords);
+        showCardText = showText;
+        SetKeywords(showText ? entry.Keywords : null);
         ClearEvent();
         if (nameText != null)
         {
@@ -252,7 +277,7 @@ public class RecordCard : MonoBehaviour
             descText.text = $"[{entry.Label}]\n{BuildDescriptionPreview(entry.Description)}";
         }
 
-        SetIcon(entry.Icon, entry.Type == RecordType.AUGMENT);
+        SetIcon(entry.Icon, entry.Type == RecordType.MEMORY);
         if (selectFrame != null)
         {
             selectFrame.gameObject.SetActive(false);
@@ -265,6 +290,7 @@ public class RecordCard : MonoBehaviour
 
         if (selectButton != null)
         {
+            selectButton.interactable = true;
             selectButton.onClick.AddListener(() => onClick?.Invoke());
         }
     }

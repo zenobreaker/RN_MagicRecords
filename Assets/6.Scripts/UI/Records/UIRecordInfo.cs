@@ -67,7 +67,7 @@ public class UIRecordInfo : UiBase
         var description = buildEntry != null ? buildEntry.Description : recordData?.description;
         var category = buildEntry != null ? buildEntry.Label : "획득 레코드";
 
-        bool isMemory = (buildEntry != null ? buildEntry.Type : recordData?.type) == RecordType.AUGMENT;
+        bool isMemory = (buildEntry != null ? buildEntry.Type : recordData?.type) == RecordType.MEMORY;
         bool useMemory = isMemory && memoryRecordIcon != null;
         if (recordIcon != null)
         {

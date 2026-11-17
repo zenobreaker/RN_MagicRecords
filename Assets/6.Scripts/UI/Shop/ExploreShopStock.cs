@@ -66,7 +66,7 @@ public sealed class ExploreRecordPrice
         int upper = System.Math.Max(price, maximumPrice);
         int first = UnityEngine.Random.Range(price, upper + 1);
         int second = UnityEngine.Random.Range(price, upper + 1);
-        return type == RecordType.AUGMENT ? System.Math.Max(first, second) : System.Math.Min(first, second);
+        return type == RecordType.MEMORY ? System.Math.Max(first, second) : System.Math.Min(first, second);
     }
 }
 

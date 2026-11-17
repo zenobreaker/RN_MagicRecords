@@ -345,7 +345,8 @@ public class UITotalResultPopUp : UIPopUp
         {
             foreach (int recordId in battleReport.recordIds)
             {
-                var record = AppManager.Instance.SafeInvoke(app => app.GetRecordData(recordId));
+                var record = AppManager.Instance.SafeInvoke(app => app.GetRecordManager())
+                    .SafeInvoke(manager => manager.GetShopRecord(recordId)) ?? AppManager.Instance.SafeInvoke(app => app.GetRecordData(recordId));
                 if (record != null)
                 {
                     records.Add(record);
@@ -359,7 +360,10 @@ public class UITotalResultPopUp : UIPopUp
             records,
             (slot, data, index) =>
             {
-                slot.Setup(data);
+                var entry = new BuildEntryViewData(data.recordName, data.description, data.icon,
+                    "획득 레코드", keywords: data.keywords, recordType: data.type);
+                slot.SetupBuildEntry(entry, () => UIManager.Instance.SafeInvoke(ui => ui.OpenBuildEntryInfoPopUp(entry)),
+                    showText: false);
             });
     }
 

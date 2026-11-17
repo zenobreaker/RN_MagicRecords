@@ -69,47 +69,48 @@ public static class ExploreBuildViewData
         return LocalizationManager.Instance != null ? LocalizationManager.Instance.GetText(value) : value ?? "";
     }
 
-    public static List<BuildEntryViewData> ReadRecords(RecordManager manager = null)
-    {
-        if (manager == null)
-        {
-            manager = AppManager.Instance.SafeInvoke(app => app.GetRecordManager());
-        }
-
-        return (manager.SafeInvoke(value => value.GetPossesRecord()) ?? new List<RecordData>())
-                    .Where(record => record != null)
-                    .Select(record => new BuildEntryViewData(record.recordName, record.description, record.icon,
-                        "획득 레코드", keywords: record.keywords, recordType: record.type))
-                    .ToList();
-    }
-
-    public static List<BuildEntryViewData> ReadPassives()
-    {
-        var result = new List<BuildEntryViewData>();
-        var app = AppManager.Instance;
-        var explore = app.SafeInvoke(value => value.GetExploreManager());
-        var setup = explore.SafeInvoke(value => value.CurrentSetupData);
-        var system = app.SafeInvoke(value => value.GetPassiveSystem());
-        if (setup == null || setup.HasClass == false || system == null)
-        {
-            return result;
-        }
-
-        foreach (var passive in system.GetPassives(setup.SelectedClassId))
-        {
-            bool starting = explore.IsJobStartingPassive(setup.SelectedClassId, passive.SkillID);
-            result.Add(new BuildEntryViewData(
-                string.IsNullOrEmpty(passive.Name) ? "패시브 효과" : passive.Name,
-                passive.Description, passive.Icon, starting ? "직업 패시브" : "패시브",
-                passive.SkillLevel, starting, passive.Keywords));
-        }
-        return result;
-    }
-
     public static List<BuildEntryViewData> ReadInventory(RecordManager manager = null)
     {
-        var entries = ReadPassives().Where(entry => entry.IsJobPassive).ToList();
-        entries.AddRange(ReadRecords(manager));
+        var app = AppManager.Instance;
+        manager ??= app.SafeInvoke(value => value.GetRecordManager());
+        var setup = app.SafeInvoke(value => value.GetExploreManager()).SafeInvoke(value => value.CurrentSetupData);
+        var system = app.SafeInvoke(value => value.GetPassiveSystem());
+        var entries = new List<BuildEntryViewData>();
+        var displayedSkills = new HashSet<int>();
+        var owned = manager.SafeInvoke(value => value.GetPossesRecord()) ?? new List<RecordData>();
+        if (setup != null && setup.HasClass && system != null)
+        {
+            foreach (var skill in system.GetPassives(setup.SelectedClassId))
+            {
+                if (displayedSkills.Add(skill.SkillID) == false)
+                {
+                    continue;
+                }
+
+                var card = owned.FirstOrDefault(record => manager.GetPassiveSkillId(record) == skill.SkillID)
+                    ?? manager.SafeInvoke(value => value.FindPassiveRecord(skill.SkillID, setup.SelectedClassId));
+                entries.Add(new BuildEntryViewData(card?.recordName ?? skill.Name, card?.description ?? skill.Description,
+                    card?.icon ?? skill.Icon, "패시브", skill.SkillLevel, keywords: card?.keywords ?? skill.Keywords.ToList(),
+                    recordType: RecordType.PASSIVE));
+            }
+        }
+
+        foreach (var record in owned)
+        {
+            if (record == null)
+            {
+                continue;
+            }
+
+            int skillId = manager.GetPassiveSkillId(record);
+            if (skillId > 0 && displayedSkills.Add(skillId) == false)
+            {
+                continue;
+            }
+
+            entries.Add(new BuildEntryViewData(record.recordName, record.description, record.icon,
+                "획득 레코드", keywords: record.keywords, recordType: record.type));
+        }
         return entries;
     }
 
@@ -196,8 +197,7 @@ public static class ExploreBuildViewData
                 text.AppendLine(skill?.template != null ? $"{index + 1}. {Localize(skill.GetSkillName())}  Lv.{skill.currentLevel}" : $"{index + 1}. 빈 슬롯");
             }
         }
-        AppendEntries(text, "적용 중 패시브", ReadPassives());
-        AppendEntries(text, "획득 레코드", ReadRecords());
+        AppendEntries(text, "보유 레코드", ReadInventory());
         return text.ToString();
     }
 
