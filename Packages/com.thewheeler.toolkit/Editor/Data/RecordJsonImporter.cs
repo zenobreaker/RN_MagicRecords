@@ -297,7 +297,7 @@ namespace TheWheeler.Editor
 
             foreach (var row in data)
             {
-                if (row.recordType < 0 || row.recordType > 4 || row.rarity < 0 || row.rarity > 4)
+                if (row.recordType < 0 || row.recordType > 5 || row.rarity < 0 || row.rarity > 4)
                 {
                     throw new InvalidDataException($"Record {row.id} has an invalid type/rarity.");
                 }

@@ -107,7 +107,6 @@ public static class CommonRecordSetup
                 module
             };
             record.Stats.Clear(); // Modules own the buffs; no duplicate stat application.
-            record.type = id >= 18 && id <= 21 ? RecordType.AUGMENT : RecordType.PASSIVE;
             record.linkedPassiveSkillID = 0;
             record.isImplemented = true;
             record.importNote = "";
