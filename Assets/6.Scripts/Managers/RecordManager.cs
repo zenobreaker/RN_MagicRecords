@@ -425,7 +425,8 @@ public sealed class RecordManager : MonoBehaviour
         {
             return false;
         }
-        if (record.targetFilter == TargetFilterType.ALL && record.type != RecordType.PASSIVE)
+        bool standalone = record.type == RecordType.PASSIVE || record.type == RecordType.RELIC;
+        if (record.targetFilter == TargetFilterType.ALL && standalone == false)
         {
             return false;
         }
@@ -434,7 +435,7 @@ public sealed class RecordManager : MonoBehaviour
                     .Where(s => s != null && s.SkillID > 0).Select(s => s.SkillID));
         if (recordsDict.TryGetValue(record.id, out var so) == false || so == null)
         {
-            return targets.Count > 0 ? targets.Overlaps(equipped) : record.type == RecordType.PASSIVE;
+            return targets.Count > 0 ? targets.Overlaps(equipped) : standalone;
         }
 
         var passive = AppManager.Instance?.GetExploreManager()?.ResolvePassiveTemplate(
@@ -450,7 +451,7 @@ public sealed class RecordManager : MonoBehaviour
             }
         }
         // 특정 액티브 스킬을 대상으로 하는 레코드는 타입과 무관하게 장착 여부를 검사합니다.
-        return targets.Count > 0 ? targets.Overlaps(equipped) : record.type == RecordType.PASSIVE;
+        return targets.Count > 0 ? targets.Overlaps(equipped) : standalone;
     }
 
     /// <summary>등급별 가중치에 최고 등급 미등장 보정을 적용하고 해당 등급 안에서 균등 추첨합니다.</summary>
@@ -609,7 +610,20 @@ public sealed class RecordManager : MonoBehaviour
         GrantRecord(recordData);
     }
 
-    // AUGMENT/MODIFY도 PassiveSkill로 구현되므로 연결 데이터만으로 강화형을 판정하지 않습니다.
+    public int GetPassiveSkillId(RecordData record)
+    {
+        return IsRuntimePassiveRecord(record) ? recordsDict[record.id].linkedPassiveSkillID : 0;
+    }
+
+    public RecordData FindPassiveRecord(int skillId, int jobId)
+    {
+        var definition = recordsDict.Values.FirstOrDefault(record => record != null &&
+            record.type == RecordType.PASSIVE && record.linkedPassiveSkillID == skillId &&
+            (record.targetFilter == TargetFilterType.ALL || (int)record.targetFilter == jobId));
+        return definition.SafeInvoke(record => record.GetRecordData());
+    }
+
+    // MEMORY/MODIFY도 PassiveSkill로 구현되므로 연결 데이터만으로 강화형을 판정하지 않습니다.
     private bool IsRuntimePassiveRecord(RecordData record)
     {
         return record != null && record.type == RecordType.PASSIVE &&

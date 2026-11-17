@@ -170,6 +170,8 @@ public class SkillTreeManager
         {
             ApplySavedSkills(loadData);
         }
+
+        EnsureStartingActiveSkillsLearned();
     }
 
     protected override void Start()
@@ -240,6 +242,34 @@ public class SkillTreeManager
         }
 
         data.isUnlocked = true;
+    }
+
+    /// <summary>각 직업의 스킬북에서 첫 번째 액티브는 기존 학습 레벨을 유지하며 기본 학습합니다.</summary>
+    private void EnsureStartingActiveSkillsLearned()
+    {
+        foreach (var tree in skillByClassIdTable.Values)
+        {
+            var firstActive = tree.allSkills
+                .OfType<SO_ActiveSkillData>()
+                .Where(skill => skill != null && skill.isDevelopmentLocked == false && skill.maxLevel > 0)
+                .OrderBy(skill => skill.learnableLevel)
+                .ThenBy(skill => skill.id)
+                .FirstOrDefault();
+            if (firstActive == null)
+            {
+                continue;
+            }
+
+            var data = tree.GetSkillRuntimeDataByID(firstActive.id);
+            if (data == null || (data.isUnlocked && data.currentLevel >= 1))
+            {
+                continue;
+            }
+
+            data.currentLevel = Mathf.Max(1, data.currentLevel);
+            data.isUnlocked = true;
+            OnSkillRuntimeDataChanged(data);
+        }
     }
 
     private IEnumerable<SkillTree> GetAllSkillTrees()

@@ -212,6 +212,20 @@ public sealed partial class ExploreManager
             });
         }
 
+        if (startingPassiveSettings != null && CurrentSetupData != null &&
+            startingPassiveSettings.TryGetDefaults(CurrentSetupData.SelectedClassId, out var defaults, out _))
+        {
+            foreach (var required in defaults)
+            {
+                if (startingPassiveState.Exists(entry => entry != null && entry.jobID == required.jobID &&
+                    entry.skillID == required.skillID) == false)
+                {
+                    startingPassiveState.Add(required);
+                }
+            }
+            startingPassivesInitialized = true;
+        }
+
         if (EnsureStartingPassives(out var error))
         {
             return true;
