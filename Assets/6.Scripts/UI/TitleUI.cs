@@ -46,11 +46,13 @@ public class TitleUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 게임 시작 버튼에서 배경 설명 씬으로 이동합니다.
+    /// 튜토리얼 완료 시 로비로, 미완료 시 배경 설명 씬으로 로딩 후 이동합니다.
     /// </summary>
     private void OnStartButtonClicked()
     {
-        SceneLoadingController.LoadScene("Story");
+        bool hasCompletedTutorial = PlayerManager.Instance.SafeInvoke(players => players.Data.hasCompletedTutorial);
+        string nextScene = hasCompletedTutorial ? "Lobby" : "Story";
+        SceneLoadingController.LoadScene(nextScene);
     }
 
     /// <summary>
