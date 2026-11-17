@@ -97,6 +97,21 @@ public class RecordPassive : PassiveSkill
         }
     }
 
+    /// <summary>획득 시점의 영구 효과와 자원은 유지하고 기억의 지속 효과만 강제 발동합니다.</summary>
+    public void ReactivateMemory(GameObject requester)
+    {
+        if (recordData == null || recordData.type != RecordType.MEMORY ||
+            owner == null || owner != requester || owner.activeInHierarchy == false)
+        {
+            return;
+        }
+
+        foreach (var module in modules)
+        {
+            module.OnMemoryReactivated();
+        }
+    }
+
 
     public override void OnApplyStaticEffect(StatusComponent status)
     {

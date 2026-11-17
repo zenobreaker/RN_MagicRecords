@@ -341,6 +341,22 @@ public sealed class RecordSoroModule : RecordEventModule
     [NonSerialized] private int gained;
     [NonSerialized] private bool active;
     [NonSerialized] private bool started;
+
+    /// <summary>초기 에너지를 다시 지급하지 않고 소로의 지속 구간을 즉시 재시작합니다.</summary>
+    public override void OnMemoryReactivated()
+    {
+        if (owner == null || effects == null || duration <= 0f)
+        {
+            return;
+        }
+
+        ClearOwned();
+        elapsed = delay;
+        gained = 0;
+        active = true;
+        started = true;
+        ApplyStat(buff, StatusType.ENERGY_GAIN_BONUS, 1f);
+    }
     public override void OnAcquire(GameObject skillOwner, int level)
     {
         base.OnAcquire(skillOwner, level);

@@ -16,6 +16,11 @@ public abstract class CommonRecordModule : PassiveContextModule
     public virtual void OnUpdate(float deltaTime)
     {
     }
+
+    /// <summary>기억의 지속 효과를 다시 실행하는 모듈만 재정의합니다.</summary>
+    public virtual void OnMemoryReactivated()
+    {
+    }
 }
 
 [Serializable]
@@ -49,6 +54,12 @@ public sealed class CommonRecordBuffModule : CommonRecordModule
     [NonSerialized] private readonly List<BaseEffect> applied = new();
     [NonSerialized] private EffectComponent effects;
     [NonSerialized] private Character attackOwner;
+
+    /// <summary>확률 및 원래 발동 조건을 건너뛰고 유한 지속 버프만 갱신합니다.</summary>
+    public override void OnMemoryReactivated()
+    {
+        Apply(true);
+    }
 
     public override void OnAcquire(GameObject skillOwner, int level)
     {
@@ -128,7 +139,7 @@ public sealed class CommonRecordBuffModule : CommonRecordModule
             Clear();
         }
     }
-    private void Apply()
+    private void Apply(bool reactivateMemory = false)
     {
         if (owner == null || owner.activeInHierarchy == false || effects == null)
         {
@@ -138,14 +149,20 @@ public sealed class CommonRecordBuffModule : CommonRecordModule
         for (int i = 0; i < buffs.Count; i++)
         {
             var entry = buffs[i];
-            if (entry?.buff == null)
+            if (entry == null || entry.buff == null || (reactivateMemory && entry.duration <= 0f))
             {
                 continue;
             }
 
             string id = $"Record:{recordId}:{entry.buff.id}:{i}";
-            if (effects.HasEffect(id) != null)
+            var existing = effects.HasEffect(id);
+            if (existing != null)
             {
+                if (reactivateMemory)
+                {
+                    existing.ResetDuration();
+                    effects.RefreshEffectUI(existing);
+                }
                 continue;
             }
 
@@ -191,6 +208,12 @@ public sealed class CommonRecordBattleBleedModule : CommonRecordModule
     public SO_BaseEffect bleed;
     [Min(0)] public float duration = 10;
     [Min(0)] public float attackRatio = .1f;
+
+    /// <summary>현재 전투의 적에게 기존 기억과 같은 지속시간의 출혈을 다시 적용합니다.</summary>
+    public override void OnMemoryReactivated()
+    {
+        BattleManager.Instance.SafeInvoke(manager => OnBattleStarted(manager.CurrentEnemies));
+    }
     public override void OnBattleStarted(IReadOnlyList<Character> enemies)
     {
         if (owner == null || bleed == null || enemies == null)
