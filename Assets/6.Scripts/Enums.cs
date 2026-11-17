@@ -287,11 +287,12 @@ public enum HitShape
 //  Record Type
 public enum RecordType
 {
-    NONE,
-    EMPTY,
-    PASSIVE,    // 일반적인 status 형식
-    AUGMENT, // 증강 (수치 강화)
-    MODIFY,  // 변형 (기믹 변형 : 관통 제거 등등)
+    NONE = 0,
+    EMPTY = 1,
+    PASSIVE = 2,
+    MEMORY = 3,
+    MODIFY = 4,
+    RELIC = 5,
 }
 
 // 필터링을 위한 Enum (시트의 TargetFilter와 맞춤)
