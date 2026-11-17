@@ -278,6 +278,11 @@ public class AppManager
         if (exploreManager.IsEventCombat)
         {
             exploreManager.CompleteEventCombat(result.IsSuccess);
+            if (result.IsSuccess == false)
+            {
+                exploreManager.InvalidateRunAfterDefeat();
+            }
+
             SaveIfDirty();
             if (result.IsSuccess)
             {
@@ -302,6 +307,11 @@ public class AppManager
         // 1. ExploreManager에게 결과 전달
         exploreManager.ClearStage(
             result.IsSuccess);
+
+        if (result.IsSuccess == false)
+        {
+            exploreManager.InvalidateRunAfterDefeat();
+        }
 
         if (exploreManager.RunStatus == RunStatus.ChapterCleared)
         {

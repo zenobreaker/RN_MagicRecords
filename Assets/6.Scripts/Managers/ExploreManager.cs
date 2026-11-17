@@ -793,6 +793,24 @@ public sealed partial class ExploreManager : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// 패배한 런의 이어하기 저장만 즉시 폐기합니다.
+    /// 결과창에서 사용할 전투 통계와 런타임 데이터는 확인 버튼을 누를 때까지 유지합니다.
+    /// </summary>
+    public void InvalidateRunAfterDefeat()
+    {
+        CaptureBattleReport();
+
+        SaveManager.DeleteExploreRun();
+        SaveManager.DeleteMapData();
+        SaveManager.DeleteStageNodeData();
+
+        // 이후 SaveIfDirty 또는 씬 언로드가 패배한 런을 다시 저장하지 않도록 차단합니다.
+        RunStatus = RunStatus.NoSave;
+        bCreate = false;
+        bAllCleared = false;
+    }
+
     // UI에서 '다음'버튼을 누를 때 임시저장
     public void SaveSetupProgress(ExplorationSetupData currentSetup)
     {
