@@ -192,6 +192,7 @@ public class ActiveSkillEditorWindow : EditorWindow
             DrawPropertyIfExists(so, "skillName");
             DrawPropertyIfExists(so, "skillImage");
             DrawPropertyIfExists(so, "isConcurrentSkill");
+            DrawPropertyIfExists(so, "manaCost");
             DrawPropertyIfExists(so, "actionData");
             DrawPropertyIfExists(so, "damageData");
             EditorGUILayout.Space(10f);
