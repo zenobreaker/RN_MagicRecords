@@ -170,10 +170,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 7125304235209576201}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: -64, y: -16}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8465053847873092415
 CanvasRenderer:
@@ -4347,6 +4347,8 @@ MonoBehaviour:
   popupArea: {fileID: 0}
   characterPageObj: {fileID: 8961212799951679688}
   skillPageObj: {fileID: 3054915932951432016}
+  memoryDronePageObj: {fileID: 7910000000000000002}
+  stepTitle: {fileID: 5631726453318331687}
   nextButton: {fileID: 5616557180597688888}
   prevButton: {fileID: 3659339939542648261}
   startButton: {fileID: 5617625718200521044}
@@ -8223,6 +8225,7 @@ RectTransform:
   m_Children:
   - {fileID: 4534202330871571008}
   - {fileID: 2807573694920876987}
+  - {fileID: 7910000000000000003}
   m_Father: {fileID: 7003658091934179771}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -8659,3 +8662,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterInfoController
   content: {fileID: 0}
   childObject: {fileID: 0}
+--- !u!1001 &7910000000000000001
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4317701256167047333}
+    m_Modifications:
+    - target: {fileID: 169913130698330328, guid: d0abc8ad48316984fb2aab7d2f9def8d, type: 3}
+      propertyPath: m_Name
+      value: MemoryDronePage
+      objectReference: {fileID: 0}
+    - target: {fileID: 169913130698330328, guid: d0abc8ad48316984fb2aab7d2f9def8d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6674407169326138265, guid: d0abc8ad48316984fb2aab7d2f9def8d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7278450713997197801, guid: d0abc8ad48316984fb2aab7d2f9def8d, type: 3}
+      propertyPath: textKey
+      value: ui_exploration_memory_drone_title
+      objectReference: {fileID: 0}
+    - target: {fileID: 8714086004186627959, guid: d0abc8ad48316984fb2aab7d2f9def8d, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8714086004186627959, guid: d0abc8ad48316984fb2aab7d2f9def8d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.86
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d0abc8ad48316984fb2aab7d2f9def8d, type: 3}
+--- !u!1 &7910000000000000002 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 169913130698330328, guid: d0abc8ad48316984fb2aab7d2f9def8d, type: 3}
+  m_PrefabInstance: {fileID: 7910000000000000001}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &7910000000000000003 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1910956132829819959, guid: d0abc8ad48316984fb2aab7d2f9def8d, type: 3}
+  m_PrefabInstance: {fileID: 7910000000000000001}
+  m_PrefabAsset: {fileID: 0}

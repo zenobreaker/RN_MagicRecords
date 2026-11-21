@@ -20,7 +20,7 @@ MonoBehaviour:
   learnableLevel: 0
   maxLevel: 1
   skillUpgradeCost: 
-  skillImage: {fileID: 0}
+  skillImage: {fileID: 953564560, guid: c93b8447255acbd4cb8be2f0f008cb3a, type: 3}
   leadingSkillList: 
   levelDatas: []
   implementation: 0
@@ -60,6 +60,14 @@ MonoBehaviour:
       data:
         triggerTime: 2
         buff: {fileID: 11400000, guid: 8dbaa8b7afb649c2a9477aa38d7ec696, type: 2}
+        modeIcons:
+        - {fileID: 21300000, guid: fc5b6da392e34fbf9f20e9388cdc58bd, type: 3}
+        - {fileID: 21300000, guid: 923485254d054a5783a6111134d99000, type: 3}
+        - {fileID: 21300000, guid: 64b61943520f4941ab914f011c8c27be, type: 3}
+        - {fileID: 21300000, guid: c3f003e4bc4b4ec0bd6debcba434c89c, type: 3}
+        - {fileID: 21300000, guid: 4ca3e551cfe84de58d6da71abebe554a, type: 3}
+        - {fileID: 21300000, guid: 7dcbff75fc884a97aee4156b347bc0ba, type: 3}
+        - {fileID: 21300000, guid: 7268965d0e6d460e8b9ef227e38411cf, type: 3}
         mark: {fileID: 11400000, guid: ddd9856cb3b84b319899a93935bb6d99, type: 2}
         markChance: 0.5
         markDuration: 5
