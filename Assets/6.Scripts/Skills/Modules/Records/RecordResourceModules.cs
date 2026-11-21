@@ -26,7 +26,11 @@ public sealed class RecordInitialEnergyModule : RecordEventModule
     public override void OnAcquire(GameObject skillOwner, int level)
     {
         base.OnAcquire(skillOwner, level);
-        effects?.AddLaserEnergy(amount, null, false);
+        if (effects != null && amount > 0)
+        {
+            effects.AddLaserEnergy(amount, null, false);
+            NotifyEffectActivated();
+        }
     }
 }
 
@@ -62,6 +66,10 @@ public sealed class RecordSkillTimingModule : RecordEventModule
         }
         context.Base.Cooldown *= Mathf.Clamp01(1f - cooldownReduction);
         context.Cast.CastingTime *= Mathf.Clamp01(1f - castTimeReduction);
+        if (cooldownReduction != 0f || castTimeReduction != 0f)
+        {
+            NotifyEffectActivated();
+        }
     }
 }
 
@@ -320,6 +328,10 @@ public sealed class RecordDoomModule : RecordEventModule
                 ApplyStat(entry.buff, entry.stat, entry.amount, entry.valueType);
             }
         }
+        if (effects != null && delayedBuffs.Count > 0)
+        {
+            NotifyEffectActivated();
+        }
     }
     protected override void OnBattleEnded()
     {
@@ -355,7 +367,7 @@ public sealed class RecordSoroModule : RecordEventModule
         gained = 0;
         active = true;
         started = true;
-        ApplyStat(buff, StatusType.ENERGY_GAIN_BONUS, 1f);
+        ApplyStat(buff, StatusType.ENERGY_GAIN_BONUS, 1f, hasTrackedLifetime: true);
     }
     public override void OnAcquire(GameObject skillOwner, int level)
     {
@@ -387,7 +399,11 @@ public sealed class RecordSoroModule : RecordEventModule
         if (active == false && elapsed >= delay && elapsed < delay + duration)
         {
             active = true;
-            ApplyStat(buff, StatusType.ENERGY_GAIN_BONUS, 1f);
+            ApplyStat(buff, StatusType.ENERGY_GAIN_BONUS, 1f, hasTrackedLifetime: true);
+            if (effects != null)
+            {
+                NotifyEffectActivated();
+            }
         }
         if (active && elapsed >= delay + duration)
         {
@@ -408,7 +424,8 @@ public sealed class RecordSoroModule : RecordEventModule
             return;
         }
         gained = Mathf.Min(maxEnergy, gained + amount);
-        ApplyStat(buff, StatusType.ATTACK, damagePerEnergy * gained, ModifierValueType.PERCENT);
+        ApplyStat(buff, StatusType.ATTACK, damagePerEnergy * gained, ModifierValueType.PERCENT,
+            hasTrackedLifetime: true);
     }
     public override void OnLose()
     {
@@ -437,7 +454,15 @@ public sealed class RecordWildnessModule : RecordEventModule
         if (hit.IsSubAction == false && UnityEngine.Random.value < healChance)
         {
             HealthPointComponent health = owner.GetComponent<HealthPointComponent>();
-            health?.Heal(health.GetMaxHP * healRatio);
+            if (health != null)
+            {
+                float previous = health.GetCurrentHP;
+                health.Heal(health.GetMaxHP * healRatio);
+                if (health.GetCurrentHP > previous)
+                {
+                    NotifyEffectActivated();
+                }
+            }
         }
     }
     public override void OnSkillCast(SkillUseEvent evt, SkillRuntimeContext context)
@@ -449,5 +474,6 @@ public sealed class RecordWildnessModule : RecordEventModule
             return;
         }
         ApplyOwned(new RecordShieldEffect(id, shieldBuff, status.GetMaxHP() * shieldRatio, shieldDuration));
+        NotifyEffectActivated();
     }
 }

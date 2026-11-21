@@ -27,6 +27,7 @@ public class Player
     private Action<InputAction.CallbackContext> onAction;
     private Action<InputAction.CallbackContext> onMove;
     private Action<InputAction.CallbackContext> onDash;
+    private Action<InputAction.CallbackContext> onGuideDrone;
     private Action<InputAction.CallbackContext>[] onSkillActions;
     private Action<InputAction.CallbackContext>[] onSkillCancels;
     private bool combatInputEnabled = true;
@@ -108,6 +109,14 @@ public class Player
         };
 
         Awake_SkillAcitonInput(actionMap);
+        onGuideDrone = context =>
+        {
+            if (combatInputEnabled == false || CheatConsoleUI.CapturesInput || TutorialSequence.CapturesInput)
+            {
+                return;
+            }
+            GetComponent<GuideDrone>().SafeInvoke(drone => drone.TryActivate());
+        };
 
 
     }
@@ -234,6 +243,7 @@ public class Player
         Bind("Action", onAction);
         Bind("Dash", onDash);
         Bind("Move", onMove);
+        Bind("GuideDrone", onGuideDrone);
         if (onSkillActions == null || onSkillCancels == null)
         {
             return;

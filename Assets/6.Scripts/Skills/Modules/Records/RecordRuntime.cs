@@ -161,14 +161,15 @@ public abstract class RecordEventModule : CommonRecordModule
     {
     }
 
-    protected void ApplyOwned(BaseEffect effect)
+    /// <summary>자신이 적용한 효과를 추적하며 별도로 관리하는 유한 지속 구간도 HUD에 전달합니다.</summary>
+    protected void ApplyOwned(BaseEffect effect, bool hasTrackedLifetime = false)
     {
         if (effect == null || effects == null)
         {
             return;
         }
         effects.RemoveEffect(effect.ID);
-        effects.ApplyEffect(effect, owner, owner);
+        ApplyRecordEffect(effects, effect, owner, hasTrackedLifetime);
         ownedEffects.RemoveAll(previous => effects.HasEffect(previous.ID) != previous);
         ownedEffects.Add(effect);
     }
@@ -185,12 +186,14 @@ public abstract class RecordEventModule : CommonRecordModule
         ownedEffects.Clear();
     }
 
+    /// <summary>능력치 보정과 표시 정책을 함께 전달하며 효과 수명은 기존 관리 방식을 유지합니다.</summary>
     protected void ApplyStat(SO_BaseEffect definition, StatusType stat, float amount,
-        ModifierValueType valueType = ModifierValueType.FIXED, float duration = 0f, string suffix = "")
+        ModifierValueType valueType = ModifierValueType.FIXED, float duration = 0f, string suffix = "",
+        bool hasTrackedLifetime = false)
     {
         ApplyOwned(new StatBuffEffect($"Record:{recordId}:{GetType().Name}:{stat}:{suffix}", duration,
             new StatModifier(stat, amount, valueType), definition, definition != null ? definition.name : GetType().Name,
-            BuffStackPolicy.REFRESH_ONLY));
+            BuffStackPolicy.REFRESH_ONLY), hasTrackedLifetime);
     }
 
     public override void OnLose()

@@ -196,6 +196,24 @@ public sealed class RecordManager : MonoBehaviour
         return recordInventory.Records.ToList();
     }
 
+    /// <summary>현재 소유자의 기억 레코드만 재발동하며 획득, 레벨, 저장 데이터는 변경하지 않습니다.</summary>
+    public void ReactivateMemoryRecords(GameObject owner)
+    {
+        if (owner == null)
+        {
+            return;
+        }
+
+        foreach (var record in recordInventory.Records.ToList())
+        {
+            if (record.type == RecordType.MEMORY &&
+                recordPassives.TryGetValue(record.uniqueID, out var passive) && passive is RecordPassive memory)
+            {
+                memory.ReactivateMemory(owner);
+            }
+        }
+    }
+
     // Inventory restoration happens during AppManager.Awake, before PassiveSystem.OnInit.
     // Rebuild effects afterwards so resumed records keep their gameplay effects too.
     public void RestoreOwnedPassives()

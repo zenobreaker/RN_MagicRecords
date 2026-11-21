@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EffectComponent : MonoBehaviour
 {
+    [SerializeField] private Sprite defaultLaserEnergyIcon;
     public int DebuffCount
     {
         get;
@@ -23,6 +24,18 @@ public class EffectComponent : MonoBehaviour
         StatusComponent status = GetComponent<StatusComponent>();
         int bonus = applyBonus && status != null ? Mathf.RoundToInt(status.GetStatusValue(StatusType.ENERGY_GAIN_BONUS)) : 0;
         int gain = (int)System.Math.Min(int.MaxValue, (long)amount + System.Math.Max(0, bonus));
+        if (icon == null)
+        {
+            icon = defaultLaserEnergyIcon;
+        }
+
+        // 초기 지급으로 생성된 아이콘 없는 스택도 후속 획득 시 정상 표시로 복구합니다.
+        var existing = HasEffect(LaserEnergyEffect.EffectID);
+        if (existing != null && existing.FxIcon == null && icon != null)
+        {
+            existing.FxIcon = icon;
+        }
+
         for (int i = 0; i < gain; i++)
         {
             ApplyEffect(new LaserEnergyEffect(icon), gameObject, gameObject);

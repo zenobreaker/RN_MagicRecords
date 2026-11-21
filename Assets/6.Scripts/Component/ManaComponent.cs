@@ -183,10 +183,16 @@ public sealed class ManaComponent : MonoBehaviour
         NotifyManaChanged();
     }
 
+    /// <summary>마나를 변경하지 않고 지정된 양을 소비할 수 있는지 확인합니다.</summary>
+    public bool CanSpendMana(float amount)
+    {
+        return CanRecover() && IsFinite(amount) && amount >= 0f && amount <= currentMana;
+    }
+
     /// <summary>마나가 충분할 때만 지정된 양을 소비합니다.</summary>
     public bool TrySpendMana(float amount)
     {
-        if (CanRecover() == false || IsFinite(amount) == false || amount < 0f || amount > currentMana)
+        if (CanSpendMana(amount) == false)
         {
             return false;
         }

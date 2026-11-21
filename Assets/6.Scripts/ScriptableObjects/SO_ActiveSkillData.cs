@@ -70,7 +70,8 @@ public class SO_ActiveSkillData : SO_SkillData
     [Header("Skill Settings")]
     [Tooltip("AI용 값이므로 웬만하면 건들지 않는다.")]
     public float range = -1;
-    //public int cost;
+    [Min(0f), Tooltip("플레이어가 시전을 시작할 때 한 번 소비하는 마나입니다. 모든 스킬 레벨에 동일하게 적용합니다.")]
+    public float manaCost;
     //public float cooldown;
     //public float limitCooldown;
     //public float castingTime;

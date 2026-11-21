@@ -601,6 +601,13 @@ public class UIManager : Singleton<UIManager>
         ui.SafeInvoke(value => value.RefreshUI());
     }
 
+    /// <summary>로비 가이드 드론 정보 팝업을 기존 UI 스택에 표시합니다.</summary>
+    public void OpenGuideDronePopUp()
+    {
+        var ui = OpenUI<UIGuideDronePopup>(true);
+        ui.SafeInvoke(value => value.RefreshUI());
+    }
+
     public void OpenRecordSelectPopUp(List<RecordData> records, bool canReroll, RecordUIMode mode)
     {
         var ui = OpenUI<RecordUI>(true);

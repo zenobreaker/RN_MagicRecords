@@ -62,6 +62,23 @@ public class EffectGroupUI : MonoBehaviour
         if (handler != null)
         {
             handler.OnEffect += OnEffect;
+            RestorePlayerEffects();
+        }
+    }
+
+    /// <summary>HUD보다 먼저 적용된 획득 효과도 구독 시점에 복원합니다.</summary>
+    private void RestorePlayerEffects()
+    {
+        var effects = PlayerManager.Instance.SafeInvoke(manager => manager.GetCurrentPlayer())
+            .SafeInvoke(player => player.GetComponent<EffectComponent>());
+        if (effects == null || effects.isActiveAndEnabled == false)
+        {
+            return;
+        }
+
+        foreach (var effect in effects.ActiveEffects)
+        {
+            UpdateEffectIcon(effect);
         }
     }
 
@@ -80,8 +97,21 @@ public class EffectGroupUI : MonoBehaviour
 
     protected void UpdateEffectIcon(BaseEffect baseEffect)
     {
-        if (this == null || isActiveAndEnabled == false || baseEffect == null ||
-            baseEffect.FxIcon == null || effectIconUI == null)
+        if (this == null || isActiveAndEnabled == false || baseEffect == null)
+        {
+            return;
+        }
+
+        if (baseEffect.ShowInHUD == false)
+        {
+            if (displayedEffects.TryGetValue(baseEffect.ID, out var displayed))
+            {
+                RemoveIcon(displayed);
+            }
+            return;
+        }
+
+        if (baseEffect.FxIcon == null || effectIconUI == null)
         {
             return;
         }

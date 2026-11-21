@@ -24,6 +24,17 @@ public class SO_HUDHandler : ScriptableObject
 
     public event Action<BaseEffect> OnEffect;
 
+    private GuideDrone currentGuideDrone;
+    public GuideDrone CurrentGuideDrone => currentGuideDrone;
+    public event Action<GuideDrone> OnGuideDroneChanged;
+
+    /// <summary>드론 HUD가 늦게 생성되어도 현재 드론과 충전 상태를 복원할 수 있도록 전달합니다.</summary>
+    public void OnChangeGuideDrone(GuideDrone drone)
+    {
+        currentGuideDrone = drone;
+        OnGuideDroneChanged?.Invoke(drone);
+    }
+
 
 
 

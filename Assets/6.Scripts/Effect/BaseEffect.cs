@@ -49,6 +49,9 @@ public abstract class BaseEffect
         get;
         private set;
     } = 1;
+    /// <summary>버프 아이콘에 표시할 수치이며 실제 효과 스택과 별도로 재정의할 수 있습니다.</summary>
+    public virtual int DisplayStackCount => StackCount;
+
     public virtual int MaxStack
     {
         get
@@ -103,6 +106,21 @@ public abstract class BaseEffect
 
     public event Action<BaseEffect> OnRemovedUI;
 
+    public bool ShowInHUD
+    {
+        get;
+        private set;
+    } = true;
+
+    /// <summary>수명이나 스택이 없어도 현재 종류 또는 상태를 확인해야 하는 효과입니다.</summary>
+    public virtual bool HasPersistentHUDState => false;
+
+    /// <summary>레코드 효과는 지속시간, 스택 또는 명시적인 상태 표시가 필요할 때 버프칸에 표시합니다.</summary>
+    public void ConfigureRecordHUDVisibility(bool hasTrackedLifetime = false)
+    {
+        ShowInHUD = HasPersistentHUDState || hasTrackedLifetime || Duration > 0f || MaxStack > 1 || ShowSingleStack;
+    }
+
     public BaseEffect(string id, string desc, float duration)
     {
         ID = id;
@@ -149,6 +167,7 @@ public abstract class BaseEffect
     }
 
     public virtual bool IsDispellable => true;
+    public virtual bool ShowRemainingTime => false;
     public GameObject AppliedBy => appliedBy;
     public GameObject Target => owner;
 

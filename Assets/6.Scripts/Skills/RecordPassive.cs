@@ -8,6 +8,7 @@ public class RecordPassive : PassiveSkill
     private readonly Dictionary<StatusComponent, List<StatModifier>> appliedModifiers = new();
     private readonly List<CommonRecordModule> modules = new();
     private BattleManager battle;
+    private bool reactivatingMemory;
     public RecordPassive(SO_RecordData data) : base()
     {
         if (data == null)
@@ -24,7 +25,8 @@ public class RecordPassive : PassiveSkill
             }
 
             var module = (CommonRecordModule)template.Clone();
-            module.SetRecordId(data.id);
+            module.SetRecordId(data.id, data.icon);
+            module.SetActivationCallback(OnMemoryEffectActivated);
             modules.Add(module);
         }
     }
@@ -106,10 +108,29 @@ public class RecordPassive : PassiveSkill
             return;
         }
 
-        foreach (var module in modules)
+        reactivatingMemory = true;
+        try
         {
-            module.OnMemoryReactivated();
+            foreach (var module in modules)
+            {
+                module.OnMemoryReactivated();
+            }
         }
+        finally
+        {
+            reactivatingMemory = false;
+        }
+    }
+
+    /// <summary>기억 유형의 자연 발동만 현재 소유자의 드론 충전으로 전달합니다.</summary>
+    private void OnMemoryEffectActivated()
+    {
+        if (recordData == null || recordData.type != RecordType.MEMORY ||
+            reactivatingMemory || owner == null || owner.activeInHierarchy == false)
+        {
+            return;
+        }
+        owner.GetComponent<GuideDrone>().SafeInvoke(drone => drone.OnMemoryEffectActivated(recordData.rarity));
     }
 
 

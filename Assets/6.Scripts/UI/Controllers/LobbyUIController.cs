@@ -55,6 +55,12 @@ public class LobbyUIController
         UIManager.Instance.OpenUI<CharacterInfoController>();
     }
 
+    /// <summary>가이드 드론의 프로필과 기능을 확인하는 팝업을 엽니다.</summary>
+    public void OnOpenGuideDroneUI()
+    {
+        UIManager.Instance.SafeInvoke(ui => ui.OpenGuideDronePopUp());
+    }
+
     public void OnOpenSkillUI()
     {
         UIManager.Instance.OpenUI<SkillTreeController>();

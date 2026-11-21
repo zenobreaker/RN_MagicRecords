@@ -260,6 +260,32 @@ public abstract class ActiveSkill
     }
 
     protected readonly ActiveSkillData activeSkillData;
+    private readonly float manaCost;
+    public float ManaCost => manaCost;
+
+    /// <summary>플레이어의 유료 스킬만 마나를 확인하며 AI와 무료 스킬은 기존 동작을 유지합니다.</summary>
+    public bool HasEnoughMana()
+    {
+        if (ownerCharacter is not Player || manaCost == 0f)
+        {
+            return true;
+        }
+
+        return ownerCharacter.SafeInvoke(character => character.GetComponent<ManaComponent>())
+            .SafeInvoke(mana => mana.CanSpendMana(manaCost));
+    }
+
+    /// <summary>후속 페이즈나 투사체가 아닌 시전 시작 시점에만 마나를 한 번 소비합니다.</summary>
+    private bool TrySpendCastMana()
+    {
+        if (ownerCharacter is not Player || manaCost == 0f)
+        {
+            return true;
+        }
+
+        return ownerCharacter.SafeInvoke(character => character.GetComponent<ManaComponent>())
+            .SafeInvoke(mana => mana.TrySpendMana(manaCost));
+    }
 
     public ActiveSkill(SO_SkillData skillData)
         : base(skillData)
@@ -267,6 +293,7 @@ public abstract class ActiveSkill
 
         if (skillData is SO_ActiveSkillData activeSkillData)
         {
+            manaCost = activeSkillData.manaCost;
             phaseList = activeSkillData.phaseList;
             this.isConcurrentSkill = activeSkillData.isConcurrentSkill;
             LevelDatas = activeSkillData.levelDatas;
@@ -485,6 +512,11 @@ public abstract class ActiveSkill
             return;
         }
 
+        if (TrySpendCastMana() == false)
+        {
+            return;
+        }
+
         CancelToken(ref phaseCts);
         CancelToken(ref skillCts);
         skillCts = ownerCharacter != null
@@ -546,6 +578,9 @@ public abstract class ActiveSkill
 
         // 쿨타임
         SetCooldown();
+        // 사용이 성립한 시점에만 충전하며 탄환 생성이나 후속 페이즈에서는 중복 지급하지 않습니다.
+        ownerCharacter.SafeInvoke(character => character.GetComponent<GuideDrone>())
+            .SafeInvoke(drone => drone.OnSkillUsed(this));
     }
 
     protected virtual void PrepareCasting()

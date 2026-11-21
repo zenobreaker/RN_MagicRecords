@@ -7,7 +7,8 @@ public enum ExplorationStep
 {
     Character = 0,
     Skill = 1,
-    Final = Skill,
+    MemoryDrone = 2,
+    Final = MemoryDrone,
 }
 
 
@@ -16,6 +17,7 @@ public class ExplorationSetupData
 {
     public int SelectedCharacterId = -1;
     public int SelectedClassId = -1;
+    public string SelectedMemoryDroneId = string.Empty;
 
     // 이어하기 모드인지 여부
     public bool IsContinue = false;
@@ -26,6 +28,7 @@ public class ExplorationSetupData
         IsContinue = false;
         SelectedCharacterId = -1;
         SelectedClassId = -1;
+        SelectedMemoryDroneId = string.Empty;
     }
 
     public bool HasCharacter
@@ -49,6 +52,8 @@ public class UIExplorationSetup : UIPopUp
     [Header("UI Pages (Inspector에서 할당)")]
     [SerializeField] private GameObject characterPageObj;
     [SerializeField] private GameObject skillPageObj;
+    [SerializeField] private GameObject memoryDronePageObj;
+    [SerializeField] private LocalizeText stepTitle;
 
     [Header("Navigation Buttons")]
     [SerializeField] private Button nextButton;
@@ -69,6 +74,7 @@ public class UIExplorationSetup : UIPopUp
         // 페이지 객체 매핑
         pageObjects[ExplorationStep.Character] = characterPageObj;
         pageObjects[ExplorationStep.Skill] = skillPageObj;
+        pageObjects[ExplorationStep.MemoryDrone] = memoryDronePageObj;
 
         // 인터페이스 캐싱
         foreach (var kvp in pageObjects)
@@ -122,6 +128,7 @@ public class UIExplorationSetup : UIPopUp
         {
             SelectedCharacterId = savedData?.SelectedCharacterId ?? -1,
             SelectedClassId = savedData?.SelectedClassId ?? -1,
+            SelectedMemoryDroneId = savedData?.SelectedMemoryDroneId ?? string.Empty,
             IsContinue = true
         };
         cachedManager = AppManager.Instance.SafeInvoke(v => v.GetExploreManager());
@@ -145,7 +152,8 @@ public class UIExplorationSetup : UIPopUp
             return ExplorationStep.Character;
         }
 
-        return ExplorationStep.Final;
+        return string.IsNullOrEmpty(setupData.SelectedMemoryDroneId)
+            ? ExplorationStep.Skill : ExplorationStep.MemoryDrone;
     }
 
     protected override void DrawPopUp()
@@ -166,6 +174,16 @@ public class UIExplorationSetup : UIPopUp
 
         // 2. 타겟 페이지 켜고 데이터 주입
         currentStep = targetStep;
+        stepTitle.SafeInvoke(title =>
+        {
+            title.textKey = currentStep switch
+            {
+                ExplorationStep.Character => "ui_exploration_character_title",
+                ExplorationStep.Skill => "ui_exploration_skill_title",
+                _ => "ui_exploration_memory_drone_title"
+            };
+            title.ApplyLocalization();
+        });
         pageObjects[currentStep].SetActive(true);
         pages[currentStep].OnShowPage(setupData);
 

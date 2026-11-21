@@ -15,6 +15,18 @@ public class PlayerManager :
         private set;
     } = new();
 
+    /// <summary>이전 메모리 드론 선택을 탐사 초기화와 관계없이 보관합니다.</summary>
+    public void RememberMemoryDrone(string droneId)
+    {
+        if (string.IsNullOrEmpty(droneId) || Data.lastSelectedMemoryDroneId == droneId)
+        {
+            return;
+        }
+
+        Data.lastSelectedMemoryDroneId = droneId;
+        SaveManager.SavePlayerData(Data);
+    }
+
     /// <summary>진행 단계를 캐릭터나 탐사 저장과 별도로 즉시 저장합니다.</summary>
     public void SetTutorialProgress(TutorialStep step)
     {

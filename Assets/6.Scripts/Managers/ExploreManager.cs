@@ -432,6 +432,7 @@ public sealed partial class ExploreManager : MonoBehaviour
         {
             SelectedCharacterId = finalSetup.SelectedCharacterId,
             SelectedClassId = finalSetup.SelectedClassId,
+            SelectedMemoryDroneId = finalSetup.SelectedMemoryDroneId,
             IsContinue = finalSetup.IsContinue
         };
         RunStatus = RunStatus.MidRun;
@@ -824,6 +825,7 @@ public sealed partial class ExploreManager : MonoBehaviour
         {
             SelectedCharacterId = currentSetup.SelectedCharacterId,
             SelectedClassId = currentSetup.SelectedClassId,
+            SelectedMemoryDroneId = currentSetup.SelectedMemoryDroneId,
             IsContinue = currentSetup.IsContinue
         };
         RunStatus = RunStatus.SetupIncomplete;

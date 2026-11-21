@@ -127,6 +127,10 @@ public sealed class SpawnManager : MonoBehaviour
                 AppManager.Instance.SafeInvoke(v => v.OnApplyStaticEffct(jobID, player));
                 AppManager.Instance.SafeInvoke(v => v.OnApplyStaticEffct(Constants.GLOBAL_RECORD_JOB_ID, player));
 
+                // 기본 능력치와 레코드 적용 후 이번 탐사에서 선택한 드론 효과를 추가합니다.
+                AppManager.Instance.SafeInvoke(app => app.GetExploreManager())
+                    .SafeInvoke(explore => explore.ApplyMemoryDrone(player));
+
                 // Recalculate Status
                 if (player.TryGetComponent<StatusComponent>(out var status))
                 {

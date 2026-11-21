@@ -7,6 +7,11 @@ public sealed class RecordBulletModeEffect : RecordDefinedEffect
 {
     public const string EffectID = "MythBulletMode";
     private int fired;
+    private readonly Sprite[] modeIcons;
+    private readonly Sprite fallbackIcon;
+    public override bool HasPersistentHUDState => true;
+    public override bool ShowSingleStack => true;
+    public override int DisplayStackCount => fired;
     public float RapidCooldownReduction
     {
         get;
@@ -20,11 +25,25 @@ public sealed class RecordBulletModeEffect : RecordDefinedEffect
     {
         "필중의 마탄", "관통의 마탄", "분열의 마탄", "파열의 마탄", "속사의 마탄", "집행의 마탄", "운명의 마탄"
     };
-    public RecordBulletModeEffect(SO_BaseEffect definition, float rapidCooldownReduction = 0.3f) : base(EffectID, definition, 0f)
+    /// <summary>마탄 종류별 아이콘을 보관하고 현재 종류를 바로 표시합니다.</summary>
+    public RecordBulletModeEffect(SO_BaseEffect definition, float rapidCooldownReduction = 0.3f,
+        Sprite[] modeIcons = null) : base(EffectID, definition, 0f)
     {
         RapidCooldownReduction = rapidCooldownReduction;
-        Name = Names[0];
+        this.modeIcons = modeIcons != null ? (Sprite[])modeIcons.Clone() : Array.Empty<Sprite>();
+        fallbackIcon = FxIcon;
+        RefreshModeDisplay();
     }
+
+    /// <summary>현재 마탄의 이름과 전용 아이콘을 함께 갱신합니다.</summary>
+    private void RefreshModeDisplay()
+    {
+        Name = Names[Mode - 1];
+        Sprite icon = Mode <= modeIcons.Length ? modeIcons[Mode - 1] : null;
+        FxIcon = icon != null ? icon : fallbackIcon;
+    }
+
+    /// <summary>발사 수를 표시하고 일곱 발째에 다음 마탄으로 전환하며 표시 수치를 초기화합니다.</summary>
     public void CountShot()
     {
         fired++;
@@ -32,9 +51,11 @@ public sealed class RecordBulletModeEffect : RecordDefinedEffect
         {
             fired = 0;
             Mode = Mode % 7 + 1;
-            Name = Names[Mode - 1];
-            owner.GetComponent<EffectComponent>()?.RefreshEffectUI(this);
+            RefreshModeDisplay();
         }
+
+        owner.SafeInvoke(target => target.GetComponent<EffectComponent>())
+            .SafeInvoke(effects => effects.RefreshEffectUI(this));
     }
 }
 
@@ -43,6 +64,8 @@ public sealed class RecordBulletModeEffect : RecordDefinedEffect
 public sealed class RecordMythBulletModule : RecordEventModule
 {
     public SO_BaseEffect buff;
+    [Tooltip("필중, 관통, 분열, 파열, 속사, 집행, 운명의 마탄 순서입니다.")]
+    public Sprite[] modeIcons = Array.Empty<Sprite>();
     public SO_BaseEffect mark;
     public float markChance = 0.5f;
     public float markDuration = 5f;
@@ -61,7 +84,7 @@ public sealed class RecordMythBulletModule : RecordEventModule
     public override void OnAcquire(GameObject skillOwner, int level)
     {
         base.OnAcquire(skillOwner, level);
-        ApplyOwned(new RecordBulletModeEffect(buff, rapidCooldownReduction));
+        ApplyOwned(new RecordBulletModeEffect(buff, rapidCooldownReduction, modeIcons));
     }
 
     /// <summary>동시 발사 패턴은 한 발사 단위이며 모든 투사체가 같은 버프 스냅샷을 사용합니다.</summary>
@@ -115,7 +138,7 @@ public sealed class RecordMythBulletModule : RecordEventModule
         {
             targetEffects.RemoveEffect(existing);
         }
-        targetEffects.ApplyEffect(new RecordMarkEffect("RecordMark", mark, markDuration, bonus), target, owner);
+        ApplyRecordEffect(targetEffects, new RecordMarkEffect("RecordMark", mark, markDuration, bonus), target);
     }
 
     public override void OnSpawnObject(ISkillEffect spawnedObject, ActiveSkill casterSkill)

@@ -80,7 +80,7 @@ public class GenericPassiveSkill : PassiveSkill
             var module = template.Clone();
             if (module is CommonRecordModule common)
             {
-                common.SetRecordId(data.id);
+                common.SetRecordId(data.id, data.skillImage);
             }
             runtimeModules.Add(module);
             if (moduleCache.ContainsKey(module.triggerTime) == false)

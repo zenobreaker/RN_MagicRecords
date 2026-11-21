@@ -7,6 +7,7 @@ public class EffectIconUI : MonoBehaviour
     [SerializeField] private Image effectImage;
     [SerializeField] private Image cooldownImage;
     [SerializeField] private TextMeshProUGUI stackCount;
+    [SerializeField] private TextMeshProUGUI remainingTime;
 
     private BaseEffect baseEffect;
 
@@ -42,8 +43,16 @@ public class EffectIconUI : MonoBehaviour
 
         if (stackCount != null)
         {
-            stackCount.text = baseEffect.StackCount > 1 || baseEffect.ShowSingleStack
-            ? baseEffect.StackCount.ToString() : string.Empty;
+            int displayCount = baseEffect.DisplayStackCount;
+            stackCount.text = displayCount > 1 || baseEffect.ShowSingleStack
+                ? displayCount.ToString() : string.Empty;
         }
+
+        remainingTime.SafeInvoke(text =>
+        {
+            bool visible = baseEffect.ShowRemainingTime && baseEffect.Duration > 0f;
+            text.text = visible ? Mathf.CeilToInt(Mathf.Max(0f, baseEffect.RemainingTime)).ToString() : string.Empty;
+            text.gameObject.SetActive(visible);
+        });
     }
 }

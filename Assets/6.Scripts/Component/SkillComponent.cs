@@ -520,6 +520,7 @@ public sealed class SkillComponent : ActionComponent
                 out var skill))
         {
             return skill != null &&
+                   skill.HasEnoughMana() &&
                    skill.IsOnCooldown == false && skill.IsActive == false && skill.IsCasting == false && skill.IsEnding == false &&
                    (InAction == false || skill.CanUseConcurrently ||
                     (skillName == nameof(SkillSlot.SubAction) && IsSubActionCancelOnCooldown == false));
@@ -648,6 +649,12 @@ public sealed class SkillComponent : ActionComponent
         int startPhaseIndex = phaseIndex < 0 ? 0 : phaseIndex;
         if (startPhaseIndex >= skill.MaxPhaseCount)
         {
+            return;
+        }
+
+        if (skill.HasEnoughMana() == false)
+        {
+            OnSkillUse?.Invoke(false);
             return;
         }
 

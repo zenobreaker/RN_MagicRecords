@@ -6,9 +6,50 @@ using UnityEngine;
 public abstract class CommonRecordModule : PassiveContextModule
 {
     [NonSerialized] protected int recordId;
-    public void SetRecordId(int id)
+    [NonSerialized] private Sprite sourceIcon;
+    [NonSerialized] private Action activationCallback;
+
+    /// <summary>실제 기억 효과의 발동을 소유 레코드에 전달합니다.</summary>
+    internal void SetActivationCallback(Action callback)
+    {
+        activationCallback = callback;
+    }
+
+    protected void NotifyEffectActivated()
+    {
+        activationCallback?.Invoke();
+    }
+
+    /// <summary>런타임 모듈에 효과 식별자와 아이콘 대체에 사용할 원본 스킬 정보를 전달합니다.</summary>
+    public void SetRecordId(int id, Sprite icon = null)
     {
         recordId = id;
+        sourceIcon = icon;
+    }
+
+    /// <summary>레코드의 표시 여부와 대체 아이콘을 지정한 뒤 기존 효과 시스템에 전달합니다.</summary>
+    protected bool ApplyRecordEffect(EffectComponent receiver, BaseEffect effect, GameObject target,
+        bool hasTrackedLifetime = false)
+    {
+        if (effect == null || receiver == null)
+        {
+            return false;
+        }
+
+        var existing = receiver.HasEffect(effect.ID);
+        if (existing != null && existing.StackPolicy == BuffStackPolicy.IGNOREIFEXSIST)
+        {
+            return false;
+        }
+
+        effect.ConfigureRecordHUDVisibility(hasTrackedLifetime);
+        if (effect.FxIcon == null)
+        {
+            effect.FxIcon = sourceIcon;
+        }
+
+        receiver.ApplyEffect(effect, target, owner);
+        return receiver.HasEffect(effect.ID) != null;
     }
     public virtual void OnBattleStarted(IReadOnlyList<Character> enemies)
     {
@@ -146,6 +187,7 @@ public sealed class CommonRecordBuffModule : CommonRecordModule
             return;
         }
 
+        bool activated = false;
         for (int i = 0; i < buffs.Count; i++)
         {
             var entry = buffs[i];
@@ -170,10 +212,14 @@ public sealed class CommonRecordBuffModule : CommonRecordModule
                             ? new CooldownReductionEffect(entry.buff, entry.amount, entry.duration, id, entry.displayName)
                             : new StatBuffEffect(id, entry.duration, new StatModifier(entry.stat, entry.amount, entry.valueType),
                                 entry.buff, entry.displayName, BuffStackPolicy.IGNOREIFEXSIST);
-            effects.ApplyEffect(effect, owner, owner);
+            activated |= ApplyRecordEffect(effects, effect, owner);
             applied.Add(effect);
         }
         applied.RemoveAll(effect => effects.HasEffect(effect.ID) != effect);
+        if (activated && reactivateMemory == false && activation != Activation.Persistent)
+        {
+            NotifyEffectActivated();
+        }
     }
     private void Clear()
     {
@@ -221,7 +267,8 @@ public sealed class CommonRecordBattleBleedModule : CommonRecordModule
             return;
         }
 
-        float power = (owner.GetComponent<StatusComponent>()?.GetStatusValue(StatusType.ATTACK) ?? 0) * attackRatio;
+        float power = owner.GetComponent<StatusComponent>().SafeInvoke(status => status.GetStatusValue(StatusType.ATTACK)) * attackRatio;
+        bool activated = false;
         foreach (var target in enemies)
         {
             if (target == null || target.gameObject.activeInHierarchy == false)
@@ -237,7 +284,11 @@ public sealed class CommonRecordBattleBleedModule : CommonRecordModule
 
             var effect = EffectFactory.CreateDotStatusEffect("Bleed", bleed.description, duration,
                             bleed, Mathf.Max(.01f, bleed.tickInterval), power);
-            effects.ApplyEffect(effect, target.gameObject, owner);
+            activated |= ApplyRecordEffect(effects, effect, target.gameObject);
+        }
+        if (activated)
+        {
+            NotifyEffectActivated();
         }
     }
 }

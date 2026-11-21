@@ -12,9 +12,13 @@ public sealed class RecordMarkModule : RecordEventModule
     public float damageBonus = 0.1f;
     protected override void AfterOwnHit(GameObject target, DamageEvent hit, float damage)
     {
-        if (UnityEngine.Random.value < chance && target.GetComponent<HealthPointComponent>()?.Dead == false)
+        if (UnityEngine.Random.value < chance && target.GetComponent<HealthPointComponent>().SafeInvoke(health => health.Dead, true) == false)
         {
-            target.GetComponent<EffectComponent>()?.ApplyEffect(new RecordMarkEffect("RecordMark", debuff, duration, damageBonus), target, owner);
+            if (ApplyRecordEffect(target.GetComponent<EffectComponent>(),
+                new RecordMarkEffect("RecordMark", debuff, duration, damageBonus), target))
+            {
+                NotifyEffectActivated();
+            }
         }
     }
 }
@@ -76,7 +80,7 @@ public sealed class RecordRandomDebuffModule : RecordEventModule
             return;
         }
         remaining = GetLevelValue(cooldownByLevel, 5f);
-        target.GetComponent<EffectComponent>()?.ApplyEffect(effect, target, owner);
+        ApplyRecordEffect(target.GetComponent<EffectComponent>(), effect, target);
     }
 }
 
@@ -96,8 +100,8 @@ public sealed class RecordRancorModule : RecordEventModule
         {
             return;
         }
-        targetEffects.ApplyEffect(new RecordRancorEffect(id, debuff, delay,
-            status.GetStatusValue(StatusType.ATTACK) * attackRatio, bonusPerDebuff), target, owner);
+        ApplyRecordEffect(targetEffects, new RecordRancorEffect(id, debuff, delay,
+            status.GetStatusValue(StatusType.ATTACK) * attackRatio, bonusPerDebuff), target);
     }
 }
 
@@ -174,6 +178,10 @@ public sealed class RecordDebuffTransferModule : RecordEventModule
                 {
                     continue;
                 }
+                if (copy.FxIcon == null)
+                {
+                    copy.FxIcon = effect.FxIcon;
+                }
                 for (int stack = 1; stack < effect.StackCount; stack++)
                 {
                     copy.AddStack();
@@ -216,7 +224,7 @@ public sealed class RecordBlackArmorModule : RecordEventModule
         }
         BaseEffect selfDebuff = RecordDebuffFactory.RandomEffect(damageDebuffs, duration,
             status.GetStatusValue(StatusType.ATTACK) * attackRatio);
-        effects?.ApplyEffect(selfDebuff, owner, owner);
+        ApplyRecordEffect(effects, selfDebuff, owner);
         OnUpdate(0f);
     }
     public override void OnUpdate(float deltaTime)
@@ -244,6 +252,7 @@ public sealed class RecordArmorEffect : RecordDefinedEffect
 {
     public const string EffectID = "BlackCurseArmor";
     public override bool IsDispellable => false;
+    public override bool HasPersistentHUDState => true;
     private StatusComponent status;
     public RecordArmorEffect(SO_BaseEffect definition) : base(EffectID, definition, 0f, EffectType.DEBUFF)
     {
