@@ -67,6 +67,7 @@ public class SO_ActiveSkillDataEditor : Editor
             {
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("levelDatas"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("range"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("manaCost"));
                 //EditorGUILayout.PropertyField(serializedObject.FindProperty("cooldown"));
                 //EditorGUILayout.PropertyField(serializedObject.FindProperty("limitCooldown"));
                 //EditorGUILayout.PropertyField(serializedObject.FindProperty("castingTime"));
