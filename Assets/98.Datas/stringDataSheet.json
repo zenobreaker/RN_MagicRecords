@@ -1,5 +1,10 @@
-﻿{
+{
   "stringData": [
+    {
+      "key": "ui_exploration_memory_drone_title",
+      "kr": "메모리 드론 선택",
+      "en": "Select Memory Drone"
+    },
     {
       "key": "ui_exploration_character_title",
       "kr": "캐릭터 선택",
@@ -2504,6 +2509,81 @@
       "key": "skill_desc_38",
       "kr": "치명타 확률 +10%p.",
       "en": "Critical chance +10 percentage points."
+    },
+    {
+      "key": "NPC_901",
+      "kr": "제어 불능 휠러",
+      "en": "Out-of-Control Wheeler"
+    },
+    {
+      "key": "NPC_902",
+      "kr": "고방어 드론",
+      "en": "High Defense Drone"
+    },
+    {
+      "key": "NPC_903",
+      "kr": "아이스브레이커",
+      "en": "Ice Breaker"
+    },
+    {
+      "key": "NPC_904",
+      "kr": "아이스브레이커",
+      "en": "Ice Breaker"
+    },
+    {
+      "key": "ui_guide_drone_button",
+      "kr": "가이드 드론",
+      "en": "Guide Drone"
+    },
+    {
+      "key": "ui_guide_drone_title",
+      "kr": "가이드 드론 정보",
+      "en": "Guide Drone Info"
+    },
+    {
+      "key": "ui_guide_drone_profile",
+      "kr": "프로필",
+      "en": "Profile"
+    },
+    {
+      "key": "ui_guide_drone_passive",
+      "kr": "패시브 효과",
+      "en": "Passive Effect"
+    },
+    {
+      "key": "ui_guide_drone_active",
+      "kr": "액티브 효과",
+      "en": "Active Effect"
+    },
+    {
+      "key": "ui_guide_drone_memory",
+      "kr": "기억 재발동",
+      "en": "Memory Reactivation"
+    },
+    {
+      "key": "guide_drone_narae_name",
+      "kr": "나래",
+      "en": "Narae"
+    },
+    {
+      "key": "guide_drone_narae_profile",
+      "kr": "지혜를 상징하는 기본 가이드 드론. 휠러의 탐사를 안내하고 전투를 지원합니다.",
+      "en": "A default guide drone symbolizing wisdom. Guides Wheelers on exploration missions and provides combat support."
+    },
+    {
+      "key": "guide_drone_narae_passive",
+      "kr": "치명타 확률이 5%p 증가합니다.",
+      "en": "Increases critical chance by 5 percentage points."
+    },
+    {
+      "key": "guide_drone_narae_active",
+      "kr": "활성화 중 치명타 확률이 추가로 10%p 증가합니다. 드론 포인트를 지속적으로 소모하며, 포인트가 모두 소모되면 효과가 종료됩니다.",
+      "en": "While active, increases critical chance by an additional 10 percentage points. Continuously consumes drone points and ends when they run out."
+    },
+    {
+      "key": "guide_drone_memory_description",
+      "kr": "드론을 활성화하면 보유 중인 기억 레코드의 지속 효과를 다시 발동합니다. 각 효과는 해당 레코드의 고유 지속시간을 따릅니다.",
+      "en": "Activating the drone retriggers the timed effects of your owned Memory Records. Each effect uses its record's own duration."
     }
   ]
 }
